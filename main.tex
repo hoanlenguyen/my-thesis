@@ -1,9 +1,16 @@
+% !TEX program = xelatex
 \documentclass[12pt,a4paper]{report}
 
 % ── Fonts ────────────────────────────────────────────────────────────────────
 \usepackage{fontspec}
-\setmainfont{Liberation Serif}  % metric-compatible substitute for Times New Roman
-\setsansfont{Liberation Sans}   % metric-compatible substitute for Arial
+% Template fonts are Times New Roman / Arial; fall back to metric-compatible
+% Liberation, then to TeX Gyre (bundled with TeX Live) where unavailable.
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{%
+  \IfFontExistsTF{Liberation Serif}{\setmainfont{Liberation Serif}}%
+    {\setmainfont{TeX Gyre Termes}}}
+\IfFontExistsTF{Arial}{\setsansfont{Arial}}{%
+  \IfFontExistsTF{Liberation Sans}{\setsansfont{Liberation Sans}}%
+    {\setsansfont{TeX Gyre Heros}}}
 
 % ── Page geometry ─────────────────────────────────────────────────────────────
 % Left 4 cm, others 2 cm  (Oulu IPS template)
@@ -13,7 +20,8 @@
   right=2cm,
   top=2cm,
   bottom=2cm,
-  includeheadfoot
+  includeheadfoot,
+  headheight=15pt
 ]{geometry}
 
 % ── Line spacing ──────────────────────────────────────────────────────────────
@@ -529,7 +537,8 @@ Table~\ref{tab:dsr} maps the six DSR phases defined by Peffers et al.
 \caption{DSR phase mapping.}
 \label{tab:dsr}
 \small
-\begin{tabularx}{\textwidth}{lllX}
+\begin{tabularx}{\textwidth}{c>{\raggedright\arraybackslash}p{2.6cm}%
+  >{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.2cm}}
 \toprule
 Phase & DSR step & Activity in this thesis & Output \\
 \midrule
