@@ -135,7 +135,25 @@ Hoan Le\\
 % ── ABSTRACT ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Abstract}
 
-Work in progress.
+Residential households on dynamic electricity contracts can reduce costs
+by shifting flexible appliance loads to off-peak windows, yet
+coordinating multiple appliances across a volatile price curve requires
+automation that current single-agent LLM-based solutions fail to provide
+reliably. Existing implementations suffer from multi-appliance
+coordination failures, one-dimensional optimization signals, and
+evaluations limited to single-day scenarios.
+
+This thesis designs and evaluates a hierarchical ReAct multi-agent
+pipeline built in LangGraph, comprising an Orchestrator, an Appliance
+Profiler, a Price-Aware Scheduler, and a Conflict Resolver. The study
+investigates to what extent the pipeline reduces scheduling cost
+compared to a single-agent baseline, which price-volatility conditions
+yield the greatest improvement, and which appliance characteristics
+drive cost savings. Evaluation uses REFIT Smart Home consumption
+profiles and Finnish Nord Pool FI spot prices across 48 scenarios, with
+performance measured as optimality gap relative to a MILP ground truth
+and assessed using the Wilcoxon signed-rank test. The methodology
+follows Design Science Research.
 
 \vspace{12pt}
 {\sffamily\itshape Keywords}
@@ -148,7 +166,7 @@ scheduling, dynamic electricity pricing, Design Science Research
 {\sffamily\itshape Supervisor}
 
 \vspace{4pt}
-TBD
+Yueqiang Xu, PhD, Postdoctoral Researcher
 
 % ── FOREWORD ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Foreword}
