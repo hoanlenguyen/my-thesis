@@ -1,0 +1,904 @@
+\documentclass[12pt,a4paper]{report}
+
+% ── Fonts ────────────────────────────────────────────────────────────────────
+\usepackage{fontspec}
+\setmainfont{Liberation Serif}  % metric-compatible substitute for Times New Roman
+\setsansfont{Liberation Sans}   % metric-compatible substitute for Arial
+
+% ── Page geometry ─────────────────────────────────────────────────────────────
+% Left 4 cm, others 2 cm  (Oulu IPS template)
+\usepackage[
+  a4paper,
+  left=4cm,
+  right=2cm,
+  top=2cm,
+  bottom=2cm,
+  includeheadfoot
+]{geometry}
+
+% ── Line spacing ──────────────────────────────────────────────────────────────
+\usepackage{setspace}
+\singlespacing
+
+% ── Headers / footers ─────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ── Chapter / section heading fonts  ─────────────────────────────────────────
+\usepackage{titlesec}
+
+% Chapter heading: Arial 18pt bold, no "Chapter N" prefix
+\titleformat{\chapter}[block]
+  {\sffamily\fontsize{18}{22}\bfseries}
+  {\thechapter.}{0.5em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{12pt}
+
+% Section heading: Arial 14pt bold
+\titleformat{\section}[block]
+  {\sffamily\fontsize{14}{18}\bfseries}
+  {\thesection}{0.5em}{}
+\titlespacing*{\section}{0pt}{18pt}{6pt}
+
+% Subsection heading: Arial 14pt (not bold, matching template)
+\titleformat{\subsection}[block]
+  {\sffamily\fontsize{14}{18}\normalfont}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% Unnumbered chapter (Abstract, Foreword, etc.) — same style, no number
+\newcommand{\unnumberedchapter}[1]{%
+  \chapter*{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+% ── Paragraph spacing ─────────────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{10pt}
+
+% ── Text alignment ────────────────────────────────────────────────────────────
+\usepackage{ragged2e}
+\justifying
+
+% ── Tables ────────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+
+% Table caption: Arial 10pt bold, above table
+\usepackage{caption}
+\captionsetup[table]{
+  font={sf,small,bf},
+  labelsep=space,
+  justification=raggedright,
+  singlelinecheck=false,
+  position=above
+}
+\captionsetup[figure]{
+  font={sf,small,bf},
+  labelsep=period,
+  justification=centering,
+  position=below
+}
+
+% ── Graphics ──────────────────────────────────────────────────────────────────
+\usepackage{graphicx}
+
+% ── Hyperlinks ────────────────────────────────────────────────────────────────
+\usepackage[hidelinks]{hyperref}
+
+% ── Math ─────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+
+% ── Misc ──────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{eurosym}
+\usepackage{xcolor}
+
+% ── Hanging references ────────────────────────────────────────────────────────
+\usepackage{hanging}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── COVER PAGE ──────────────────────────────────────────────────────────────
+% Cover follows Thesis_template_2021.docx: own 2 cm margins on all sides,
+% logo centred 3 cm below the top margin, title 3.53 cm below the logo,
+% author block at the page bottom indented 10.16 cm.
+\newgeometry{left=2cm, right=2cm, top=2cm, bottom=2cm, nohead, nofoot}
+\begin{titlepage}
+\setlength{\parskip}{0pt}
+\centering
+\vspace*{3cm}
+\includegraphics[width=3.76cm, keepaspectratio]{attachments/uni_logo.jpeg}\par
+\vspace{3.53cm}
+{\sffamily\fontsize{20}{24}\bfseries
+A Hierarchical ReAct Multi-Agent Pipeline for Residential Appliance Load
+Scheduling Under Dynamic Electricity Pricing\par}
+\vfill
+{\raggedright\leftskip=10.16cm\rmfamily\normalsize
+University of Oulu\\
+Information Processing Science\\
+Master's Thesis\\
+Hoan Le\\
+2026\par}
+\end{titlepage}
+\restoregeometry
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ── ABSTRACT ────────────────────────────────────────────────────────────────
+\unnumberedchapter{Abstract}
+
+Work in progress.
+
+\vspace{12pt}
+{\sffamily\itshape Keywords}
+
+\vspace{4pt}
+multi-agent system, ReAct, LangGraph, home energy management, appliance
+scheduling, dynamic electricity pricing, Design Science Research
+
+\vspace{12pt}
+{\sffamily\itshape Supervisor}
+
+\vspace{4pt}
+TBD
+
+% ── FOREWORD ────────────────────────────────────────────────────────────────
+\unnumberedchapter{Foreword}
+
+Work in progress.
+
+% ── ABBREVIATIONS ───────────────────────────────────────────────────────────
+\unnumberedchapter{Abbreviations}
+
+\begin{description}[leftmargin=5cm, style=nextline, font=\normalfont\bfseries]
+\item[API] Application Programming Interface
+\item[DSR] Design Science Research
+\item[HEMS] Home Energy Management System
+\item[LLM] Large Language Model
+\item[MAS] Multi-Agent System
+\item[MCP] Model Context Protocol
+\item[MILP] Mixed Integer Linear Programming
+\item[Nord Pool FI] Nord Pool Finland Bidding Zone
+\item[ReAct] Reasoning and Acting
+\item[REFIT] Renewable Energy in the Future of an Innovative Technology
+\item[SLM] Small Language Model
+\item[SLR] Systematic Literature Review
+\end{description}
+
+% ── TABLE OF CONTENTS ───────────────────────────────────────────────────────
+\tableofcontents
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{Introduction}
+
+The residential energy sector is undergoing a fundamental shift in how
+consumption is managed and optimized. The proliferation of smart
+metering infrastructure, the growing adoption of dynamic electricity
+pricing contracts, and the expanding penetration of renewable energy
+sources are together creating both an opportunity and a challenge for
+residential energy management. Households with dynamic spot-price
+contracts can substantially reduce their electricity bills by shifting
+flexible appliance loads to cheap off-peak windows. However, the
+cognitive burden of coordinating multiple appliance cycles across a
+volatile 24-hour price curve exceeds what most households can
+practically manage without automated assistance.
+
+In Finland, this challenge has reached particular salience. Since
+October 2025, Finnish electricity consumers on spot-price contracts face
+15-minute pricing intervals tied to the Nordic spot market (Nord Pool FI
+bidding zone), with intraday price ratios of up to 2.5 times between the
+cheapest and most expensive hours (Haakana et al., 2025). At the same
+time, research in LLM-based Home Energy Management Systems (HEMS) has
+advanced rapidly. Recent hierarchical multi-agent implementations
+demonstrate that language model reasoning can be applied to appliance
+scheduling tasks that previously required domain-expert rule encoding or
+computationally expensive optimization solvers (El Makroum et al., 2026).
+However, these implementations carry three documented limitations that
+this thesis directly addresses.
+
+\section{Background and motivation}
+
+The research journey toward optimizing residential energy consumption is
+shifting from rigid heuristic algorithms to autonomous,
+reasoning-capable AI architectures. Conventional HEMS solutions have
+historically relied on mathematical optimization solvers, rule-based
+schedulers, or classical machine learning models trained on historical
+consumption patterns (Beaudin \& Zareipour, 2015). While effective in
+constrained and well-defined settings, these approaches require
+significant domain expertise to configure and do not generalize to novel
+price regimes.
+
+The emergence of Large Language Models (LLMs) as general-purpose
+reasoning engines has opened new possibilities for HEMS design. Yao et
+al. (2023) demonstrate that LLMs equipped with the ReAct paradigm --- a
+Thought-Action-Observation loop that interleaves reasoning with tool
+calls --- can solve multi-step planning problems requiring dynamic
+information retrieval and constraint satisfaction. Applied to
+residential scheduling, a ReAct agent can reason over a price forecast,
+classify appliances by shiftability, identify the cheapest available
+time window, and verify constraint compliance through a traceable
+reasoning chain.
+
+A secondary motivation concerns sustainable AI deployment. Small
+language models (SLMs) in the 7 billion parameter range consume 10 to
+30 times less energy per inference than large frontier models while
+maintaining competitive task quality (NVIDIA, 2025). Since the Low
+Carbon Alert trainee project context prioritizes energy efficiency in
+the AI systems used to schedule household loads, a secondary evaluation
+axis comparing GPT-4o-mini against Llama-3.3-70B contributes to the
+research agenda on sustainable agentic AI deployment.
+
+\section{Research problem}
+
+Existing LLM-based HEMS implementations carry three documented
+limitations. Multi-appliance coordination fails in some model
+configurations due to context window overload. Optimization signals are
+one-dimensional, based solely on wholesale price without considering
+simultaneous load peak constraints. And evaluations are confined to
+single-day scenarios that leave robustness across price-volatility
+regimes untested (Jonah et al., 2026).
+
+To address these limitations, the study is guided by one main research
+question and two sub-questions:
+
+\begin{quote}
+\textbf{RQ:} To what extent does a hierarchical ReAct multi-agent pipeline
+reduce residential appliance scheduling cost compared to a
+single-agent baseline, and under which price-volatility conditions is
+the improvement most pronounced?
+
+\textbf{SQ1:} How should the pipeline be designed to handle multiple
+simultaneous appliance scheduling requests without redundant reasoning
+across agents?
+
+\textbf{SQ2:} Which appliance types benefit most from multi-agent
+scheduling, and what appliance characteristics drive the largest cost
+reduction?
+\end{quote}
+
+The main RQ is deliberately non-binary. It asks how much and under which
+conditions, producing a richer and more nuanced answer than a binary
+yes/no finding. Together the three questions cover performance magnitude
+(RQ), design rationale (SQ1), and domain insight (SQ2).
+
+\section{Design Science Research approach}
+
+This study follows the Design Science Research (DSR) methodology as
+defined by Peffers et al. (2007). DSR is appropriate because the central
+activity is the iterative construction and empirical validation of a
+software artifact --- the hierarchical ReAct multi-agent pipeline ---
+rather than the observation of a pre-existing phenomenon. As Hevner et
+al. (2004) explain, DSR produces knowledge and understanding of a design
+problem and its solution through the building and evaluation of an
+artifact. The artifact is the primary research contribution. A
+Systematic Literature Review (SLR) is conducted as DSR Phase 1 to
+confirm the research gap and ground all architectural decisions in prior
+work.
+
+\section{Structure of the thesis}
+
+This thesis is organized into seven chapters. Chapter 2 presents the
+literature review covering HEMS concepts, LLM-based agents for energy
+management, the ReAct framework, multi-agent LLM systems, current
+agentic AI trends, and the Finnish energy market context. Chapter 3
+describes the Design Science Research methodology and evaluation
+strategy. Chapter 4 presents the system design and implementation.
+Chapter 5 presents evaluation results across 48 scenarios. Chapter 6
+discusses findings, limitations, and future work. Chapter 7 concludes
+the thesis.
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{Literature Review}
+
+This chapter reviews the theoretical background and prior empirical work
+relevant to the design and evaluation of a hierarchical ReAct
+multi-agent pipeline for residential appliance scheduling. The review is
+organized into seven thematic areas. The chapter concludes by
+synthesizing the literature into a confirmed research gap that motivates
+the three research questions of this thesis.
+
+\section{Home energy management systems}
+
+A Home Energy Management System (HEMS) is a software or hardware system
+that monitors, controls, and optimizes residential electricity
+consumption to reduce cost, support grid stability, and improve energy
+efficiency (Beaudin \& Zareipour, 2015). The core scheduling problem is
+the assignment of flexible appliance loads --- those whose start times
+can be shifted without violating user preferences or physical
+constraints --- to time windows where electricity prices are lowest,
+while ensuring that total household load at any moment does not exceed
+safe operational limits.
+
+The literature classifies HEMS scheduling approaches into three broad
+categories. Rule-based systems apply expert-defined heuristics to
+trigger or defer appliance cycles based on price thresholds.
+Mathematical optimization methods including Mixed Integer Linear
+Programming (MILP) and dynamic programming compute provably optimal
+schedules subject to precise constraint definitions, but require all
+constraints to be expressed in mathematical form and cannot handle
+natural language user preferences (Moradzadeh \& Tomsovic, 2013).
+Machine learning approaches learn scheduling policies from historical
+data but do not generalize well to novel price regimes (Mocanu et al.,
+2018). A key limitation shared across all three approaches is their
+inability to adapt dynamically to new constraint types or explain
+scheduling decisions in terms that non-expert household users can
+understand and trust.
+
+\section{LLM-based agents for energy management}
+
+The application of LLMs to energy management tasks has emerged as an
+active research area since 2023. El Makroum et al. (2026) present a
+hierarchical agentic AI architecture comprising one orchestrator agent
+and three specialist agents evaluated across three model variants: LLaMa
+3.3 70B, Qwen 3 32B, and GPT-OSS 120B. Their system demonstrates cost
+reductions of 15--30\% compared to unscheduled baselines on
+representative household scenarios. However, the system does not include
+thermal loads such as heat pumps, electric heating systems, or hot water
+storage, and evaluation is confined to a limited set of scenarios that
+do not systematically vary price-volatility regime.
+
+Jonah et al. (2026) implement a single-agent ReAct HEMS that grounds one
+tool-calling agent in live half-hourly spot prices, weather forecasts,
+and household usage data. Their evaluation against a MILP ground truth
+reveals three explicit limitations: multi-appliance coordination
+failures in some model configurations, one-dimensional optimization
+signals based solely on wholesale price, and evaluation confined to
+single-day scenarios that leaves robustness across price-volatility
+regimes untested. These three limitations constitute the primary
+research gap this thesis addresses.
+
+\section{The ReAct framework}
+
+The ReAct (Reasoning and Acting) framework, introduced by Yao et al.
+(2023), proposes that LLM agents should interleave reasoning traces with
+action execution rather than separating reasoning and acting into
+sequential phases. In the ReAct paradigm, each agent step produces three
+outputs: a Thought --- explicit reasoning about the current state and
+next action; an Action --- a structured call to an external tool or API;
+and an Observation --- the result returned by that tool. This loop
+repeats until the agent reaches a final answer.
+
+Yao et al. (2023) evaluate ReAct against chain-of-thought reasoning and
+direct action baselines across four benchmark tasks. ReAct outperforms
+both baselines on all four tasks, with particularly large gains on tasks
+requiring dynamic information retrieval and multi-step planning ---
+precisely the characteristics that distinguish HEMS scheduling from
+simpler single-step optimization tasks. The interpretability of the
+ReAct trace is a distinctive advantage for energy management
+applications: because each agent step records the reasoning behind every
+tool call and schedule decision, the full trace provides an auditable
+explanation of why a particular appliance was assigned to a particular
+time window.
+
+\section{Multi-agent LLM systems}
+
+Multi-agent LLM systems have been proposed as a solution to the context
+window and coordination limitations of single-agent designs. Han et al.
+(2024) survey the challenges and open problems in LLM multi-agent
+systems, identifying task allocation, memory management, and
+orchestration pattern design as primary research challenges. The survey
+confirms that role-specialized multi-agent designs --- where each agent
+is responsible for one well-defined subtask and has access only to the
+tools needed for that subtask --- consistently outperform generalist
+single-agent designs on complex multi-step tasks.
+
+Hong et al. (2023) demonstrate role-based multi-agent orchestration in a
+software development context through MetaGPT, where agents act as
+product manager, architect, engineer, and QA reviewer. The MetaGPT
+architecture shows that structuring agent interactions through a shared
+state object eliminates the redundant context that causes coordination
+failures in single-agent designs --- a finding directly relevant to the
+multi-appliance coordination failures documented in single-agent HEMS
+implementations.
+
+\section{Agentic AI trends in 2025--2026}
+
+Several 2025--2026 trends in agentic AI are directly applicable to this
+thesis. The most significant is the shift from single-agent to
+hierarchical multi-agent orchestration. Anthropic (2026) states that
+organizations in 2026 will be able to harness multiple agents acting
+together to handle task complexity that was difficult to imagine just a
+year ago. This shift is driven by the fundamental limitation that
+complex tasks exceed what any single agent context window can handle
+effectively.
+
+The Model Context Protocol (MCP), introduced by Anthropic in November
+2024 and donated to the Linux Foundation's Agentic AI Foundation in
+December 2025, has emerged as the industry standard for agent-to-tool
+communication (Anthropic, 2024). MCP provides a standardized,
+model-agnostic interface that enables AI agents to connect to external
+tools and data sources, eliminating the brittle custom integration code
+that previously characterized agent tool implementations. The LangChain
+MCP adapters library makes MCP tools directly compatible with LangGraph
+agents, enabling the price API and data reader in this thesis to be
+implemented as reusable MCP servers.
+
+Human-in-the-Loop (HITL) design has been identified as one of the seven
+canonical agentic AI design patterns alongside ReAct, Reflection, Tool
+Use, Planning, Multi-Agent Collaboration, and Sequential Workflows
+(acecloud.ai, 2026). In this thesis, a lightweight HITL checkpoint where
+the Orchestrator presents the proposed schedule to the user for approval
+before the Conflict Resolver finalizes it is incorporated as an optional
+LangGraph interrupt node, aligning the design with current best practice
+for high-stakes autonomous decisions.
+
+\section{Finnish energy market context}
+
+Finland provides a directly relevant operational context for this
+research. The country operates within the Nordic spot electricity market
+(Nord Pool) and as of October 2025 has adopted 15-minute pricing
+intervals, making it one of the most granularly priced residential
+electricity markets in Europe. Approximately 31\% of Finnish household
+electricity consumers currently hold spot-price-based electricity
+contracts that expose them directly to hourly and quarter-hourly price
+fluctuations (Haakana et al., 2025).
+
+Intraday price volatility in the Finnish market is substantial. Analysis
+of Nord Pool FI historical data reveals that the cheapest hours
+typically sit around \euro{}0.033 to \euro{}0.046 per kWh, while
+morning demand peaks push prices to approximately \euro{}0.0815 per kWh
+--- a 2.5 times ratio under normal conditions. During extreme events
+such as the 2022--2023 energy crisis, Finnish households experienced
+price spikes up to eight times higher than normal overnight rates
+(Numminen et al., 2026). These structural features make Finnish
+residential demand flexibility not merely a consumer cost issue but a
+national energy system challenge.
+
+\section{Literature synthesis and research gap}
+\label{sec:gap}
+
+The literature reviewed across the preceding sections establishes three
+converging findings. First, HEMS scheduling is a multi-step,
+multi-constraint optimization problem that LLM-based agents can address
+more flexibly than rule-based or classical optimization approaches.
+Second, single-agent ReAct HEMS implementations carry documented,
+explicitly stated limitations in multi-appliance coordination,
+optimization signal dimensionality, and evaluation scope (Jonah et al.,
+2026). Third, multi-agent role-specialized designs consistently
+outperform single-agent baselines on complex multi-step tasks in other
+domains (Hong et al., 2023; Han et al., 2024), but no published system
+applies this design pattern to HEMS with a controlled comparison across
+multiple price-volatility regimes.
+
+This gap is the direct motivation for this thesis. The study makes three
+contributions: a hierarchical ReAct multi-agent pipeline for residential
+appliance scheduling implemented in LangGraph; a quantified comparison
+across 48 evaluation scenarios spanning six price-volatility regimes
+with statistical significance testing and per-appliance breakdown; and a
+secondary comparison of GPT-4o-mini against Llama-3.3-70B on scheduling
+quality and inference cost.
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{Research Methodology}
+
+This chapter describes the research methodology and explains how Design
+Science Research is applied in this thesis. It presents the rationale
+for the selected approach, the phase mapping to thesis activities, and
+the evaluation strategy including the statistical methods used.
+
+\section{Design Science Research methodology}
+
+This thesis follows the Design Science Research (DSR) methodology as
+defined by Peffers et al. (2007). DSR is a research paradigm focused on
+the design and evaluation of innovative artifacts that solve complex
+practical problems. As Hevner et al. (2004) argue, design science
+creates and evaluates IT artifacts intended to solve identified
+organizational problems, producing knowledge through the construction
+and evaluation of artifacts rather than through the observation of
+natural phenomena. DSR is the appropriate methodology for this thesis
+because the central activity is building and evaluating the multi-agent
+pipeline artifact, not observing a pre-existing system.
+
+Artifacts in DSR are classified into four types: constructs, models,
+methods, and instantiations (March \& Smith, 1995). In this thesis, the
+artifact is an instantiation --- a working software implementation of a
+hierarchical multi-agent scheduling pipeline --- supported by
+architectural models (the LangGraph state graph design) and constructs
+(the agent role taxonomy: Profiler, Scheduler, Resolver, Orchestrator).
+
+Table~\ref{tab:dsr} maps the six DSR phases defined by Peffers et al.
+(2007) to the specific activities and outputs in this thesis.
+
+\begin{table}[h!]
+\caption{DSR phase mapping.}
+\label{tab:dsr}
+\small
+\begin{tabularx}{\textwidth}{lllX}
+\toprule
+Phase & DSR step & Activity in this thesis & Output \\
+\midrule
+1 & Problem identification &
+  SLR confirming no multi-agent ReAct HEMS addresses multi-appliance
+  coordination across multiple price-volatility regimes &
+  Gap statement; confirmed RQs \\[4pt]
+2 & Define objectives &
+  Specify measurable success criteria: optimality gap target, conflict
+  resolution rate, latency, token cost &
+  Objective specification \\[4pt]
+3 & Design and development &
+  Implement Appliance Profiler, Price-Aware Scheduler, Conflict
+  Resolver, Orchestrator, and single-agent baseline in LangGraph &
+  Working pipeline artifact \\[4pt]
+4 & Demonstration &
+  Run pipeline on five representative scenarios; confirm valid
+  cost-reducing schedules &
+  Demonstration results \\[4pt]
+5 & Evaluation &
+  Run 48 scenarios; apply Wilcoxon test; break down by scenario type
+  and appliance type &
+  Quantitative evaluation results \\[4pt]
+6 & Communication &
+  Write findings, design guidelines, limitations, and future work &
+  Complete thesis \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Evaluation strategy}
+
+The evaluation follows a simulation-based controlled design. No real
+sensors, buildings, or hardware are required. All inputs are drawn from
+publicly available datasets and APIs, and all evaluation scenarios are
+constructed from historical real-world data rather than synthetic
+simulations. The evaluation comparison is paired: the same 48 scenarios
+are run through the multi-agent pipeline, the single-agent baseline, and
+the MILP solver.
+
+The primary evaluation metric is the schedule optimality gap, defined as:
+
+\[
+\text{optimality gap} (\%) =
+  \frac{\text{agent cost} - \text{MILP cost}}{\text{MILP cost}} \times 100
+\]
+
+A smaller optimality gap indicates a schedule closer to the mathematical
+optimum. The Wilcoxon signed-rank test is used to assess statistical
+significance of the difference between multi-agent and single-agent
+optimality gaps across all 48 paired scenarios. The test is appropriate
+because it is non-parametric, requires no assumption of normality, and
+is designed for paired comparisons. Statistical significance is assessed
+at $p < 0.05$ two-tailed. Practical significance is reported using
+effect size $r = Z / \sqrt{N}$.
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{System Design and Implementation}
+
+This chapter describes the design and implementation of the hierarchical
+ReAct multi-agent pipeline. It presents the problem definition and
+design objectives, the architecture of the complete pipeline, the
+specifications of each agent, the single-agent baseline implementation,
+the MILP ground truth solver, and the technology stack used throughout.
+
+\section{Problem definition and objectives}
+
+Based on the literature synthesis in Section~\ref{sec:gap} and DSR
+Phase 2, the artifact must satisfy five design objectives. First,
+multi-appliance coordination: the pipeline must correctly schedule two
+or more flexible appliances simultaneously without producing overlapping
+high-load windows. Second, price-volatility robustness: the pipeline
+must produce cost-reducing schedules across all six scenario types.
+Third, constraint compliance: every schedule must respect user-defined
+completion deadlines and household load limits. Fourth,
+interpretability: the full reasoning trace of every scheduling decision
+must be captured through LangSmith. Fifth, computational efficiency: the
+pipeline must complete scheduling within 60 seconds and under \$0.10
+API cost per scenario using GPT-4o-mini.
+
+\section{Architecture overview}
+
+The artifact is a LangGraph-based hierarchical pipeline organized as a
+directed state graph with four nodes, each implementing a ReAct agent or
+coordination logic. Outputs from each node are written to a shared
+LangGraph state object that persists across the full pipeline execution.
+The pipeline executes in the following sequence: the Orchestrator
+receives the user's scheduling request and initializes the shared state;
+the Appliance Profiler classifies flexible appliances; the Price-Aware
+Scheduler proposes cost-optimal start times; the Conflict Resolver
+eliminates overlapping high-load windows; and the Orchestrator
+synthesizes the final schedule for the user.
+
+Figure~\ref{fig:arch} presents the complete pipeline architecture. Solid
+arrows indicate primary data flow; dashed arrows indicate state updates
+to the shared LangGraph state object. The single-agent baseline (dashed
+box, top right) receives identical inputs and is evaluated in parallel
+for comparison.
+
+\begin{figure}[h!]
+  \centering
+  \IfFileExists{figure1.png}{%
+    \includegraphics[width=0.90\textwidth]{figure1.png}%
+  }{%
+    \fbox{\parbox[c][6cm][c]{0.85\textwidth}{\centering
+      \sffamily Figure placeholder --- add \texttt{figure1.png}}}%
+  }
+  \caption{Hierarchical ReAct Multi-Agent Pipeline Architecture.}
+  \label{fig:arch}
+\end{figure}
+
+\section{Agent specifications}
+
+The \textbf{Orchestrator} receives the household scheduling request,
+coordinates the three specialist agents in sequence, and synthesizes the
+final output. The Orchestrator does not perform scheduling reasoning
+itself, keeping its context window small and decisions reliable across
+all scenario types.
+
+The \textbf{Appliance Profiler} reads the household consumption data and
+classifies each appliance by shiftability. The classification
+distinguishes flexible loads --- those with long cycle durations and
+user-defined completion windows such as washing machines and dishwashers
+--- from fixed loads such as refrigerators and microwaves. The Profiler
+outputs a structured appliance profile containing power draw in Watts,
+typical cycle duration in minutes, and the constraint window for each
+flexible load.
+
+The \textbf{Price-Aware Scheduler} receives the appliance profile and
+the day-ahead price schedule. It reasons through the price series to
+identify the cheapest available window for each flexible appliance
+within its constraint envelope and proposes a daily schedule with
+per-appliance start times and a total cost estimate.
+
+The \textbf{Conflict Resolver} receives the proposed schedule and checks
+for overlapping windows where two or more appliances with high power
+draw would run simultaneously, exceeding the household's peak load
+threshold. If conflicts exist, the Resolver proposes staggered start
+time adjustments that eliminate the conflict while minimizing the
+increase in total schedule cost.
+
+\section{Single-agent baseline}
+
+The single-agent baseline is implemented using LangGraph's
+\texttt{create\_react\_agent} function with a single LLM instance and
+access to all tools available to the three specialist agents combined:
+the smart home data reader, appliance classifier, spot price tool,
+schedule calculator, cheapest window finder, load summation tool,
+conflict detector, and schedule adjuster. The baseline receives the same
+input prompt as the multi-agent pipeline. This design ensures a fair
+comparison: the only controlled difference between baseline and artifact
+is the presence or absence of role specialization.
+
+The baseline is validated on five pilot scenarios before the full
+evaluation. Validation confirms that the baseline produces plausible but
+suboptimal schedules on simple scenarios and exhibits the coordination
+failures documented by Jonah et al. (2026) on complex multi-appliance
+scenarios, providing empirical motivation for the multi-agent design.
+
+\section{MILP ground truth solver}
+
+The MILP solver is implemented using PuLP and computes the
+mathematically optimal schedule for each scenario. The solver minimizes
+total daily electricity cost subject to three constraint types: each
+flexible appliance must complete exactly one cycle within its constraint
+window; no appliance cycle may be interrupted once started; and total
+household load at any time step must not exceed the household peak
+threshold. The solver is validated on the same five pilot scenarios as
+the baseline before the full evaluation begins.
+
+\section{Technology stack}
+
+Table~\ref{tab:stack} summarizes the technology stack used in this
+thesis.
+
+\begin{table}[h!]
+\caption{Technology stack.}
+\label{tab:stack}
+\small
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+Component & Tool & Cost \\
+\midrule
+Orchestration framework & LangGraph v1.0+ (stable, Oct 2025) & Free, open source \\
+LLM --- development & Llama-3.3-70B via Ollama or Groq & Free --- zero API cost \\
+LLM --- final evaluation & GPT-4o-mini via OpenAI API & Under \$3 for all 48 scenarios \\
+MILP solver & PuLP (Python) & Free, open source \\
+Agent tracing & LangSmith free tier & Free --- native LangGraph integration \\
+Automated evaluation & DeepEval open source & Free --- task completion metrics \\
+Statistical analysis & SciPy + Pingouin (Python) & Free --- Wilcoxon test and effect size $r$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{Evaluation and Results}
+
+Work in progress. This chapter will present the full evaluation results
+across 48 scenarios, including the demonstration results from DSR Phase
+4, the quantitative comparison of multi-agent versus single-agent
+optimality gaps, the Wilcoxon signed-rank test results, and the
+per-appliance cost saving breakdown.
+
+\section{Dataset and scenario design}
+
+The REFIT Electrical Load Measurements dataset (Murray et al., 2017)
+provides appliance-level power consumption profiles at 8-second
+intervals from 20 UK residential households. The cleaned version from
+the University of Strathclyde is used, providing individual CSV files
+per house with appliances labelled in columns. Houses 1, 2, and 3 are
+selected, covering washing machine, dishwasher, and tumble dryer
+configurations. Finnish electricity prices are sourced from the Nord
+Pool FI historical data via parassahko.fi, covering the period from
+October 2025 onward at 15-minute resolution.
+
+Table~\ref{tab:scenarios} summarizes the 48 evaluation scenarios
+constructed across six types varying price volatility and appliance set
+complexity.
+
+\begin{table}[h!]
+\caption{Evaluation scenario design.}
+\label{tab:scenarios}
+\small
+\begin{tabularx}{\textwidth}{llXcX}
+\toprule
+Type & Price regime & Appliances & Inst. & Research purpose \\
+\midrule
+A & Stable --- low volatility &
+  2 appliances: dishwasher + washing machine & 8 &
+  Baseline check --- both systems should perform well \\[3pt]
+B & Stable --- low volatility &
+  3 appliances: dishwasher + washing machine + tumble dryer & 8 &
+  Tests three-way conflict resolution \\[3pt]
+C & Moderate volatility &
+  3 to 5 appliances mixed & 8 &
+  Tests price-signal responsiveness \\[3pt]
+D & High volatility --- winter peak &
+  5 appliances, overlapping constraints & 8 &
+  Most financially consequential condition \\[3pt]
+E & Price spike --- Dec 2022 crisis &
+  3 appliances, tight constraint windows & 8 &
+  Extreme Finnish price event robustness \\[3pt]
+F & Negative spot price --- surplus &
+  4 appliances, flexible windows & 8 &
+  Tests exploitation of zero-cost windows \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Demonstration results}
+Work in progress.
+
+\section{Quantitative results}
+Work in progress.
+
+\section{Statistical analysis}
+Work in progress.
+
+\section{Per-appliance breakdown}
+Work in progress.
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{Discussion}
+
+Work in progress. This chapter will interpret the results in relation to
+the three research questions, connect findings to the agentic AI trends
+reviewed in Chapter~2, and address the limitations and directions for
+future research.
+
+\section{Interpretation of research questions}
+Work in progress.
+
+\section{Limitations}
+
+Several limitations of this study warrant acknowledgement. First, the
+evaluation is entirely simulation-based using historical data. While the
+use of real consumption profiles and real Nord Pool FI prices provides
+stronger ecological validity than synthetic scenarios, the study does
+not evaluate the pipeline in a live deployment where appliance states
+change dynamically and user preferences may deviate from scripted
+constraint windows. Second, the REFIT dataset was collected from UK
+homes between 2013 and 2015 and may not fully reflect the appliance
+configurations and usage patterns of contemporary Finnish households.
+Third, LLM outputs are non-deterministic: two runs of the same scenario
+may produce different schedules. To mitigate this, each scenario is run
+three times and results are averaged, but residual variance from
+non-determinism remains. Fourth, the study evaluates only three
+appliance types; generalizing findings to electric vehicle chargers,
+heat pumps, or battery storage requires additional evaluation.
+
+\section{Future research}
+
+Several directions for future research emerge from this study. First,
+extending the pipeline to include thermal loads --- electric space
+heating, heat pumps, and domestic hot water systems --- addresses the
+gap explicitly identified by El Makroum et al. (2026). Second,
+implementing the price API and data reader as MCP servers would enable
+reuse by future researchers without custom integration code,
+contributing to the emerging standardization of agent tool interfaces.
+Third, a live deployment study involving Finnish households on
+spot-price contracts would provide ecological validity that
+simulation-based evaluation cannot. Fourth, extending the multi-LLM
+comparison to include Qwen-3-32B and Phi-4 would provide a more
+complete picture of the SLM landscape for residential scheduling tasks.
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter{Conclusions}
+
+Work in progress. This chapter will summarize the main contributions of
+the thesis, explicitly answer RQ, SQ1, and SQ2 using evidence from
+Chapter~5, and state the implications for academic research on
+multi-agent LLM systems and practical deployment of intelligent demand
+flexibility tools in Finnish residential settings.
+
+% ════════════════════════════════════════════════════════════════════════════
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+
+\begin{hangparas}{0.7cm}{1}
+
+Anthropic. (2024). \textit{Model Context Protocol}.
+\url{https://modelcontextprotocol.io}
+
+Anthropic. (2026). \textit{AI agents in 2026: Key trends and
+organizational adoption patterns}. Anthropic Research Report.
+
+Beaudin, M., \& Zareipour, H. (2015). Home energy management systems: A
+review of modelling and complexity. \textit{Renewable and Sustainable
+Energy Reviews, 45}, 318--335.
+
+El Makroum, M., et al. (2026). Agentic AI home energy management system:
+A large language model framework for residential load scheduling.
+\textit{ScienceDirect}. arXiv:2510.26603.
+
+Haakana, J., Lassila, J., Kaipia, T., \& Partanen, J. (2025). Effects
+of extreme spot market prices on the electrical power system: Lessons
+from the Finnish distribution system. \textit{IET Generation,
+Transmission and Distribution}.
+
+Han, S., Zhang, Q., Zhao, L., Xu, R., Peng, W., \& Yang, H. (2024). LLM
+multi-agent systems: Challenges and open problems. arXiv:2402.03578.
+
+Hevner, A. R., March, S. T., Park, J., \& Ram, S. (2004). Design
+science in information systems research. \textit{MIS Quarterly, 28}(1),
+75--105.
+
+Hong, S., Zhuge, M., Chen, J., Zheng, X., Cheng, Y., Zhang, C., \&
+Schmidhuber, J. (2023). MetaGPT: Meta programming for a multi-agent
+collaborative framework. arXiv:2308.00352.
+
+Jonah, N., et al. (2026). LLMs for agentic home energy management.
+arXiv:2607.04569.
+
+March, S. T., \& Smith, G. F. (1995). Design and natural science
+research on information technology. \textit{Decision Support Systems,
+15}(4), 251--266.
+
+Mocanu, E., Mocanu, D. C., Nguyen, P. H., Liotta, A., Webber, M. E.,
+Gibescu, M., \& Slootweg, J. G. (2018). On-line building energy
+optimization using deep reinforcement learning. \textit{IEEE
+Transactions on Smart Grid, 10}(4), 3698--3708.
+
+Moradzadeh, B., \& Tomsovic, K. (2013). Two-stage residential energy
+management considering network operational constraints. \textit{IEEE
+Transactions on Smart Grid, 4}(4), 2339--2346.
+
+Murray, D., Stankovic, L., \& Stankovic, V. (2017). An electrical load
+measurements dataset of United Kingdom households from a two-year
+longitudinal study. \textit{Scientific Data, 4}, 160122.
+\url{https://doi.org/10.1038/sdata.2016.122}
+
+NVIDIA Corporation. (2025). \textit{Efficient inference with small
+language models}. NVIDIA Technical Position Paper.
+
+Numminen, S., et al. (2026). \textit{Energy poverty is not recognized in
+Finland}. Aalto University Research Report.
+
+Peffers, K., Tuunanen, T., Rothenberger, M. A., \& Chatterjee, S.
+(2007). A design science research methodology for information systems
+research. \textit{Journal of Management Information Systems, 24}(3),
+45--77.
+
+Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., \& Cao,
+Y. (2023). ReAct: Synergizing reasoning and acting in language models.
+\textit{International Conference on Learning Representations (ICLR
+2023)}. arXiv:2210.03629.
+
+\end{hangparas}
+
+\end{document}

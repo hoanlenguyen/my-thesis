@@ -1,0 +1,16 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.out
+*.lof
+*.lot
+*.bbl
+*.blg
+*.xdv
+
+# Word lock files
+~$*
