@@ -205,8 +205,7 @@ Work in progress.
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Introduction}
 
-The residential energy sector is undergoing a fundamental shift in how
-consumption is managed and optimized. The proliferation of smart
+Driven by dynamic pricing and smart grid infrastructure, an architectural shift is transforming how residential electricity consumption is monitored, scheduled, and optimized.The proliferation of smart
 metering infrastructure, the growing adoption of dynamic electricity
 pricing contracts, and the expanding penetration of renewable energy
 sources are together creating both an opportunity and a challenge for
@@ -640,12 +639,9 @@ for comparison.
 
 \begin{figure}[h!]
   \centering
-  \IfFileExists{figure1.png}{%
-    \includegraphics[width=0.90\textwidth]{figure1.png}%
-  }{%
-    \fbox{\parbox[c][6cm][c]{0.85\textwidth}{\centering
-      \sffamily Figure placeholder --- add \texttt{figure1.png}}}%
-  }
+  % trim removes the image's built-in title (the caption carries it)
+  \includegraphics[width=\textwidth, trim=0 0 0 135, clip]%
+    {attachments/Hierarchical ReAct Multi-Agent Pipeline Architecture.png}
   \caption{Hierarchical ReAct Multi-Agent Pipeline Architecture.}
   \label{fig:arch}
 \end{figure}
