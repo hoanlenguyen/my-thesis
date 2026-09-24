@@ -1,0 +1,60 @@
+# A Hierarchical ReAct Multi-Agent Pipeline for Residential Appliance Load Scheduling
+
+Master's thesis (University of Oulu, Information Processing Science) — thesis text in `main.tex`,
+DSR artifact in `src/hems/`.
+
+## Setup
+
+```bash
+uv sync                      # Python 3.12 + dependencies into .venv
+cp .env.example .env         # add OPENAI_API_KEY / GROQ_API_KEY / LANGSMITH_API_KEY
+uv run pytest                # offline test suite (no API calls)
+```
+
+Compile the thesis with XeLaTeX (`latexmk`; VS Code LaTeX Workshop is preconfigured).
+
+## Pipeline
+
+| System | Module | Role |
+|---|---|---|
+| `multi` | `agents/multi_agent.py` | Orchestrator → Appliance Profiler → Price-Aware Scheduler → Conflict Resolver (LangGraph), verification loop back to the scheduler if conflicts remain (max 2) |
+| `single` | `agents/single_agent.py` | one ReAct agent with all eight tools and the combined prompt |
+| `milp` | `solvers/milp.py` | PuLP/CBC ground truth |
+| `naive` | `solvers/naive.py` | every appliance starts at its default (earliest) time |
+
+All systems are scored by one function, `core/evaluate.py`. The eight tools (`tools/__init__.py`)
+are shared: specialists get their subset, the baseline gets all of them.
+
+## Workflow
+
+```bash
+# 0. development / pilots without real data (flagged synthetic, never thesis results)
+uv run hems synth --out data/pilot
+uv run hems demo data/pilot/SYN-D01.json --system multi --model gpt-4o-mini
+uv run hems demo data/pilot/SYN-D01.json --system multi --review     # human-in-the-loop approval
+
+# 1. benchmark from real data (see data/README.md)
+uv run hems refit-inspect --refit data/raw/refit
+uv run hems build --refit data/raw/refit --prices data/raw/prices_fi.csv --out data/scenarios
+
+# 2. evaluation (resumable; rerun the same command after an interruption)
+uv run hems run --scenarios data/scenarios --systems milp naive single multi \
+                --models gpt-4o-mini llama-3.3-70b --runs 3 --out results/runs.jsonl
+
+# 3. Chapter 5 tables/figures -> results/tables/*.tex, results/figures/*.pdf
+uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out results
+```
+
+## Methodological settings (state in Chapter 3)
+
+- **Cost** = consumer price (spot + margin + transfer + electricity tax, + VAT; `data/tariff.py`) × flexible
+  appliance energy. Keeps costs positive on negative-price days so the optimality gap is defined.
+- **Infeasible agent schedules** (window/peak violation or no schedule) are scored at the naive cost;
+  feasibility rate is reported separately.
+- **Metrics**: optimality gap %, savings captured `(naive − agent)/(naive − MILP)`, conflict resolution
+  rate over scenarios where independently cheapest starts overload the household, per-appliance saving
+  vs naive, latency, tokens, USD.
+- **Statistics**: Wilcoxon signed-rank on per-scenario means over 3 runs, `zero_method="pratt"`,
+  effect size r = |Z|/√N; Spearman for appliance characteristics (SQ2).
+- **Peak limit** default 4.0 kW (raised per scenario only if infeasible; recorded in `notes`).
+- **Types C–F** use repeated cycles of the three REFIT appliance kinds to reach 4–5 loads.

@@ -1,0 +1,120 @@
+"""Turn results/runs.jsonl into the metrics of Chapter 5.
+
+Scoring conventions (state these in Chapter 3):
+* An infeasible agent schedule (window or peak violation, or no schedule) is
+  scored at the naive-baseline cost: the household would fall back to running
+  appliances at their default times. Feasibility is reported separately.
+* optimality gap % = (scored cost - MILP cost) / MILP cost * 100.
+* savings captured = (naive - scored) / (naive - MILP): the share of the
+  achievable saving obtained; robust even where costs approach zero.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+from hems.core.models import Scenario
+from hems.solvers.naive import has_coordination_conflict
+
+AGENT_SYSTEMS = ("single", "multi")
+
+
+def load_runs(path: str | Path) -> pd.DataFrame:
+    with Path(path).open(encoding="utf-8") as fh:
+        return pd.DataFrame([json.loads(line) for line in fh if line.strip()])
+
+
+def scored_runs(runs: pd.DataFrame) -> pd.DataFrame:
+    """Agent runs joined with their scenario's MILP and naive references."""
+    ref = runs[runs.system.isin(["milp", "naive"])].pivot_table(index="scenario_id", columns="system", values="cost_eur")
+    ref.columns = [f"{c}_cost" for c in ref.columns]
+    ref = ref.reset_index()
+    ref.columns.name = None
+    agents = runs[runs.system.isin(AGENT_SYSTEMS)].merge(ref, on="scenario_id", how="inner")
+    agents["scored_cost"] = np.where(agents.feasible, agents.cost_eur, agents.naive_cost)
+    agents["gap_pct"] = (agents.scored_cost - agents.milp_cost) / agents.milp_cost * 100
+    achievable = agents.naive_cost - agents.milp_cost
+    agents["savings_captured"] = np.where(achievable > 1e-9, (agents.naive_cost - agents.scored_cost) / achievable, np.nan)
+    return agents
+
+
+def per_scenario(scored: pd.DataFrame) -> pd.DataFrame:
+    """Mean over repeated runs: one row per (model, system, scenario) — the unit of the paired test."""
+    return (
+        scored.groupby(["model", "system", "scenario_id", "scenario_type"])
+        .agg(
+            gap_pct=("gap_pct", "mean"),
+            savings_captured=("savings_captured", "mean"),
+            feasible_rate=("feasible", "mean"),
+            gap_sd=("gap_pct", "std"),
+            latency_s=("latency_s", "mean"),
+            tokens=("tokens_in", "mean"),
+            cost_usd=("cost_usd", "mean"),
+        )
+        .reset_index()
+    )
+
+
+def summary_by_type(scenario_means: pd.DataFrame) -> pd.DataFrame:
+    table = scenario_means.pivot_table(index="scenario_type", columns=["model", "system"], values="gap_pct", aggfunc="mean")
+    overall = scenario_means.pivot_table(columns=["model", "system"], values="gap_pct", aggfunc="mean")
+    overall.index = ["All"]
+    return pd.concat([table, overall])
+
+
+def efficiency(scored: pd.DataFrame) -> pd.DataFrame:
+    return (
+        scored.groupby(["model", "system"])
+        .agg(
+            feasible_rate=("feasible", "mean"),
+            mean_gap_pct=("gap_pct", "mean"),
+            median_latency_s=("latency_s", "median"),
+            mean_tokens=("tokens_in", "mean"),
+            mean_tokens_out=("tokens_out", "mean"),
+            mean_cost_usd=("cost_usd", "mean"),
+            total_cost_usd=("cost_usd", "sum"),
+            mean_tool_calls=("tool_calls", "mean"),
+        )
+        .reset_index()
+    )
+
+
+def conflict_resolution_rate(scored: pd.DataFrame, scenarios: dict[str, Scenario]) -> pd.DataFrame:
+    """SQ1: share of runs ending conflict-free (feasible) among scenarios that require coordination."""
+    conflict_ids = {sid for sid, sc in scenarios.items() if has_coordination_conflict(sc)}
+    subset = scored[scored.scenario_id.isin(conflict_ids)]
+    rate = subset.groupby(["model", "system"]).feasible.agg(["mean", "count"]).reset_index()
+    rate.columns = ["model", "system", "resolution_rate", "runs"]
+    rate["conflict_scenarios"] = len(conflict_ids)
+    return rate
+
+
+def per_appliance(scored: pd.DataFrame, naive: pd.DataFrame, scenarios: dict[str, Scenario]) -> pd.DataFrame:
+    """SQ2: saving per appliance cycle vs the naive start, with the cycle's characteristics."""
+    naive_costs = naive.set_index("scenario_id").per_appliance_cost_eur.to_dict()
+    rows = []
+    for rec in scored[scored.feasible].itertuples():
+        scenario = scenarios[rec.scenario_id]
+        for a in scenario.appliances:
+            cost = rec.per_appliance_cost_eur.get(a.id)
+            if cost is None:
+                continue
+            rows.append(
+                {
+                    "model": rec.model,
+                    "system": rec.system,
+                    "scenario_id": rec.scenario_id,
+                    "scenario_type": rec.scenario_type,
+                    "kind": a.kind,
+                    "saving_eur": naive_costs[rec.scenario_id][a.id] - cost,
+                    "duration_min": a.duration_slots * 15,
+                    "peak_kw": a.peak_kw,
+                    "energy_kwh": a.energy_kwh,
+                    "window_h": (a.deadline_slot - a.earliest_slot) / 4,
+                }
+            )
+    return pd.DataFrame(rows)

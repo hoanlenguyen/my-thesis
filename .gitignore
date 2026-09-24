@@ -14,3 +14,14 @@
 
 # Word lock files
 ~$*
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+
+# Raw datasets (large; see data/README.md)
+data/raw/*
+!data/raw/.gitkeep
