@@ -157,8 +157,12 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
         final = assignments_to_dict(resolution.assignments)
         summary = ""
         if summarize:
+            check = tools["detect_conflicts"].invoke({"schedule": final})
             reply = models("orchestrator").invoke(
-                [SystemMessage(prompts.ORCHESTRATOR_SUMMARY), HumanMessage(f"Request:\n{state['request']}\n\nFinal schedule: {json.dumps(final)}")],
+                [
+                    SystemMessage(prompts.ORCHESTRATOR_SUMMARY),
+                    HumanMessage(f"Request:\n{state['request']}\n\nFinal schedule: {json.dumps(final)}\nPeak-load check: {check}"),
+                ],
                 config=config,
             )
             summary = reply.text if hasattr(reply, "text") else str(reply.content)

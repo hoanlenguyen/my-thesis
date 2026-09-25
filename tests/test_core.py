@@ -90,3 +90,22 @@ def test_find_cheapest_window_is_single_appliance_optimum(scenario: Scenario) ->
     for a in scenario.appliances:
         best_line = tools["find_cheapest_window"].invoke({"appliance_id": a.id, "top_k": 1})
         assert f"start {scenario.slot_to_time(greedy[a.id])}" in best_line
+
+
+def test_adjust_schedule_auto_mode_resolves_overlap_one_move_at_a_time() -> None:
+    scenario = make_scenario("D", seed=2)
+    tools = build_tools(scenario)
+    greedy = {k: scenario.slot_to_time(v) for k, v in greedy_schedule(scenario).items()}
+    assert tools["detect_conflicts"].invoke({"schedule": greedy}).startswith("CONFLICT")
+
+    schedule = dict(greedy)
+    for appliance in scenario.appliances[1:]:  # keep the first, move the rest one by one
+        reply = tools["adjust_schedule"].invoke({"schedule": schedule, "appliance_id": appliance.id})
+        if reply.startswith("No start time"):
+            continue
+        moved = reply.split("Adjusted schedule: ")[1].split("\n")[0]
+        schedule = eval(moved)  # tool echoes a dict literal of the new schedule
+    parsed = {k: scenario.time_to_slot(v) for k, v in schedule.items()}
+    result = evaluate(scenario, parsed)
+    assert result.feasible
+    assert result.cost_eur >= evaluate(scenario, solve_milp(scenario).schedule).cost_eur - 1e-9

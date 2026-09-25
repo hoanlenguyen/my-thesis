@@ -31,8 +31,11 @@ SCHEDULER_ROLE = (
 
 RESOLVER_ROLE = (
     "Conflict resolution: check the proposed schedule against the peak load limit (detect_conflicts, sum_load). "
-    "If appliances overlap and exceed the limit, stagger start times with adjust_schedule, choosing the moves "
-    "that add the least cost and keep every appliance inside its window. Verify that no conflict remains."
+    "If appliances overlap and exceed the limit, stagger start times with adjust_schedule, one appliance at a "
+    "time: leave new_start_time empty to move an appliance to its cheapest start where it causes no overload, or give a time "
+    "to try a specific move. Always pass the latest adjusted schedule to the next call. Prefer moving the "
+    "appliances whose move adds the least cost, keep every appliance inside its window, and verify with "
+    "detect_conflicts that no conflict remains."
 )
 
 ORCHESTRATOR_PLAN = (
@@ -43,7 +46,9 @@ ORCHESTRATOR_PLAN = (
 
 ORCHESTRATOR_SUMMARY = (
     "You are the Orchestrator of a home energy management system. Write a short, friendly summary (max 4 "
-    "sentences) of the final schedule for the household: when each appliance runs and the estimated cost."
+    "sentences) of the final schedule for the household: when each appliance runs and the estimated cost. "
+    "You are given the result of an automatic peak-load check; if it reports a conflict, say plainly that the "
+    "schedule still exceeds the household limit. Never claim constraints are met unless the check confirms it."
 )
 
 PROFILER = f"You are the Appliance Profiler agent. {GOAL}\nYour task: {PROFILER_ROLE}\n{REACT_STYLE}"

@@ -164,12 +164,40 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
         )
 
     @_guard
-    def adjust_schedule(schedule: dict[str, str], appliance_id: str, new_start_time: str) -> str:
-        """Move one appliance to new_start_time and report the cost change and remaining conflicts."""
+    def adjust_schedule(schedule: dict[str, str], appliance_id: str, new_start_time: str = "") -> str:
+        """Move ONE appliance and report the cost change and remaining conflicts.
+
+        With new_start_time "HH:MM" the appliance is moved there. Leave new_start_time empty to move it
+        to its cheapest start within its window at which it causes no overload, with all other
+        appliances where they are (alternatives are listed)."""
         parsed = parse_schedule(schedule)
         a = sc.appliance(appliance_id)
         before = evaluate(sc, parsed)
-        parsed[appliance_id] = sc.time_to_slot(new_start_time)
+        alternatives = ""
+        if new_start_time:
+            parsed[appliance_id] = sc.time_to_slot(new_start_time)
+        else:
+            # A start is free if the load stays within the limit while THIS appliance runs; overloads
+            # among the other (not yet moved) appliances are left for their own moves.
+            others = total_load(sc, {k: v for k, v in parsed.items() if k != appliance_id})
+            limit = sc.peak_limit_kw + 1e-6
+            free = sorted(
+                (
+                    s
+                    for s in a.valid_starts()
+                    if all(others[s + i] + p <= limit for i, p in enumerate(a.profile_kw))
+                ),
+                key=lambda s: appliance_cost(sc, a, s),
+            )
+            if not free:
+                return (
+                    f"No start time for {appliance_id} within its window keeps the load under the limit while the other "
+                    f"appliances stay fixed. Move another appliance first. Schedule unchanged: {schedule}"
+                )
+            parsed[appliance_id] = free[0]
+            alternatives = "\nOther conflict-free options: " + (
+                ", ".join(f"{sc.slot_to_time(s)} (EUR {appliance_cost(sc, a, s):.4f})" for s in free[1:4]) or "none"
+            )
         after = evaluate(sc, parsed)
         window_ok = parsed[appliance_id] in a.valid_starts()
         new = {k: sc.slot_to_time(v) for k, v in parsed.items()}
@@ -177,7 +205,7 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
         return (
             f"Adjusted schedule: {new}\n"
             f"Cost EUR {after.cost_eur:.4f} (change {after.cost_eur - before.cost_eur:+.4f}); "
-            f"{appliance_id} {'within' if window_ok else 'OUTSIDE'} its window; {status}."
+            f"{appliance_id} {'within' if window_ok else 'OUTSIDE'} its window; {status}.{alternatives}"
         )
 
     fns = [
