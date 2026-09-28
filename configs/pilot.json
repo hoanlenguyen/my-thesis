@@ -1,0 +1,10 @@
+{
+  "name": "pilot",
+  "scenarios": "data/scenarios",
+  "ids": ["A01", "B03", "C02", "D01", "E01", "F04"],
+  "systems": ["milp", "naive", "single", "multi"],
+  "models": ["gpt-4o-mini", "gpt-oss-20b"],
+  "runs": 1,
+  "out": "results/pilot_real.jsonl",
+  "order": "model"
+}

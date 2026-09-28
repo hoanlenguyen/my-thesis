@@ -17,9 +17,21 @@ class ModelSpec:
 
 MODELS: dict[str, ModelSpec] = {
     "gpt-4o-mini": ModelSpec("openai", "gpt-4o-mini-2024-07-18", 0.15, 0.60),
-    "llama-3.3-70b": ModelSpec("groq", "llama-3.3-70b-versatile", 0.59, 0.79),
-    "llama-3.1-8b": ModelSpec("groq", "llama-3.1-8b-instant", 0.05, 0.08),
+    # Evaluation models: gpt-4o-mini (commercial API) and gpt-oss-20b (open weights, local).
+    # Llama-3.3-70B was planned but Groq moved Llama to enterprise-only access on 26 Aug 2026.
+    # gpt-oss-120b (Groq, evaluated by El Makroum et al. 2026) is pilot-only: the free tier's ~200k
+    # tokens/day cannot cover the full evaluation and the paid tier was unavailable.
+    "gpt-oss-120b": ModelSpec("groq", "openai/gpt-oss-120b", 0.15, 0.60),
+    # gpt-oss-20b runs locally with Ollama (same open weights, no API cost or rate limit); the Groq-hosted
+    # variant is kept for comparison.
+    "gpt-oss-20b": ModelSpec("ollama", "gpt-oss:20b", 0.0, 0.0),
+    "gpt-oss-20b-groq": ModelSpec("groq", "openai/gpt-oss-20b", 0.075, 0.30),
 }
+
+# Local inference settings: the agents' conversations exceed Ollama's default context window, and
+# "medium" reasoning effort matches the gpt-oss default on hosted providers.
+OLLAMA_NUM_CTX = 32768
+OLLAMA_REASONING = "medium"
 
 
 def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> BaseChatModel:
@@ -33,6 +45,13 @@ def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> 
 
         kwargs = {"model_kwargs": {"seed": seed}} if seed is not None else {}
         return ChatGroq(model=spec.model_id, temperature=temperature, max_retries=6, **kwargs)
+    if spec.provider == "ollama":
+        from langchain_ollama import ChatOllama
+
+        return ChatOllama(
+            model=spec.model_id, temperature=temperature, seed=seed, num_ctx=OLLAMA_NUM_CTX,
+            reasoning=OLLAMA_REASONING, keep_alive="30m",
+        )  # fmt: skip
     raise ValueError(f"unknown provider {spec.provider}")
 
 

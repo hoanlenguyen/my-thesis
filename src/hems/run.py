@@ -8,6 +8,7 @@ so they are retried on the next invocation instead of counting as agent errors.
 from __future__ import annotations
 
 import json
+import os
 import time
 import traceback
 import uuid
@@ -17,6 +18,7 @@ from typing import Any
 
 from langchain_core.callbacks import get_usage_metadata_callback
 
+from hems.agents.errors import daily_quota_exhausted
 from hems.agents.llm import MODELS, make_model, usage_cost_usd
 from hems.agents.multi_agent import run_multi_agent
 from hems.agents.single_agent import run_single_agent
@@ -34,11 +36,40 @@ def run_key(system: str, model: str, scenario_id: str, run: int) -> str:
     return f"{system}|{model}|{scenario_id}|{run}"
 
 
-def completed_keys(path: Path) -> set[str]:
+def repair_tail(path: Path) -> bool:
+    """Drop a partially written last line (the process was killed mid-write). Returns True if repaired."""
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+    data = path.read_bytes()
+    if data.endswith(b"\n"):
+        return False
+    path.write_bytes(data[: data.rfind(b"\n") + 1])
+    return True
+
+
+def read_records(path: Path) -> list[dict[str, Any]]:
+    """All complete records; malformed lines (e.g. from a hard power-off) are skipped."""
     if not path.exists():
-        return set()
+        return []
+    records = []
     with path.open(encoding="utf-8") as fh:
-        return {json.loads(line)["key"] for line in fh if line.strip()}
+        for line in fh:
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return records
+
+
+def completed_keys(path: Path) -> set[str]:
+    return {r["key"] for r in read_records(path)}
+
+
+def append_record(path: Path, record: dict[str, Any]) -> None:
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record) + "\n")
+        fh.flush()
+        os.fsync(fh.fileno())  # a finished run survives a sudden shutdown
 
 
 def parse_assignments(scenario: Scenario, assignments: dict[str, str] | None) -> tuple[Schedule, list[str]]:
@@ -110,11 +141,31 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
         "cost_usd": round(usd, 6),
         "tool_calls": agent_run.tool_calls,
         "iterations": agent_run.iterations,
+        "recoveries": agent_run.recoveries,
         "agent_errors": agent_run.errors,
         "explanation": agent_run.explanation,
         "langsmith_run_id": run_id if system in AGENT_SYSTEMS else None,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
+
+
+Job = tuple[Scenario, str, str, int]  # scenario, system, model, run
+
+
+def plan_jobs(scenarios: list[Scenario], systems: list[str], models: list[str], runs: int, order: str = "scenario") -> list[Job]:
+    """All jobs of a batch. order="model" runs references first, then each model in the given order
+    (e.g. the fast cloud model before the slow local one)."""
+    jobs: list[Job] = []
+    for scenario in scenarios:
+        for system in systems:
+            if system in REFERENCE_SYSTEMS:
+                jobs.append((scenario, system, "-", 0))
+            else:
+                jobs += [(scenario, system, m, r) for m in models for r in range(1, runs + 1)]
+    if order == "model":
+        rank = {m: i for i, m in enumerate(["-", *models])}
+        jobs.sort(key=lambda j: (rank[j[2]], j[3], j[0].id, j[1]))  # stable: scenario order kept within a run
+    return jobs
 
 
 def run_batch(
@@ -124,32 +175,38 @@ def run_batch(
     runs: int,
     out_path: Path,
     summarize: bool = True,
-) -> None:
+    order: str = "scenario",
+) -> str:
+    """Run every job not yet in ``out_path``. Returns "done", "quota" or "incomplete" (some jobs failed)."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    if repair_tail(out_path):
+        print(f"repaired a partially written last line in {out_path}", flush=True)
     done = completed_keys(out_path)
-    jobs = []
-    for scenario in scenarios:
-        for system in systems:
-            if system in REFERENCE_SYSTEMS:
-                jobs.append((scenario, system, "-", 0))
-            else:
-                jobs += [(scenario, system, m, r) for m in models for r in range(1, runs + 1)]
+    jobs = plan_jobs(scenarios, systems, models, runs, order)
     todo = [j for j in jobs if run_key(j[1], j[2], j[0].id, j[3]) not in done]
-    print(f"{len(jobs)} jobs, {len(jobs) - len(todo)} already done, {len(todo)} to run -> {out_path}")
+    print(f"{len(jobs)} jobs, {len(jobs) - len(todo)} already done, {len(todo)} to run -> {out_path}", flush=True)
 
+    failed = 0
     for i, (scenario, system, model, run) in enumerate(todo, 1):
         label = run_key(system, model, scenario.id, run)
         try:
             record = execute(scenario, system, model, run, summarize=summarize)
         except KeyboardInterrupt:
+            print(f"\ninterrupted during {label}; it will be rerun next time. {len(todo) - i + 1} jobs left.", flush=True)
             raise
-        except Exception:  # provider/network failure: leave unrecorded so a rerun retries it
-            print(f"[{i}/{len(todo)}] {label} FAILED (not recorded)\n{traceback.format_exc(limit=3)}")
+        except Exception as exc:  # provider/network failure: leave unrecorded so a rerun retries it
+            if daily_quota_exhausted(exc):
+                print(f"[{i}/{len(todo)}] {label}: daily provider quota reached; stopping. Rerun the same command "
+                      f"later to continue ({len(todo) - i + 1} jobs left).", flush=True)  # fmt: skip
+                return "quota"
+            failed += 1
+            print(f"[{i}/{len(todo)}] {label} FAILED (not recorded)\n{traceback.format_exc(limit=3)}", flush=True)
             continue
-        with out_path.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(record) + "\n")
+        append_record(out_path, record)
         status = "ok" if record["feasible"] else "INFEASIBLE"
         print(
             f"[{i}/{len(todo)}] {label} cost EUR {record['cost_eur']:.4f} {status} "
-            f"{record['latency_s']:.1f}s {record['tokens_in'] + record['tokens_out']} tok"
+            f"{record['latency_s']:.1f}s {record['tokens_in'] + record['tokens_out']} tok",
+            flush=True,
         )
+    return "incomplete" if failed else "done"

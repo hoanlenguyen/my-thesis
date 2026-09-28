@@ -75,6 +75,7 @@
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{longtable}
+\usepackage{makecell}
 
 % Table caption: Arial 10pt bold, above table
 \usepackage{caption}
@@ -97,6 +98,8 @@
 
 % ── Hyperlinks ────────────────────────────────────────────────────────────────
 \usepackage[hidelinks]{hyperref}
+\usepackage{xurl}                    % allow long URLs/DOIs to break across lines
+\setlength{\emergencystretch}{2em}   % avoid overfull lines in justified text
 
 % ── Math ─────────────────────────────────────────────────────────────────────
 \usepackage{amsmath}
@@ -258,8 +261,11 @@ language models (SLMs) in the 7 billion parameter range consume 10 to
 maintaining competitive task quality (NVIDIA, 2025). Since the Low
 Carbon Alert trainee project context prioritizes energy efficiency in
 the AI systems used to schedule household loads, a secondary evaluation
-axis comparing GPT-4o-mini against Llama-3.3-70B contributes to the
-research agenda on sustainable agentic AI deployment.
+axis compares the commercial cloud model GPT-4o-mini with gpt-oss-20b,
+an open-weight mixture-of-experts model (about 21 billion parameters, of
+which about 3.6 billion are active per token) run locally on a laptop,
+contributing to the research agenda on sustainable agentic AI
+deployment.
 
 \section{Research problem}
 
@@ -498,8 +504,9 @@ contributions: a hierarchical ReAct multi-agent pipeline for residential
 appliance scheduling implemented in LangGraph; a quantified comparison
 across 48 evaluation scenarios spanning six price-volatility regimes
 with statistical significance testing and per-appliance breakdown; and a
-secondary comparison of GPT-4o-mini against Llama-3.3-70B on scheduling
-quality and inference cost.
+secondary comparison of the commercial GPT-4o-mini with the locally run
+open-weight gpt-oss-20b on scheduling quality, reliability and inference
+cost.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Research Methodology}
@@ -569,6 +576,7 @@ Phase & DSR step & Activity in this thesis & Output \\
 \end{table}
 
 \section{Evaluation strategy}
+\label{sec:evaluation}
 
 The evaluation follows a simulation-based controlled design. No real
 sensors, buildings, or hardware are required. All inputs are drawn from
@@ -719,12 +727,11 @@ thesis.
 Component & Tool & Cost \\
 \midrule
 Orchestration framework & LangGraph v1.0+ (stable, Oct 2025) & Free, open source \\
-LLM --- development & Llama-3.3-70B via Ollama or Groq & Free --- zero API cost \\
-LLM --- final evaluation & GPT-4o-mini via OpenAI API & Under \$3 for all 48 scenarios \\
-MILP solver & PuLP (Python) & Free, open source \\
+LLM --- commercial & GPT-4o-mini via OpenAI API & Under \$3 for all 48 scenarios \\
+LLM --- open-weight & gpt-oss-20b via Ollama, local laptop GPU/CPU & Free --- no API cost \\
+MILP solver & PuLP with CBC (Python) & Free, open source \\
 Agent tracing & LangSmith free tier & Free --- native LangGraph integration \\
-Automated evaluation & DeepEval open source & Free --- task completion metrics \\
-Statistical analysis & SciPy + Pingouin (Python) & Free --- Wilcoxon test and effect size $r$ \\
+Statistical analysis & SciPy (Python) & Free --- Wilcoxon test and effect size $r$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -732,27 +739,137 @@ Statistical analysis & SciPy + Pingouin (Python) & Free --- Wilcoxon test and ef
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Evaluation and Results}
 
-Work in progress. This chapter will present the full evaluation results
-across 48 scenarios, including the demonstration results from DSR Phase
-4, the quantitative comparison of multi-agent versus single-agent
-optimality gaps, the Wilcoxon signed-rank test results, and the
-per-appliance cost saving breakdown.
+This chapter presents the evaluation of the artifact, corresponding to
+DSR Phases 4 and 5. Section~\ref{sec:dataset} describes the benchmark:
+the appliance and price data and the construction of the 48 evaluation
+scenarios across six price-volatility types. Section~\ref{sec:resolution}
+uses the MILP solver alone to examine Finland's move to fifteen-minute
+electricity prices, quantifying how much of the achievable scheduling
+saving depends on fifteen-minute rather than hourly price information;
+this establishes where differences between schedulers can be expected
+before any agent is evaluated. Section~\ref{sec:demonstration} reports
+the demonstration of the pipeline on representative scenarios (DSR
+Phase 4). Sections~\ref{sec:quantitative} and~\ref{sec:statistics}
+compare the optimality gaps of the multi-agent pipeline and the
+single-agent baseline across all scenarios and test the difference with
+the Wilcoxon signed-rank test. Section~\ref{sec:per-appliance} breaks
+the cost savings down by appliance type. The agent results in
+Sections~\ref{sec:demonstration}--\ref{sec:per-appliance} are pending
+the full evaluation runs.
 
 \section{Dataset and scenario design}
+\label{sec:dataset}
 
-The REFIT Electrical Load Measurements dataset (Murray et al., 2017)
-provides appliance-level power consumption profiles at 8-second
-intervals from 20 UK residential households. The cleaned version from
-the University of Strathclyde is used, providing individual CSV files
-per house with appliances labelled in columns. Houses 1, 2, and 3 are
-selected, covering washing machine, dishwasher, and tumble dryer
-configurations. Finnish electricity prices are sourced from the Nord
-Pool FI historical data via parassahko.fi, covering the period from
-October 2025 onward at 15-minute resolution.
+The evaluation benchmark combines real appliance consumption profiles
+from UK households with real Finnish day-ahead electricity prices. Each
+of the 48 scenarios describes one day in 96 fifteen-minute slots
+(00:00--24:00 local time) and consists of a price curve, a household
+base load, a set of flexible appliance cycles with user time windows, and
+a household peak load limit. The benchmark is generated by a
+deterministic, seeded build procedure, so it can be reproduced exactly
+from the source data.
 
-Table~\ref{tab:scenarios} summarizes the 48 evaluation scenarios
-constructed across six types varying price volatility and appliance set
-complexity.
+\subsection{Appliance data}
+
+Appliance profiles are drawn from the cleaned REFIT Electrical Load
+Measurements dataset (Murray et al., 2017; Murray \& Stankovic, 2016),
+which records the whole-house aggregate and nine individually monitored
+appliances at 8-second intervals in 20 UK households between 2013 and
+2015. The cleaned release corrects timestamps for daylight saving time
+and re-aligns appliance monitor columns where a monitor was moved between
+appliances during the study. The appliance-to-column mapping follows
+the dataset documentation.
+
+Eighteen households are used. House 12 is excluded because it has no
+monitored washing machine, dishwasher or tumble dryer. House 19 is
+excluded after inspection: its washing-machine monitor recorded no
+heating phase in any of its 246 detected cycles (no fifteen-minute mean
+above 1.2\,kW, against 22--70\,\% of cycles in the other households),
+so its profiles do not represent the water-heating load that dominates
+the cost and peak demand of a wash. Washer-dryers (houses 1, 8, 9 and
+18) are not used as profiles, because they run washing and drying as a
+single cycle; their consumption is nevertheless removed from the base
+load.
+
+Individual appliance cycles are extracted from each monitor by
+thresholding the one-minute mean power at 20\,W and merging pauses
+shorter than 30 minutes for dishwashers (whose programmes contain a
+passive drying pause) and 15 minutes for washing machines and tumble
+dryers (which are often reloaded within minutes). Cycles shorter than
+20 minutes, longer than 300 minutes or below 0.1\,kWh are discarded, and
+each remaining cycle is converted into a fifteen-minute mean power
+profile. This yields 6,172 washing-machine cycles from 19 monitored
+machines, 4,702 dishwasher cycles from 15 machines and 1,940
+tumble-dryer cycles from 7 machines. To prevent heavily used appliances
+from dominating the benchmark, a scenario first draws a monitored
+appliance of the required type and then one of its cycles. The household
+base load is the median, per fifteen-minute slot of the day, of the
+aggregate minus all shiftable appliance monitors, computed after
+discarding readings that the dataset flags as inconsistent (sub-metered
+sum exceeding the aggregate).
+
+\subsection{Electricity price data}
+
+Day-ahead spot prices for the Nord Pool FI bidding zone were obtained
+for 1 January 2022 to 24 September 2026 from the public Sähkötin price
+service, which republishes Nord Pool data (Pakastin Oy, 2026). The
+values are in EUR/MWh excluding VAT and were verified against an
+independent source for the December 2022 crisis period. The service
+provides hourly values, which are repeated across the four fifteen-minute
+slots of each hour; days with a daylight-saving transition are dropped,
+leaving 1,718 complete days.
+
+Scheduling cost is computed with the consumer price rather than the raw
+spot price. For spot price $s$, the consumer price per kWh is
+\[
+p = (s + m + d + \tau)(1 + v),
+\]
+with a retail margin $m = 0.5$\,c/kWh, a distribution fee $d =
+5.0$\,c/kWh, the electricity tax $\tau = 2.253$\,c/kWh and VAT $v =
+25.5\,\%$. These are representative values for a Finnish household on a
+spot-price contract; a single VAT rate is applied to all days so that
+scenarios from different periods remain comparable. Using the consumer
+price keeps costs positive on days with negative spot prices, which
+keeps the optimality gap defined in Section~\ref{sec:evaluation} meaningful. Only the
+energy of the flexible appliances is costed, since the base load costs
+the same under every schedule.
+
+\subsection{Scenario construction}
+
+Table~\ref{tab:scenarios} summarises the six scenario types. Days are
+assigned to types by the within-day standard deviation of the spot
+price. Types A and B use disjoint days from the lowest quartile among
+days without negative prices, type C uses days between the 40th and
+60th percentiles, and type D uses days in the top 15\,\% that fall in
+December--February. Type E uses days from December 2022, sampled from the
+16 days with the highest maximum price. Type F uses days with at least
+two hours of negative prices. Eight days are sampled per type.
+
+Types C--F need up to five loads, while REFIT provides three flexible
+appliance types; a scenario may therefore contain two cycles of the same
+type, such as two washing loads. Each appliance has a user window
+(earliest start and deadline), and its naive start time is the earliest
+start. Types A--C use windows opening between 06:00 and 12:00 and lasting
+8--14 hours. In type D all five appliances share one window from
+08:00--10:00 until 22:00--24:00, so their cheapest start times coincide.
+In type E each appliance becomes ready 0--2 hours before the day's
+highest daytime price and has 4--8 hours of slack beyond its cycle, so
+the naive schedule runs into the price spike while avoiding it remains
+possible. This reflects that price spikes coincide with evening demand
+peaks, when households tend to start appliances. Type F windows open
+between 00:00 and 04:00 and last until midnight.
+
+The household peak load limit, including the base load, is 3.5\,kW. It
+represents a household power cap, for example one induced by a
+power-based distribution tariff, rather than the main fuse (typically
+3\,$\times$\,25\,A, about 17\,kW), which would never bind for these
+appliances. The build procedure verifies with the MILP solver that every
+scenario has a feasible schedule; this held for all 48 scenarios
+without relaxing the limit. Table~\ref{tab:benchmark} reports the
+resulting characteristics per type. A scenario requires coordination
+when running every appliance at its individually cheapest start time
+exceeds the peak limit; these 28 scenarios form the basis of the
+conflict resolution rate.
 
 \begin{table}[h!]
 \caption{Evaluation scenario design.}
@@ -775,7 +892,7 @@ D & High volatility --- winter peak &
   5 appliances, overlapping constraints & 8 &
   Most financially consequential condition \\[3pt]
 E & Price spike --- Dec 2022 crisis &
-  3 appliances, tight constraint windows & 8 &
+  3 appliances, ready 0--2\,h before the daily price peak, 4--8\,h slack & 8 &
   Extreme Finnish price event robustness \\[3pt]
 F & Negative spot price --- surplus &
   4 appliances, flexible windows & 8 &
@@ -784,16 +901,93 @@ F & Negative spot price --- surplus &
 \end{tabularx}
 \end{table}
 
+\begin{table}[h!]
+\caption{Benchmark characteristics per scenario type.}
+\label{tab:benchmark}
+\small
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}Xcccc}
+\toprule
+Type & Price days & \makecell{Mean\\appliances} & \makecell{Require\\coordination} &
+  \makecell{Naive schedule\\within limit} & \makecell{MILP saving\\vs.\ naive} \\
+\midrule
+A & 2022--2026 & 2.0 & 1/8 & 8/8 & 10.2\,\% \\
+B & 2023--2026 & 3.0 & 4/8 & 7/8 & 4.3\,\% \\
+C & 2023--2026 & 3.4 & 5/8 & 6/8 & 19.9\,\% \\
+D & 2022--2026 (Dec--Feb) & 5.0 & 8/8 & 0/8 & 37.0\,\% \\
+E & 1--14 Dec 2022 & 3.0 & 4/8 & 3/8 & 14.4\,\% \\
+F & 2023--2025 & 4.0 & 6/8 & 5/8 & 7.8\,\% \\
+\midrule
+All & & 3.4 & 28/48 & 29/48 & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Value of 15-minute price information}
+\label{sec:resolution}
+
+Since 1 October 2025 the Nord Pool day-ahead market settles Finnish
+electricity in fifteen-minute periods. The main benchmark uses hourly
+prices, because its type E days date from the 2022 energy crisis. To
+examine the new market design, a second set of 48 scenarios (Q-A01 to
+Q-F08) was built with the same procedure from native fifteen-minute FI
+prices for 1 October 2025 to 25 September 2026 (358 complete days),
+obtained from the public price service of the Estonian transmission
+system operator, which republishes Nord Pool data (Elering AS, 2026).
+Its hourly averages match the hourly series used in
+Section~\ref{sec:dataset}. Because this period contains no crisis month,
+its type E days are drawn from the 16 days with the highest peak price
+(up to 65\,c/kWh), and no day is used by more than one type. Prices
+genuinely vary within the hour: in 98\,\% of hours the four quarter-hour
+prices differ, with a median spread of 0.75\,c/kWh.
+
+For each Q scenario, two optimal schedules were computed with the MILP
+solver. The first is planned on the real fifteen-minute prices. The
+second is planned on hourly averages, which is all the price information
+a household had before the switch, and is then settled at the real
+fifteen-minute prices. Hourly prices make the four quarters of an hour
+tie, so ties are broken towards the earliest start. The cost difference
+between the two schedules is the saving that is only reachable with
+fifteen-minute price information. Table~\ref{tab:resolution} reports the
+savings of both schedules relative to the naive schedule, the
+additional cost reduction from fifteen-minute information, and the share
+of the achievable saving that requires it; the ``All'' row weights
+scenarios by their cost.
+
+\input{results/resolution/resolution_by_type.tex}
+
+Fifteen-minute price information lowers the optimal cost in 39 of the 48
+scenarios, but the effect is modest: 1.2\,\% overall, or 3.7\,\% of the
+achievable saving. The remaining 96\,\% of the saving is available to a
+scheduler that plans on hourly prices, since most of the value lies in
+moving appliance cycles between hours rather than between quarters of an
+hour. The additional reduction grows with the intra-hour price spread
+(Spearman $\rho = 0.66$ across scenarios) and is largest on volatile
+days: 1.4\,\% in type D, 2.1\,\% in type E, and 10.2\,\% in the single
+largest case (Q-E03, 17 October 2025). Type C shows the largest relative
+share (16.4\,\%), because its hourly price differences are small, so
+intra-hour variation forms a larger part of the opportunity. In absolute
+terms the gain is about one cent per household per day for the two to
+five cycles scheduled, and about three cents on type D days. The
+schedules nevertheless differ: 110 of the 163 appliance start times
+change between the two plans. These results indicate that the hourly
+main benchmark captures most of the scheduling problem, while any
+difference between the agents under fifteen-minute prices is expected
+to appear mainly in types C, D and E.
+
 \section{Demonstration results}
+\label{sec:demonstration}
 Work in progress.
 
 \section{Quantitative results}
+\label{sec:quantitative}
 Work in progress.
 
 \section{Statistical analysis}
+\label{sec:statistics}
 Work in progress.
 
 \section{Per-appliance breakdown}
+\label{sec:per-appliance}
 Work in progress.
 
 % ════════════════════════════════════════════════════════════════════════════
@@ -865,6 +1059,10 @@ Beaudin, M., \& Zareipour, H. (2015). Home energy management systems: A
 review of modelling and complexity. \textit{Renewable and Sustainable
 Energy Reviews, 45}, 318--335.
 
+Elering AS. (2026). \textit{Nord Pool day-ahead prices, bidding zone FI}
+[Data service; data owner Nord Pool]. Retrieved 26 September 2026, from
+\url{https://dashboard.elering.ee/api/nps/price}
+
 El Makroum, M., et al. (2026). Agentic AI home energy management system:
 A large language model framework for residential load scheduling.
 \textit{ScienceDirect}. arXiv:2510.26603.
@@ -901,6 +1099,10 @@ Moradzadeh, B., \& Tomsovic, K. (2013). Two-stage residential energy
 management considering network operational constraints. \textit{IEEE
 Transactions on Smart Grid, 4}(4), 2339--2346.
 
+Murray, D., \& Stankovic, L. (2016). \textit{REFIT: Electrical load
+measurements (cleaned)} [Data set]. University of Strathclyde.
+\url{https://doi.org/10.15129/9ab14b0e-19ac-4279-938f-27f643078cec}
+
 Murray, D., Stankovic, L., \& Stankovic, V. (2017). An electrical load
 measurements dataset of United Kingdom households from a two-year
 longitudinal study. \textit{Scientific Data, 4}, 160122.
@@ -911,6 +1113,10 @@ language models}. NVIDIA Technical Position Paper.
 
 Numminen, S., et al. (2026). \textit{Energy poverty is not recognized in
 Finland}. Aalto University Research Report.
+
+Pakastin Oy. (2026). \textit{Sähkötin: Nord Pool FI day-ahead spot
+prices} [Data service]. Retrieved 25 September 2026, from
+\url{https://sahkotin.fi}
 
 Peffers, K., Tuunanen, T., Rothenberger, M. A., \& Chatterjee, S.
 (2007). A design science research methodology for information systems

@@ -90,3 +90,91 @@ def test_multi_agent_loops_back_on_conflict(scenario: Scenario) -> None:
     assert run.iterations == 2
     parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
     assert evaluate(scenario, parsed).feasible
+
+
+def test_single_agent_recovers_after_provider_rejects_prose(scenario: Scenario) -> None:
+    from .fakes import ProviderRejection
+
+    model = scripted(
+        call("read_household_data"),
+        ProviderRejection(),  # model answered in prose; provider rejected the turn
+        call("ScheduleOutput", assignments=_optimal_assignments(scenario), total_cost_eur=1.0, explanation="ok"),
+    )
+    run = run_single_agent(scenario, model)
+    assert run.recoveries == 1 and run.errors == []
+    assert run.tool_calls == 2  # the tool call made before the rejection is kept
+
+
+def test_single_agent_gives_up_after_max_recoveries(scenario: Scenario) -> None:
+    from hems.agents.errors import MAX_RECOVERIES
+
+    from .fakes import ProviderRejection
+
+    model = scripted(*[ProviderRejection() for _ in range(MAX_RECOVERIES + 1)])
+    run = run_single_agent(scenario, model)
+    assert run.assignments is None and "rejected" in run.errors[0]
+
+
+def test_pipeline_counts_specialist_recoveries(scenario: Scenario) -> None:
+    from .fakes import ProviderRejection
+
+    ids = [a.id for a in scenario.appliances]
+    optimal = _optimal_assignments(scenario)
+    profiles = [
+        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
+         "earliest_time": "00:00", "deadline_time": "24:00"}
+        for a in scenario.appliances
+    ]  # fmt: skip
+    models = {
+        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
+        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
+        "scheduler": scripted(ProviderRejection(), call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="x")),
+        "resolver": scripted(call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none")),
+    }
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.recoveries == 1 and run.errors == []
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+
+
+def test_daily_quota_detection() -> None:
+    from hems.agents.errors import daily_quota_exhausted
+
+    assert daily_quota_exhausted(Exception("rate_limit_exceeded ... on tokens per day (TPD): Limit 200000"))
+    assert not daily_quota_exhausted(Exception("rate_limit_exceeded ... on tokens per minute (TPM)"))
+
+
+def test_single_agent_recovers_when_prose_ends_the_loop(scenario: Scenario) -> None:
+    # Ollama-style: no provider error, the model just answers in prose and the agent loop stops.
+    model = scripted(
+        call("read_household_data"),
+        "Here is my schedule: everything at noon.",
+        call("ScheduleOutput", assignments=_optimal_assignments(scenario), total_cost_eur=1.0, explanation="ok"),
+    )
+    run = run_single_agent(scenario, model)
+    assert run.recoveries == 1 and run.errors == [] and run.assignments
+
+
+def test_pipeline_sends_missing_appliances_back_to_scheduler(scenario: Scenario) -> None:
+    ids = [a.id for a in scenario.appliances]
+    optimal = _optimal_assignments(scenario)
+    partial = optimal[:-1]  # the Scheduler forgets one appliance
+    profiles = [
+        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
+         "earliest_time": "00:00", "deadline_time": "24:00"}
+        for a in scenario.appliances
+    ]  # fmt: skip
+    models = {
+        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
+        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
+        "scheduler": scripted(
+            call("ScheduleOutput", assignments=partial, total_cost_eur=1.0, explanation="partial"),
+            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="complete"),
+        ),
+        "resolver": scripted(
+            call("ResolverOutput", assignments=partial, conflicts_remaining=False, changes="none"),
+            call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none"),
+        ),
+    }
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 2
+    assert set(run.assignments) == set(ids)

@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+from langchain_core.runnables import RunnableConfig
 
 from hems.agents.llm import MODELS
 from hems.core.models import Scenario, load_scenarios
@@ -36,16 +38,35 @@ def cmd_build(args: argparse.Namespace) -> None:
         price_kwargs["time_col"] = args.price_time_col
     if args.price_col:
         price_kwargs["price_col"] = args.price_col
+    from hems.data.refit import ALL_HOUSES
+
+    from datetime import date
+
     manifest = build_benchmark(
-        args.refit, args.prices, args.out, seed=args.seed, peak_limit_kw=args.peak_limit, price_kwargs=price_kwargs
-    )
+        args.refit, args.prices, args.out, seed=args.seed, peak_limit_kw=args.peak_limit, price_kwargs=price_kwargs,
+        houses=tuple(args.houses) if args.houses else ALL_HOUSES,
+        date_from=date.fromisoformat(args.date_from) if args.date_from else None,
+        date_to=date.fromisoformat(args.date_to) if args.date_to else None,
+        crisis=None if args.spike_days == "top" else ("2022-12-01", "2022-12-31"),
+        id_prefix=args.id_prefix,
+    )  # fmt: skip
     print(json.dumps({k: manifest[k] for k in ("cycles_detected", "days", "price_days_available")}, indent=1))
 
 
-def cmd_refit_inspect(args: argparse.Namespace) -> None:
-    from hems.data.refit import inspect
+def cmd_prices(args: argparse.Namespace) -> None:
+    from datetime import date
 
-    print(inspect(args.refit).to_string(index=False))
+    from hems.data.fetch_prices import fetch
+
+    df = fetch(args.source, date.fromisoformat(args.start), date.fromisoformat(args.end), args.out)
+    step = df.timestamp_utc.diff().value_counts().head(2).to_dict()
+    print(f"{len(df)} prices {df.timestamp_utc.min()} .. {df.timestamp_utc.max()} (steps: {step}) -> {args.out}")
+
+
+def cmd_refit_inspect(args: argparse.Namespace) -> None:
+    from hems.data.refit import ALL_HOUSES, inspect
+
+    print(inspect(args.refit, tuple(args.houses) if args.houses else ALL_HOUSES).to_string(index=False))
 
 
 def cmd_run(args: argparse.Namespace) -> None:
@@ -76,7 +97,7 @@ def cmd_demo(args: argparse.Namespace) -> None:
 
     model = make_model(args.model)
     pipeline = build_pipeline(scenario, lambda _role: model, human_review=True)
-    config = {"configurable": {"thread_id": scenario.id}, "recursion_limit": 50}
+    config: RunnableConfig | None = {"configurable": {"thread_id": scenario.id}, "recursion_limit": 50}
     for update in pipeline.stream({"request": scenario.user_request}, config=config, stream_mode="updates"):
         for node in update:
             print(f"-- {node} done")
@@ -88,6 +109,28 @@ def cmd_demo(args: argparse.Namespace) -> None:
         return
     final = pipeline.invoke(None, config=config)
     print(final.get("summary", ""))
+
+
+def cmd_campaign(args: argparse.Namespace) -> None:
+    from hems import campaign
+
+    plan = campaign.Plan.load(args.plan)
+    if args.action == "status":
+        print(campaign.status(plan))
+        return
+    outcome = campaign.run(plan, summarize=not args.no_summary)
+    raise SystemExit(0 if outcome == "done" else 3)  # non-zero lets a scheduler know work remains
+
+
+def cmd_resolution(args: argparse.Namespace) -> None:
+    import pandas as pd
+
+    from hems.analysis.resolution import compare_resolution
+
+    rows, by_type = compare_resolution(load_scenarios(args.scenarios), args.out)
+    with pd.option_context("display.width", 160, "display.max_columns", 20, "display.float_format", "{:.3f}".format):
+        print(by_type.to_string(index=False))
+    print(f"\nper-scenario results and LaTeX table written to {args.out}")
 
 
 def cmd_analyze(args: argparse.Namespace) -> None:
@@ -104,6 +147,12 @@ def cmd_analyze(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
+    # Windows consoles default to cp1252; model output (e.g. "≈") must never crash a batch while logging.
+    # Line buffering makes progress visible immediately when output goes to a log file.
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
     load_dotenv()
     parser = argparse.ArgumentParser(prog="hems", description=__doc__)
     sub = parser.add_subparsers(required=True)
@@ -125,11 +174,25 @@ def main() -> None:
     p.add_argument("--price-col")
     p.add_argument("--out", default="data/scenarios")
     p.add_argument("--seed", type=int, default=2026)
-    p.add_argument("--peak-limit", type=float, default=4.0)
+    p.add_argument("--peak-limit", type=float, default=3.5, help="household peak limit in kW")
+    p.add_argument("--houses", type=int, nargs="*", help="REFIT houses to use (default: all except refit.EXCLUDED_HOUSES)")
+    p.add_argument("--from", dest="date_from", help="only price days on/after this date (e.g. 2025-10-01 for 15-min prices)")
+    p.add_argument("--to", dest="date_to", help="only price days on/before this date")
+    p.add_argument("--spike-days", choices=["crisis", "top"], default="crisis",
+                   help="type E days: Dec 2022 crisis, or the 16 highest-peak days of the period")
+    p.add_argument("--id-prefix", default="", help="prefix for scenario ids, e.g. Q- for the 15-min set")
     p.set_defaults(func=cmd_build)
+
+    p = sub.add_parser("prices", help="download Nord Pool FI day-ahead prices (EUR/MWh, UTC) to CSV")
+    p.add_argument("--source", default="elering", choices=["elering", "entsoe", "sahkotin"])
+    p.add_argument("--start", default="2022-01-01")
+    p.add_argument("--end", default="2026-09-25", help="exclusive")
+    p.add_argument("--out", default="data/raw/prices_fi.csv")
+    p.set_defaults(func=cmd_prices)
 
     p = sub.add_parser("refit-inspect", help="cycle statistics per mapped REFIT column")
     p.add_argument("--refit", required=True)
+    p.add_argument("--houses", type=int, nargs="*")
     p.set_defaults(func=cmd_refit_inspect)
 
     p = sub.add_parser("run", help="run systems over scenarios, appending to a JSONL file")
@@ -149,6 +212,17 @@ def main() -> None:
     p.add_argument("--model", default="gpt-4o-mini", choices=list(MODELS))
     p.add_argument("--review", action="store_true", help="human-in-the-loop approval before finalising (multi only)")
     p.set_defaults(func=cmd_demo)
+
+    p = sub.add_parser("campaign", help="resumable evaluation from a plan file (configs/*.json)")
+    p.add_argument("action", choices=["run", "status"])
+    p.add_argument("--plan", default="configs/full_evaluation.json")
+    p.add_argument("--no-summary", action="store_true", help="skip the orchestrator's natural-language summary")
+    p.set_defaults(func=cmd_campaign)
+
+    p = sub.add_parser("resolution", help="MILP: value of 15-min vs hourly price information")
+    p.add_argument("--scenarios", default="data/scenarios_15min")
+    p.add_argument("--out", default="results/resolution")
+    p.set_defaults(func=cmd_resolution)
 
     p = sub.add_parser("analyze", help="metrics, Wilcoxon tests, LaTeX tables and figures")
     p.add_argument("--runs", default="results/runs.jsonl")

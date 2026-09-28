@@ -25,7 +25,7 @@ LABELS = {"washing_machine": "washing machine", "dishwasher": "dishwasher", "tum
 @dataclass(frozen=True)
 class TypeSpec:
     appliances: tuple[str, ...]  # kinds; C draws 3-5 of these
-    window: str  # "normal" | "overlap" | "tight" | "flexible"
+    window: str  # "normal" | "overlap" | "spike" | "flexible"
     variable_count: bool = False
 
 
@@ -34,19 +34,25 @@ TYPE_SPECS: dict[str, TypeSpec] = {
     "B": TypeSpec(("dishwasher", "washing_machine", "tumble_dryer"), "normal"),
     "C": TypeSpec(("washing_machine", "tumble_dryer", "dishwasher", "washing_machine", "tumble_dryer"), "normal", True),
     "D": TypeSpec(("washing_machine", "washing_machine", "tumble_dryer", "tumble_dryer", "dishwasher"), "overlap"),
-    "E": TypeSpec(("dishwasher", "washing_machine", "tumble_dryer"), "tight"),
+    "E": TypeSpec(("dishwasher", "washing_machine", "tumble_dryer"), "spike"),
     "F": TypeSpec(("washing_machine", "tumble_dryer", "dishwasher", "washing_machine"), "flexible"),
 }
 
 H = 4  # slots per hour
 
 
-def _window(kind_duration: int, style: str, rng: np.random.Generator, shared: tuple[int, int] | None) -> tuple[int, int]:
+def _window(
+    kind_duration: int, style: str, rng: np.random.Generator, shared: tuple[int, int] | None, spike_slot: int
+) -> tuple[int, int]:
     if style == "overlap" and shared:
         return shared
-    if style == "tight":
-        earliest = int(rng.integers(6 * H, 16 * H + 1))
-        return earliest, min(SLOTS_PER_DAY, earliest + kind_duration + int(rng.integers(2 * H, 4 * H + 1)))
+    if style == "spike":
+        # Type E: the appliance becomes ready 0-2 h before the day's price peak, so the naive "start when
+        # ready" schedule runs into the spike (households tend to start appliances at demand peaks), and
+        # 4-8 h of slack beyond the cycle leaves room to avoid it.
+        earliest = max(0, spike_slot - int(rng.integers(0, 2 * H + 1)))
+        deadline = min(SLOTS_PER_DAY, earliest + kind_duration + int(rng.integers(4 * H, 8 * H + 1)))
+        return max(0, min(earliest, deadline - kind_duration)), deadline
     if style == "flexible":
         earliest = int(rng.integers(0, 4 * H + 1))
         return earliest, SLOTS_PER_DAY
@@ -61,7 +67,7 @@ def compose_scenario(
     day: date,
     spot_eur_per_kwh: np.ndarray,
     base_load_kw: np.ndarray,
-    profile_pool: dict[str, list[list[float]]],
+    profile_pool: dict[str, list[list[list[float]]]],
     fixed_appliances: list[FixedAppliance],
     rng: np.random.Generator,
     tariff: Tariff = Tariff(),
@@ -74,6 +80,7 @@ def compose_scenario(
         kinds = list(rng.permutation(kinds)[: int(rng.integers(3, 6))])
 
     shared = None
+    spike_slot = 6 * H + int(np.argmax(spot_eur_per_kwh[6 * H : 22 * H]))  # daytime price peak
     if spec.window == "overlap":
         earliest = int(rng.integers(8 * H, 10 * H + 1))
         shared = (earliest, int(rng.integers(22 * H, SLOTS_PER_DAY + 1)))
@@ -82,9 +89,10 @@ def compose_scenario(
     counts: dict[str, int] = {}
     for kind in kinds:
         counts[kind] = counts.get(kind, 0) + 1
-        pool = profile_pool[kind]
-        profile = [round(float(p), 3) for p in pool[int(rng.integers(len(pool)))]]
-        earliest, deadline = _window(len(profile), spec.window, rng, shared)
+        households = profile_pool[kind]  # pick a household first, then one of its cycles
+        cycles = households[int(rng.integers(len(households)))]
+        profile = [round(float(p), 3) for p in cycles[int(rng.integers(len(cycles)))]]
+        earliest, deadline = _window(len(profile), spec.window, rng, shared, spike_slot)
         appliances.append(
             FlexibleAppliance(
                 id=f"{kind}_{counts[kind]}",
@@ -159,28 +167,37 @@ def daily_stats(days: pd.DataFrame) -> pd.DataFrame:
 def select_days(
     days: pd.DataFrame,
     rng: np.random.Generator,
-    crisis: tuple[str, str] = ("2022-12-01", "2022-12-31"),
+    crisis: tuple[str, str] | None = ("2022-12-01", "2022-12-31"),
     min_negative_slots: int = 8,
 ) -> dict[str, list[date]]:
-    """Pick INSTANCES_PER_TYPE days per scenario type; A and B draw disjoint stable days."""
+    """Pick INSTANCES_PER_TYPE days per scenario type; no day is used by two types.
+
+    Type E ("price spike") days come from ``crisis`` (default: the Dec 2022 energy crisis), sampled from
+    its 16 highest-peak days. With ``crisis=None`` (e.g. a 15-minute-price benchmark covering only
+    Oct 2025 onwards) E uses the 16 highest-peak days of the whole period instead.
+    """
     stats = daily_stats(days)
-    normal = stats[(stats.n_negative == 0) & ~stats.index.isin(pd.date_range(*crisis).date)]
+    in_crisis = stats.index.isin(pd.date_range(*crisis).date) if crisis else np.zeros(len(stats), dtype=bool)
+    normal = stats[(stats.n_negative == 0) & ~in_crisis]
     q = normal["std"].quantile
+    spike_source = stats.loc[in_crisis] if crisis else normal
 
     pools: dict[str, pd.Index] = {
         "stable": normal.index[normal["std"] <= q(0.25)],
         "C": normal.index[(normal["std"] >= q(0.40)) & (normal["std"] <= q(0.60))],
         "D": normal.index[normal.month.isin([12, 1, 2]) & (normal["std"] >= q(0.85))],
-        "E": stats.loc[stats.index.isin(pd.date_range(*crisis).date)].sort_values("max", ascending=False).index[
-            : 2 * INSTANCES_PER_TYPE
-        ],
+        "E": spike_source.sort_values("max", ascending=False).index[: 2 * INSTANCES_PER_TYPE],
         "F": stats.index[stats.n_negative >= min_negative_slots],
     }
+    used: set[date] = set()
 
     def draw(pool: pd.Index, k: int, name: str) -> list[date]:
-        if len(pool) < k:
-            raise ValueError(f"only {len(pool)} candidate days for {name}, need {k}")
-        return sorted(rng.choice(np.asarray(pool, dtype=object), size=k, replace=False).tolist())
+        available = [d for d in pool if d not in used]
+        if len(available) < k:
+            raise ValueError(f"only {len(available)} candidate days for {name}, need {k}")
+        chosen = sorted(rng.choice(np.asarray(available, dtype=object), size=k, replace=False).tolist())
+        used.update(chosen)
+        return chosen
 
     stable = draw(pools["stable"], 2 * INSTANCES_PER_TYPE, "A/B")
     rng.shuffle(stable)

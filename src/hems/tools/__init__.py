@@ -72,14 +72,22 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
     @_guard
     def read_household_data() -> str:
         """Read the household's appliance inventory: power draw, cycle length and user time windows."""
-        lines = [f"Household peak load limit: {sc.peak_limit_kw:.2f} kW (including always-on base load)."]
+        base = sc.base_load_kw
+        lines = [
+            f"Household peak load limit: {sc.peak_limit_kw:.2f} kW for the total load, i.e. the measured base load "
+            f"plus the scheduled appliances.",
+            f"Measured base load (all fixed appliances together): {min(base):.2f}-{max(base):.2f} kW over the day "
+            f"(mean {sum(base) / len(base):.2f} kW); sum_load and detect_conflicts already include it.",
+            "Fixed appliances below show their rated power when switched on; they do not run continuously and "
+            "their actual use is already part of the measured base load.",
+        ]
         for a in sc.appliances:
             lines.append(
                 f"- {a.id}: kind={a.kind}, cycle {a.duration_slots * 15} min, energy {a.energy_kwh:.2f} kWh, "
                 f"peak {a.peak_kw:.2f} kW, user window: {describe_window(a.id)}"
             )
         for f in sc.fixed_appliances:
-            lines.append(f"- {f.id}: kind={f.kind}, typical power {f.typical_power_kw:.2f} kW, no user window")
+            lines.append(f"- {f.id}: kind={f.kind}, rated power when on {f.typical_power_kw:.2f} kW, no user window")
         return "\n".join(lines)
 
     @_guard

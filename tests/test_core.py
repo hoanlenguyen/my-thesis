@@ -109,3 +109,25 @@ def test_adjust_schedule_auto_mode_resolves_overlap_one_move_at_a_time() -> None
     result = evaluate(scenario, parsed)
     assert result.feasible
     assert result.cost_eur >= evaluate(scenario, solve_milp(scenario).schedule).cost_eur - 1e-9
+
+
+def test_model_output_failure_is_distinguished_from_provider_errors() -> None:
+    from hems.agents.errors import model_output_failure
+
+    class Rejected(Exception):
+        body = {"error": {"code": "tool_use_failed", "message": "Tool choice is required"}}
+
+    assert model_output_failure(Rejected("400")) is not None
+    assert model_output_failure(ConnectionError("timeout")) is None
+
+
+def test_household_data_states_measured_base_load(scenario: Scenario) -> None:
+    text = build_tools(scenario)["read_household_data"].invoke({})
+    assert "Measured base load" in text and "rated power when on" in text
+
+
+def test_step_budget_parity() -> None:
+    from hems.agents.multi_agent import STEP_LIMITS
+    from hems.agents.single_agent import RECURSION_LIMIT
+
+    assert sum(STEP_LIMITS.values()) == RECURSION_LIMIT

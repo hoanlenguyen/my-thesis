@@ -7,6 +7,7 @@ from typing import Any
 
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
 from langchain_core.messages import AIMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
 
 _ids = count()
 
@@ -16,12 +17,27 @@ def call(name: str, **args: Any) -> AIMessage:
     return AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": f"call_{next(_ids)}", "type": "tool_call"}])
 
 
+class ProviderRejection(Exception):
+    """Mimics Groq's HTTP 400 when the model answers in prose although a tool call is required."""
+
+    def __init__(self, text: str = "I think the schedule is fine.") -> None:
+        super().__init__("Error code: 400 - tool_use_failed")
+        self.body = {"error": {"code": "tool_use_failed", "failed_generation": text}}
+
+
 class ScriptedModel(GenericFakeChatModel):
-    """Replays a fixed list of AI messages; accepts bind_tools so create_agent can use it."""
+    """Replays a fixed list of AI messages (an Exception item is raised instead); accepts bind_tools."""
 
     def bind_tools(self, tools: Any, **kwargs: Any) -> ScriptedModel:
         return self
 
+    def _generate(self, messages: Any, stop: Any = None, run_manager: Any = None, **kwargs: Any) -> ChatResult:
+        item = next(self.messages)
+        if isinstance(item, Exception):
+            raise item
+        return ChatResult(generations=[ChatGeneration(message=item)])
 
-def scripted(*messages: AIMessage | str) -> ScriptedModel:
-    return ScriptedModel(messages=iter([AIMessage(content=m) if isinstance(m, str) else m for m in messages]))
+
+def scripted(*messages: AIMessage | str | Exception) -> ScriptedModel:
+    items = [AIMessage(content=m) if isinstance(m, str) else m for m in messages]
+    return ScriptedModel(messages=iter(items))

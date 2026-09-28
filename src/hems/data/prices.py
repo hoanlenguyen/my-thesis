@@ -52,3 +52,11 @@ def to_daily_slots(prices: pd.Series) -> pd.DataFrame:
     full_days = counts[counts == SLOTS_PER_DAY].index
     wide = frame[frame.date.isin(full_days)].pivot(index="date", columns="slot", values="price")
     return wide.dropna()
+
+
+def native_resolution_minutes(path: str | Path, date_from=None, **kwargs) -> int:
+    """Median spacing of the raw price series (from ``date_from``), in minutes: 60 hourly, 15 quarter-hourly."""
+    prices = load_price_csv(path, **kwargs)
+    if date_from is not None:
+        prices = prices[prices.index >= pd.Timestamp(date_from, tz=LOCAL_TZ)]
+    return int(prices.index.to_series().diff().median().total_seconds() // 60)

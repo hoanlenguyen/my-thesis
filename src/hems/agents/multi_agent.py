@@ -1,12 +1,13 @@
 """Hierarchical ReAct multi-agent pipeline (LangGraph).
 
-    orchestrator_plan -> profiler -> scheduler -> resolver --(conflicts & budget left)--> scheduler
-                                                     |
+    orchestrator_plan -> profiler -> scheduler -> resolver --(conflicts or missing appliances,
+                                                     |          budget left)--> scheduler
                                                      +--> [human review] -> orchestrator_finalize -> END
 
 Each specialist is a ReAct agent with only its own tools. The fixed edge order
-matches Chapter 4.2; the only branch is the verification gate after the
-resolver, which re-runs detect_conflicts and sends feedback to the scheduler.
+matches Chapter 4.2; the only branch is the Orchestrator's verification gate after
+the resolver, which re-runs detect_conflicts, checks that every requested appliance
+has a start time, and sends any problems back to the scheduler.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel
 
 from hems.agents import prompts
+from hems.agents.errors import MAX_RECOVERIES, invoke_with_recovery, model_output_failure
 from hems.agents.schemas import (
     ProfileOutput,
     ResolverOutput,
@@ -37,7 +39,8 @@ from hems.agents.types import AgentRun
 from hems.core.models import Scenario
 from hems.tools import PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select
 
-SPECIALIST_RECURSION_LIMIT = 25
+# Step budget split by workload; the total equals the single agent's RECURSION_LIMIT (75).
+STEP_LIMITS = {"profiler": 15, "scheduler": 35, "resolver": 25}
 ORCHESTRATOR_RECURSION_LIMIT = 6
 MAX_RESOLVE_ITERATIONS = 2
 
@@ -56,6 +59,7 @@ class PipelineState(TypedDict, total=False):
     final: dict[str, str]
     summary: str
     tool_calls: Annotated[int, operator.add]
+    recoveries: Annotated[int, operator.add]
     errors: Annotated[list[str], operator.add]
 
 
@@ -68,78 +72,113 @@ def _run_agent(
     name: str,
     limit: int,
     config: dict[str, Any] | None,
-) -> tuple[BaseModel | None, int, list[str]]:
-    agent = create_agent(model, tools=tools, system_prompt=system_prompt, response_format=ToolStrategy(schema), name=name)
+) -> tuple[BaseModel | None, int, list[str], int]:
+    agent = create_agent(
+        model, tools=tools, system_prompt=system_prompt, response_format=ToolStrategy(schema),
+        checkpointer=InMemorySaver(),  # lets a rejected turn be retried from the last good state
+        name=name,
+    )  # fmt: skip
     try:
-        result = agent.invoke({"messages": [HumanMessage(message)]}, config={**(config or {}), "recursion_limit": limit})
+        result, recoveries = invoke_with_recovery(agent, message, schema.__name__, config or {}, limit)
     except GraphRecursionError:
-        return None, 0, [f"{name}: step limit reached"]
+        return None, 0, [f"{name}: step limit reached"], 0
+    except Exception as exc:  # provider errors propagate; persistent model-output failures = failed step
+        if (reason := model_output_failure(exc)) is None:
+            raise
+        return None, 0, [f"{name}: {reason}"], MAX_RECOVERIES
     calls = sum(len(getattr(m, "tool_calls", []) or []) for m in result["messages"])
     output = result.get("structured_response")
-    return output, calls, ([] if output is not None else [f"{name}: no structured output"])
+    return output, calls, ([] if output is not None else [f"{name}: no structured output"]), recoveries
 
 
 def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True):
     tools = build_tools(scenario)
 
     def orchestrator_plan(state: PipelineState, config) -> PipelineState:
-        brief, calls, errors = _run_agent(
+        brief, calls, errors, recoveries = _run_agent(
             models("orchestrator"), [], prompts.ORCHESTRATOR_PLAN, TaskBrief, state["request"],
             "orchestrator", ORCHESTRATOR_RECURSION_LIMIT, config,
         )  # fmt: skip
         if brief is None:  # fall back to all appliances rather than abort the run
             brief = TaskBrief(appliance_ids=[a.id for a in scenario.appliances], notes="")
-        return {"brief": brief, "iterations": 0, "tool_calls": calls, "errors": errors}
+        return {"brief": brief, "iterations": 0, "tool_calls": calls, "errors": errors, "recoveries": recoveries}
 
     def profiler(state: PipelineState, config) -> PipelineState:
+        # The original request travels in the shared state alongside the Orchestrator's brief, so an
+        # appliance omitted from the brief is not silently lost at this hand-off (observed in the pilot).
         brief = state["brief"]
-        message = f"Profile these requested appliances: {', '.join(brief.appliance_ids)}.\nUser notes: {brief.notes or 'none'}"
-        profile, calls, errors = _run_agent(
+        message = (
+            f"User request:\n{state['request']}\n\n"
+            f"Orchestrator brief: appliances {', '.join(brief.appliance_ids)}; notes: {brief.notes or 'none'}.\n"
+            "Profile every appliance the user's request asks to schedule."
+        )
+        profile, calls, errors, recoveries = _run_agent(
             models("profiler"), select(tools, PROFILER_TOOLS), prompts.PROFILER, ProfileOutput, message,
-            "profiler", SPECIALIST_RECURSION_LIMIT, config,
+            "profiler", STEP_LIMITS["profiler"], config,
         )  # fmt: skip
-        return {"profile": profile or ProfileOutput(appliances=[]), "tool_calls": calls, "errors": errors}
+        return {"profile": profile or ProfileOutput(appliances=[]), "tool_calls": calls, "errors": errors, "recoveries": recoveries}
 
     def scheduler(state: PipelineState, config) -> PipelineState:
         flexible = [p.model_dump() for p in state["profile"].appliances if p.flexible]
         message = f"Appliance profiles:\n{json.dumps(flexible, indent=1)}"
         if state.get("conflict_feedback"):
-            previous = assignments_to_dict(state["resolution"].assignments)
+            previous = assignments_to_dict(state["resolution"].assignments) if state.get("resolution") else {}
             message += (
                 f"\n\nYour previous schedule after conflict resolution: {json.dumps(previous)}\n"
-                f"Conflict feedback: {state['conflict_feedback']}\nPropose a revised schedule."
+                f"Verification feedback: {state['conflict_feedback']}\n"
+                "Propose a revised schedule that gives every requested appliance a start time."
             )
-        proposal, calls, errors = _run_agent(
+        proposal, calls, errors, recoveries = _run_agent(
             models("scheduler"), select(tools, SCHEDULER_TOOLS), prompts.SCHEDULER, ScheduleOutput, message,
-            "scheduler", SPECIALIST_RECURSION_LIMIT, config,
+            "scheduler", STEP_LIMITS["scheduler"], config,
         )  # fmt: skip
-        update: PipelineState = {"tool_calls": calls, "errors": errors}
+        update: PipelineState = {"tool_calls": calls, "errors": errors, "recoveries": recoveries}
         if proposal is not None:
             update["proposal"] = proposal
         return update
 
+    def requested_ids(state: PipelineState) -> list[str]:
+        """Appliances the schedule must cover: the Orchestrator's brief plus the flexible profiled ones."""
+        ids = list(state["brief"].appliance_ids)
+        ids += [p.appliance_id for p in state["profile"].appliances if p.flexible and p.appliance_id not in ids]
+        return ids
+
+    def completeness_feedback(state: PipelineState, scheduled: dict[str, str]) -> str:
+        missing = [i for i in requested_ids(state) if i not in scheduled]
+        return f"MISSING: no start time for {', '.join(missing)}." if missing else ""
+
     def resolver(state: PipelineState, config) -> PipelineState:
         proposal = state.get("proposal")
-        if proposal is None:
-            return {"errors": ["resolver: no proposal to resolve"]}
+        if proposal is None:  # the Scheduler returned nothing: incomplete by definition, send it back
+            return {
+                "conflict_feedback": completeness_feedback(state, {}) or "MISSING: no schedule was returned.",
+                "iterations": state["iterations"] + 1,
+                "errors": ["resolver: no proposal to resolve"],
+            }
         windows = {p.appliance_id: f"{p.earliest_time}-{p.deadline_time}" for p in state["profile"].appliances}
         message = (
             f"Proposed schedule: {json.dumps(assignments_to_dict(proposal.assignments))}\n"
             f"User windows (earliest start - finish by): {json.dumps(windows)}"
         )
-        resolution, calls, errors = _run_agent(
+        resolution, calls, errors, recoveries = _run_agent(
             models("resolver"), select(tools, RESOLVER_TOOLS), prompts.RESOLVER, ResolverOutput, message,
-            "resolver", SPECIALIST_RECURSION_LIMIT, config,
+            "resolver", STEP_LIMITS["resolver"], config,
         )  # fmt: skip
         if resolution is None:  # keep the unresolved proposal so the run still yields a schedule
             resolution = ResolverOutput(assignments=proposal.assignments, conflicts_remaining=True, changes="resolver failed")
-        feedback = tools["detect_conflicts"].invoke({"schedule": assignments_to_dict(resolution.assignments)})
+        # Orchestrator's verification gate: peak-load conflicts and completeness.
+        final = assignments_to_dict(resolution.assignments)
+        conflicts = tools["detect_conflicts"].invoke({"schedule": final})
+        problems = [conflicts] if conflicts.startswith(("CONFLICT", "ERROR")) else []
+        if missing := completeness_feedback(state, final):
+            problems.append(missing)
         return {
             "resolution": resolution,
-            "conflict_feedback": feedback if feedback.startswith(("CONFLICT", "ERROR")) else "",
+            "conflict_feedback": " ".join(problems),
             "iterations": state["iterations"] + 1,
             "tool_calls": calls,
             "errors": errors,
+            "recoveries": recoveries,
         }
 
     def after_resolver(state: PipelineState) -> str:
@@ -199,5 +238,6 @@ def run_multi_agent(scenario: Scenario, models: ModelFactory, config: dict[str, 
         explanation=state.get("summary", ""),
         errors=state.get("errors", []),
         tool_calls=state.get("tool_calls", 0),
+        recoveries=state.get("recoveries", 0),
         iterations=state.get("iterations", 0),
     )

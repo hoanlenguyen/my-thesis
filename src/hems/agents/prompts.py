@@ -40,8 +40,8 @@ RESOLVER_ROLE = (
 
 ORCHESTRATOR_PLAN = (
     "You are the Orchestrator of a home energy management system. Read the household's scheduling request "
-    "and extract the ids of the appliances to schedule and any constraints the user states. "
-    "Do not schedule anything yourself; the specialist agents will do that."
+    "and extract the ids of ALL appliances to schedule (every id listed in the request; do not omit any) "
+    "and any constraints the user states. Do not schedule anything yourself; the specialist agents will do that."
 )
 
 ORCHESTRATOR_SUMMARY = (

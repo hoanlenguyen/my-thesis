@@ -39,7 +39,7 @@ uv run hems build --refit data/raw/refit --prices data/raw/prices_fi.csv --out d
 
 # 2. evaluation (resumable; rerun the same command after an interruption)
 uv run hems run --scenarios data/scenarios --systems milp naive single multi \
-                --models gpt-4o-mini llama-3.3-70b --runs 3 --out results/runs.jsonl
+                --models gpt-4o-mini gpt-oss-20b --runs 3 --out results/runs.jsonl
 
 # 3. Chapter 5 tables/figures -> results/tables/*.tex, results/figures/*.pdf
 uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out results
@@ -56,5 +56,7 @@ uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out r
   vs naive, latency, tokens, USD.
 - **Statistics**: Wilcoxon signed-rank on per-scenario means over 3 runs, `zero_method="pratt"`,
   effect size r = |Z|/√N; Spearman for appliance characteristics (SQ2).
-- **Peak limit** default 4.0 kW (raised per scenario only if infeasible; recorded in `notes`).
+- **Peak limit** default 3.5 kW for the benchmark (raised per scenario only if infeasible; recorded in `notes`).
+- **REFIT houses**: all except 12 (no flexible appliances) and 19 (washing machine shows no heating phase);
+  see `EXCLUDED_HOUSES` in `data/refit.py`.
 - **Types C–F** use repeated cycles of the three REFIT appliance kinds to reach 4–5 loads.

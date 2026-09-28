@@ -1,0 +1,9 @@
+{
+  "name": "full evaluation",
+  "scenarios": "data/scenarios",
+  "systems": ["milp", "naive", "single", "multi"],
+  "models": ["gpt-4o-mini", "gpt-oss-20b"],
+  "runs": 3,
+  "out": "results/runs.jsonl",
+  "order": "model"
+}

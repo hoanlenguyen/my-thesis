@@ -24,8 +24,9 @@ AGENT_SYSTEMS = ("single", "multi")
 
 
 def load_runs(path: str | Path) -> pd.DataFrame:
-    with Path(path).open(encoding="utf-8") as fh:
-        return pd.DataFrame([json.loads(line) for line in fh if line.strip()])
+    from hems.run import read_records  # tolerant of a line cut off by a hard shutdown
+
+    return pd.DataFrame(read_records(Path(path)))
 
 
 def scored_runs(runs: pd.DataFrame) -> pd.DataFrame:

@@ -16,7 +16,7 @@ from hems.core.models import SLOTS_PER_DAY, FixedAppliance, Scenario
 from hems.data.scenarios import INSTANCES_PER_TYPE, TYPE_SPECS, compose_scenario
 
 # Stylised 15-min cycle shapes (kW): heating phases dominate the peak.
-PROFILE_POOL: dict[str, list[list[float]]] = {
+CYCLES: dict[str, list[list[float]]] = {
     "washing_machine": [
         [2.0, 2.0, 0.3, 0.2, 0.2, 0.5, 0.3, 0.1],
         [2.1, 1.6, 0.2, 0.2, 0.4, 0.4],
@@ -30,6 +30,8 @@ PROFILE_POOL: dict[str, list[list[float]]] = {
         [2.2, 2.2, 2.2, 2.2, 0.8],
     ],
 }
+
+PROFILE_POOL: dict[str, list[list[list[float]]]] = {kind: [cycles] for kind, cycles in CYCLES.items()}  # one "household"
 
 FIXED = [
     FixedAppliance(id="fridge_freezer", kind="fridge_freezer", typical_power_kw=0.08),

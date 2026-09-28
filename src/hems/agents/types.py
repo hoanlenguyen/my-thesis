@@ -12,3 +12,4 @@ class AgentRun:
     errors: list[str] = field(default_factory=list)
     tool_calls: int = 0
     iterations: int = 0
+    recoveries: int = 0  # turns re-requested after the provider rejected the model's output
