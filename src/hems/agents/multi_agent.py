@@ -1,13 +1,13 @@
 """Hierarchical ReAct multi-agent pipeline (LangGraph).
 
-    orchestrator_plan -> profiler -> scheduler -> resolver --(conflicts or missing appliances,
-                                                     |          budget left)--> scheduler
+    orchestrator_plan -> profiler -> scheduler -> resolver --(conflict, missing appliance or start
+                                                     |          outside window; budget left)--> scheduler
                                                      +--> [human review] -> orchestrator_finalize -> END
 
 Each specialist is a ReAct agent with only its own tools. The fixed edge order
 matches Chapter 4.2; the only branch is the Orchestrator's verification gate after
 the resolver, which re-runs detect_conflicts, checks that every requested appliance
-has a start time, and sends any problems back to the scheduler.
+has a start time inside its user window, and sends any problems back to the scheduler.
 """
 
 from __future__ import annotations
@@ -147,6 +147,25 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
         missing = [i for i in requested_ids(state) if i not in scheduled]
         return f"MISSING: no start time for {', '.join(missing)}." if missing else ""
 
+    def window_feedback(scheduled: dict[str, str]) -> str:
+        """Start times outside the user window (checked against the household data, as the tools do)."""
+        problems = []
+        for appliance_id, clock in scheduled.items():
+            try:
+                appliance = scenario.appliance(appliance_id)
+                start = scenario.time_to_slot(clock)
+            except (ValueError, AttributeError):
+                problems.append(f"{appliance_id} at {clock!r} is not a valid appliance and start time")
+                continue
+            if start not in appliance.valid_starts():
+                problems.append(
+                    f"{appliance_id} starts {scenario.slot_to_time(start)} but must start between "
+                    f"{scenario.slot_to_time(appliance.earliest_slot)} and "
+                    f"{scenario.slot_to_time(appliance.latest_start_slot)} to finish by "
+                    f"{scenario.boundary_to_time(appliance.deadline_slot)}"
+                )
+        return f"OUTSIDE WINDOW: {'; '.join(problems)}." if problems else ""
+
     def resolver(state: PipelineState, config) -> PipelineState:
         proposal = state.get("proposal")
         if proposal is None:  # the Scheduler returned nothing: incomplete by definition, send it back
@@ -166,12 +185,14 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
         )  # fmt: skip
         if resolution is None:  # keep the unresolved proposal so the run still yields a schedule
             resolution = ResolverOutput(assignments=proposal.assignments, conflicts_remaining=True, changes="resolver failed")
-        # Orchestrator's verification gate: peak-load conflicts and completeness.
+        # Orchestrator's verification gate: peak-load conflicts, completeness and user time windows.
         final = assignments_to_dict(resolution.assignments)
         conflicts = tools["detect_conflicts"].invoke({"schedule": final})
         problems = [conflicts] if conflicts.startswith(("CONFLICT", "ERROR")) else []
         if missing := completeness_feedback(state, final):
             problems.append(missing)
+        if outside := window_feedback(final):
+            problems.append(outside)
         return {
             "resolution": resolution,
             "conflict_feedback": " ".join(problems),

@@ -1,0 +1,9 @@
+{
+  "name": "baselines",
+  "scenarios": "data/scenarios",
+  "systems": ["milp", "naive", "timer", "oneshot"],
+  "models": ["gpt-4o-mini"],
+  "runs": 3,
+  "out": "results/baselines.jsonl",
+  "order": "model"
+}

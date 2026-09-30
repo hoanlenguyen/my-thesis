@@ -21,15 +21,18 @@ from langchain_core.callbacks import get_usage_metadata_callback
 from hems.agents.errors import daily_quota_exhausted
 from hems.agents.llm import MODELS, make_model, usage_cost_usd
 from hems.agents.multi_agent import run_multi_agent
+from hems.agents.oneshot import run_oneshot
 from hems.agents.single_agent import run_single_agent
 from hems.agents.types import AgentRun
 from hems.core.evaluate import evaluate
 from hems.core.models import Scenario, Schedule
 from hems.solvers.milp import solve_milp
-from hems.solvers.naive import naive_schedule
+from hems.solvers.naive import naive_schedule, smart_timer_schedule
 
-REFERENCE_SYSTEMS = ("milp", "naive")
+REFERENCE_SYSTEMS = ("milp", "naive", "timer")  # deterministic: one run, no model
 AGENT_SYSTEMS = ("single", "multi")
+LLM_SYSTEMS = (*AGENT_SYSTEMS, "oneshot")  # oneshot: LLM without tools (baseline)
+ALL_SYSTEMS = (*REFERENCE_SYSTEMS, *LLM_SYSTEMS)
 
 
 def run_key(system: str, model: str, scenario_id: str, run: int) -> str:
@@ -94,8 +97,8 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
         result = solve_milp(scenario)
         schedule, parse_problems = result.schedule, [] if result.status == "Optimal" else [f"MILP status {result.status}"]
         agent_run = AgentRun(assignments={k: scenario.slot_to_time(v) for k, v in schedule.items()})
-    elif system == "naive":
-        schedule, parse_problems = naive_schedule(scenario), []
+    elif system in ("naive", "timer"):
+        schedule, parse_problems = (naive_schedule if system == "naive" else smart_timer_schedule)(scenario), []
         agent_run = AgentRun(assignments={k: scenario.slot_to_time(v) for k, v in schedule.items()})
     else:
         config = {
@@ -110,6 +113,8 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
             elif system == "multi":
                 model = make_model(model_name)
                 agent_run = run_multi_agent(scenario, lambda _role: model, config, summarize=summarize)
+            elif system == "oneshot":
+                agent_run = run_oneshot(scenario, make_model(model_name), config)
             else:
                 raise ValueError(f"unknown system {system}")
             usage = dict(cb.usage_metadata)
@@ -144,7 +149,7 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
         "recoveries": agent_run.recoveries,
         "agent_errors": agent_run.errors,
         "explanation": agent_run.explanation,
-        "langsmith_run_id": run_id if system in AGENT_SYSTEMS else None,
+        "langsmith_run_id": run_id if system in LLM_SYSTEMS else None,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
 

@@ -61,6 +61,13 @@ SCHEDULER = (
 
 RESOLVER = f"You are the Conflict Resolver agent. {GOAL}\nYour task: {RESOLVER_ROLE}\n{REACT_STYLE}"
 
+ONESHOT = (
+    f"You are a home energy management assistant. {GOAL}\n"
+    "You have no tools. All household data, the price of every 15-minute slot and the measured base load "
+    "of every slot are given in the message. Work out the schedule yourself and return a start time for "
+    'every requested appliance. All times are clock times "HH:MM" on a 15-minute grid (e.g. 13:45).'
+)
+
 SINGLE_AGENT = (
     f"You are a home energy management agent. {GOAL}\n"
     f"Carry out all of the following yourself:\n1. {PROFILER_ROLE}\n2. {SCHEDULER_ROLE}\n3. {RESOLVER_ROLE}\n"

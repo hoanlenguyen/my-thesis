@@ -21,12 +21,17 @@ from hems.core.models import Scenario
 from hems.solvers.naive import has_coordination_conflict
 
 AGENT_SYSTEMS = ("single", "multi")
+BASELINE_SYSTEMS = ("timer", "oneshot")  # rule-based smart timer; LLM without tools
+SCORED_SYSTEMS = (*AGENT_SYSTEMS, *BASELINE_SYSTEMS)
 
 
-def load_runs(path: str | Path) -> pd.DataFrame:
+def load_runs(paths: str | Path | list[str | Path]) -> pd.DataFrame:
+    """Records from one or more run files; a key present in several files is kept once (first file wins)."""
     from hems.run import read_records  # tolerant of a line cut off by a hard shutdown
 
-    return pd.DataFrame(read_records(Path(path)))
+    paths = [paths] if isinstance(paths, (str, Path)) else paths
+    runs = pd.DataFrame([r for p in paths for r in read_records(Path(p))])
+    return runs.drop_duplicates("key").reset_index(drop=True) if not runs.empty else runs
 
 
 def scored_runs(runs: pd.DataFrame) -> pd.DataFrame:
@@ -35,7 +40,7 @@ def scored_runs(runs: pd.DataFrame) -> pd.DataFrame:
     ref.columns = [f"{c}_cost" for c in ref.columns]
     ref = ref.reset_index()
     ref.columns.name = None
-    agents = runs[runs.system.isin(AGENT_SYSTEMS)].merge(ref, on="scenario_id", how="inner")
+    agents = runs[runs.system.isin(SCORED_SYSTEMS)].merge(ref, on="scenario_id", how="inner")
     agents["scored_cost"] = np.where(agents.feasible, agents.cost_eur, agents.naive_cost)
     agents["gap_pct"] = (agents.scored_cost - agents.milp_cost) / agents.milp_cost * 100
     achievable = agents.naive_cost - agents.milp_cost
@@ -54,9 +59,12 @@ def per_scenario(scored: pd.DataFrame) -> pd.DataFrame:
             gap_sd=("gap_pct", "std"),
             latency_s=("latency_s", "mean"),
             tokens=("tokens_in", "mean"),
+            tokens_out=("tokens_out", "mean"),
             cost_usd=("cost_usd", "mean"),
+            tool_calls=("tool_calls", "mean"),
         )
         .reset_index()
+        .assign(tokens_total=lambda df: df.tokens + df.tokens_out)
     )
 
 

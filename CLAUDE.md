@@ -54,6 +54,14 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   (`multi_agent.STEP_LIMITS`, split by workload after the pilot).
 - Recovery nudge (`agents/errors.py`) applies identically to every model and agent; recoveries are logged.
 - Infeasible agent schedules are scored at the naive cost; feasibility is reported separately.
+- **Pre-registration** (`docs/preregistration.md`): H1/H2 are confirmed on the held-out Q set
+  (`configs/confirmation.json` → `results/confirmation.jsonl`, analysed only by `hems confirm` /
+  `analysis/confirm.py`). Once registered, never change `confirm.py`, the Q scenarios, prompts or tools
+  before that run; report any deviation. The main benchmark is exploratory.
+- Extra baselines (`configs/baselines.json` → `results/baselines.jsonl`): `timer` = rule-based smart timer
+  (`solvers/naive.smart_timer_schedule`, deterministic) and `oneshot` = LLM without tools
+  (`agents/oneshot.py`, all data incl. per-slot base load in one prompt). Analyse together with
+  `hems analyze --runs results/runs.jsonl results/baselines.jsonl`.
 - Benchmark settings: 18 REFIT houses (12 and 19 excluded — reasons in `refit.EXCLUDED_HOUSES`),
   peak limit 3.5 kW, type E windows anchored at the daily price peak, seed 2026.
 
@@ -89,3 +97,7 @@ The evaluation uses **two models**: commercial cloud vs small open-weight model 
 - APA-style references in the `hangparas` block, alphabetical; cite data sources (REFIT dataset DOI,
   Nord Pool via Sahkotin/Elering).
 - After editing `main.tex`, compile and visually check the changed pages (`compile-thesis` skill).
+- **Avoid em dashes** (`---`, "—"): they read as AI-generated style. Rewrite with commas, parentheses,
+  "such as", "namely", a colon or a separate sentence. Use one only when nothing else works, and then
+  tie it to the preceding word (`word~--- next`) so it never starts a line. The same applies to table cells.
+- Hyphenation is disabled (no words split across lines); table text is left-aligned (`\tabularxcolumn`).

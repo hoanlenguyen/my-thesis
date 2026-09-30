@@ -21,6 +21,22 @@ def test_wilcoxon_detects_consistent_improvement() -> None:
     assert result["n"] == 48 and result["p"] < 1e-6 and result["r"] > 0.5 and result["median_diff"] < 0
 
 
+def test_tost_concludes_equivalence_only_inside_the_margin() -> None:
+    rng = np.random.default_rng(1)
+    single = pd.Series(rng.uniform(0, 10, 48))
+    close = stats.tost_paired(single + rng.normal(0, 0.3, 48), single, margin=1.0)
+    assert close["equivalent"] and close["ci90_low"] > -1 and close["ci90_high"] < 1
+    shifted = stats.tost_paired(single + 2 + rng.normal(0, 0.3, 48), single, margin=1.0)
+    assert not shifted["equivalent"] and shifted["p_tost_t"] > 0.5
+
+
+def test_holm_adjustment() -> None:
+    from hems.analysis.confirm import holm
+
+    assert np.allclose(holm([0.01, 0.04, 0.03]), [0.03, 0.06, 0.06])
+    assert holm([0.5]) == [0.5]
+
+
 def test_report_end_to_end(tmp_path) -> None:
     scenarios = generate(tmp_path / "scen", per_type=2, seed=3)
     runs_path = tmp_path / "runs.jsonl"
@@ -47,3 +63,5 @@ def test_report_end_to_end(tmp_path) -> None:
     overall = results["wilcoxon"].query("scope == 'all'").iloc[0]
     assert overall["median_diff"] < 0
     assert set(results["conflict_resolution"].system) == {"single", "multi"}
+    assert list(results["equivalence"].margin) == list(stats.EQUIVALENCE_MARGINS)
+    assert set(results["efficiency_tests"].metric) == set(stats.EFFICIENCY_METRICS)

@@ -12,6 +12,7 @@ from langchain_core.runnables import RunnableConfig
 
 from hems.agents.llm import MODELS
 from hems.core.models import Scenario, load_scenarios
+from hems.run import ALL_SYSTEMS
 
 
 def _scenarios(directory: str, ids: list[str] | None, limit: int | None) -> list[Scenario]:
@@ -86,12 +87,12 @@ def cmd_demo(args: argparse.Namespace) -> None:
     from hems.agents.llm import make_model
     from hems.agents.multi_agent import build_pipeline
     from hems.core.evaluate import evaluate
-    from hems.run import execute, parse_assignments
+    from hems.run import LLM_SYSTEMS, execute, parse_assignments
 
     scenario = Scenario.load(args.scenario)
     print(scenario.user_request, "\n")
     if args.system != "multi" or not args.review:
-        record = execute(scenario, args.system, args.model if args.system in ("single", "multi") else "-")
+        record = execute(scenario, args.system, args.model if args.system in LLM_SYSTEMS else "-")
         print(json.dumps({k: record[k] for k in ("assignments", "cost_eur", "feasible", "violations", "latency_s", "tokens_in", "tokens_out", "explanation", "agent_errors")}, indent=1))  # fmt: skip
         return
 
@@ -141,9 +142,23 @@ def cmd_analyze(args: argparse.Namespace) -> None:
     scenarios = {s.id: s for s in load_scenarios(args.scenarios)}
     results = write_report(args.runs, scenarios, args.out)
     with pd.option_context("display.width", 160, "display.max_columns", 20):
-        for name in ("gap_by_type", "wilcoxon", "conflict_resolution", "efficiency"):
+        for name in ("gap_by_type", "wilcoxon", "baselines", "equivalence", "conflict_resolution", "efficiency", "efficiency_tests"):
             print(f"\n== {name}\n{results[name]}")
     print(f"\ntables and figures written to {args.out}")
+
+
+def cmd_confirm(args: argparse.Namespace) -> None:
+    import pandas as pd
+
+    from hems.analysis.confirm import run
+
+    result = run(args.runs)
+    with pd.option_context("display.width", 200, "display.max_columns", 20, "display.max_colwidth", 60):
+        print(result.to_string(index=False))
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        result.to_csv(args.out, index=False)
+        print(f"\nwritten to {args.out}")
 
 
 def main() -> None:
@@ -197,7 +212,7 @@ def main() -> None:
 
     p = sub.add_parser("run", help="run systems over scenarios, appending to a JSONL file")
     p.add_argument("--scenarios", default="data/scenarios")
-    p.add_argument("--systems", nargs="+", default=["milp", "naive", "single", "multi"], choices=["milp", "naive", "single", "multi"])
+    p.add_argument("--systems", nargs="+", default=["milp", "naive", "single", "multi"], choices=list(ALL_SYSTEMS))
     p.add_argument("--models", nargs="+", default=["gpt-4o-mini"], choices=list(MODELS))
     p.add_argument("--runs", type=int, default=3)
     p.add_argument("--ids", nargs="*", help="only these scenario ids")
@@ -208,7 +223,7 @@ def main() -> None:
 
     p = sub.add_parser("demo", help="run one scenario and print the result")
     p.add_argument("scenario")
-    p.add_argument("--system", default="multi", choices=["milp", "naive", "single", "multi"])
+    p.add_argument("--system", default="multi", choices=list(ALL_SYSTEMS))
     p.add_argument("--model", default="gpt-4o-mini", choices=list(MODELS))
     p.add_argument("--review", action="store_true", help="human-in-the-loop approval before finalising (multi only)")
     p.set_defaults(func=cmd_demo)
@@ -225,10 +240,15 @@ def main() -> None:
     p.set_defaults(func=cmd_resolution)
 
     p = sub.add_parser("analyze", help="metrics, Wilcoxon tests, LaTeX tables and figures")
-    p.add_argument("--runs", default="results/runs.jsonl")
+    p.add_argument("--runs", nargs="+", default=["results/runs.jsonl"], help="one or more run files (merged)")
     p.add_argument("--scenarios", default="data/scenarios")
     p.add_argument("--out", default="results")
     p.set_defaults(func=cmd_analyze)
+
+    p = sub.add_parser("confirm", help="pre-registered confirmatory tests of H1 and H2 (docs/preregistration.md)")
+    p.add_argument("--runs", default="results/confirmation.jsonl")
+    p.add_argument("--out", default="results/confirmation/confirmatory_tests.csv")
+    p.set_defaults(func=cmd_confirm)
 
     args = parser.parse_args()
     args.func(args)

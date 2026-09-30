@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from hems.agents.multi_agent import run_multi_agent
+from hems.agents.oneshot import run_oneshot, scenario_message
 from hems.agents.single_agent import run_single_agent
 from hems.core.evaluate import evaluate
 from hems.core.models import Scenario
@@ -178,3 +179,43 @@ def test_pipeline_sends_missing_appliances_back_to_scheduler(scenario: Scenario)
     run = run_multi_agent(scenario, lambda role: models[role])
     assert run.iterations == 2
     assert set(run.assignments) == set(ids)
+
+
+def test_pipeline_sends_out_of_window_starts_back_to_scheduler(scenario: Scenario) -> None:
+    # Reproduces pilot/evaluation failure E03: the Resolver moved an appliance past its deadline.
+    ids = [a.id for a in scenario.appliances]
+    optimal = _optimal_assignments(scenario)
+    late = scenario.appliances[0]
+    outside = [dict(o) for o in optimal]
+    outside[0]["start_time"] = scenario.slot_to_time(late.latest_start_slot + 1)
+    profiles = [
+        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
+         "earliest_time": "00:00", "deadline_time": "24:00"}
+        for a in scenario.appliances
+    ]  # fmt: skip
+    models = {
+        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
+        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
+        "scheduler": scripted(
+            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="first"),
+            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="revised"),
+        ),
+        "resolver": scripted(
+            call("ResolverOutput", assignments=outside, conflicts_remaining=False, changes="moved one"),
+            call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none"),
+        ),
+    }
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 2  # the out-of-window start triggered the feedback round
+    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
+    assert evaluate(scenario, parsed).feasible
+
+
+def test_oneshot_answers_without_tools_from_full_data(scenario: Scenario) -> None:
+    message = scenario_message(scenario)
+    assert len(message.splitlines()) > 96 and "base_kW" in message  # every slot's price and base load
+    model = scripted(call("ScheduleOutput", assignments=_optimal_assignments(scenario), total_cost_eur=1.0, explanation="x"))
+    run = run_oneshot(scenario, model)
+    assert run.errors == [] and run.tool_calls == 0
+    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
+    assert evaluate(scenario, parsed).feasible

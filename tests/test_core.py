@@ -7,7 +7,7 @@ import pytest
 from hems.core.evaluate import evaluate
 from hems.core.models import Scenario
 from hems.solvers.milp import solve_milp
-from hems.solvers.naive import greedy_schedule, naive_schedule
+from hems.solvers.naive import greedy_schedule, naive_schedule, smart_timer_schedule
 from hems.tools import ALL_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools
 
 from .conftest import make_scenario
@@ -38,7 +38,7 @@ def test_milp_feasible_and_no_worse_than_references(scenario_type: str) -> None:
     scenario = make_scenario(scenario_type, seed=5)
     milp = evaluate(scenario, solve_milp(scenario).schedule)
     assert milp.feasible
-    for reference in (naive_schedule(scenario), greedy_schedule(scenario)):
+    for reference in (naive_schedule(scenario), greedy_schedule(scenario), smart_timer_schedule(scenario)):
         ref = evaluate(scenario, reference)
         if ref.feasible:
             assert milp.cost_eur <= ref.cost_eur + 1e-9
@@ -131,3 +131,13 @@ def test_step_budget_parity() -> None:
     from hems.agents.single_agent import RECURSION_LIMIT
 
     assert sum(STEP_LIMITS.values()) == RECURSION_LIMIT
+
+
+@pytest.mark.parametrize("scenario_type", list("ABCDEF"))
+def test_smart_timer_stays_in_windows_and_matches_greedy_without_conflict(scenario_type: str) -> None:
+    scenario = make_scenario(scenario_type, seed=5)
+    timer = smart_timer_schedule(scenario)
+    assert all(timer[a.id] in a.valid_starts() for a in scenario.appliances)
+    greedy = evaluate(scenario, greedy_schedule(scenario))
+    if greedy.feasible:  # nothing to coordinate: placing each at its cheapest start is optimal
+        assert evaluate(scenario, timer).cost_eur == pytest.approx(greedy.cost_eur)

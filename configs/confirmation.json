@@ -1,0 +1,9 @@
+{
+  "name": "confirmation (pre-registered, docs/preregistration.md)",
+  "scenarios": "data/scenarios_15min",
+  "systems": ["milp", "naive", "timer", "single", "multi", "oneshot"],
+  "models": ["gpt-4o-mini"],
+  "runs": 3,
+  "out": "results/confirmation.jsonl",
+  "order": "model"
+}

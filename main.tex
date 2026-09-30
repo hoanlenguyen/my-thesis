@@ -34,6 +34,12 @@
 \fancyhf{}
 \fancyhead[R]{\thepage}
 \renewcommand{\headrulewidth}{0pt}
+% Chapter opening pages use the "plain" style; give it the same top-right number.
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
 
 % ── Chapter / section heading fonts  ─────────────────────────────────────────
 \usepackage{titlesec}
@@ -69,12 +75,27 @@
 % ── Text alignment ────────────────────────────────────────────────────────────
 \usepackage{ragged2e}
 \justifying
+% No words split across lines: no hyphenation, and no line breaks at explicit
+% hyphens or em dashes (---). The extra inter-word stretch below lets justified
+% lines absorb the words that can no longer be split.
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\setlength{\emergencystretch}{3em}
 
 % ── Tables ────────────────────────────────────────────────────────────────────
 \usepackage{booktabs}
 \usepackage{tabularx}
+% Table text is left-aligned: justified narrow cells stretch badly without hyphenation.
+\renewcommand{\tabularxcolumn}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{array}
 \usepackage{longtable}
+% Figures and tables never float past the start of the next section.
+\usepackage[section]{placeins}
+% Pages holding only figures/tables start at the top instead of centring them.
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{12pt}
+\makeatother
 \usepackage{makecell}
 
 % Table caption: Arial 10pt bold, above table
@@ -95,14 +116,16 @@
 
 % ── Graphics ──────────────────────────────────────────────────────────────────
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, fit, calc, shapes.geometric}
 
 % ── Hyperlinks ────────────────────────────────────────────────────────────────
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}                    % allow long URLs/DOIs to break across lines
-\setlength{\emergencystretch}{2em}   % avoid overfull lines in justified text
 
 % ── Math ─────────────────────────────────────────────────────────────────────
 \usepackage{amsmath}
+\usepackage{amssymb}
 
 % ── Misc ──────────────────────────────────────────────────────────────────────
 \usepackage{enumitem}
@@ -187,7 +210,7 @@ Work in progress.
 % ── ABBREVIATIONS ───────────────────────────────────────────────────────────
 \unnumberedchapter{Abbreviations}
 
-\begin{description}[leftmargin=5cm, style=nextline, font=\normalfont\bfseries]
+\begin{description}[leftmargin=5cm, style=nextline, font=\normalfont\bfseries, before=\raggedright]
 \item[API] Application Programming Interface
 \item[DSR] Design Science Research
 \item[HEMS] Home Energy Management System
@@ -246,10 +269,10 @@ price regimes.
 
 The emergence of Large Language Models (LLMs) as general-purpose
 reasoning engines has opened new possibilities for HEMS design. Yao et
-al. (2023) demonstrate that LLMs equipped with the ReAct paradigm --- a
-Thought-Action-Observation loop that interleaves reasoning with tool
-calls --- can solve multi-step planning problems requiring dynamic
-information retrieval and constraint satisfaction. Applied to
+al. (2023) introduce the ReAct paradigm, a Thought-Action-Observation
+loop that interleaves reasoning with tool calls. They demonstrate that
+LLMs equipped with this loop can solve multi-step planning problems
+requiring dynamic information retrieval and constraint satisfaction. Applied to
 residential scheduling, a ReAct agent can reason over a price forecast,
 classify appliances by shiftability, identify the cheapest available
 time window, and verify constraint compliance through a traceable
@@ -275,37 +298,62 @@ configurations due to context window overload. Optimization signals are
 one-dimensional, based solely on wholesale price without considering
 simultaneous load peak constraints. And evaluations are confined to
 single-day scenarios that leave robustness across price-volatility
-regimes untested (Jonah et al., 2026).
+regimes untested (Jonah et al., 2026). In addition, it remains unclear
+what a language model agent adds over simpler approaches: whether its
+tool use matters compared with asking the model for a schedule directly,
+and whether it offers anything over a rule-based scheduler once the
+household's constraints are known.
 
 To address these limitations, the study is guided by one main research
-question and two sub-questions:
+question and four sub-questions:
 
 \begin{quote}
-\textbf{RQ:} To what extent does a hierarchical ReAct multi-agent pipeline
-reduce residential appliance scheduling cost compared to a
-single-agent baseline, and under which price-volatility conditions is
-the improvement most pronounced?
+\textbf{RQ:} How can a hierarchical ReAct multi-agent pipeline be
+designed to schedule residential appliances from household requests
+under dynamic electricity prices, and how does it compare with
+single-agent, rule-based and optimal scheduling in schedule cost,
+reliability and inference cost?
 
-\textbf{SQ1:} How should the pipeline be designed to handle multiple
-simultaneous appliance scheduling requests without redundant reasoning
-across agents?
+\textbf{SQ1:} Does grounding the language model's reasoning in tool
+calls improve schedule quality compared with generating the schedule
+directly from the data?
 
-\textbf{SQ2:} Which appliance types benefit most from multi-agent
-scheduling, and what appliance characteristics drive the largest cost
-reduction?
+\textbf{SQ2:} Does decomposing the task into specialist agents preserve
+schedule quality while changing inference cost and latency relative to
+a single agent?
+
+\textbf{SQ3:} How do scheduling quality, reliability, latency and
+inference cost change when a commercial cloud model is replaced by a
+small open-weight model run locally, and does this change differ between
+the single-agent and multi-agent designs?
+
+\textbf{SQ4:} Do the agent designs satisfy constraints that households
+state informally more often than rule-based scheduling, and how do they
+compare with a language model that only extracts the constraints for a
+rule-based scheduler?
 \end{quote}
 
-The main RQ is deliberately non-binary. It asks how much and under which
-conditions, producing a richer and more nuanced answer than a binary
-yes/no finding. Together the three questions cover performance magnitude
-(RQ), design rationale (SQ1), and domain insight (SQ2).
+The main RQ combines the design of the artifact with its comparison
+against three kinds of reference: a single agent with the same tools, a
+rule-based scheduler, and the mathematical optimum. SQ1 tests the
+premise of the ReAct approach, that reasoning grounded in tool
+observations outperforms unaided generation. SQ2 tests what
+decomposition changes: whether role specialisation keeps the quality of
+the schedules while altering how much computation they require. SQ3
+examines how far these findings depend on the language model, which
+matters for sustainable deployment because a small local model avoids
+both API cost and the dependence on a cloud provider. SQ4 addresses the
+setting in which a language model should have a clear advantage, namely
+requests written in everyday language that a rule-based scheduler cannot
+read. How the results vary with price volatility and appliance type is
+reported for each comparison.
 
 \section{Design Science Research approach}
 
 This study follows the Design Science Research (DSR) methodology as
 defined by Peffers et al. (2007). DSR is appropriate because the central
 activity is the iterative construction and empirical validation of a
-software artifact --- the hierarchical ReAct multi-agent pipeline ---
+software artifact, namely the hierarchical ReAct multi-agent pipeline,
 rather than the observation of a pre-existing phenomenon. As Hevner et
 al. (2004) explain, DSR produces knowledge and understanding of a design
 problem and its solution through the building and evaluation of an
@@ -334,7 +382,7 @@ relevant to the design and evaluation of a hierarchical ReAct
 multi-agent pipeline for residential appliance scheduling. The review is
 organized into seven thematic areas. The chapter concludes by
 synthesizing the literature into a confirmed research gap that motivates
-the three research questions of this thesis.
+the research questions of this thesis.
 
 \section{Home energy management systems}
 
@@ -342,11 +390,11 @@ A Home Energy Management System (HEMS) is a software or hardware system
 that monitors, controls, and optimizes residential electricity
 consumption to reduce cost, support grid stability, and improve energy
 efficiency (Beaudin \& Zareipour, 2015). The core scheduling problem is
-the assignment of flexible appliance loads --- those whose start times
-can be shifted without violating user preferences or physical
-constraints --- to time windows where electricity prices are lowest,
-while ensuring that total household load at any moment does not exceed
-safe operational limits.
+the assignment of flexible appliance loads to time windows where
+electricity prices are lowest, while ensuring that total household load
+at any moment does not exceed safe operational limits. A load is
+flexible when its start time can be shifted without violating user
+preferences or physical constraints.
 
 The literature classifies HEMS scheduling approaches into three broad
 categories. Rule-based systems apply expert-defined heuristics to
@@ -392,16 +440,16 @@ The ReAct (Reasoning and Acting) framework, introduced by Yao et al.
 (2023), proposes that LLM agents should interleave reasoning traces with
 action execution rather than separating reasoning and acting into
 sequential phases. In the ReAct paradigm, each agent step produces three
-outputs: a Thought --- explicit reasoning about the current state and
-next action; an Action --- a structured call to an external tool or API;
-and an Observation --- the result returned by that tool. This loop
+outputs. The Thought is explicit reasoning about the current state and
+the next action, the Action is a structured call to an external tool or
+API, and the Observation is the result returned by that tool. This loop
 repeats until the agent reaches a final answer.
 
 Yao et al. (2023) evaluate ReAct against chain-of-thought reasoning and
 direct action baselines across four benchmark tasks. ReAct outperforms
 both baselines on all four tasks, with particularly large gains on tasks
-requiring dynamic information retrieval and multi-step planning ---
-precisely the characteristics that distinguish HEMS scheduling from
+requiring dynamic information retrieval and multi-step planning. These
+are precisely the characteristics that distinguish HEMS scheduling from
 simpler single-step optimization tasks. The interpretability of the
 ReAct trace is a distinctive advantage for energy management
 applications: because each agent step records the reasoning behind every
@@ -416,9 +464,9 @@ window and coordination limitations of single-agent designs. Han et al.
 (2024) survey the challenges and open problems in LLM multi-agent
 systems, identifying task allocation, memory management, and
 orchestration pattern design as primary research challenges. The survey
-confirms that role-specialized multi-agent designs --- where each agent
+confirms that role-specialized multi-agent designs, in which each agent
 is responsible for one well-defined subtask and has access only to the
-tools needed for that subtask --- consistently outperform generalist
+tools needed for that subtask, consistently outperform generalist
 single-agent designs on complex multi-step tasks.
 
 Hong et al. (2023) demonstrate role-based multi-agent orchestration in a
@@ -426,9 +474,9 @@ software development context through MetaGPT, where agents act as
 product manager, architect, engineer, and QA reviewer. The MetaGPT
 architecture shows that structuring agent interactions through a shared
 state object eliminates the redundant context that causes coordination
-failures in single-agent designs --- a finding directly relevant to the
-multi-appliance coordination failures documented in single-agent HEMS
-implementations.
+failures in single-agent designs. This finding is directly relevant to
+the multi-appliance coordination failures documented in single-agent
+HEMS implementations.
 
 \section{Agentic AI trends in 2025--2026}
 
@@ -475,8 +523,8 @@ fluctuations (Haakana et al., 2025).
 Intraday price volatility in the Finnish market is substantial. Analysis
 of Nord Pool FI historical data reveals that the cheapest hours
 typically sit around \euro{}0.033 to \euro{}0.046 per kWh, while
-morning demand peaks push prices to approximately \euro{}0.0815 per kWh
---- a 2.5 times ratio under normal conditions. During extreme events
+morning demand peaks push prices to approximately \euro{}0.0815 per
+kWh, a ratio of about 2.5 under normal conditions. During extreme events
 such as the 2022--2023 energy crisis, Finnish households experienced
 price spikes up to eight times higher than normal overnight rates
 (Numminen et al., 2026). These structural features make Finnish
@@ -499,14 +547,19 @@ domains (Hong et al., 2023; Han et al., 2024), but no published system
 applies this design pattern to HEMS with a controlled comparison across
 multiple price-volatility regimes.
 
-This gap is the direct motivation for this thesis. The study makes three
-contributions: a hierarchical ReAct multi-agent pipeline for residential
-appliance scheduling implemented in LangGraph; a quantified comparison
-across 48 evaluation scenarios spanning six price-volatility regimes
-with statistical significance testing and per-appliance breakdown; and a
-secondary comparison of the commercial GPT-4o-mini with the locally run
-open-weight gpt-oss-20b on scheduling quality, reliability and inference
-cost.
+This gap is the direct motivation for this thesis. The study makes four
+contributions. The first is a hierarchical ReAct multi-agent pipeline
+for residential appliance scheduling, implemented in LangGraph. The
+second is a controlled comparison of the pipeline with a single agent, a
+language model without tools, a rule-based smart timer and the
+mathematical optimum, spanning six price-volatility regimes, with
+hypotheses fixed in advance and confirmed on a held-out benchmark (SQ1,
+SQ2). The third is a comparison of the commercial GPT-4o-mini with the
+locally run open-weight gpt-oss-20b on scheduling quality, reliability,
+latency and inference cost for both designs (SQ3). The fourth is a
+benchmark of informal household requests with annotated constraints,
+which tests the agents where a rule-based scheduler cannot operate
+(SQ4).
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Research Methodology}
@@ -531,8 +584,8 @@ pipeline artifact, not observing a pre-existing system.
 
 Artifacts in DSR are classified into four types: constructs, models,
 methods, and instantiations (March \& Smith, 1995). In this thesis, the
-artifact is an instantiation --- a working software implementation of a
-hierarchical multi-agent scheduling pipeline --- supported by
+artifact is an instantiation, that is, a working software implementation
+of a hierarchical multi-agent scheduling pipeline. It is supported by
 architectural models (the LangGraph state graph design) and constructs
 (the agent role taxonomy: Profiler, Scheduler, Resolver, Orchestrator).
 
@@ -565,8 +618,9 @@ Phase & DSR step & Activity in this thesis & Output \\
   cost-reducing schedules &
   Demonstration results \\[4pt]
 5 & Evaluation &
-  Run 48 scenarios; apply Wilcoxon test; break down by scenario type
-  and appliance type &
+  Exploratory run on 48 hourly-price scenarios; pre-registered
+  confirmatory run on 48 held-out fifteen-minute scenarios; informal
+  request benchmark; Wilcoxon, TOST and McNemar tests &
   Quantitative evaluation results \\[4pt]
 6 & Communication &
   Write findings, design guidelines, limitations, and future work &
@@ -583,24 +637,167 @@ sensors, buildings, or hardware are required. All inputs are drawn from
 publicly available datasets and APIs, and all evaluation scenarios are
 constructed from historical real-world data rather than synthetic
 simulations. The evaluation comparison is paired: the same 48 scenarios
-are run through the multi-agent pipeline, the single-agent baseline, and
-the MILP solver.
+are run through the multi-agent pipeline and the single-agent baseline
+with each of the two language models, and through four further
+schedulers. The MILP solver provides the optimal schedule, and a naive
+schedule starts every appliance as soon as the user allows. Two
+baselines test whether the agents add value over simpler approaches. A
+rule-based smart timer, of the kind found in commercial smart plugs and
+home energy applications, places the appliances one at a time, the most
+energy-intensive first, each at its cheapest start at which the household
+load stays within the peak limit. It needs structured appliance data but
+no language model. The rule was fixed before it was run on the benchmark
+and was not tuned afterwards. A no-tools baseline gives the language
+model the request together with all household data and the price and
+measured base load of every slot in a single prompt, and takes its
+schedule from one answer without tools or a reasoning loop. The
+comparison with it isolates the contribution of tool use; it is run with
+GPT-4o-mini only. Because language model output varies between runs,
+each system that uses a language model is run three times per scenario
+and model, while the deterministic schedulers are run once.
 
-The primary evaluation metric is the schedule optimality gap, defined as:
+The evaluation proceeds in two stages. The main benchmark of 48
+scenarios with hourly prices (Section~\ref{sec:dataset}) is the
+exploratory stage. It was used while the pipeline was refined over
+several design iterations, and the hypotheses for SQ1 and SQ2 were
+formulated after its results had been inspected, so its results are
+reported as exploratory. The hypotheses were then fixed in a
+pre-registration, committed to the project repository before a
+confirmatory run on a second benchmark of 48 scenarios built from
+fifteen-minute prices (Section~\ref{sec:resolution}), on which no
+language model had previously been run. Only the confirmatory run is
+used to accept or reject the hypotheses of SQ1 and SQ2. SQ3 was part of
+the original research plan and is tested on the main benchmark with both
+language models; the direction of its hypothesis was stated after the
+pilot runs, which had indicated it. SQ4 uses a separate benchmark of
+informal household requests, and its hypotheses were fixed before any
+system was run on that benchmark. Table~\ref{tab:hypotheses} lists the
+hypotheses and their tests.
 
+\begin{table}[h!]
+\caption{Hypotheses and statistical tests.}
+\label{tab:hypotheses}
+\small
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+& Hypothesis & Test \\
+\midrule
+H1 & Both agent designs have a lower optimality gap than the no-tools
+  baseline (SQ1). & Wilcoxon signed-rank, per design \\[3pt]
+H2a & The pipeline and the single agent are equivalent in optimality gap
+  within $\pm 1$ percentage point (SQ2). & Paired $t$ TOST \\[3pt]
+H2b & The pipeline uses fewer input tokens and has a lower API cost per
+  run than the single agent (SQ2). & Wilcoxon signed-rank \\[3pt]
+H2c & The pipeline has a longer latency than the single agent (SQ2). &
+  Wilcoxon signed-rank \\[3pt]
+H3 & With gpt-oss-20b instead of GPT-4o-mini, the feasibility rate of the
+  pipeline falls more than that of the single agent (SQ3). & Wilcoxon
+  signed-rank on the per-scenario change \\[3pt]
+H4a & Both agent designs satisfy the annotated constraints of informal
+  requests more often than the smart timer on default settings (SQ4). &
+  McNemar \\[3pt]
+H4b & The agent designs and the extraction-plus-timer hybrid differ in
+  how often they satisfy the annotated constraints (SQ4, no direction
+  stated). & McNemar \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Scoring}
+
+All schedules are scored by the same function. The cost of a schedule is
+the consumer price of electricity multiplied by the energy of the flexible
+appliance cycles, summed over the day; the consumer price adds the retail
+margin, distribution fee, electricity tax and VAT to the spot price
+(Section~\ref{sec:dataset}). The base load costs the same under every
+schedule and is therefore excluded from the cost, but it counts towards
+the peak load limit. A schedule is feasible when every appliance has a
+start time, every cycle runs within its user window, and the total
+household load never exceeds the peak limit. An infeasible schedule, or a
+run that returns no schedule, is scored at the cost of the naive schedule,
+on the reasoning that the household would then fall back to starting its
+appliances when they are ready. The feasibility rate is reported
+separately, so that this convention does not hide failures.
+
+The primary evaluation metric is the schedule optimality gap:
 \[
 \text{optimality gap} (\%) =
-  \frac{\text{agent cost} - \text{MILP cost}}{\text{MILP cost}} \times 100
+  \frac{\text{agent cost} - \text{MILP cost}}{\text{MILP cost}} \times 100 .
 \]
-
 A smaller optimality gap indicates a schedule closer to the mathematical
-optimum. The Wilcoxon signed-rank test is used to assess statistical
-significance of the difference between multi-agent and single-agent
-optimality gaps across all 48 paired scenarios. The test is appropriate
-because it is non-parametric, requires no assumption of normality, and
-is designed for paired comparisons. Statistical significance is assessed
-at $p < 0.05$ two-tailed. Practical significance is reported using
-effect size $r = Z / \sqrt{N}$.
+optimum. Because the consumer price stays positive even when the spot
+price is negative, the MILP cost is always positive and the gap is well
+defined. As a complementary measure, the share of the achievable saving
+that a system captures is
+\[
+\text{savings captured} =
+  \frac{\text{naive cost} - \text{agent cost}}{\text{naive cost} - \text{MILP cost}} ,
+\]
+which equals one for an optimal schedule and zero for a schedule no
+better than the naive one.
+
+The sub-questions use these metrics as follows. SQ1 compares the
+optimality gap of the agent designs with that of the no-tools baseline.
+SQ2 compares the optimality gap, input and output tokens, API cost and
+latency of the pipeline and the single agent. SQ3 compares the
+feasibility rate, optimality gap, latency, token use and API cost between
+the two language models for each design. SQ4 measures how often a
+schedule satisfies the constraints annotated for an informal request and
+how accurately the constraints were extracted; its benchmark and
+metrics are described with its results. Two secondary analyses are
+reported without hypotheses: the conflict resolution rate, which is the
+share of feasible runs among the scenarios that require coordination
+(those in which starting every appliance at its individually cheapest
+time would exceed the peak limit), and the relation between the saving of
+each appliance cycle and the cycle's duration, power draw, energy and
+window width.
+
+\subsection{Statistical analysis}
+
+The multi-agent and single-agent designs are compared per scenario, using
+the mean optimality gap over the three runs as the paired observation.
+The Wilcoxon signed-rank test assesses whether the difference across the
+48 paired scenarios is statistically significant. The test is
+appropriate because it is non-parametric, requires no assumption of
+normality, and is designed for paired comparisons. Pratt's treatment of
+zero differences is used, so that scenarios in which both designs reach
+the same cost remain in the ranking instead of being discarded.
+Statistical significance is assessed at $p < 0.05$ two-tailed, and
+practical significance is reported with the effect size
+$r = |Z| / \sqrt{N}$. The test is repeated per scenario type to identify
+the price-volatility conditions under which the difference is most
+pronounced, and on the savings-captured measure as a robustness check.
+The relation between appliance characteristics and savings is assessed
+with Spearman rank correlation. All tests are two-sided. A directional
+hypothesis is supported when its test is significant and the effect has
+the predicted direction. Within each sub-question, the $p$-values are
+adjusted for multiple testing with the Holm procedure.
+
+A non-significant difference does not by itself show that the two
+designs perform alike, since it can also result from too little data.
+Equivalence is therefore tested separately with the two one-sided tests
+(TOST) procedure (Schuirmann, 1987; Lakens, 2017). The designs are
+considered equivalent when both one-sided tests reject, at the 5\,\%
+level, a mean difference in optimality gap of at least one margin in
+either direction. This is the same as requiring the 90\,\% confidence
+interval of the mean paired difference to lie inside the margin. The
+primary margin is $\pm 1$ percentage point. With a mean optimal cost of
+\EUR{0.85} per scenario, one percentage point amounts to less than one
+cent per household and day, which a household would not notice on its
+bill. The paired $t$ version of the test concerns the mean difference and
+is the primary one. A Wilcoxon version, which concerns the typical
+scenario, is reported alongside because the differences are
+heavy-tailed. The equivalence test and its margin were chosen after the
+exploratory results had been seen. The margin is therefore fixed in the
+pre-registration for the confirmatory run, and margins of 0.5 and 2
+percentage points are reported alongside to keep the choice
+transparent.
+
+Efficiency is compared with the same paired Wilcoxon test on the
+per-scenario means of input tokens, output tokens, API cost, latency and
+the number of tool calls per run. Each agent design is also compared with
+the smart timer and the no-tools baseline using the paired Wilcoxon test
+on the optimality gap.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{System Design and Implementation}
@@ -627,32 +824,107 @@ pipeline must complete scheduling within 60 seconds and under \$0.10
 API cost per scenario using GPT-4o-mini.
 
 \section{Architecture overview}
+\label{sec:architecture}
 
-The artifact is a LangGraph-based hierarchical pipeline organized as a
-directed state graph with four nodes, each implementing a ReAct agent or
-coordination logic. Outputs from each node are written to a shared
-LangGraph state object that persists across the full pipeline execution.
-The pipeline executes in the following sequence: the Orchestrator
-receives the user's scheduling request and initializes the shared state;
-the Appliance Profiler classifies flexible appliances; the Price-Aware
-Scheduler proposes cost-optimal start times; the Conflict Resolver
-eliminates overlapping high-load windows; and the Orchestrator
-synthesizes the final schedule for the user.
+The artifact is a LangGraph state graph in which each node is either a
+ReAct agent or a coordination step. All nodes read from and write to a
+shared state object that persists for the whole run
+(Table~\ref{tab:state}). The Orchestrator first turns the household's
+request into a task brief listing the appliances to schedule. The
+Appliance Profiler then classifies the appliances and records the power
+draw, cycle duration and time window of every flexible one. The
+Price-Aware Scheduler proposes a start time for each flexible appliance
+from the price curve, and the Conflict Resolver checks the proposal
+against the household peak load limit and staggers start times where
+appliances overlap.
 
-Figure~\ref{fig:arch} presents the complete pipeline architecture. Solid
-arrows indicate primary data flow; dashed arrows indicate state updates
-to the shared LangGraph state object. The single-agent baseline (dashed
-box, top right) receives identical inputs and is evaluated in parallel
-for comparison.
+The graph is not a single pass. After the Resolver, the Orchestrator's
+verification step checks the resolved schedule for three kinds of
+problems: remaining peak load conflicts, detected with the same conflict
+tool that the Resolver uses; requested appliances that have no start
+time; and start times outside the user's time window. If any problem
+remains, the step returns a description of it to the Scheduler, which proposes a revised schedule that the Resolver
+checks again. The Scheduler and Resolver therefore run at most twice,
+that is, with one feedback round; the schedule is then finalised, and
+the Orchestrator writes a short summary for the
+household that states the result of the final peak load check. The
+original request travels in the shared state together with the
+Orchestrator's brief, so an appliance missing from the brief can still
+be profiled and scheduled. Figure~\ref{fig:arch} shows the architecture,
+and Table~\ref{tab:state} lists the fields of the shared state.
 
 \begin{figure}[h!]
-  \centering
-  % trim removes the image's built-in title (the caption carries it)
-  \includegraphics[width=\textwidth, trim=0 0 0 135, clip]%
-    {attachments/Hierarchical ReAct Multi-Agent Pipeline Architecture.png}
-  \caption{Hierarchical ReAct Multi-Agent Pipeline Architecture.}
-  \label{fig:arch}
+\centering
+\begin{tikzpicture}[
+  font=\sffamily\footnotesize,
+  node distance=4.5mm,
+  agent/.style={draw, rounded corners=2pt, align=center, text width=6.2cm, inner sep=4pt, fill=#1},
+  agent/.default=white,
+  io/.style={draw, rounded corners=2pt, align=center, text width=6.2cm, inner sep=3pt, fill=gray!10},
+  gate/.style={draw, diamond, aspect=3.2, align=center, inner sep=1pt, fill=orange!12},
+  ref/.style={draw, dashed, rounded corners=2pt, align=center, text width=3.7cm, inner sep=3pt},
+  flow/.style={-{Latex[length=2mm]}, thick},
+  upd/.style={-{Latex[length=1.5mm]}, dashed, gray!70!black},
+]
+\node[io] (req) {Household request: appliances to run, ready times and deadlines};
+\node[agent=blue!8, below=of req] (orch) {\textbf{Orchestrator (plan)}\\
+  parses the request into a task brief};
+\node[agent=green!8, below=of orch] (prof) {\textbf{Appliance Profiler}\\
+  classifies appliances; power, duration, window\\
+  \textit{read\_household\_data, classify\_appliance}};
+\node[agent=yellow!12, below=of prof] (sched) {\textbf{Price-Aware Scheduler}\\
+  cheapest start time per appliance\\
+  \textit{get\_spot\_prices, calculate\_schedule\_cost, find\_cheapest\_window}};
+\node[agent=red!8, below=of sched] (res) {\textbf{Conflict Resolver}\\
+  staggers overlapping high-load cycles\\
+  \textit{sum\_load, detect\_conflicts, adjust\_schedule}};
+\node[gate, below=5mm of res] (gate) {\textbf{Verification}\\peak conflict, missing\\appliance or start\\outside window?};
+\node[agent=blue!8, below=9mm of gate] (fin) {\textbf{Orchestrator (finalise)}\\
+  final schedule and summary for the household};
+\draw[flow] (req) -- (orch);
+\draw[flow] (orch) -- (prof);
+\draw[flow] (prof) -- (sched);
+\draw[flow] (sched) -- (res);
+\draw[flow] (res) -- (gate);
+\draw[flow] (gate) -- node[right=2mm, align=left, font=\sffamily\scriptsize] {no, or feedback round\\already used} (fin);
+\draw[flow] (gate.west) -- ++(-0.9,0) |- node[pos=0.25, left, align=right, font=\sffamily\scriptsize] {yes:\\feedback\\to Scheduler} (sched.west);
+% the shared state spans the four agents; every agent writes to it
+\coordinate (stateNW) at ($(orch.north east)+(0.8,0)$);
+\coordinate (stateSE) at ($(res.south east)+(3.3,0)$);
+\node[draw, dashed, rounded corners=2pt, fill=gray!5, inner sep=0pt, fit=(stateNW)(stateSE)] (state) {};
+\node[align=center, text width=2.3cm, font=\sffamily\scriptsize] at (state.center)
+      {\textbf{\footnotesize Shared LangGraph state}\\[3pt] request, brief,\\ profile, proposal,\\ resolution,\\
+       verification feedback,\\ iteration count,\\ final schedule\\[3pt] (Table~\ref{tab:state})};
+\foreach \n in {orch, prof, sched, res} \draw[upd] (\n.east) -- (\n.east -| state.west);
+\node[ref, below=10mm of fin] (milp) {\textbf{MILP ground truth}\\optimal schedule (PuLP/CBC)};
+\node[ref, left=3mm of milp] (single) {\textbf{Single-agent baseline}\\one ReAct agent, all eight tools};
+\node[ref, right=3mm of milp] (naive) {\textbf{Naive schedule}\\every appliance starts when ready};
+\node[above=1mm of milp, font=\sffamily\scriptsize\itshape] {reference systems: same scenarios, same scoring function};
+\end{tikzpicture}
+\caption{Architecture of the hierarchical ReAct multi-agent pipeline.}
+\label{fig:arch}
 \end{figure}
+
+\begin{table}[h!]
+\caption{Fields of the shared LangGraph state.}
+\label{tab:state}
+\small
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+Field & Written by & Content \\
+\midrule
+request & caller & the household's scheduling request in natural language \\
+brief & Orchestrator & appliance identifiers to schedule and stated constraints \\
+profile & Profiler & per appliance: type, flexible or fixed, peak power, cycle duration, earliest start and deadline \\
+proposal & Scheduler & start time per appliance, estimated cost and a short justification \\
+resolution & Resolver & conflict-free start times, whether conflicts remain, and the changes made \\
+verification feedback & verification step & remaining peak conflicts, appliances without a start time and start times outside the user window; empty when the schedule passes \\
+iterations & verification step & number of Scheduler--Resolver passes completed (at most two) \\
+final, summary & Orchestrator & final start times and the summary shown to the household \\
+tool calls, recoveries, errors & all nodes & counters and error messages recorded for the evaluation \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Agent specifications}
 
@@ -664,9 +936,9 @@ all scenario types.
 
 The \textbf{Appliance Profiler} reads the household consumption data and
 classifies each appliance by shiftability. The classification
-distinguishes flexible loads --- those with long cycle durations and
-user-defined completion windows such as washing machines and dishwashers
---- from fixed loads such as refrigerators and microwaves. The Profiler
+distinguishes flexible loads, which have long cycle durations and
+user-defined completion windows (washing machines, dishwashers and tumble
+dryers), from fixed loads such as refrigerators and microwaves. The Profiler
 outputs a structured appliance profile containing power draw in Watts,
 typical cycle duration in minutes, and the constraint window for each
 flexible load.
@@ -684,54 +956,152 @@ threshold. If conflicts exist, the Resolver proposes staggered start
 time adjustments that eliminate the conflict while minimizing the
 increase in total schedule cost.
 
+Each specialist is a ReAct agent that may only call its own tools and
+must end with a structured output (the appliance profile, the proposed
+schedule or the resolved schedule), which is validated against a schema
+before it is written to the shared state. The agents share a budget of
+75 graph steps, divided by workload: 15 for the Profiler, 35 for the
+Scheduler and 25 for the Resolver. The Scheduler received the largest
+share after the pilot runs showed that it performs most of the tool
+calls. When a model replies in prose instead of producing the required
+structured output, the agent is resumed from its last state and asked
+once more to return the output, at most twice. This rule applies
+identically to every agent and model, and every such recovery is
+recorded.
+
+Table~\ref{tab:tools} lists the eight tools. They are deterministic
+functions over the scenario data, so every number an agent reasons with
+comes from a calculation rather than from the language model. No tool
+solves the whole problem: \texttt{find\_cheapest\_window} considers one
+appliance at a time and ignores both the other appliances and the peak
+load limit, so coordinating the appliances is left to the agents.
+
+\begin{table}[h!]
+\caption{Tools available to the agents.}
+\label{tab:tools}
+\small
+\begin{tabularx}{\textwidth}{>{\ttfamily\footnotesize\raggedright}p{4.3cm}lX}
+\toprule
+\normalfont Tool (inputs) & Agent & Output and logic \\
+\midrule
+read\_household\_data() & Profiler &
+  Peak load limit, measured base load range, and for each appliance its
+  type, cycle duration, energy, peak power and user window (flexible) or
+  rated power (fixed). \\[2pt]
+classify\_appliance(\allowbreak appliance\_id) & Profiler &
+  Flexible or fixed, with a reason; washing machines, dishwashers and
+  tumble dryers are shiftable cycle loads. \\[2pt]
+get\_spot\_prices(\allowbreak from\_time, to\_time) & Scheduler &
+  Consumer price in c/kWh for every 15-minute slot, optionally for a time
+  range. \\[2pt]
+calculate\_\allowbreak schedule\_cost(\allowbreak appliance\_id, start\_time) & Scheduler &
+  Cost of one cycle started at the given time (power profile $\times$
+  price $\times$ 0.25\,h, summed over the cycle), its end time, and
+  whether it lies within the user window. \\[2pt]
+find\_cheapest\_\allowbreak window(\allowbreak appliance\_id, top\_k) & Scheduler &
+  The $k$ cheapest start times within the user window for one appliance,
+  found by evaluating every valid start. \\[2pt]
+sum\_load(schedule) & Resolver &
+  Maximum total household load (base load plus scheduled cycles) and the
+  five highest slots, compared with the limit. \\[2pt]
+detect\_conflicts(\allowbreak schedule) & Resolver &
+  Time ranges in which the total load exceeds the limit and the
+  appliances running then, or confirmation that there is no conflict. \\[2pt]
+adjust\_schedule(\allowbreak schedule, appliance\_id, new\_start\_time) & Resolver &
+  Moves one appliance and reports the cost change, the window check and
+  any remaining overload. Without a start time, it moves the appliance to
+  its cheapest start at which it causes no overload, keeping the others
+  fixed, and lists alternatives. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Single-agent baseline}
 
-The single-agent baseline is implemented using LangGraph's
-\texttt{create\_react\_agent} function with a single LLM instance and
-access to all tools available to the three specialist agents combined:
-the smart home data reader, appliance classifier, spot price tool,
-schedule calculator, cheapest window finder, load summation tool,
-conflict detector, and schedule adjuster. The baseline receives the same
-input prompt as the multi-agent pipeline. This design ensures a fair
-comparison: the only controlled difference between baseline and artifact
-is the presence or absence of role specialization.
+The single-agent baseline is one ReAct agent, built with LangChain's
+\texttt{create\_agent} on the LangGraph runtime, with access to all eight
+tools of Table~\ref{tab:tools}. It receives the same household request as
+the pipeline, and its system prompt is assembled from the same role
+instructions that the three specialists receive, so both designs have
+the same domain knowledge. Its step budget of 75 equals the combined
+budget of the specialists, and the same structured output schema and
+recovery rule apply. The only controlled difference between the baseline
+and the artifact is therefore the presence or absence of role
+specialization.
 
-The baseline is validated on five pilot scenarios before the full
-evaluation. Validation confirms that the baseline produces plausible but
-suboptimal schedules on simple scenarios and exhibits the coordination
-failures documented by Jonah et al. (2026) on complex multi-appliance
-scenarios, providing empirical motivation for the multi-agent design.
+The baseline and the pipeline were validated on six pilot scenarios, one
+per scenario type, before the full evaluation (Section~\ref{sec:demonstration}).
 
 \section{MILP ground truth solver}
 
-The MILP solver is implemented using PuLP and computes the
-mathematically optimal schedule for each scenario. The solver minimizes
-total daily electricity cost subject to three constraint types: each
-flexible appliance must complete exactly one cycle within its constraint
-window; no appliance cycle may be interrupted once started; and total
-household load at any time step must not exceed the household peak
-threshold. The solver is validated on the same five pilot scenarios as
-the baseline before the full evaluation begins.
+The MILP solver computes the mathematically optimal schedule for each
+scenario. The day is divided into slots $t \in \mathcal{T} =
+\{0, \dots, 95\}$ of $\Delta = 0.25$\,h. Each flexible appliance
+$a \in \mathcal{A}$ has a power profile $p_{a,0}, \dots, p_{a,d_a-1}$ in
+kW over its cycle of $d_a$ slots, an earliest start slot $e_a$ and a
+deadline slot $\ell_a$ by which the cycle must end. Its admissible start
+slots are
+\[
+\mathcal{S}_a = \{\, s \in \mathbb{Z} : e_a \le s \le \ell_a - d_a \,\}.
+\]
+The model uses binary start variables $x_{a,s} \in \{0,1\}$, equal to one
+if appliance $a$ starts in slot $s \in \mathcal{S}_a$. With the consumer
+price $\pi_t$ in \euro/kWh, the base load $b_t$ in kW and the household
+peak limit $\bar{P}$ in kW, the model is
+\begin{align}
+\min_{x} \quad & \sum_{a \in \mathcal{A}} \sum_{s \in \mathcal{S}_a}
+  c_{a,s}\, x_{a,s},
+  \qquad c_{a,s} = \Delta \sum_{k=0}^{d_a-1} p_{a,k}\, \pi_{s+k},
+  \label{eq:milp-objective} \\
+\text{s.t.} \quad & \sum_{s \in \mathcal{S}_a} x_{a,s} = 1
+  \qquad \forall a \in \mathcal{A},
+  \label{eq:milp-one-start} \\
+& b_t + \sum_{a \in \mathcal{A}} \; \sum_{\substack{s \in \mathcal{S}_a \\ 0 \le t-s < d_a}}
+  p_{a,t-s}\, x_{a,s} \le \bar{P}
+  \qquad \forall t \in \mathcal{T},
+  \label{eq:milp-peak} \\
+& x_{a,s} \in \{0,1\}
+  \qquad \forall a \in \mathcal{A},\ s \in \mathcal{S}_a .
+  \nonumber
+\end{align}
+The objective~\eqref{eq:milp-objective} is the consumer cost of the
+flexible cycles, with $c_{a,s}$ the precomputed cost of starting
+appliance $a$ in slot $s$. Constraint~\eqref{eq:milp-one-start} requires
+exactly one cycle per appliance, and constraint~\eqref{eq:milp-peak}
+keeps the total household load within the peak limit in every slot.
+Because a decision fixes the start of a whole cycle, each cycle runs
+without interruption once started, and restricting the variables to
+$\mathcal{S}_a$ keeps every cycle within its user window, so neither
+property needs a separate constraint. The model is solved with PuLP and
+the CBC solver in well under a second per scenario. Its correctness was
+verified against exhaustive enumeration of all start combinations on
+small scenarios, and it is also used during benchmark construction to
+confirm that every scenario has a feasible schedule.
 
 \section{Technology stack}
 
-Table~\ref{tab:stack} summarizes the technology stack used in this
-thesis.
+Table~\ref{tab:stack} lists the software used to build and evaluate the
+artifact, with the versions used for the reported results. All components
+except the commercial language model are open source. The API cost of
+the commercial model is an outcome of the evaluation and is reported with
+the results in Chapter~5.
 
 \begin{table}[h!]
 \caption{Technology stack.}
 \label{tab:stack}
 \small
-\begin{tabularx}{\textwidth}{llX}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}p{4.0cm}X}
 \toprule
-Component & Tool & Cost \\
+Component & Tool and version & Purpose \\
 \midrule
-Orchestration framework & LangGraph v1.0+ (stable, Oct 2025) & Free, open source \\
-LLM --- commercial & GPT-4o-mini via OpenAI API & Under \$3 for all 48 scenarios \\
-LLM --- open-weight & gpt-oss-20b via Ollama, local laptop GPU/CPU & Free --- no API cost \\
-MILP solver & PuLP with CBC (Python) & Free, open source \\
-Agent tracing & LangSmith free tier & Free --- native LangGraph integration \\
-Statistical analysis & SciPy (Python) & Free --- Wilcoxon test and effect size $r$ \\
+Programming language & Python 3.12 & implementation of the artifact, baselines and analysis \\[2pt]
+Agent orchestration & LangGraph 1.2, LangChain 1.4 & state graph of the pipeline, ReAct agents, tool calling and schema-validated outputs \\[2pt]
+Commercial LLM & GPT-4o-mini (snapshot 2024-07-18), OpenAI API & cloud model for both designs \\[2pt]
+Open-weight LLM & gpt-oss-20b, Ollama 0.34 & open-weight model hosted on local hardware (SQ3) \\[2pt]
+MILP solver & PuLP 3.3 with CBC & optimal reference schedules \\[2pt]
+Data processing & pandas 3.0, NumPy 2.5 & REFIT cycle extraction, price series and scenario construction \\[2pt]
+Tracing & LangSmith & recording the reasoning trace and tool calls of every run \\[2pt]
+Statistics & SciPy 1.18 & Wilcoxon signed-rank test, effect size and Spearman correlation \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -752,7 +1122,11 @@ the demonstration of the pipeline on representative scenarios (DSR
 Phase 4). Sections~\ref{sec:quantitative} and~\ref{sec:statistics}
 compare the optimality gaps of the multi-agent pipeline and the
 single-agent baseline across all scenarios and test the difference with
-the Wilcoxon signed-rank test. Section~\ref{sec:per-appliance} breaks
+the Wilcoxon signed-rank test. Section~\ref{sec:baselines} compares
+both designs with two simpler baselines, a rule-based smart timer and a
+language model without tools. Section~\ref{sec:confirmatory} repeats
+the tests of H1 and H2 on the held-out fifteen-minute benchmark, as fixed
+in the pre-registration. Section~\ref{sec:per-appliance} breaks
 the cost savings down by appliance type. The agent results in
 Sections~\ref{sec:demonstration}--\ref{sec:per-appliance} are pending
 the full evaluation runs.
@@ -879,22 +1253,22 @@ conflict resolution rate.
 \toprule
 Type & Price regime & Appliances & Inst. & Research purpose \\
 \midrule
-A & Stable --- low volatility &
+A & Stable, low volatility &
   2 appliances: dishwasher + washing machine & 8 &
-  Baseline check --- both systems should perform well \\[3pt]
-B & Stable --- low volatility &
+  Baseline check: both systems should perform well \\[3pt]
+B & Stable, low volatility &
   3 appliances: dishwasher + washing machine + tumble dryer & 8 &
   Tests three-way conflict resolution \\[3pt]
 C & Moderate volatility &
   3 to 5 appliances mixed & 8 &
   Tests price-signal responsiveness \\[3pt]
-D & High volatility --- winter peak &
+D & High volatility, winter peak &
   5 appliances, overlapping constraints & 8 &
   Most financially consequential condition \\[3pt]
-E & Price spike --- Dec 2022 crisis &
+E & Price spike (Dec 2022 crisis) &
   3 appliances, ready 0--2\,h before the daily price peak, 4--8\,h slack & 8 &
   Extreme Finnish price event robustness \\[3pt]
-F & Negative spot price --- surplus &
+F & Negative spot price (surplus) &
   4 appliances, flexible windows & 8 &
   Tests exploitation of zero-cost windows \\
 \bottomrule
@@ -984,7 +1358,142 @@ Work in progress.
 
 \section{Statistical analysis}
 \label{sec:statistics}
-Work in progress.
+
+% Hand-typed from `hems analyze` (results/tables/equivalence.csv, efficiency_tests.csv),
+% GPT-4o-mini only. Update when the gpt-oss-20b runs are complete.
+This section reports the tests described in Section~\ref{sec:evaluation}
+for GPT-4o-mini on the main benchmark, with the mean over three runs per
+scenario as the paired observation ($N = 48$). These results are
+exploratory; the pre-registered confirmatory results are reported in
+Section~\ref{sec:confirmatory}. The results for gpt-oss-20b are added
+when its runs are complete.
+
+\paragraph{Schedule quality.} The multi-agent pipeline reached a mean
+optimality gap of 1.25\,\% and the single agent 1.43\,\%. The Wilcoxon
+signed-rank test finds no significant difference ($W = 449$,
+$Z = -0.14$, $p = 0.89$, $r = 0.02$), and the median paired difference
+is zero, because both designs reach the same cost in most scenarios. The
+equivalence test shows that this is not merely a lack of evidence. The
+mean paired difference is $-0.18$ percentage points, with a 90\,\%
+confidence interval of $[-0.71, 0.35]$, which lies inside the primary
+margin of $\pm 1$ percentage point (Table~\ref{tab:equivalence}). The two
+designs are therefore equivalent in schedule quality within one
+percentage point of the optimum. At the narrower margin of 0.5
+percentage points the $t$ version of the test does not conclude
+equivalence, because a few scenarios with large differences in either
+direction widen the interval, although the Wilcoxon version does.
+
+\begin{table}[h!]
+\caption{Equivalence test (TOST) of the optimality gap, multi-agent vs.\ single-agent (GPT-4o-mini, $N = 48$).}
+\label{tab:equivalence}
+\small
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccc}
+\toprule
+Margin & $p$, paired $t$ TOST & $p$, Wilcoxon TOST & Equivalent \\
+\midrule
+$\pm 0.5$ percentage points & 0.156 & $<$\,0.001 & No \\
+$\pm 1$ percentage point (primary) & 0.006 & $<$\,0.001 & Yes \\
+$\pm 2$ percentage points & $<$\,0.001 & $<$\,0.001 & Yes \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\paragraph{Efficiency.} The two designs differ significantly in every
+efficiency measure (Table~\ref{tab:efficiency-tests}). The pipeline used
+34\,\% fewer input tokens, because each specialist works with a short
+context and only its own tools, while the single agent carries the
+entire conversation and all eight tool descriptions through every step.
+It produced 83\,\% more output tokens and made 23\,\% more tool calls,
+since four agents each write their own structured output and call their
+tools separately. Input tokens dominate the price, so the API cost per run was
+21\,\% lower for the pipeline, and lower in 35 of the 48 scenarios. The
+sequential hand-offs made the pipeline 69\,\% slower, with a mean of
+21.4 seconds against 12.7 seconds, and it was faster in only two
+scenarios.
+
+\begin{table}[h!]
+\caption{Efficiency per run, multi-agent vs.\ single-agent (GPT-4o-mini, means over $N = 48$ scenarios, Wilcoxon signed-rank test).}
+\label{tab:efficiency-tests}
+\small
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
+\toprule
+Measure & \makecell{Single\\agent} & \makecell{Multi-\\agent} & Difference & \makecell{Multi-agent\\lower} & $p$ & $r$ \\
+\midrule
+Input tokens & 21\,686 & 14\,292 & $-34$\,\% & 43/48 & $<$\,0.001 & 0.79 \\
+Output tokens & 661 & 1\,208 & $+83$\,\% & 1/48 & $<$\,0.001 & 0.87 \\
+Total tokens & 22\,347 & 15\,500 & $-31$\,\% & 40/48 & $<$\,0.001 & 0.75 \\
+API cost (USD) & 0.0037 & 0.0029 & $-21$\,\% & 35/48 & $<$\,0.001 & 0.54 \\
+Latency (s) & 12.7 & 21.4 & $+69$\,\% & 2/48 & $<$\,0.001 & 0.86 \\
+Tool calls & 16.5 & 20.3 & $+23$\,\% & 1/48 & $<$\,0.001 & 0.81 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Taken together, decomposing the task into specialist agents did not
+lower the cost of the schedules, but it reached the same quality with
+about a third fewer tokens and a fifth lower inference cost, at the price
+of a longer response time.
+
+\section{Comparison with simpler baselines}
+\label{sec:baselines}
+
+% Hand-typed from `hems analyze --runs results/runs.jsonl results/baselines.jsonl` (GPT-4o-mini).
+Table~\ref{tab:baselines} compares the two agent designs with the smart
+timer and the no-tools baseline. All systems that use a language model
+use GPT-4o-mini.
+
+\begin{table}[h!]
+\caption{Agent designs and simpler baselines (GPT-4o-mini, 48 scenarios).}
+\label{tab:baselines}
+\small
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
+\toprule
+System & \makecell{Feasible\\runs} & \makecell{Mean\\gap} & \makecell{Median\\gap} & \makecell{Gap,\\type D} & \makecell{Savings\\captured} & \makecell{Time\\per run} \\
+\midrule
+Smart timer (no language model) & 48/48 & 0.23\,\% & 0.00\,\% & 1.2\,\% & 99\,\% & $<$\,0.01\,s \\
+Multi-agent pipeline & 144/144 & 1.25\,\% & 0.01\,\% & 5.9\,\% & 94\,\% & 21.4\,s \\
+Single agent & 143/144 & 1.43\,\% & 0.00\,\% & 6.5\,\% & 93\,\% & 12.7\,s \\
+No-tools language model & 126/144 & 23.1\,\% & 11.9\,\% & 66.0\,\% & $-17$\,\% & 2.0\,s \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Without tools, GPT-4o-mini schedules poorly. Its mean optimality gap is
+23.1\,\%, and 18 of its 144 schedules are infeasible: 14 exceed the peak
+limit and 4 start a cycle outside its window. A further 22 of its
+feasible schedules cost more than starting every appliance as soon as it
+is ready, so on average it captures less than none of the achievable
+saving. Both agent designs are significantly better (Wilcoxon
+$p < 0.001$, $r = 0.87$ for each), with median paired differences of
+10.8 percentage points for the single agent and 11.4 for the pipeline.
+The same model that fails to schedule from a single prompt comes close to
+the optimum when it can query prices, costs and loads through tools and
+check its own work. Tool use, rather than the language model's own
+calculation, is therefore what makes the agents viable.
+
+The smart timer, however, outperforms both agent designs. It finds a
+feasible schedule in every scenario, is optimal in 30 of the 48, and its
+largest gap is 3.7\,\% (D04). Both agent designs have significantly
+larger gaps than the timer (single agent $p < 0.001$, $r = 0.63$;
+pipeline $p < 0.001$, $r = 0.68$). The difference is concentrated in
+type D, where the timer's mean gap is 1.2\,\% against 5.9\,\% for the
+pipeline and 6.5\,\% for the single agent. The median paired differences
+are small (0.002 percentage points for the single agent and 0.017 for the
+pipeline), because in most scenarios all three systems reach the optimum
+or come very close to it. The timer needs no language model, runs in
+about two milliseconds and has no inference cost. In this benchmark,
+where the power profile and window of every appliance are known exactly
+and the horizon is one day, placing the appliances one at a time is
+almost always enough. The agents come within about one percentage point
+of this rule but do not improve on it. What they add is the ability to
+start from a request written in natural language rather than from
+structured appliance data, and to explain the schedule they produce. The
+Discussion returns to what this implies for the artifact.
+
+\section{Confirmatory evaluation}
+\label{sec:confirmatory}
+Work in progress. This section will report the pre-registered tests of
+H1 and H2 on the held-out fifteen-minute benchmark.
 
 \section{Per-appliance breakdown}
 \label{sec:per-appliance}
@@ -994,12 +1503,41 @@ Work in progress.
 \chapter{Discussion}
 
 Work in progress. This chapter will interpret the results in relation to
-the three research questions, connect findings to the agentic AI trends
+the research questions, connect findings to the agentic AI trends
 reviewed in Chapter~2, and address the limitations and directions for
 future research.
 
 \section{Interpretation of research questions}
 Work in progress.
+
+\section{Agents compared with simpler schedulers}
+
+The comparison with simpler baselines in Section~\ref{sec:baselines}
+places the results in context, and two findings stand out. First, tool
+use is essential. The same language model that captures more than
+90\,\% of the achievable saving as an agent does worse than no
+scheduling at all when it has to work out the schedule in a single
+answer. This agrees with the motivation for ReAct (Yao et al., 2023),
+in which reasoning is grounded in the observations returned by actions
+instead of being carried out unaided. It indicates that the role of the
+language model in the pipeline is to decide which calculations to
+request and how to combine their results, not to perform the
+calculations itself.
+
+Second, on well-specified single-day problems a rule-based smart timer
+is slightly better than either agent design and costs almost nothing to
+run. For a household whose appliances and time windows are already known
+to a home energy management system in structured form, the evidence
+therefore does not support replacing such a rule with a language model
+agent on cost grounds. The case for the agents rests on the interface
+instead. They accept a request written in everyday language, check it
+against the household data and explain the resulting schedule, while
+keeping its cost within about one percentage point of the rule. The
+benchmark does not test this advantage directly, because its requests
+are regular enough to be turned into the timer's input without
+difficulty. Requests that are informal, incomplete or contradictory, and
+a measure of how accurately each system turns them into constraints,
+would be the most direct way to establish where the agents add value.
 
 \section{Limitations}
 
@@ -1017,14 +1555,20 @@ may produce different schedules. To mitigate this, each scenario is run
 three times and results are averaged, but residual variance from
 non-determinism remains. Fourth, the study evaluates only three
 appliance types; generalizing findings to electric vehicle chargers,
-heat pumps, or battery storage requires additional evaluation.
+heat pumps, or battery storage requires additional evaluation. Fifth,
+the benchmark requests are generated from a template and state the
+window of every appliance explicitly. They therefore do not test the
+agents' ability to interpret informal requests, which is where their
+advantage over rule-based scheduling is expected, and on these
+well-specified problems a rule-based smart timer outperforms both agent
+designs (Section~\ref{sec:baselines}).
 
 \section{Future research}
 
 Several directions for future research emerge from this study. First,
-extending the pipeline to include thermal loads --- electric space
-heating, heat pumps, and domestic hot water systems --- addresses the
-gap explicitly identified by El Makroum et al. (2026). Second,
+extending the pipeline to thermal loads such as electric space heating,
+heat pumps and domestic hot water systems would address the gap
+explicitly identified by El Makroum et al. (2026). Second,
 implementing the price API and data reader as MCP servers would enable
 reuse by future researchers without custom integration code,
 contributing to the emerging standardization of agent tool interfaces.
@@ -1033,12 +1577,16 @@ spot-price contracts would provide ecological validity that
 simulation-based evaluation cannot. Fourth, extending the multi-LLM
 comparison to include Qwen-3-32B and Phi-4 would provide a more
 complete picture of the SLM landscape for residential scheduling tasks.
+Fifth, a benchmark of informal household requests with annotated
+constraints would test the agents where a rule-based scheduler cannot
+operate, by measuring how accurately each system turns such requests
+into a correct schedule.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Conclusions}
 
 Work in progress. This chapter will summarize the main contributions of
-the thesis, explicitly answer RQ, SQ1, and SQ2 using evidence from
+the thesis, explicitly answer the RQ and SQ1 to SQ4 using evidence from
 Chapter~5, and state the implications for academic research on
 multi-agent LLM systems and practical deployment of intelligent demand
 flexibility tools in Finnish residential settings.
@@ -1086,6 +1634,11 @@ collaborative framework. arXiv:2308.00352.
 Jonah, N., et al. (2026). LLMs for agentic home energy management.
 arXiv:2607.04569.
 
+Lakens, D. (2017). Equivalence tests: A practical primer for \textit{t}
+tests, correlations, and meta-analyses. \textit{Social Psychological and
+Personality Science, 8}(4), 355--362.
+\url{https://doi.org/10.1177/1948550617697177}
+
 March, S. T., \& Smith, G. F. (1995). Design and natural science
 research on information technology. \textit{Decision Support Systems,
 15}(4), 251--266.
@@ -1122,6 +1675,12 @@ Peffers, K., Tuunanen, T., Rothenberger, M. A., \& Chatterjee, S.
 (2007). A design science research methodology for information systems
 research. \textit{Journal of Management Information Systems, 24}(3),
 45--77.
+
+Schuirmann, D. J. (1987). A comparison of the two one-sided tests
+procedure and the power approach for assessing the equivalence of
+average bioavailability. \textit{Journal of Pharmacokinetics and
+Biopharmaceutics, 15}(6), 657--680.
+\url{https://doi.org/10.1007/BF01068419}
 
 Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., \& Cao,
 Y. (2023). ReAct: Synergizing reasoning and acting in language models.

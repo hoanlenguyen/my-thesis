@@ -49,7 +49,7 @@ def to_booktabs(df: pd.DataFrame, caption: str, label: str) -> str:
 
 
 def gap_boxplot(scenario_means: pd.DataFrame, path: Path) -> None:
-    models = sorted(scenario_means.model.unique())
+    models = sorted(scenario_means[scenario_means.system.isin(SYSTEM_LABELS)].model.unique())
     fig, axes = plt.subplots(1, len(models), figsize=(6 * len(models), 3.6), squeeze=False, sharey=True)
     for ax, model in zip(axes[0], models):
         sub = scenario_means[scenario_means.model == model]
@@ -69,7 +69,7 @@ def gap_boxplot(scenario_means: pd.DataFrame, path: Path) -> None:
     plt.close(fig)
 
 
-def write_report(runs_path: str | Path, scenarios: dict[str, Scenario], out_dir: str | Path) -> dict[str, pd.DataFrame]:
+def write_report(runs_path: str | Path | list[str | Path], scenarios: dict[str, Scenario], out_dir: str | Path) -> dict[str, pd.DataFrame]:
     out = Path(out_dir)
     (out / "tables").mkdir(parents=True, exist_ok=True)
     (out / "figures").mkdir(parents=True, exist_ok=True)
@@ -86,8 +86,11 @@ def write_report(runs_path: str | Path, scenarios: dict[str, Scenario], out_dir:
         "gap_by_type": metrics.summary_by_type(means),
         "wilcoxon": stats.compare_systems(means, "gap_pct"),
         "wilcoxon_savings_captured": stats.compare_systems(means, "savings_captured"),
+        "equivalence": stats.equivalence(means, "gap_pct"),
+        "baselines": stats.compare_to_baselines(means, "gap_pct"),
         "conflict_resolution": metrics.conflict_resolution_rate(scored, scenarios),
         "efficiency": metrics.efficiency(scored),
+        "efficiency_tests": stats.efficiency_tests(means),
         "per_appliance": appliance_rows.groupby(["model", "system", "kind"]).saving_eur.agg(["mean", "std", "count"]).reset_index()
         if not appliance_rows.empty
         else pd.DataFrame(),
@@ -97,6 +100,9 @@ def write_report(runs_path: str | Path, scenarios: dict[str, Scenario], out_dir:
         "gap_by_type": ("Mean optimality gap (\\%) by scenario type.", "tab:gap-by-type"),
         "wilcoxon": ("Wilcoxon signed-rank test, multi- vs single-agent optimality gap.", "tab:wilcoxon"),
         "wilcoxon_savings_captured": ("Wilcoxon signed-rank test on savings captured.", "tab:wilcoxon-savings"),
+        "baselines": ("Agent designs vs. smart-timer and no-tools LLM baselines (optimality gap, Wilcoxon).", "tab:baselines"),
+        "equivalence": ("Equivalence test (TOST), multi- vs single-agent optimality gap.", "tab:equivalence"),
+        "efficiency_tests": ("Wilcoxon signed-rank test, multi- vs single-agent efficiency per run.", "tab:efficiency-tests"),
         "conflict_resolution": ("Conflict resolution rate in scenarios requiring coordination.", "tab:conflicts"),
         "efficiency": ("Feasibility, latency, tokens and API cost per run.", "tab:efficiency"),
         "per_appliance": ("Mean saving per appliance cycle vs. no scheduling (EUR).", "tab:per-appliance"),
