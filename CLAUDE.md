@@ -30,6 +30,7 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 | `data/pilot/` | synthetic SYN-* scenarios — development only, never thesis results |
 | `data/raw/` | gitignored: REFIT CSVs (6.5 GB), price CSVs |
 | `results/` | `runs.jsonl` / `pilot_real.jsonl` (+ archived `*_vN.jsonl`), `resolution/`, tables |
+| `demo/` | Nuxt 4 demo replaying recorded results (theme/components from Low-carbon-alerts); data from `tools/export_demo_data.py` → `demo/public/data`; `pnpm dev` on :3001 |
 
 ## Commands
 

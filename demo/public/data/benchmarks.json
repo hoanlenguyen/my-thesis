@@ -19,13 +19,13 @@
     "system": "multi",
     "label": "Multi-agent pipeline",
     "model": "gpt-oss-20b",
-    "runs": 57,
+    "runs": 61,
     "feasible": 16,
-    "gapMean": 19.146,
-    "savingsCaptured": 0.1561,
-    "latencyMean": 459.18,
+    "gapMean": 18.161,
+    "savingsCaptured": 0.155,
+    "latencyMean": 494.14,
     "usdPerRun": 0.0,
-    "tokensIn": 44042.0
+    "tokensIn": 43915.0
    },
    {
     "system": "single",
@@ -43,13 +43,13 @@
     "system": "single",
     "label": "Single agent",
     "model": "gpt-oss-20b",
-    "runs": 58,
-    "feasible": 48,
-    "gapMean": 7.938,
-    "savingsCaptured": 0.4254,
-    "latencyMean": 143.36,
+    "runs": 62,
+    "feasible": 52,
+    "gapMean": 7.433,
+    "savingsCaptured": 0.4293,
+    "latencyMean": 140.83,
     "usdPerRun": 0.0,
-    "tokensIn": 74262.0
+    "tokensIn": 72273.0
    },
    {
     "system": "timer",
@@ -118,6 +118,7 @@
     "type": "A",
     "date": "2022-04-23",
     "appliances": 2,
+    "house": 2,
     "naiveCost": 0.2901,
     "milpCost": 0.2363,
     "achievableSaving": 0.0538
@@ -127,6 +128,7 @@
     "type": "A",
     "date": "2023-02-28",
     "appliances": 2,
+    "house": 6,
     "naiveCost": 0.1918,
     "milpCost": 0.1801,
     "achievableSaving": 0.0117
@@ -136,6 +138,7 @@
     "type": "A",
     "date": "2023-07-05",
     "appliances": 2,
+    "house": 7,
     "naiveCost": 0.2065,
     "milpCost": 0.1908,
     "achievableSaving": 0.0157
@@ -145,6 +148,7 @@
     "type": "A",
     "date": "2025-05-22",
     "appliances": 2,
+    "house": 8,
     "naiveCost": 0.184,
     "milpCost": 0.1712,
     "achievableSaving": 0.0128
@@ -154,6 +158,7 @@
     "type": "A",
     "date": "2025-07-03",
     "appliances": 2,
+    "house": 3,
     "naiveCost": 0.2735,
     "milpCost": 0.2227,
     "achievableSaving": 0.0508
@@ -163,6 +168,7 @@
     "type": "A",
     "date": "2026-03-10",
     "appliances": 2,
+    "house": 5,
     "naiveCost": 0.3216,
     "milpCost": 0.2834,
     "achievableSaving": 0.0382
@@ -172,6 +178,7 @@
     "type": "A",
     "date": "2026-03-24",
     "appliances": 2,
+    "house": 9,
     "naiveCost": 0.2551,
     "milpCost": 0.2305,
     "achievableSaving": 0.0246
@@ -181,6 +188,7 @@
     "type": "A",
     "date": "2026-03-25",
     "appliances": 2,
+    "house": 11,
     "naiveCost": 0.2257,
     "milpCost": 0.2199,
     "achievableSaving": 0.0058
@@ -190,6 +198,7 @@
     "type": "B",
     "date": "2023-06-23",
     "appliances": 3,
+    "house": 16,
     "naiveCost": 0.5143,
     "milpCost": 0.4448,
     "achievableSaving": 0.0695
@@ -199,6 +208,7 @@
     "type": "B",
     "date": "2024-02-13",
     "appliances": 3,
+    "house": 15,
     "naiveCost": 0.4476,
     "milpCost": 0.4473,
     "achievableSaving": 0.0003
@@ -208,6 +218,7 @@
     "type": "B",
     "date": "2024-02-16",
     "appliances": 3,
+    "house": 1,
     "naiveCost": 0.3458,
     "milpCost": 0.3277,
     "achievableSaving": 0.0181
@@ -217,6 +228,7 @@
     "type": "B",
     "date": "2024-02-21",
     "appliances": 3,
+    "house": 20,
     "naiveCost": 0.8282,
     "milpCost": 0.7728,
     "achievableSaving": 0.0554
@@ -226,6 +238,7 @@
     "type": "B",
     "date": "2024-07-23",
     "appliances": 3,
+    "house": 21,
     "naiveCost": 0.3603,
     "milpCost": 0.3509,
     "achievableSaving": 0.0094
@@ -235,6 +248,7 @@
     "type": "B",
     "date": "2025-10-12",
     "appliances": 3,
+    "house": 4,
     "naiveCost": 0.458,
     "milpCost": 0.4528,
     "achievableSaving": 0.0052
@@ -244,6 +258,7 @@
     "type": "B",
     "date": "2025-11-12",
     "appliances": 3,
+    "house": 10,
     "naiveCost": 0.4474,
     "milpCost": 0.4294,
     "achievableSaving": 0.018
@@ -253,6 +268,7 @@
     "type": "B",
     "date": "2026-07-17",
     "appliances": 3,
+    "house": 13,
     "naiveCost": 0.2568,
     "milpCost": 0.2545,
     "achievableSaving": 0.0023
@@ -262,6 +278,7 @@
     "type": "C",
     "date": "2023-01-10",
     "appliances": 3,
+    "house": 17,
     "naiveCost": 0.3904,
     "milpCost": 0.3904,
     "achievableSaving": 0.0
@@ -271,6 +288,7 @@
     "type": "C",
     "date": "2023-02-03",
     "appliances": 3,
+    "house": 18,
     "naiveCost": 0.8455,
     "milpCost": 0.663,
     "achievableSaving": 0.1824
@@ -280,6 +298,7 @@
     "type": "C",
     "date": "2023-09-28",
     "appliances": 4,
+    "house": 2,
     "naiveCost": 0.7805,
     "milpCost": 0.6415,
     "achievableSaving": 0.1391
@@ -289,6 +308,7 @@
     "type": "C",
     "date": "2023-11-22",
     "appliances": 3,
+    "house": 6,
     "naiveCost": 0.482,
     "milpCost": 0.4199,
     "achievableSaving": 0.0621
@@ -298,6 +318,7 @@
     "type": "C",
     "date": "2024-02-27",
     "appliances": 3,
+    "house": 7,
     "naiveCost": 0.7111,
     "milpCost": 0.4937,
     "achievableSaving": 0.2175
@@ -307,6 +328,7 @@
     "type": "C",
     "date": "2024-04-24",
     "appliances": 4,
+    "house": 8,
     "naiveCost": 1.0731,
     "milpCost": 0.8705,
     "achievableSaving": 0.2026
@@ -316,6 +338,7 @@
     "type": "C",
     "date": "2025-01-21",
     "appliances": 3,
+    "house": 3,
     "naiveCost": 0.9062,
     "milpCost": 0.5511,
     "achievableSaving": 0.3551
@@ -325,6 +348,7 @@
     "type": "C",
     "date": "2026-06-28",
     "appliances": 4,
+    "house": 5,
     "naiveCost": 0.582,
     "milpCost": 0.4779,
     "achievableSaving": 0.1041
@@ -334,6 +358,7 @@
     "type": "D",
     "date": "2022-01-31",
     "appliances": 5,
+    "house": 9,
     "naiveCost": 2.6809,
     "milpCost": 2.1865,
     "achievableSaving": 0.4944
@@ -343,6 +368,7 @@
     "type": "D",
     "date": "2024-01-04",
     "appliances": 5,
+    "house": 11,
     "naiveCost": 4.2103,
     "milpCost": 2.8551,
     "achievableSaving": 1.3552
@@ -352,6 +378,7 @@
     "type": "D",
     "date": "2024-12-09",
     "appliances": 5,
+    "house": 16,
     "naiveCost": 1.0245,
     "milpCost": 0.4138,
     "achievableSaving": 0.6107
@@ -361,6 +388,7 @@
     "type": "D",
     "date": "2024-12-13",
     "appliances": 5,
+    "house": 15,
     "naiveCost": 2.629,
     "milpCost": 1.2395,
     "achievableSaving": 1.3895
@@ -370,6 +398,7 @@
     "type": "D",
     "date": "2024-12-17",
     "appliances": 5,
+    "house": 1,
     "naiveCost": 1.4617,
     "milpCost": 1.4772,
     "achievableSaving": -0.0155
@@ -379,6 +408,7 @@
     "type": "D",
     "date": "2025-01-20",
     "appliances": 5,
+    "house": 20,
     "naiveCost": 3.7783,
     "milpCost": 1.5905,
     "achievableSaving": 2.1879
@@ -388,6 +418,7 @@
     "type": "D",
     "date": "2026-01-30",
     "appliances": 5,
+    "house": 21,
     "naiveCost": 2.4914,
     "milpCost": 1.6411,
     "achievableSaving": 0.8503
@@ -397,6 +428,7 @@
     "type": "D",
     "date": "2026-02-06",
     "appliances": 5,
+    "house": 4,
     "naiveCost": 2.5718,
     "milpCost": 1.4889,
     "achievableSaving": 1.0829
@@ -406,6 +438,7 @@
     "type": "E",
     "date": "2022-12-01",
     "appliances": 3,
+    "house": 10,
     "naiveCost": 2.5693,
     "milpCost": 2.2137,
     "achievableSaving": 0.3556
@@ -415,6 +448,7 @@
     "type": "E",
     "date": "2022-12-04",
     "appliances": 3,
+    "house": 13,
     "naiveCost": 2.0344,
     "milpCost": 1.95,
     "achievableSaving": 0.0844
@@ -424,6 +458,7 @@
     "type": "E",
     "date": "2022-12-06",
     "appliances": 3,
+    "house": 17,
     "naiveCost": 1.3278,
     "milpCost": 1.0588,
     "achievableSaving": 0.2689
@@ -433,6 +468,7 @@
     "type": "E",
     "date": "2022-12-09",
     "appliances": 3,
+    "house": 18,
     "naiveCost": 1.7285,
     "milpCost": 1.5026,
     "achievableSaving": 0.2259
@@ -442,6 +478,7 @@
     "type": "E",
     "date": "2022-12-10",
     "appliances": 3,
+    "house": 2,
     "naiveCost": 1.9939,
     "milpCost": 1.6198,
     "achievableSaving": 0.374
@@ -451,6 +488,7 @@
     "type": "E",
     "date": "2022-12-11",
     "appliances": 3,
+    "house": 6,
     "naiveCost": 3.3588,
     "milpCost": 2.9193,
     "achievableSaving": 0.4395
@@ -460,6 +498,7 @@
     "type": "E",
     "date": "2022-12-12",
     "appliances": 3,
+    "house": 7,
     "naiveCost": 2.6083,
     "milpCost": 2.5754,
     "achievableSaving": 0.0329
@@ -469,6 +508,7 @@
     "type": "E",
     "date": "2022-12-14",
     "appliances": 3,
+    "house": 8,
     "naiveCost": 2.2097,
     "milpCost": 1.5362,
     "achievableSaving": 0.6735
@@ -478,6 +518,7 @@
     "type": "F",
     "date": "2023-05-18",
     "appliances": 4,
+    "house": 3,
     "naiveCost": 0.3005,
     "milpCost": 0.2992,
     "achievableSaving": 0.0014
@@ -487,6 +528,7 @@
     "type": "F",
     "date": "2023-09-20",
     "appliances": 4,
+    "house": 5,
     "naiveCost": 0.3271,
     "milpCost": 0.3267,
     "achievableSaving": 0.0004
@@ -496,6 +538,7 @@
     "type": "F",
     "date": "2023-09-29",
     "appliances": 4,
+    "house": 9,
     "naiveCost": 0.6973,
     "milpCost": 0.6989,
     "achievableSaving": -0.0016
@@ -505,6 +548,7 @@
     "type": "F",
     "date": "2024-08-10",
     "appliances": 4,
+    "house": 11,
     "naiveCost": 0.4212,
     "milpCost": 0.3437,
     "achievableSaving": 0.0775
@@ -514,6 +558,7 @@
     "type": "F",
     "date": "2024-10-17",
     "appliances": 4,
+    "house": 16,
     "naiveCost": 0.2282,
     "milpCost": 0.2264,
     "achievableSaving": 0.0018
@@ -523,6 +568,7 @@
     "type": "F",
     "date": "2024-12-11",
     "appliances": 4,
+    "house": 15,
     "naiveCost": 0.2579,
     "milpCost": 0.2574,
     "achievableSaving": 0.0006
@@ -532,6 +578,7 @@
     "type": "F",
     "date": "2025-05-01",
     "appliances": 4,
+    "house": 1,
     "naiveCost": 0.4917,
     "milpCost": 0.2815,
     "achievableSaving": 0.2102
@@ -541,6 +588,7 @@
     "type": "F",
     "date": "2025-12-28",
     "appliances": 4,
+    "house": 20,
     "naiveCost": 0.4626,
     "milpCost": 0.4626,
     "achievableSaving": 0.0
@@ -642,6 +690,7 @@
     "type": "A",
     "date": "2025-10-19",
     "appliances": 2,
+    "house": 2,
     "naiveCost": 0.2084,
     "milpCost": 0.2084,
     "achievableSaving": 0.0
@@ -651,6 +700,7 @@
     "type": "A",
     "date": "2025-11-02",
     "appliances": 2,
+    "house": 6,
     "naiveCost": 0.1376,
     "milpCost": 0.1376,
     "achievableSaving": 0.0
@@ -660,6 +710,7 @@
     "type": "A",
     "date": "2025-12-18",
     "appliances": 2,
+    "house": 7,
     "naiveCost": 0.1469,
     "milpCost": 0.1297,
     "achievableSaving": 0.0172
@@ -669,6 +720,7 @@
     "type": "A",
     "date": "2026-07-12",
     "appliances": 2,
+    "house": 8,
     "naiveCost": 0.1888,
     "milpCost": 0.1721,
     "achievableSaving": 0.0167
@@ -678,6 +730,7 @@
     "type": "A",
     "date": "2026-07-23",
     "appliances": 2,
+    "house": 21,
     "naiveCost": 0.2608,
     "milpCost": 0.2593,
     "achievableSaving": 0.0016
@@ -687,6 +740,7 @@
     "type": "A",
     "date": "2026-07-29",
     "appliances": 2,
+    "house": 5,
     "naiveCost": 0.2583,
     "milpCost": 0.2385,
     "achievableSaving": 0.0198
@@ -696,6 +750,7 @@
     "type": "A",
     "date": "2026-07-31",
     "appliances": 2,
+    "house": 9,
     "naiveCost": 0.2367,
     "milpCost": 0.2341,
     "achievableSaving": 0.0026
@@ -705,6 +760,7 @@
     "type": "A",
     "date": "2026-08-09",
     "appliances": 2,
+    "house": 11,
     "naiveCost": 0.1996,
     "milpCost": 0.1922,
     "achievableSaving": 0.0074
@@ -714,6 +770,7 @@
     "type": "B",
     "date": "2025-12-15",
     "appliances": 3,
+    "house": 15,
     "naiveCost": 0.5082,
     "milpCost": 0.4976,
     "achievableSaving": 0.0107
@@ -723,6 +780,7 @@
     "type": "B",
     "date": "2026-03-13",
     "appliances": 3,
+    "house": 1,
     "naiveCost": 0.2906,
     "milpCost": 0.2826,
     "achievableSaving": 0.008
@@ -732,6 +790,7 @@
     "type": "B",
     "date": "2026-03-19",
     "appliances": 3,
+    "house": 16,
     "naiveCost": 0.2613,
     "milpCost": 0.2519,
     "achievableSaving": 0.0094
@@ -741,6 +800,7 @@
     "type": "B",
     "date": "2026-03-28",
     "appliances": 3,
+    "house": 20,
     "naiveCost": 0.5503,
     "milpCost": 0.5307,
     "achievableSaving": 0.0196
@@ -750,6 +810,7 @@
     "type": "B",
     "date": "2026-07-08",
     "appliances": 3,
+    "house": 4,
     "naiveCost": 0.3374,
     "milpCost": 0.3183,
     "achievableSaving": 0.0191
@@ -759,6 +820,7 @@
     "type": "B",
     "date": "2026-07-24",
     "appliances": 3,
+    "house": 10,
     "naiveCost": 0.5442,
     "milpCost": 0.4946,
     "achievableSaving": 0.0496
@@ -768,6 +830,7 @@
     "type": "B",
     "date": "2026-07-26",
     "appliances": 3,
+    "house": 13,
     "naiveCost": 0.4043,
     "milpCost": 0.4042,
     "achievableSaving": 0.0
@@ -777,6 +840,7 @@
     "type": "B",
     "date": "2026-08-16",
     "appliances": 3,
+    "house": 17,
     "naiveCost": 0.2437,
     "milpCost": 0.2419,
     "achievableSaving": 0.0018
@@ -786,6 +850,7 @@
     "type": "C",
     "date": "2025-12-08",
     "appliances": 3,
+    "house": 18,
     "naiveCost": 0.2416,
     "milpCost": 0.2375,
     "achievableSaving": 0.0041
@@ -795,6 +860,7 @@
     "type": "C",
     "date": "2025-12-11",
     "appliances": 3,
+    "house": 3,
     "naiveCost": 0.4573,
     "milpCost": 0.4486,
     "achievableSaving": 0.0087
@@ -804,6 +870,7 @@
     "type": "C",
     "date": "2026-01-07",
     "appliances": 4,
+    "house": 2,
     "naiveCost": 1.1793,
     "milpCost": 1.1592,
     "achievableSaving": 0.0201
@@ -813,6 +880,7 @@
     "type": "C",
     "date": "2026-01-08",
     "appliances": 3,
+    "house": 6,
     "naiveCost": 0.771,
     "milpCost": 0.6813,
     "achievableSaving": 0.0897
@@ -822,6 +890,7 @@
     "type": "C",
     "date": "2026-02-15",
     "appliances": 3,
+    "house": 7,
     "naiveCost": 0.7856,
     "milpCost": 0.6171,
     "achievableSaving": 0.1686
@@ -831,6 +900,7 @@
     "type": "C",
     "date": "2026-02-21",
     "appliances": 4,
+    "house": 8,
     "naiveCost": 0.6491,
     "milpCost": 0.6397,
     "achievableSaving": 0.0095
@@ -840,6 +910,7 @@
     "type": "C",
     "date": "2026-04-27",
     "appliances": 3,
+    "house": 21,
     "naiveCost": 0.5292,
     "milpCost": 0.441,
     "achievableSaving": 0.0883
@@ -849,6 +920,7 @@
     "type": "C",
     "date": "2026-08-24",
     "appliances": 4,
+    "house": 5,
     "naiveCost": 0.5972,
     "milpCost": 0.5218,
     "achievableSaving": 0.0754
@@ -858,6 +930,7 @@
     "type": "D",
     "date": "2026-01-20",
     "appliances": 5,
+    "house": 9,
     "naiveCost": 2.8675,
     "milpCost": 1.8629,
     "achievableSaving": 1.0047
@@ -867,6 +940,7 @@
     "type": "D",
     "date": "2026-01-27",
     "appliances": 5,
+    "house": 11,
     "naiveCost": 3.3743,
     "milpCost": 3.0165,
     "achievableSaving": 0.3579
@@ -876,6 +950,7 @@
     "type": "D",
     "date": "2026-01-29",
     "appliances": 5,
+    "house": 15,
     "naiveCost": 1.7074,
     "milpCost": 1.4295,
     "achievableSaving": 0.2779
@@ -885,6 +960,7 @@
     "type": "D",
     "date": "2026-01-30",
     "appliances": 5,
+    "house": 1,
     "naiveCost": 3.1345,
     "milpCost": 2.4291,
     "achievableSaving": 0.7054
@@ -894,6 +970,7 @@
     "type": "D",
     "date": "2026-02-02",
     "appliances": 5,
+    "house": 16,
     "naiveCost": 4.2134,
     "milpCost": 3.0299,
     "achievableSaving": 1.1835
@@ -903,6 +980,7 @@
     "type": "D",
     "date": "2026-02-03",
     "appliances": 5,
+    "house": 20,
     "naiveCost": 5.3606,
     "milpCost": 4.4807,
     "achievableSaving": 0.8799
@@ -912,6 +990,7 @@
     "type": "D",
     "date": "2026-02-10",
     "appliances": 5,
+    "house": 4,
     "naiveCost": 2.4875,
     "milpCost": 1.3909,
     "achievableSaving": 1.0966
@@ -921,6 +1000,7 @@
     "type": "D",
     "date": "2026-02-19",
     "appliances": 5,
+    "house": 10,
     "naiveCost": 3.1667,
     "milpCost": 1.4002,
     "achievableSaving": 1.7665
@@ -930,6 +1010,7 @@
     "type": "E",
     "date": "2025-10-01",
     "appliances": 3,
+    "house": 13,
     "naiveCost": 1.3772,
     "milpCost": 0.7047,
     "achievableSaving": 0.6725
@@ -939,6 +1020,7 @@
     "type": "E",
     "date": "2025-10-14",
     "appliances": 3,
+    "house": 17,
     "naiveCost": 2.2941,
     "milpCost": 1.0973,
     "achievableSaving": 1.1967
@@ -948,6 +1030,7 @@
     "type": "E",
     "date": "2025-10-17",
     "appliances": 3,
+    "house": 18,
     "naiveCost": 0.8045,
     "milpCost": 0.5794,
     "achievableSaving": 0.2252
@@ -957,6 +1040,7 @@
     "type": "E",
     "date": "2025-11-21",
     "appliances": 3,
+    "house": 3,
     "naiveCost": 0.9671,
     "milpCost": 0.6365,
     "achievableSaving": 0.3306
@@ -966,6 +1050,7 @@
     "type": "E",
     "date": "2026-02-04",
     "appliances": 3,
+    "house": 2,
     "naiveCost": 1.4898,
     "milpCost": 1.2292,
     "achievableSaving": 0.2606
@@ -975,6 +1060,7 @@
     "type": "E",
     "date": "2026-02-06",
     "appliances": 3,
+    "house": 6,
     "naiveCost": 2.7754,
     "milpCost": 1.8406,
     "achievableSaving": 0.9348
@@ -984,6 +1070,7 @@
     "type": "E",
     "date": "2026-09-15",
     "appliances": 3,
+    "house": 7,
     "naiveCost": 1.4659,
     "milpCost": 0.9387,
     "achievableSaving": 0.5273
@@ -993,6 +1080,7 @@
     "type": "E",
     "date": "2026-09-22",
     "appliances": 3,
+    "house": 8,
     "naiveCost": 1.3362,
     "milpCost": 0.7295,
     "achievableSaving": 0.6067
@@ -1002,6 +1090,7 @@
     "type": "F",
     "date": "2025-10-08",
     "appliances": 4,
+    "house": 21,
     "naiveCost": 0.3124,
     "milpCost": 0.3124,
     "achievableSaving": 0.0
@@ -1011,6 +1100,7 @@
     "type": "F",
     "date": "2025-12-19",
     "appliances": 4,
+    "house": 5,
     "naiveCost": 0.3429,
     "milpCost": 0.343,
     "achievableSaving": -0.0
@@ -1020,6 +1110,7 @@
     "type": "F",
     "date": "2025-12-20",
     "appliances": 4,
+    "house": 9,
     "naiveCost": 0.7011,
     "milpCost": 0.7011,
     "achievableSaving": -0.0
@@ -1029,6 +1120,7 @@
     "type": "F",
     "date": "2025-12-27",
     "appliances": 4,
+    "house": 11,
     "naiveCost": 0.4338,
     "milpCost": 0.4259,
     "achievableSaving": 0.0079
@@ -1038,6 +1130,7 @@
     "type": "F",
     "date": "2026-04-22",
     "appliances": 4,
+    "house": 15,
     "naiveCost": 0.2292,
     "milpCost": 0.2269,
     "achievableSaving": 0.0023
@@ -1047,6 +1140,7 @@
     "type": "F",
     "date": "2026-04-26",
     "appliances": 4,
+    "house": 1,
     "naiveCost": 0.2728,
     "milpCost": 0.2559,
     "achievableSaving": 0.0169
@@ -1056,6 +1150,7 @@
     "type": "F",
     "date": "2026-05-24",
     "appliances": 4,
+    "house": 16,
     "naiveCost": 0.3191,
     "milpCost": 0.2451,
     "achievableSaving": 0.074
@@ -1065,6 +1160,7 @@
     "type": "F",
     "date": "2026-06-20",
     "appliances": 4,
+    "house": 20,
     "naiveCost": 0.4901,
     "milpCost": 0.4624,
     "achievableSaving": 0.0277

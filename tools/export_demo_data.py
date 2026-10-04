@@ -8,6 +8,7 @@ The demo only replays what the evaluation recorded; it runs no system itself.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -83,8 +84,10 @@ def export(key: str, spec: dict) -> dict:
             })  # fmt: skip
         results.sort(key=lambda r: (list(SYSTEMS).index(r["system"]), r["model"], r["run"]))
         naive, milp = float(ref.loc[sid, "naive"]), float(ref.loc[sid, "milp"])
+        house = int(m.group(1)) if (m := re.search(r"house (\d+)", sc.notes, re.I)) else None
         detail = {
-            "id": sid, "type": sc.type, "date": sc.date, "peakLimitKw": sc.peak_limit_kw,
+            "id": sid, "type": sc.type, "date": sc.date, "peakLimitKw": sc.peak_limit_kw, "house": house,
+            "fixedAppliances": [{"id": f.id, "kind": f.kind, "ratedKw": f.typical_power_kw} for f in sc.fixed_appliances],
             "priceCents": [round(p * 100, 3) for p in sc.price_eur_per_kwh],
             "spotCents": [round(p * 100, 3) for p in sc.spot_eur_per_kwh],
             "baseLoadKw": [round(b, 3) for b in sc.base_load_kw],
@@ -98,7 +101,7 @@ def export(key: str, spec: dict) -> dict:
             "results": results,
         }  # fmt: skip
         (folder / f"{sid}.json").write_text(json.dumps(detail), encoding="utf-8")
-        index.append({"id": sid, "type": sc.type, "date": sc.date, "appliances": len(sc.appliances),
+        index.append({"id": sid, "type": sc.type, "date": sc.date, "appliances": len(sc.appliances), "house": house,
                       "naiveCost": round(naive, 4), "milpCost": round(milp, 4),
                       "achievableSaving": round(naive - milp, 4)})  # fmt: skip
     return {"id": key, "label": spec["label"], "summary": summary, "scenarios": index}

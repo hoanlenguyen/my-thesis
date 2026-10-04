@@ -14,23 +14,71 @@ export const euro = (v: number | null | undefined, digits = 2) =>
 export const pct = (v: number | null | undefined, digits = 1) =>
   v == null ? '–' : `${v.toFixed(digits)} %`
 
-// Icons as in Low-carbon-alerts RecommendationCard.
+// Icons as in Low-carbon-alerts RecommendationCard, extended to the REFIT appliance kinds.
 export const APPLIANCE_ICONS: Record<string, string> = {
   dishwasher: 'i-lucide-utensils-crossed',
   washing_machine: 'i-lucide-washing-machine',
-  tumble_dryer: 'i-lucide-shirt'
+  tumble_dryer: 'i-lucide-shirt',
+  washer_dryer: 'i-lucide-washing-machine',
+  fridge: 'i-lucide-refrigerator',
+  freezer: 'i-lucide-snowflake',
+  chest_freezer: 'i-lucide-snowflake',
+  fridge_freezer: 'i-lucide-refrigerator',
+  television: 'i-lucide-tv',
+  computer: 'i-lucide-monitor',
+  microwave: 'i-lucide-microwave',
+  kettle: 'i-lucide-coffee',
+  toaster: 'i-lucide-sandwich',
+  electric_heater: 'i-lucide-heater',
+  hifi: 'i-lucide-speaker',
+  overhead_fan: 'i-lucide-fan',
+  router: 'i-lucide-router',
+  network_site: 'i-lucide-router',
+  dehumidifier: 'i-lucide-droplets',
+  games_console: 'i-lucide-gamepad-2'
 }
 
 export const APPLIANCE_LABELS: Record<string, string> = {
   dishwasher: 'Dishwasher',
   washing_machine: 'Washing machine',
-  tumble_dryer: 'Tumble dryer'
+  tumble_dryer: 'Tumble dryer',
+  washer_dryer: 'Washer-dryer',
+  fridge_freezer: 'Fridge-freezer',
+  hifi: 'Hi-fi',
+  television: 'Television'
 }
 
-/** Readable name for an appliance id such as "tumble_dryer_2". */
+const titleCase = (s: string) => s.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())
+
+/** Readable name for an appliance id or REFIT name such as "tumble_dryer_2". */
 export function applianceName(id: string, kind: string): string {
   const n = id.match(/_(\d+)$/)?.[1]
-  return `${APPLIANCE_LABELS[kind] ?? kind}${n && n !== '1' ? ` ${n}` : ''}`
+  return `${APPLIANCE_LABELS[kind] ?? titleCase(kind)}${n && n !== '1' ? ` ${n}` : ''}`
+}
+
+export const applianceIcon = (kind: string) => APPLIANCE_ICONS[kind] ?? 'i-lucide-plug'
+
+// Shiftable in principle but not scheduled in the benchmark (display only; the recorded results treat
+// them as part of the base load).
+export const DISPLAY_SHIFTABLE = new Set(['computer', 'television', 'washer_dryer'])
+
+export function applianceRole(a: { kind: string, scheduled?: boolean }, partlyShiftable = DISPLAY_SHIFTABLE.has(a.kind)) {
+  if (a.scheduled) return { label: 'Scheduled', color: 'primary' as const }
+  if (partlyShiftable) return { label: 'Partly shiftable, not scheduled', color: 'warning' as const }
+  return { label: 'Not shiftable', color: 'neutral' as const }
+}
+
+/** Consumer price c/kWh from spot EUR/MWh, with the thesis tariff (src/hems/data/tariff.py). */
+export function consumerCents(spotEurMwh: number): number {
+  return (spotEurMwh / 10 + 0.5 + 5.0 + 2.253) * 1.255
+}
+
+/** Mean of each block of four 15-minute values, giving 24 hourly values. */
+export function hourly(values: number[]): number[] {
+  return Array.from({ length: 24 }, (_, h) => {
+    const block = values.slice(h * 4, h * 4 + 4)
+    return block.reduce((a, b) => a + b, 0) / Math.max(1, block.length)
+  })
 }
 
 // One colour per appliance position (timeline blocks, legend).

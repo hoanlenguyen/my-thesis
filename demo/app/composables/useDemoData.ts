@@ -18,6 +18,7 @@ export interface ScenarioIndex {
   type: string
   date: string
   appliances: number
+  house: number | null
   naiveCost: number
   milpCost: number
   achievableSaving: number
@@ -55,11 +56,55 @@ export interface RunResult {
   message: string
 }
 
+export interface FixedAppliance {
+  id: string
+  kind: string
+  ratedKw: number
+}
+
+/** Typical use of one appliance from the REFIT recordings (tools/export_household_profiles.py). */
+export interface ApplianceProfile {
+  name: string
+  kind: string
+  shiftable: boolean
+  scheduled: boolean
+  ratedKw: number
+  kwhPerDay: number
+  daysUsedShare: number
+  hourly: number[] // share of recorded days with use in each hour 0-23
+}
+
+/** A non-shiftable appliance row of the day timeline: rated power plus its typical use, if profiled. */
+export interface FixedRow {
+  id: string
+  kind: string
+  ratedKw: number
+  hourly: number[] | null
+  shiftable: boolean // marked "partly shiftable" by the viewer (display only)
+}
+
+/** A row showing when the household usually runs one of the appliances being scheduled. */
+export interface UsualRow {
+  name: string
+  kind: string
+  hourly: number[]
+}
+
+export interface Household {
+  house: number
+  firstDay: string
+  lastDay: string
+  days: number
+  appliances: ApplianceProfile[]
+}
+
 export interface DayDetail {
   id: string
   type: string
   date: string
   peakLimitKw: number
+  house: number | null
+  fixedAppliances: FixedAppliance[]
   priceCents: number[]
   spotCents: number[]
   baseLoadKw: number[]
@@ -72,6 +117,10 @@ export interface DayDetail {
 
 export function useBenchmarks() {
   return useFetch<Benchmark[]>('/data/benchmarks.json', { key: 'benchmarks' })
+}
+
+export function useHouseholds() {
+  return useFetch<Household[]>('/data/households.json', { key: 'households' })
 }
 
 export function useDay(benchmark: MaybeRefOrGetter<string>, id: MaybeRefOrGetter<string>) {

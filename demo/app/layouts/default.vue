@@ -3,7 +3,9 @@
 const route = useRoute()
 const navItems = [
   { label: 'Which system saves?', icon: 'i-lucide-chart-column', to: '/' },
-  { label: 'Daily recommendations', icon: 'i-lucide-calendar-clock', to: '/days' }
+  { label: 'Households', icon: 'i-lucide-house', to: '/households' },
+  { label: 'Daily recommendations', icon: 'i-lucide-calendar-clock', to: '/days' },
+  { label: "Today's price", icon: 'i-lucide-zap', to: '/today' }
 ]
 const isActive = (to: string) => (to === '/' ? route.path === '/' : route.path.startsWith(to))
 </script>

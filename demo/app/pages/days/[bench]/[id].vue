@@ -5,16 +5,15 @@ const route = useRoute()
 const bench = computed(() => String(route.params.bench))
 const id = computed(() => String(route.params.id))
 const { data: day, status } = await useDay(bench, id)
+const { data: households } = await useHouseholds()
+
+const priceView = ref<'hour' | 'quarter'>('hour')
+const hourlyPrices = computed(() => (day.value ? hourly(day.value.priceCents) : []))
 
 const run = ref(1)
 const showLocal = ref(false)
 const keyOf = (r: RunResult) => `${r.system}|${r.model}`
-
-// One result per system for the chosen run (deterministic systems have run 0).
-const results = computed<RunResult[]>(() => {
-  const all = day.value?.results ?? []
-  return all.filter(r => (r.run === 0 || r.run === run.value) && (showLocal.value || r.model !== 'gpt-oss-20b'))
-})
+const { results, usual, fixed: fixedRows } = useDayComparison(day, households, run, showLocal)
 const hasLocal = computed(() => day.value?.results.some(r => r.model === 'gpt-oss-20b'))
 const selected = ref('multi|gpt-4o-mini')
 const current = computed(() => results.value.find(r => keyOf(r) === selected.value) ?? results.value[0])
@@ -30,8 +29,13 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
         </UButton>
         <h1 class="text-2xl font-semibold text-highlighted">{{ day.id }} · {{ day.date }}</h1>
         <p class="text-sm text-muted">
-          Type {{ day.type }}: {{ SCENARIO_TYPES[day.type] }} · {{ day.appliances.length }} appliance cycles ·
+          Type {{ day.type }}: {{ SCENARIO_TYPES[day.type] }} · {{ day.appliances.length }} appliance cycles to schedule ·
           peak limit {{ day.peakLimitKw }} kW
+        </p>
+        <p v-if="day.house" class="text-xs text-dimmed mt-0.5">
+          Base load and fixed appliances from
+          <NuxtLink :to="`/households/${day.house}`" class="text-primary hover:underline">household {{ day.house }}</NuxtLink>;
+          the cycles to schedule are recorded REFIT cycles drawn from all 18 households.
         </p>
       </div>
       <div class="flex items-center gap-3">
@@ -68,12 +72,27 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
 
     <UCard>
       <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-receipt-euro" class="size-4 text-primary" />
-          <span class="font-semibold text-sm text-highlighted">Electricity price, c/kWh incl. taxes and transfer</span>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-receipt-euro" class="size-4 text-primary" />
+            <span class="font-semibold text-sm text-highlighted">Electricity price the household pays, c/kWh</span>
+          </div>
+          <div class="flex gap-1">
+            <UButton size="xs" :variant="priceView === 'hour' ? 'soft' : 'ghost'" :color="priceView === 'hour' ? 'primary' : 'neutral'" @click="priceView = 'hour'">
+              By hour
+            </UButton>
+            <UButton size="xs" :variant="priceView === 'quarter' ? 'soft' : 'ghost'" :color="priceView === 'quarter' ? 'primary' : 'neutral'" @click="priceView = 'quarter'">
+              Every 15 min
+            </UButton>
+          </div>
         </div>
       </template>
-      <PriceChart :prices="day.priceCents" />
+      <PriceBars v-if="priceView === 'hour'" :prices="hourlyPrices" />
+      <PriceChart v-else :prices="day.priceCents" />
+      <p class="mt-2 text-xs text-dimmed">
+        Spot price plus retail margin, transfer fee, electricity tax and VAT. Hourly values are the mean of the four
+        quarter-hours.
+      </p>
     </UCard>
 
     <UCard>
@@ -84,7 +103,15 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
           <span class="text-xs text-dimmed">· click a row to see its recommendation</span>
         </div>
       </template>
-      <ScheduleTimeline :appliances="day.appliances" :results="results" :selected="selected" @select="k => (selected = k)" />
+      <ScheduleTimeline
+        :appliances="day.appliances"
+        :results="results"
+        :selected="selected"
+        :naive-cost="day.naiveCost"
+        :milp-cost="day.milpCost"
+        :usual="usual"
+        :fixed="fixedRows"
+        @select="k => (selected = k)" />
     </UCard>
 
     <div v-if="current" class="grid gap-4 lg:grid-cols-2">

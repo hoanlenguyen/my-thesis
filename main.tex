@@ -1530,8 +1530,83 @@ save nothing. The pipeline's summary is checked against the final
 peak-load test before it is written (Section~\ref{sec:architecture}),
 whereas nothing checks the claims of the LLM without tools.
 
-The design iterations that led to the evaluated version of the pipeline
-are described in a later revision of this section.
+\subsection{Design iterations}
+\label{sec:iterations}
+
+% Pilot versions: results/pilot_real_v1..v6.jsonl and pilot_real.jsonl; window check: runs_v1.jsonl vs runs.jsonl.
+The evaluated pipeline is the result of five build-and-evaluate cycles,
+in line with the iterative design and demonstration activities of DSR
+(Peffers et al., 2007). The first four used a pilot of six scenarios of
+the main benchmark, one per type (A01, B03, C02, D01, E01 and F04); the
+fifth used the full main benchmark. Because the pipeline was refined on
+these scenarios, the main benchmark is treated as exploratory, and the
+hypotheses were confirmed on the held-out benchmark
+(Section~\ref{sec:confirmatory}). Table~\ref{tab:iterations} summarizes
+each iteration. Every change is a general mechanism that applies to all
+scenarios and, where it concerns errors of the language model, equally to
+the single agent; none was tuned to an individual scenario.
+
+\begin{table}[h!]
+\caption{Design iterations of the pipeline (pilot: six scenarios, one run each; iteration 5: 48 scenarios, three runs each).}
+\label{tab:iterations}
+\small
+\begin{tabularx}{\textwidth}{c>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+& Problem observed & Change & Effect \\
+\midrule
+1 & The Resolver moved appliances back and forth until it ran out of
+  steps, and the final summary could report success for a schedule that
+  still exceeded the peak limit. &
+  Automatic mode of \texttt{adjust\_schedule}; the summary is written
+  from the result of a final peak-load check. &
+  Pipeline with GPT-4o-mini: valid schedules 3/6 to 6/6, mean gap
+  11.4\,\% to 0.6\,\%. \\[3pt]
+2 & With the open-weight models, the provider rejected malformed tool
+  calls, and the local model often ended its turn in prose without the
+  required structured output. &
+  Recovery nudge (at most two per agent and run) for both cases, applied
+  identically to every agent and logged. &
+  Single agent with gpt-oss-20b: valid schedules 4/6 to 6/6 once prose
+  endings were also covered. \\[3pt]
+3 & The Orchestrator's task brief sometimes omitted an appliance, which
+  was then never scheduled. &
+  The daily plan travels with the brief to the Profiler; the
+  verification step checks that every appliance has a start and returns
+  missing ones to the Scheduler. &
+  Pipeline with GPT-4o-mini: mean gap 0.63\,\% to 0.36\,\%, with
+  feedback rounds in some runs; no improvement with gpt-oss-20b. \\[3pt]
+4 & With the step budget divided equally (25 steps per specialist), the
+  Scheduler ran out of steps. &
+  Budget divided by workload: 15 for the Profiler, 35 for the Scheduler
+  and 25 for the Resolver, still 75 in total. &
+  Scheduler step-limit failures 3 to 0 across the pilot; local pipeline
+  valid schedules 1/6 to 2/6. \\[3pt]
+5 & On the full benchmark, the only two invalid pipeline schedules
+  started a tumble dryer cycle outside its time window. &
+  The verification step also checks every start against its window and
+  returns violations to the Scheduler. &
+  Valid schedules 142/144 to 144/144, mean gap 1.50\,\% to 1.25\,\%,
+  type E 2.30\,\% to 0.21\,\%. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Three observations follow from the iterations. First, most problems
+concerned reliability rather than cost: the agents usually found cheap
+start times, but a schedule had to be complete, within the peak limit
+and within every window before its cost counted. This is why the
+verification step grew from a peak-load check into a check of all three
+conditions. Second, the changes that helped GPT-4o-mini did little for
+the small local model. In every complete pilot from iteration 2 onwards
+its pipeline produced only one or two valid schedules out of six, while
+the single agent with the same model reached six out of six once
+malformed outputs were recovered, an early sign of the result for SQ2. Third, the verification step can trade cost
+for validity. Only seven of the 144 runs of iteration 5 needed a
+feedback round, and in one of them (C08, run 3) the repaired schedule was
+valid but 17.3\,\% above the optimum, against 0.4 and 0.5\,\% in the two
+runs that needed no repair. Over the whole benchmark the window check
+improved validity and the mean gap, but the change in gap is not
+statistically significant (Wilcoxon $p = 0.65$, $N = 48$).
 
 \section{Quantitative results}
 \label{sec:quantitative}
