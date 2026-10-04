@@ -1,0 +1,7 @@
+# Dependencies and Nuxt build output (regenerate with `pnpm install` / `pnpm build`)
+node_modules/
+.nuxt/
+.output/
+.data/
+dist/
+.env

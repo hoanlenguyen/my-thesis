@@ -147,6 +147,29 @@ def cmd_analyze(args: argparse.Namespace) -> None:
     print(f"\ntables and figures written to {args.out}")
 
 
+def cmd_import_schedules(args: argparse.Namespace) -> None:
+    """Score schedules from an external tool (tools/emhass_adapter.py output) and append them as run records."""
+    from hems.run import append_record, completed_keys, external_record, run_key
+
+    data = json.loads(Path(args.schedules).read_text(encoding="utf-8"))
+    scenarios = {s.id: s for s in load_scenarios(args.scenarios)}
+    out = Path(args.out)
+    done = completed_keys(out)
+    added = 0
+    for scenario_id, result in data["schedules"].items():
+        if run_key(args.system, "-", scenario_id, 0) in done:
+            continue
+        status = result.get("status", "")
+        errors = [] if status in ("", "Optimal") else [f"{args.system}: solver status {status}"]
+        record = external_record(scenarios[scenario_id], args.system, result["starts"], result.get("solve_s", 0.0), errors)
+        record["tool_version"] = data.get("emhass_version", "")
+        record["tool_config"] = data.get("mode", "")
+        append_record(out, record)
+        added += 1
+        print(f"{record['key']} cost EUR {record['cost_eur']:.4f} {'ok' if record['feasible'] else 'INFEASIBLE'}")
+    print(f"{added} records added to {out}")
+
+
 def cmd_confirm(args: argparse.Namespace) -> None:
     import pandas as pd
 
@@ -244,6 +267,13 @@ def main() -> None:
     p.add_argument("--scenarios", default="data/scenarios")
     p.add_argument("--out", default="results")
     p.set_defaults(func=cmd_analyze)
+
+    p = sub.add_parser("import-schedules", help="score schedules from an external HEMS tool (e.g. EMHASS) as run records")
+    p.add_argument("schedules", help="JSON written by tools/emhass_adapter.py")
+    p.add_argument("--system", required=True, help='system name for the records, e.g. "emhass"')
+    p.add_argument("--scenarios", default="data/scenarios")
+    p.add_argument("--out", required=True)
+    p.set_defaults(func=cmd_import_schedules)
 
     p = sub.add_parser("confirm", help="pre-registered confirmatory tests of H1 and H2 (docs/preregistration.md)")
     p.add_argument("--runs", default="results/confirmation.jsonl")

@@ -17,6 +17,7 @@
 
 # Python
 .venv/
+.venv-emhass/
 __pycache__/
 *.pyc
 .pytest_cache/

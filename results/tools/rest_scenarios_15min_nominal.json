@@ -1,0 +1,458 @@
+{
+ "emhass_version": "0.18.4",
+ "mode": "nominal",
+ "via": "REST http://localhost:5001",
+ "schedules": {
+  "Q-A01": {
+   "starts": {
+    "dishwasher_1": 32,
+    "washing_machine_1": 44
+   },
+   "status": "Optimal",
+   "solve_s": 0.307
+  },
+  "Q-A02": {
+   "starts": {
+    "dishwasher_1": 33,
+    "washing_machine_1": 28
+   },
+   "status": "Optimal",
+   "solve_s": 0.237
+  },
+  "Q-A03": {
+   "starts": {
+    "dishwasher_1": 88,
+    "washing_machine_1": 61
+   },
+   "status": "Optimal",
+   "solve_s": 0.377
+  },
+  "Q-A04": {
+   "starts": {
+    "dishwasher_1": 52,
+    "washing_machine_1": 61
+   },
+   "status": "Optimal",
+   "solve_s": 0.239
+  },
+  "Q-A05": {
+   "starts": {
+    "dishwasher_1": 25,
+    "washing_machine_1": 58
+   },
+   "status": "Optimal",
+   "solve_s": 0.257
+  },
+  "Q-A06": {
+   "starts": {
+    "dishwasher_1": 51,
+    "washing_machine_1": 57
+   },
+   "status": "Optimal",
+   "solve_s": 0.375
+  },
+  "Q-A07": {
+   "starts": {
+    "dishwasher_1": 58,
+    "washing_machine_1": 52
+   },
+   "status": "Optimal",
+   "solve_s": 0.465
+  },
+  "Q-A08": {
+   "starts": {
+    "dishwasher_1": 60,
+    "washing_machine_1": 52
+   },
+   "status": "Optimal",
+   "solve_s": 0.298
+  },
+  "Q-B01": {
+   "starts": {
+    "dishwasher_1": 68,
+    "washing_machine_1": 54,
+    "tumble_dryer_1": 46
+   },
+   "status": "Optimal",
+   "solve_s": 0.811
+  },
+  "Q-B02": {
+   "starts": {
+    "dishwasher_1": 53,
+    "washing_machine_1": 47,
+    "tumble_dryer_1": 60
+   },
+   "status": "Optimal",
+   "solve_s": 1.29
+  },
+  "Q-B03": {
+   "starts": {
+    "dishwasher_1": 24,
+    "washing_machine_1": 53,
+    "tumble_dryer_1": 53
+   },
+   "status": "Optimal",
+   "solve_s": 0.622
+  },
+  "Q-B04": {
+   "starts": {
+    "dishwasher_1": 57,
+    "washing_machine_1": 49,
+    "tumble_dryer_1": 48
+   },
+   "status": "Optimal",
+   "solve_s": 0.434
+  },
+  "Q-B05": {
+   "starts": {
+    "dishwasher_1": 43,
+    "washing_machine_1": 64,
+    "tumble_dryer_1": 59
+   },
+   "status": "Optimal",
+   "solve_s": 1.11
+  },
+  "Q-B06": {
+   "starts": {
+    "dishwasher_1": 63,
+    "washing_machine_1": 60,
+    "tumble_dryer_1": 54
+   },
+   "status": "Optimal",
+   "solve_s": 1.059
+  },
+  "Q-B07": {
+   "starts": {
+    "dishwasher_1": 33,
+    "washing_machine_1": 54,
+    "tumble_dryer_1": 46
+   },
+   "status": "Optimal",
+   "solve_s": 0.498
+  },
+  "Q-B08": {
+   "starts": {
+    "dishwasher_1": 50,
+    "washing_machine_1": 28,
+    "tumble_dryer_1": 50
+   },
+   "status": "Optimal",
+   "solve_s": 0.337
+  },
+  "Q-C01": {
+   "starts": {
+    "washing_machine_1": 27,
+    "tumble_dryer_1": 25,
+    "tumble_dryer_2": 86
+   },
+   "status": "Optimal",
+   "solve_s": 0.721
+  },
+  "Q-C02": {
+   "starts": {
+    "washing_machine_1": 28,
+    "tumble_dryer_1": 59,
+    "washing_machine_2": 42
+   },
+   "status": "Optimal",
+   "solve_s": 0.348
+  },
+  "Q-C03": {
+   "starts": {
+    "tumble_dryer_1": 24,
+    "tumble_dryer_2": 67,
+    "dishwasher_1": 55,
+    "washing_machine_1": 57
+   },
+   "status": "Optimal",
+   "solve_s": 0.651
+  },
+  "Q-C04": {
+   "starts": {
+    "tumble_dryer_1": 85,
+    "washing_machine_1": 60,
+    "dishwasher_1": 60
+   },
+   "status": "Optimal",
+   "solve_s": 0.273
+  },
+  "Q-C05": {
+   "starts": {
+    "dishwasher_1": 65,
+    "tumble_dryer_1": 82,
+    "washing_machine_1": 85
+   },
+   "status": "Optimal",
+   "solve_s": 0.498
+  },
+  "Q-C06": {
+   "starts": {
+    "dishwasher_1": 28,
+    "washing_machine_1": 32,
+    "washing_machine_2": 57,
+    "tumble_dryer_1": 53
+   },
+   "status": "Optimal",
+   "solve_s": 0.333
+  },
+  "Q-C07": {
+   "starts": {
+    "tumble_dryer_1": 60,
+    "dishwasher_1": 50,
+    "washing_machine_1": 50
+   },
+   "status": "Optimal",
+   "solve_s": 0.628
+  },
+  "Q-C08": {
+   "starts": {
+    "tumble_dryer_1": 54,
+    "dishwasher_1": 28,
+    "washing_machine_1": 59,
+    "washing_machine_2": 54
+   },
+   "status": "Optimal",
+   "solve_s": 0.982
+  },
+  "Q-D01": {
+   "starts": {
+    "washing_machine_1": 48,
+    "washing_machine_2": 47,
+    "tumble_dryer_1": 47,
+    "tumble_dryer_2": 55,
+    "dishwasher_1": 86
+   },
+   "status": "Optimal",
+   "solve_s": 1.58
+  },
+  "Q-D02": {
+   "starts": {
+    "washing_machine_1": 52,
+    "washing_machine_2": 40,
+    "tumble_dryer_1": 38,
+    "tumble_dryer_2": 56,
+    "dishwasher_1": 82
+   },
+   "status": "Optimal",
+   "solve_s": 2.246
+  },
+  "Q-D03": {
+   "starts": {
+    "washing_machine_1": 89,
+    "washing_machine_2": 87,
+    "tumble_dryer_1": 86,
+    "tumble_dryer_2": 85,
+    "dishwasher_1": 74
+   },
+   "status": "Optimal",
+   "solve_s": 2.765
+  },
+  "Q-D04": {
+   "starts": {
+    "washing_machine_1": 85,
+    "washing_machine_2": 51,
+    "tumble_dryer_1": 73,
+    "tumble_dryer_2": 56,
+    "dishwasher_1": 80
+   },
+   "status": "Optimal",
+   "solve_s": 1.707
+  },
+  "Q-D05": {
+   "starts": {
+    "washing_machine_1": 77,
+    "washing_machine_2": 84,
+    "tumble_dryer_1": 56,
+    "tumble_dryer_2": 81,
+    "dishwasher_1": 85
+   },
+   "status": "Optimal",
+   "solve_s": 1.275
+  },
+  "Q-D06": {
+   "starts": {
+    "washing_machine_1": 90,
+    "washing_machine_2": 48,
+    "tumble_dryer_1": 86,
+    "tumble_dryer_2": 87,
+    "dishwasher_1": 40
+   },
+   "status": "Optimal",
+   "solve_s": 1.138
+  },
+  "Q-D07": {
+   "starts": {
+    "washing_machine_1": 90,
+    "washing_machine_2": 92,
+    "tumble_dryer_1": 88,
+    "tumble_dryer_2": 83,
+    "dishwasher_1": 59
+   },
+   "status": "Optimal",
+   "solve_s": 2.757
+  },
+  "Q-D08": {
+   "starts": {
+    "washing_machine_1": 86,
+    "washing_machine_2": 64,
+    "tumble_dryer_1": 55,
+    "tumble_dryer_2": 50,
+    "dishwasher_1": 83
+   },
+   "status": "Optimal",
+   "solve_s": 1.75
+  },
+  "Q-E01": {
+   "starts": {
+    "dishwasher_1": 74,
+    "washing_machine_1": 90,
+    "tumble_dryer_1": 85
+   },
+   "status": "Optimal",
+   "solve_s": 0.456
+  },
+  "Q-E02": {
+   "starts": {
+    "dishwasher_1": 83,
+    "washing_machine_1": 91,
+    "tumble_dryer_1": 73
+   },
+   "status": "Optimal",
+   "solve_s": 0.336
+  },
+  "Q-E03": {
+   "starts": {
+    "dishwasher_1": 43,
+    "washing_machine_1": 48,
+    "tumble_dryer_1": 43
+   },
+   "status": "Optimal",
+   "solve_s": 0.632
+  },
+  "Q-E04": {
+   "starts": {
+    "dishwasher_1": 86,
+    "washing_machine_1": 86,
+    "tumble_dryer_1": 81
+   },
+   "status": "Optimal",
+   "solve_s": 0.307
+  },
+  "Q-E05": {
+   "starts": {
+    "dishwasher_1": 45,
+    "washing_machine_1": 21,
+    "tumble_dryer_1": 49
+   },
+   "status": "Optimal",
+   "solve_s": 0.358
+  },
+  "Q-E06": {
+   "starts": {
+    "dishwasher_1": 58,
+    "washing_machine_1": 52,
+    "tumble_dryer_1": 61
+   },
+   "status": "Optimal",
+   "solve_s": 0.342
+  },
+  "Q-E07": {
+   "starts": {
+    "dishwasher_1": 51,
+    "washing_machine_1": 41,
+    "tumble_dryer_1": 45
+   },
+   "status": "Optimal",
+   "solve_s": 0.958
+  },
+  "Q-E08": {
+   "starts": {
+    "dishwasher_1": 90,
+    "washing_machine_1": 92,
+    "tumble_dryer_1": 93
+   },
+   "status": "Optimal",
+   "solve_s": 0.219
+  },
+  "Q-F01": {
+   "starts": {
+    "washing_machine_1": 14,
+    "tumble_dryer_1": 16,
+    "dishwasher_1": 8,
+    "washing_machine_2": 10
+   },
+   "status": "Optimal",
+   "solve_s": 0.798
+  },
+  "Q-F02": {
+   "starts": {
+    "washing_machine_1": 15,
+    "tumble_dryer_1": 6,
+    "dishwasher_1": 5,
+    "washing_machine_2": 11
+   },
+   "status": "Optimal",
+   "solve_s": 1.069
+  },
+  "Q-F03": {
+   "starts": {
+    "washing_machine_1": 11,
+    "tumble_dryer_1": 16,
+    "dishwasher_1": 32,
+    "washing_machine_2": 23
+   },
+   "status": "Optimal",
+   "solve_s": 0.812
+  },
+  "Q-F04": {
+   "starts": {
+    "washing_machine_1": 17,
+    "tumble_dryer_1": 29,
+    "dishwasher_1": 24,
+    "washing_machine_2": 21
+   },
+   "status": "Optimal",
+   "solve_s": 0.709
+  },
+  "Q-F05": {
+   "starts": {
+    "washing_machine_1": 59,
+    "tumble_dryer_1": 63,
+    "dishwasher_1": 57,
+    "washing_machine_2": 56
+   },
+   "status": "Optimal",
+   "solve_s": 0.748
+  },
+  "Q-F06": {
+   "starts": {
+    "washing_machine_1": 53,
+    "tumble_dryer_1": 62,
+    "dishwasher_1": 52,
+    "washing_machine_2": 62
+   },
+   "status": "Optimal",
+   "solve_s": 1.553
+  },
+  "Q-F07": {
+   "starts": {
+    "washing_machine_1": 56,
+    "tumble_dryer_1": 62,
+    "dishwasher_1": 56,
+    "washing_machine_2": 59
+   },
+   "status": "Optimal",
+   "solve_s": 2.087
+  },
+  "Q-F08": {
+   "starts": {
+    "washing_machine_1": 61,
+    "tumble_dryer_1": 66,
+    "dishwasher_1": 44,
+    "washing_machine_2": 51
+   },
+   "status": "Optimal",
+   "solve_s": 1.236
+  }
+ }
+}

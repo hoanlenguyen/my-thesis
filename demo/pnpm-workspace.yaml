@@ -1,0 +1,6 @@
+# Same choices as Low-carbon-alerts: these packages work without their install scripts.
+allowBuilds:
+  '@parcel/watcher': false
+  '@tailwindcss/oxide': false
+  esbuild: false
+  vue-demi: false

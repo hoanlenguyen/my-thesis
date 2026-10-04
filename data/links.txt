@@ -1,0 +1,17 @@
+Appliances
+https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned/
+
+Price
+https://sahkotin.fi/prices
+
+https://github.com/custom-components/nordpool
+
+https://transparency.entsoe.eu/
+Hoan.Le@student.oulu.fi
+5&&*2y6Z$N!6%$d
+
+Tool
+https://emhass.readthedocs.io/en/latest/installation_methods.html
+https://github.com/davidusb-geek/emhass-add-on
+
+

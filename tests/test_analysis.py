@@ -6,6 +6,7 @@ import json
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from hems.analysis import metrics, stats
 from hems.analysis.report import write_report
@@ -28,6 +29,12 @@ def test_tost_concludes_equivalence_only_inside_the_margin() -> None:
     assert close["equivalent"] and close["ci90_low"] > -1 and close["ci90_high"] < 1
     shifted = stats.tost_paired(single + 2 + rng.normal(0, 0.3, 48), single, margin=1.0)
     assert not shifted["equivalent"] and shifted["p_tost_t"] > 0.5
+
+
+def test_latex_number_format() -> None:
+    from hems.analysis.report import _fmt
+
+    assert [_fmt(v) for v in (0.0, -0.0, 10.0, 0.5, 1e-4, float("nan"))] == ["0", "0", "10", "0.5", "0.0001", "--"]
 
 
 def test_holm_adjustment() -> None:
@@ -65,3 +72,12 @@ def test_report_end_to_end(tmp_path) -> None:
     assert set(results["conflict_resolution"].system) == {"single", "multi"}
     assert list(results["equivalence"].margin) == list(stats.EQUIVALENCE_MARGINS)
     assert set(results["efficiency_tests"].metric) == set(stats.EFFICIENCY_METRICS)
+
+
+def test_pooled_savings_captured_is_robust_to_a_near_zero_achievable_saving() -> None:
+    scored = pd.DataFrame({
+        "model": ["-"] * 2, "system": ["x"] * 2,
+        "naive_cost": [1.00, 0.5001], "milp_cost": [0.80, 0.5000], "scored_cost": [0.80, 0.5101],
+    })  # fmt: skip
+    pooled = metrics.pooled_savings_captured(scored).savings_captured_pooled.iloc[0]
+    assert pooled == pytest.approx((1.5001 - 1.3101) / (1.5001 - 1.3000))  # ~0.95, not dragged to -50

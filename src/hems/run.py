@@ -20,19 +20,15 @@ from langchain_core.callbacks import get_usage_metadata_callback
 
 from hems.agents.errors import daily_quota_exhausted
 from hems.agents.llm import MODELS, make_model, usage_cost_usd
-from hems.agents.multi_agent import run_multi_agent
-from hems.agents.oneshot import run_oneshot
-from hems.agents.single_agent import run_single_agent
 from hems.agents.types import AgentRun
 from hems.core.evaluate import evaluate
 from hems.core.models import Scenario, Schedule
-from hems.solvers.milp import solve_milp
-from hems.solvers.naive import naive_schedule, smart_timer_schedule
+from hems.systems import SYSTEMS, names
 
-REFERENCE_SYSTEMS = ("milp", "naive", "timer")  # deterministic: one run, no model
+REFERENCE_SYSTEMS = names("reference", "external")  # deterministic: one run, no model
 AGENT_SYSTEMS = ("single", "multi")
-LLM_SYSTEMS = (*AGENT_SYSTEMS, "oneshot")  # oneshot: LLM without tools (baseline)
-ALL_SYSTEMS = (*REFERENCE_SYSTEMS, *LLM_SYSTEMS)
+LLM_SYSTEMS = names("llm")  # the agent designs and oneshot (LLM without tools)
+ALL_SYSTEMS = tuple(SYSTEMS)
 
 
 def run_key(system: str, model: str, scenario_id: str, run: int) -> str:
@@ -92,14 +88,15 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
     started = time.perf_counter()
     usage: dict[str, dict] = {}
     agent_run: AgentRun
+    info: dict[str, Any] = {}
+    if (spec := SYSTEMS.get(system)) is None:
+        raise ValueError(f"unknown system {system}")
 
-    if system == "milp":
-        result = solve_milp(scenario)
-        schedule, parse_problems = result.schedule, [] if result.status == "Optimal" else [f"MILP status {result.status}"]
-        agent_run = AgentRun(assignments={k: scenario.slot_to_time(v) for k, v in schedule.items()})
-    elif system in ("naive", "timer"):
-        schedule, parse_problems = (naive_schedule if system == "naive" else smart_timer_schedule)(scenario), []
-        agent_run = AgentRun(assignments={k: scenario.slot_to_time(v) for k, v in schedule.items()})
+    if spec.plan is not None:  # deterministic: reference rule, MILP or external tool
+        planned = spec.plan(scenario)
+        schedule, parse_problems, info = planned.schedule, planned.problems, planned.info
+        agent_run = AgentRun(assignments={k: scenario.slot_to_time(v) for k, v in schedule.items()}, errors=planned.errors)
+        latency = planned.latency_s if planned.latency_s is not None else time.perf_counter() - started
     else:
         config = {
             "run_id": run_id,
@@ -108,24 +105,31 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
             "metadata": {"scenario_id": scenario.id, "run": run},
         }
         with get_usage_metadata_callback() as cb:
-            if system == "single":
-                agent_run = run_single_agent(scenario, make_model(model_name), config)
-            elif system == "multi":
-                model = make_model(model_name)
-                agent_run = run_multi_agent(scenario, lambda _role: model, config, summarize=summarize)
-            elif system == "oneshot":
-                agent_run = run_oneshot(scenario, make_model(model_name), config)
-            else:
-                raise ValueError(f"unknown system {system}")
+            agent_run = spec.agent(scenario, make_model(model_name), config, summarize)
             usage = dict(cb.usage_metadata)
         schedule, parse_problems = parse_assignments(scenario, agent_run.assignments)
+        latency = time.perf_counter() - started
 
-    latency = time.perf_counter() - started
-    evaluation = evaluate(scenario, schedule)
     tokens_in, tokens_out, usd = usage_cost_usd(usage, model_name) if model_name in MODELS else (0, 0, 0.0)
+    record = _record(scenario, system, model_name, run, agent_run, schedule, parse_problems, latency,
+                     tokens_in, tokens_out, usd, run_id if system in LLM_SYSTEMS else None)  # fmt: skip
+    return {**record, **info}
 
+
+def external_record(scenario: Scenario, system: str, starts: dict[str, int | None], solve_s: float, errors: list[str]) -> dict[str, Any]:
+    """Record for a schedule produced outside this code base (e.g. EMHASS), scored like every other system."""
+    schedule: Schedule = {k: v for k, v in starts.items() if v is not None}
+    agent_run = AgentRun(assignments={k: scenario.slot_to_time(v) for k, v in schedule.items()}, errors=errors)
+    return _record(scenario, system, "-", 0, agent_run, schedule, [], solve_s, 0, 0, 0.0, None)
+
+
+def _record(
+    scenario: Scenario, system: str, model_name: str, run: int, agent_run: AgentRun, schedule: Schedule,
+    parse_problems: list[str], latency: float, tokens_in: int, tokens_out: int, usd: float, run_id: str | None,
+) -> dict[str, Any]:  # fmt: skip
+    evaluation = evaluate(scenario, schedule)
     return {
-        "key": key,
+        "key": run_key(system, model_name, scenario.id, run),
         "system": system,
         "model": model_name,
         "model_id": MODELS[model_name].model_id if model_name in MODELS else "-",
@@ -149,7 +153,7 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
         "recoveries": agent_run.recoveries,
         "agent_errors": agent_run.errors,
         "explanation": agent_run.explanation,
-        "langsmith_run_id": run_id if system in LLM_SYSTEMS else None,
+        "langsmith_run_id": run_id,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import itertools
 
 import pytest
@@ -7,7 +8,7 @@ import pytest
 from hems.core.evaluate import evaluate
 from hems.core.models import Scenario
 from hems.solvers.milp import solve_milp
-from hems.solvers.naive import greedy_schedule, naive_schedule, smart_timer_schedule
+from hems.solvers.naive import cheapest_hours_schedule, greedy_schedule, naive_schedule, smart_timer_schedule
 from hems.tools import ALL_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools
 
 from .conftest import make_scenario
@@ -104,7 +105,7 @@ def test_adjust_schedule_auto_mode_resolves_overlap_one_move_at_a_time() -> None
         if reply.startswith("No start time"):
             continue
         moved = reply.split("Adjusted schedule: ")[1].split("\n")[0]
-        schedule = eval(moved)  # tool echoes a dict literal of the new schedule
+        schedule = ast.literal_eval(moved)  # tool echoes a dict literal of the new schedule
     parsed = {k: scenario.time_to_slot(v) for k, v in schedule.items()}
     result = evaluate(scenario, parsed)
     assert result.feasible
@@ -141,3 +142,63 @@ def test_smart_timer_stays_in_windows_and_matches_greedy_without_conflict(scenar
     greedy = evaluate(scenario, greedy_schedule(scenario))
     if greedy.feasible:  # nothing to coordinate: placing each at its cheapest start is optimal
         assert evaluate(scenario, timer).cost_eur == pytest.approx(greedy.cost_eur)
+
+
+@pytest.mark.parametrize("scenario_type", list("ABCDEF"))
+def test_cheapest_hours_starts_in_window_at_a_cheap_slot(scenario_type: str) -> None:
+    scenario = make_scenario(scenario_type, seed=5)
+    schedule = cheapest_hours_schedule(scenario)
+    for a in scenario.appliances:
+        window = list(a.valid_starts())
+        assert schedule[a.id] in window
+        # every slot before the chosen start is above the blueprint threshold
+        threshold = sorted(scenario.price_eur_per_kwh[s] for s in window)[min(-(-a.duration_slots // 4) * 4, len(window) - 1)]
+        assert all(scenario.price_eur_per_kwh[s] > threshold for s in window if s < schedule[a.id])
+
+
+def test_external_record_is_scored_like_other_systems(scenario: Scenario) -> None:
+    from hems.run import execute, external_record
+
+    milp = execute(scenario, "milp")
+    record = external_record(scenario, "emhass", dict(milp["schedule_slots"]), 0.5, [])
+    assert record["key"] == f"emhass|-|{scenario.id}|0"
+    assert record["cost_eur"] == pytest.approx(milp["cost_eur"]) and record["feasible"]
+    missing = external_record(scenario, "emhass", {a.id: None for a in scenario.appliances}, 0.5, ["solver failed"])
+    assert not missing["feasible"] and missing["agent_errors"] == ["solver failed"]
+
+
+@pytest.mark.parametrize("scenario_type", list("ABCDEF"))
+def test_cheapest_hours_hourly_starts_on_full_hours_inside_the_window(scenario_type: str) -> None:
+    scenario = make_scenario(scenario_type, seed=5)
+    schedule = cheapest_hours_schedule(scenario, resolution="hourly")
+    for a in scenario.appliances:
+        assert schedule[a.id] in a.valid_starts()
+        if any(s % 4 == 0 for s in a.valid_starts()):
+            assert schedule[a.id] % 4 == 0
+    assert cheapest_hours_schedule(scenario) == cheapest_hours_schedule(scenario, hours=None, resolution="15min")
+    with pytest.raises(ValueError):
+        cheapest_hours_schedule(scenario, resolution="5min")
+
+
+def test_system_registry_is_consistent() -> None:
+    from hems.run import ALL_SYSTEMS, LLM_SYSTEMS, REFERENCE_SYSTEMS
+    from hems.systems import SYSTEMS
+
+    assert set(REFERENCE_SYSTEMS) | set(LLM_SYSTEMS) == set(ALL_SYSTEMS) == set(SYSTEMS)
+    assert not set(REFERENCE_SYSTEMS) & set(LLM_SYSTEMS)
+    for spec in SYSTEMS.values():
+        assert (spec.plan is None) == (spec.kind == "llm") and (spec.agent is None) == (spec.kind != "llm")
+
+
+def test_tariff_adders_do_not_change_the_comparison_between_schedules(scenario: Scenario) -> None:
+    """Constant per-kWh adders and VAT shift every schedule's cost equally (cycle energy is fixed), so the
+    optimum, the ranking and savings captured are the same as under spot prices alone (thesis 3.2)."""
+    from hems.data.tariff import Tariff
+
+    spot_only = scenario.model_copy(update={"price_eur_per_kwh": list(scenario.spot_eur_per_kwh)})
+    consumer = scenario.model_copy(update={"price_eur_per_kwh": list(Tariff().consumer_price(scenario.spot_eur_per_kwh))})
+    schedules = [naive_schedule(scenario), greedy_schedule(scenario), smart_timer_schedule(scenario), cheapest_hours_schedule(scenario)]
+    for a, b in itertools.combinations(schedules, 2):
+        diff_spot = evaluate(spot_only, a).cost_eur - evaluate(spot_only, b).cost_eur
+        diff_consumer = evaluate(consumer, a).cost_eur - evaluate(consumer, b).cost_eur
+        assert diff_consumer == pytest.approx(diff_spot * (1 + Tariff().vat), abs=1e-12)

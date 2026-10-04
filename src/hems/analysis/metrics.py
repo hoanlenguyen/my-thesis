@@ -21,7 +21,7 @@ from hems.core.models import Scenario
 from hems.solvers.naive import has_coordination_conflict
 
 AGENT_SYSTEMS = ("single", "multi")
-BASELINE_SYSTEMS = ("timer", "oneshot")  # rule-based smart timer; LLM without tools
+BASELINE_SYSTEMS = ("timer", "oneshot", "emhass", "emhass_nominal", "cheapest_hours", "cheapest_hours_hourly", "emhass_rest", "emhass_rest_nominal")  # incl. real HEMS tools
 SCORED_SYSTEMS = (*AGENT_SYSTEMS, *BASELINE_SYSTEMS)
 
 
@@ -73,6 +73,41 @@ def summary_by_type(scenario_means: pd.DataFrame) -> pd.DataFrame:
     overall = scenario_means.pivot_table(columns=["model", "system"], values="gap_pct", aggfunc="mean")
     overall.index = ["All"]
     return pd.concat([table, overall])
+
+
+def pooled_savings_captured(scored: pd.DataFrame) -> pd.DataFrame:
+    """Share of the achievable saving captured, pooled over all runs of a (model, system).
+
+    (sum naive - sum scored cost) / (sum naive - sum MILP). Preferred to the mean of the per-run
+    ratio, which explodes on days where the naive schedule is already almost optimal (an achievable
+    saving of a fraction of a cent turns a one-cent overshoot into -3000 %).
+    """
+    grouped = scored.groupby(["model", "system"])
+    return grouped.apply(
+        lambda g: pd.Series({
+            "savings_captured_pooled": (g.naive_cost.sum() - g.scored_cost.sum()) / (g.naive_cost.sum() - g.milp_cost.sum()),
+            "runs": len(g),
+        }),
+        include_groups=False,
+    ).reset_index()  # fmt: skip
+
+
+def feasible_only_gaps(scored: pd.DataFrame) -> pd.DataFrame:
+    """Robustness check of the naive-cost convention: gaps over feasible runs only, next to the scored gaps."""
+    return (
+        scored.groupby(["model", "system"])
+        .apply(
+            lambda g: pd.Series({
+                "feasible_runs": int(g.feasible.sum()),
+                "runs": len(g),
+                "gap_scored_mean": g.gap_pct.mean(),
+                "gap_feasible_mean": g[g.feasible].gap_pct.mean(),
+                "gap_feasible_median": g[g.feasible].gap_pct.median(),
+            }),
+            include_groups=False,
+        )
+        .reset_index()
+    )  # fmt: skip
 
 
 def efficiency(scored: pd.DataFrame) -> pd.DataFrame:

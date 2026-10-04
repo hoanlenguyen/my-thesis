@@ -24,6 +24,8 @@ def _fmt(value: object) -> str:
     if isinstance(value, float):
         if pd.isna(value):
             return "--"
+        if value == 0:
+            return "0"  # also -0.0, which would otherwise print as "-0"
         return f"{value:.3g}" if abs(value) < 0.001 and value != 0 else f"{value:.3f}".rstrip("0").rstrip(".")
     return str(value).replace("_", r"\_").replace("%", r"\%")
 
@@ -90,6 +92,8 @@ def write_report(runs_path: str | Path | list[str | Path], scenarios: dict[str, 
         "baselines": stats.compare_to_baselines(means, "gap_pct"),
         "conflict_resolution": metrics.conflict_resolution_rate(scored, scenarios),
         "efficiency": metrics.efficiency(scored),
+        "savings_captured": metrics.pooled_savings_captured(scored),
+        "feasible_only": metrics.feasible_only_gaps(scored),
         "efficiency_tests": stats.efficiency_tests(means),
         "per_appliance": appliance_rows.groupby(["model", "system", "kind"]).saving_eur.agg(["mean", "std", "count"]).reset_index()
         if not appliance_rows.empty
@@ -104,6 +108,8 @@ def write_report(runs_path: str | Path | list[str | Path], scenarios: dict[str, 
         "equivalence": ("Equivalence test (TOST), multi- vs single-agent optimality gap.", "tab:equivalence"),
         "efficiency_tests": ("Wilcoxon signed-rank test, multi- vs single-agent efficiency per run.", "tab:efficiency-tests"),
         "conflict_resolution": ("Conflict resolution rate in scenarios requiring coordination.", "tab:conflicts"),
+        "feasible_only": ("Optimality gap over all runs and over feasible runs only (\\%).", "tab:feasible-only"),
+        "savings_captured": ("Share of the achievable saving captured, pooled over all runs.", "tab:savings-captured"),
         "efficiency": ("Feasibility, latency, tokens and API cost per run.", "tab:efficiency"),
         "per_appliance": ("Mean saving per appliance cycle vs. no scheduling (EUR).", "tab:per-appliance"),
         "characteristics": ("Spearman correlation of saving with appliance characteristics.", "tab:characteristics"),

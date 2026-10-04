@@ -1,0 +1,28 @@
+{
+  "name": "hems-demo",
+  "private": true,
+  "type": "module",
+  "description": "Demo of the thesis results: daily appliance recommendations of every system, replayed from the recorded benchmark runs.",
+  "scripts": {
+    "dev": "nuxt dev --port 3001",
+    "build": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.112",
+    "@nuxt/ui": "^4.8.2",
+    "@unovis/ts": "^1.6.5",
+    "@unovis/vue": "^1.6.5",
+    "@vueuse/core": "^14.3.0",
+    "@vueuse/nuxt": "^14.3.0",
+    "nuxt": "^4.4.8",
+    "tailwindcss": "^4.3.1",
+    "vue": "^3.5.38"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.5"
+  }
+}

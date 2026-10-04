@@ -44,6 +44,15 @@ latexmk -xelatex main                           # TeX Live at C:\texlive\2026\bi
 
 Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evaluation`, `rebuild-benchmark`.
 
+## Research questions (since 4 Oct 2026, pre-registration Amendment 1)
+
+- Framing: the artifact gives each household a **daily recommendation** from its appliance plan for the
+  day (the scenario's `user_request` field holds that plan; the agent input is unchanged).
+- **SQ1**: cost reduction of the pipeline vs no scheduling, no-tools LLM, rule-based (timer, cheapest
+  hours) and EMHASS (contains H1). **SQ2**: multi- vs single-agent quality / inference cost / latency, and
+  whether it holds with the local gpt-oss-20b (H2a–c, H3). Informal requests (old SQ4) dropped; a third SQ
+  may be added later only if results warrant it.
+
 ## Methodology invariants (keep these true)
 
 - Every system is scored by `core.evaluate.evaluate`; cost = consumer price × flexible appliance energy
@@ -58,12 +67,32 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   (`configs/confirmation.json` → `results/confirmation.jsonl`, analysed only by `hems confirm` /
   `analysis/confirm.py`). Once registered, never change `confirm.py`, the Q scenarios, prompts or tools
   before that run; report any deviation. The main benchmark is exploratory.
+- All systems are registered in `src/hems/systems.py` (kind reference / external / llm); `run.execute`
+  looks them up. Adding a system = one registry entry; `tests/test_regression.py` must keep reproducing
+  the recorded deterministic results exactly.
+- Real HEMS tools (secondary, descriptive; added after the pre-registration): `emhass` / `emhass_nominal`
+  (EMHASS 0.18.4 in its own env `.venv-emhass`, conflicting pins; called as a subprocess by
+  `solvers/emhass.py` → `tools/emhass_adapter.py --stdin`, so `hems run --systems emhass` works);
+  `cheapest_hours` / `cheapest_hours_hourly` = HA "Nordpool cheapest hours actions" blueprint rule
+  (`solvers/naive.py`). Results in `results/tools/{scenarios,scenarios_15min}.jsonl`.
+- **Thesis EMHASS numbers = REST "as deployed"** (`emhass_rest`, `emhass_rest_nominal`): Docker container
+  `emhass-thesis` on localhost:5000 (image ghcr.io/davidusb-geek/emhass, 0.18.4, default settings,
+  `-e SUPERVISOR_TOKEN= -e EMHASS_URL=empty` so it never contacts Home Assistant), driven by
+  `tools/emhass_rest.py`. The direct call (`emhass`, exact MIP gap) is only a cross-check.
+- **Savings captured is pooled** over runs (`metrics.pooled_savings_captured`); never quote the mean of the
+  per-run ratio, which explodes on days with a near-zero achievable saving.
 - Extra baselines (`configs/baselines.json` → `results/baselines.jsonl`): `timer` = rule-based smart timer
   (`solvers/naive.smart_timer_schedule`, deterministic) and `oneshot` = LLM without tools
   (`agents/oneshot.py`, all data incl. per-slot base load in one prompt). Analyse together with
   `hems analyze --runs results/runs.jsonl results/baselines.jsonl`.
 - Benchmark settings: 18 REFIT houses (12 and 19 excluded — reasons in `refit.EXCLUDED_HOUSES`),
   peak limit 3.5 kW, type E windows anchored at the daily price peak, seed 2026.
+
+## Next design iteration (wait until the gpt-oss-20b campaign is complete; version, archive, rerun)
+
+- `time_to_slot` rejects `"24:00"`, so `get_spot_prices(to_time="24:00")` returns an error turn (Gemini review).
+- `multi_agent.requested_ids` trusts the Orchestrator's brief: a fixed appliance id in it would cause
+  false "MISSING" feedback. Not observed with GPT-4o-mini; check the gpt-oss-20b traces first.
 
 ## Models (`agents/llm.py`)
 

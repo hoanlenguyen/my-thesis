@@ -86,3 +86,21 @@ two-sided Wilcoxon test is also significant.
   in thesis §3.2.
 - **H4 (SQ4, informal requests)** will be registered in a separate section of this file before any system
   is run on the informal-request benchmark.
+
+## Amendment 1 (4 October 2026): research questions consolidated
+
+Recorded after the confirmatory run (`results/confirmation.jsonl`) was completed and analysed; nothing in
+sections 1 to 6 above has been changed.
+
+- The thesis now frames the artifact as giving each household a **daily recommendation** from its
+  appliance plan for the day (the cycles to run with their ready times and deadlines, the base load, the
+  peak limit and the prices). This is the same input the systems received in every run so far; no prompt,
+  tool, scenario or scoring was changed.
+- The four sub-questions were consolidated into two:
+  - **SQ1** (cost reduction compared with no scheduling, a language model without tools, rule-based
+    scheduling and a deployed optimizer) contains **H1** unchanged.
+  - **SQ2** (multi-agent vs single agent, and whether this holds with a small local model) contains
+    **H2a–H2c** unchanged and the separately tested **H3** (main benchmark, both models).
+- The Holm families of section 5 are unchanged: H1-single and H1-multi form one family (2 tests);
+  H2a, H2b-tokens, H2b-cost and H2c form the other (4 tests). The reported results already follow them.
+- **H4 (informal requests) is not pursued** and will not be registered; it was never run.
