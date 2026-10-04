@@ -79,6 +79,8 @@ SYSTEMS: dict[str, System] = {
                agent=lambda sc, model, config, summarize: run_single_agent(sc, model, config)),  # fmt: skip
         System("multi", "llm", "hierarchical ReAct multi-agent pipeline",
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize)),  # fmt: skip
+        System("multi_v3", "llm", "pipeline with cost-aware verification (design iteration 6)",
+               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, cost_check=True)),  # fmt: skip
         System("oneshot", "llm", "language model without tools",
                agent=lambda sc, model, config, summarize: run_oneshot(sc, model, config)),  # fmt: skip
     )

@@ -20,7 +20,7 @@ import pandas as pd
 from hems.core.models import Scenario
 from hems.solvers.naive import has_coordination_conflict
 
-AGENT_SYSTEMS = ("single", "multi")
+AGENT_SYSTEMS = ("single", "multi", "multi_v3")
 BASELINE_SYSTEMS = ("timer", "oneshot", "emhass", "emhass_nominal", "cheapest_hours", "cheapest_hours_hourly", "emhass_rest", "emhass_rest_nominal")  # incl. real HEMS tools
 SCORED_SYSTEMS = (*AGENT_SYSTEMS, *BASELINE_SYSTEMS)
 

@@ -1333,8 +1333,15 @@ p = (s + m + d + \tau)(1 + v),
 with a retail margin $m = 0.5$\,c/kWh, a distribution fee $d =
 5.0$\,c/kWh, the electricity tax $\tau = 2.253$\,c/kWh and VAT $v =
 25.5\,\%$. These are representative values for a Finnish household on a
-spot-price contract; a single VAT rate is applied to all days so that
-scenarios from different periods remain comparable. Using the consumer
+spot-price contract. The tax is that of tax class I including the
+security-of-supply fee, valid until 31 March 2026; on 1 April 2026 the
+fee rose from 0.013 to 0.085\,c/kWh, raising the tax to 2.325\,c/kWh
+(Caruna, 2026). The benchmark keeps one tariff for all days, including a
+single VAT rate, so that scenarios from different periods remain
+comparable. Because every component is constant per kilowatt-hour, the
+choice of values does not change the optimal schedule, the ranking of
+the systems or the savings captured, only the size of the optimality gap
+(Section~\ref{sec:evaluation}). Using the consumer
 price keeps costs positive on days with negative spot prices, which
 keeps the optimality gap defined in Section~\ref{sec:evaluation} meaningful. Only the
 energy of the flexible appliances is costed, since the base load costs
@@ -1365,11 +1372,25 @@ possible. This reflects that price spikes coincide with evening demand
 peaks, when households tend to start appliances. Type F windows open
 between 00:00 and 04:00 and last until midnight.
 
-The household peak load limit, including the base load, is 3.5\,kW. It
-represents a household power cap, for example one induced by a
-power-based distribution tariff, rather than the main fuse (typically
-3\,$\times$\,25\,A, about 17\,kW), which would never bind for these
-appliances. The build procedure verifies with the MILP solver that every
+The household peak load limit, including the base load, is 3.5\,kW in
+every fifteen-minute slot. It is a deliberately strict, stylized cap
+that makes the appliances compete for capacity, rather than a limit
+that Finnish households face today. The main fuse (typically
+3\,$\times$\,25\,A, about 17\,kW) would never bind for these appliances.
+Power-based distribution tariffs exist, but they price the peak rather
+than forbid it. Helen Sähköverkko's time-based distribution product, for
+example, charges \EUR{1.57} per kW and month, excluding VAT, for the
+third-highest hourly average power of the month, with 80\,\% of
+night-time power counted (Helen Sähköverkko, 2026a). Under the Energy
+Authority's guidance, which network companies must follow by 1 January
+2029 at the latest, a household power charge is based on the highest
+60-minute average power of the month, starts only above 8\,kW, and
+remains optional, since a product without a power charge must still be
+offered (Helen Sähköverkko, 2026b). Compared with these tariffs, the
+benchmark's cap is stricter in level (3.5 instead of 8\,kW), in time
+resolution (15 instead of 60 minutes) and in kind (a hard limit instead
+of a price). It therefore tests coordination under demanding conditions;
+replacing it with a priced peak is left for future work. The build procedure verifies with the MILP solver that every
 scenario has a feasible schedule; this held for all 48 scenarios
 without relaxing the limit. Table~\ref{tab:benchmark} reports the
 resulting characteristics per type. A scenario requires coordination
@@ -1977,7 +1998,11 @@ complete picture of the SLM landscape for residential scheduling tasks.
 Fifth, a benchmark of informal household requests with annotated
 constraints would test the agents where a rule-based scheduler cannot
 operate, by measuring how accurately each system turns such requests
-into a correct schedule.
+into a correct schedule. Sixth, the hard peak cap of the benchmark could
+be replaced by the power charge of a real distribution tariff, so that
+a system weighs the energy saving of a cheap hour against the cost of
+raising the household's monthly peak, as under the Energy Authority's
+guidance for power-based distribution pricing.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Conclusions}
@@ -2019,6 +2044,10 @@ Lin, Y. C., \& Molchanov, P. (2025). \textit{Small language models are
 the future of agentic AI} [Position paper, NVIDIA Research].
 arXiv:2506.02153. \url{https://doi.org/10.48550/arXiv.2506.02153}
 
+Caruna. (2026, March 20). \textit{The strategic stockpile fee included in
+the electricity tax will increase from 1 April 2026} [News release].
+\url{https://caruna.fi/en/news/strategic-stockpile-fee-included-electricity-tax-will-increase-1-april-2026}
+
 El Makroum, R., Zwickl-Bernhard, S., \& Kranzl, L. (2025). Agentic AI
 home energy management system: A large language model framework for
 residential load scheduling [Preprint]. arXiv:2510.26603.
@@ -2053,6 +2082,15 @@ electrical power system: Lessons from the Finnish distribution system.
 Han, S., Zhang, Q., Jin, W., \& Xu, Z. (2024). \textit{LLM multi-agent
 systems: Challenges and open problems} [Preprint]. arXiv:2402.03578.
 \url{https://doi.org/10.48550/arXiv.2402.03578}
+
+Helen Sähköverkko. (2026a). \textit{Network service products and
+prices}. Retrieved 4 October 2026, from
+\url{https://www.helensahkoverkko.fi/en/private-customers/Information-about-electricity-consumption/Network-service-products-and-prices}
+
+Helen Sähköverkko. (2026b, February 16). \textit{Energy Authority
+clarifies electricity distribution pricing: an option without a power
+charge remains for households} [News release].
+\url{https://www.helensahkoverkko.fi/en/uutiset/2026/energy-authority-clarifies-electricity-distribution-pricing}
 
 Hevner, A. R., March, S. T., Park, J., \& Ram, S. (2004). Design
 science in information systems research. \textit{MIS Quarterly, 28}(1),

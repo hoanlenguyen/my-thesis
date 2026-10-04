@@ -1,0 +1,509 @@
+{"date": "2013-11-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-11-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-11-30", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-30", "naive": {"cost": 0.10820005089999998, "feasible": true}, "milp": {"cost": 0.10820005089999998, "feasible": true}, "timer": {"cost": 0.10820005089999998, "feasible": true}, "cheapest_hours": {"cost": 0.10820005089999998, "feasible": true}, "emhass_rest": {"cost": 0.10820005089999998, "feasible": true}}
+{"date": "2013-12-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-02", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-02", "naive": {"cost": 0.1394160580875, "feasible": true}, "milp": {"cost": 0.123994545925, "feasible": true}, "timer": {"cost": 0.123994545925, "feasible": true}, "cheapest_hours": {"cost": 0.1280605608125, "feasible": true}, "emhass_rest": {"cost": 0.123994545925, "feasible": true}}
+{"date": "2013-12-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-06", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-06", "naive": {"cost": 0.14052693075, "feasible": true}, "milp": {"cost": 0.12185529488749999, "feasible": true}, "timer": {"cost": 0.12185529488749999, "feasible": true}, "cheapest_hours": {"cost": 0.12961971320000001, "feasible": true}, "emhass_rest": {"cost": 0.12185529488749999, "feasible": true}}
+{"date": "2013-12-07", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-07", "naive": {"cost": 0.14909863094999998, "feasible": true}, "milp": {"cost": 0.14894691086249998, "feasible": true}, "timer": {"cost": 0.14894691086249998, "feasible": true}, "cheapest_hours": {"cost": 0.14909863094999998, "feasible": true}, "emhass_rest": {"cost": 0.14894691086249998, "feasible": true}}
+{"date": "2013-12-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-10", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-10", "naive": {"cost": 0.1346254595375, "feasible": true}, "milp": {"cost": 0.0850924230125, "feasible": true}, "timer": {"cost": 0.0850924230125, "feasible": true}, "cheapest_hours": {"cost": 0.09656005767499999, "feasible": true}, "emhass_rest": {"cost": 0.0850924230125, "feasible": true}}
+{"date": "2013-12-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-14", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-14", "naive": {"cost": 0.15932273317499998, "feasible": true}, "milp": {"cost": 0.1586196539375, "feasible": true}, "timer": {"cost": 0.1586196539375, "feasible": true}, "cheapest_hours": {"cost": 0.15932273317499998, "feasible": true}, "emhass_rest": {"cost": 0.1586196539375, "feasible": true}}
+{"date": "2013-12-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-17", "naive": {"cost": 0.09206686588749997, "feasible": true}, "milp": {"cost": 0.0797411092875, "feasible": true}, "timer": {"cost": 0.0797411092875, "feasible": true}, "cheapest_hours": {"cost": 0.0850331995625, "feasible": true}, "emhass_rest": {"cost": 0.0797411092875, "feasible": true}}
+{"date": "2013-12-18", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-18", "naive": {"cost": 0.12061042273749999, "feasible": true}, "milp": {"cost": 0.10813546232500001, "feasible": true}, "timer": {"cost": 0.10813546232500001, "feasible": true}, "cheapest_hours": {"cost": 0.10958042540000001, "feasible": true}, "emhass_rest": {"cost": 0.10813546232500001, "feasible": true}}
+{"date": "2013-12-19", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-19", "naive": {"cost": 0.11885976676249999, "feasible": true}, "milp": {"cost": 0.11393536011249997, "feasible": true}, "timer": {"cost": 0.11393536011249997, "feasible": true}, "cheapest_hours": {"cost": 0.11573993402499999, "feasible": true}, "emhass_rest": {"cost": 0.11393536011249997, "feasible": true}}
+{"date": "2013-12-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-24", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-24", "naive": {"cost": 0.12851926331250002, "feasible": true}, "milp": {"cost": 0.127360380625, "feasible": true}, "timer": {"cost": 0.127360380625, "feasible": true}, "cheapest_hours": {"cost": 0.12851926331250002, "feasible": true}, "emhass_rest": {"cost": 0.127360380625, "feasible": true}}
+{"date": "2013-12-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-28", "cycles": 3, "pastMidnight": 0, "priceDay": "2025-12-28", "naive": {"cost": 0.354533214175, "feasible": true}, "milp": {"cost": 0.34959569905, "feasible": true}, "timer": {"cost": 0.34969766152500004, "feasible": true}, "cheapest_hours": {"cost": 0.3531240593875, "feasible": true}, "emhass_rest": {"cost": 0.34969766152500004, "feasible": true}}
+{"date": "2013-12-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2013-12-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-02", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-02", "naive": {"cost": 0.20768790435, "feasible": true}, "milp": {"cost": 0.16413811483749996, "feasible": true}, "timer": {"cost": 0.16413811483749996, "feasible": true}, "cheapest_hours": {"cost": 0.168500560725, "feasible": true}, "emhass_rest": {"cost": 0.16413811483749996, "feasible": true}}
+{"date": "2014-01-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-06", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-06", "naive": {"cost": 0.332863304875, "feasible": true}, "milp": {"cost": 0.2602470564875, "feasible": true}, "timer": {"cost": 0.2602470564875, "feasible": true}, "cheapest_hours": {"cost": 0.30981291440000003, "feasible": true}, "emhass_rest": {"cost": 0.2602470564875, "feasible": true}}
+{"date": "2014-01-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-09", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-09", "naive": {"cost": 0.31976717907499996, "feasible": true}, "milp": {"cost": 0.22099401361249998, "feasible": true}, "timer": {"cost": 0.22099401361249998, "feasible": true}, "cheapest_hours": {"cost": 0.257506302775, "feasible": true}, "emhass_rest": {"cost": 0.22099401361249998, "feasible": true}}
+{"date": "2014-01-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-11", "naive": {"cost": 0.152574824075, "feasible": true}, "milp": {"cost": 0.1414159758875, "feasible": true}, "timer": {"cost": 0.1414159758875, "feasible": true}, "cheapest_hours": {"cost": 0.14772663357500002, "feasible": true}, "emhass_rest": {"cost": 0.1414159758875, "feasible": true}}
+{"date": "2014-01-12", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-12", "naive": {"cost": 0.27108274845, "feasible": true}, "milp": {"cost": 0.16453763781250003, "feasible": true}, "timer": {"cost": 0.16453763781250003, "feasible": true}, "cheapest_hours": {"cost": 0.1770079704125, "feasible": true}, "emhass_rest": {"cost": 0.16453763781250003, "feasible": true}}
+{"date": "2014-01-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-13", "naive": {"cost": 0.3117680004625, "feasible": true}, "milp": {"cost": 0.2493096875625, "feasible": true}, "timer": {"cost": 0.2493096875625, "feasible": true}, "cheapest_hours": {"cost": 0.30304574105, "feasible": true}, "emhass_rest": {"cost": 0.2493096875625, "feasible": true}}
+{"date": "2014-01-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-16", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-16", "naive": {"cost": 0.1785703638375, "feasible": true}, "milp": {"cost": 0.12924520237500003, "feasible": true}, "timer": {"cost": 0.12924520237500003, "feasible": true}, "cheapest_hours": {"cost": 0.1531551517625, "feasible": true}, "emhass_rest": {"cost": 0.12924520237500003, "feasible": true}}
+{"date": "2014-01-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-17", "naive": {"cost": 0.154607296575, "feasible": true}, "milp": {"cost": 0.1542543748875, "feasible": true}, "timer": {"cost": 0.1542543748875, "feasible": true}, "cheapest_hours": {"cost": 0.154607296575, "feasible": true}, "emhass_rest": {"cost": 0.1542543748875, "feasible": true}}
+{"date": "2014-01-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-19", "cycles": 3, "pastMidnight": 0, "priceDay": "2026-01-19", "naive": {"cost": 0.6275060836124999, "feasible": false}, "milp": {"cost": 0.6137136022375, "feasible": true}, "timer": {"cost": 0.6137136022375, "feasible": true}, "cheapest_hours": {"cost": 0.6220071505125, "feasible": false}, "emhass_rest": {"cost": 0.6137136022375, "feasible": true}}
+{"date": "2014-01-20", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-20", "naive": {"cost": 0.13216684237499998, "feasible": true}, "milp": {"cost": 0.11420213546249999, "feasible": true}, "timer": {"cost": 0.11420213546249999, "feasible": true}, "cheapest_hours": {"cost": 0.129453595125, "feasible": true}, "emhass_rest": {"cost": 0.11420213546249999, "feasible": true}}
+{"date": "2014-01-21", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-01-21", "naive": {"cost": 0.3737001295125, "feasible": true}, "milp": {"cost": 0.30508644635, "feasible": true}, "timer": {"cost": 0.30508644635, "feasible": true}, "cheapest_hours": {"cost": 0.31986326187499997, "feasible": true}, "emhass_rest": {"cost": 0.30508644635, "feasible": true}}
+{"date": "2014-01-22", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-22", "naive": {"cost": 0.37594127086249995, "feasible": true}, "milp": {"cost": 0.29726898860000006, "feasible": true}, "timer": {"cost": 0.29726898860000006, "feasible": true}, "cheapest_hours": {"cost": 0.34868129977499995, "feasible": true}, "emhass_rest": {"cost": 0.29726898860000006, "feasible": true}}
+{"date": "2014-01-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-01-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-02-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-08", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-08", "naive": {"cost": 0.0748664633875, "feasible": true}, "milp": {"cost": 0.07384142958750001, "feasible": true}, "timer": {"cost": 0.07384142958750001, "feasible": true}, "cheapest_hours": {"cost": 0.0748664633875, "feasible": true}, "emhass_rest": {"cost": 0.07384142958750001, "feasible": true}}
+{"date": "2014-03-09", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-03-09", "naive": {"cost": 0.4134139174, "feasible": true}, "milp": {"cost": 0.3414677511625, "feasible": true}, "timer": {"cost": 0.3414677511625, "feasible": true}, "cheapest_hours": {"cost": 0.40435486305, "feasible": true}, "emhass_rest": {"cost": 0.3414677511625, "feasible": true}}
+{"date": "2014-03-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-13", "naive": {"cost": 0.11329644588749999, "feasible": true}, "milp": {"cost": 0.11272461454999999, "feasible": true}, "timer": {"cost": 0.11272461454999999, "feasible": true}, "cheapest_hours": {"cost": 0.1127370421875, "feasible": true}, "emhass_rest": {"cost": 0.11272461454999999, "feasible": true}}
+{"date": "2014-03-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-15", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-15", "naive": {"cost": 0.096351012325, "feasible": true}, "milp": {"cost": 0.08543357907499999, "feasible": true}, "timer": {"cost": 0.08543357907499999, "feasible": true}, "cheapest_hours": {"cost": 0.08543357907499999, "feasible": true}, "emhass_rest": {"cost": 0.08543357907499999, "feasible": true}}
+{"date": "2014-03-16", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-03-16", "naive": {"cost": 0.2961689716875, "feasible": true}, "milp": {"cost": 0.2578779051375, "feasible": true}, "timer": {"cost": 0.2578779051375, "feasible": true}, "cheapest_hours": {"cost": 0.2601048963625, "feasible": false}, "emhass_rest": {"cost": 0.2578779051375, "feasible": true}}
+{"date": "2014-03-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-21", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-21", "naive": {"cost": 0.11775409293750001, "feasible": true}, "milp": {"cost": 0.117311507775, "feasible": true}, "timer": {"cost": 0.117311507775, "feasible": true}, "cheapest_hours": {"cost": 0.11736028335000001, "feasible": true}, "emhass_rest": {"cost": 0.117311507775, "feasible": true}}
+{"date": "2014-03-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-24", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-24", "naive": {"cost": 0.13290678096249997, "feasible": true}, "milp": {"cost": 0.122922524925, "feasible": true}, "timer": {"cost": 0.122922524925, "feasible": true}, "cheapest_hours": {"cost": 0.1232666616125, "feasible": true}, "emhass_rest": {"cost": 0.122922524925, "feasible": true}}
+{"date": "2014-03-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-27", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-27", "naive": {"cost": 0.10962884016249999, "feasible": true}, "milp": {"cost": 0.09469226, "feasible": true}, "timer": {"cost": 0.09469226, "feasible": true}, "cheapest_hours": {"cost": 0.1052330771625, "feasible": true}, "emhass_rest": {"cost": 0.09469226, "feasible": true}}
+{"date": "2014-03-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-29", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-03-28", "naive": {"cost": 0.21963487998749998, "feasible": true}, "milp": {"cost": 0.2132131799, "feasible": true}, "timer": {"cost": 0.2132131799, "feasible": true}, "cheapest_hours": {"cost": 0.2150437699625, "feasible": true}, "emhass_rest": {"cost": 0.2132131799, "feasible": true}}
+{"date": "2014-03-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-03-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-01", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-01", "naive": {"cost": 0.080334150125, "feasible": true}, "milp": {"cost": 0.07237063861250001, "feasible": true}, "timer": {"cost": 0.07237063861250001, "feasible": true}, "cheapest_hours": {"cost": 0.073644573425, "feasible": true}, "emhass_rest": {"cost": 0.07237063861250001, "feasible": true}}
+{"date": "2014-04-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-03", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-03", "naive": {"cost": 0.19306456904999997, "feasible": true}, "milp": {"cost": 0.1393490850125, "feasible": true}, "timer": {"cost": 0.1393490850125, "feasible": true}, "cheapest_hours": {"cost": 0.1393490850125, "feasible": true}, "emhass_rest": {"cost": 0.1393490850125, "feasible": true}}
+{"date": "2014-04-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-06", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-06", "naive": {"cost": 0.1046757944125, "feasible": true}, "milp": {"cost": 0.1038576222625, "feasible": true}, "timer": {"cost": 0.1038576222625, "feasible": true}, "cheapest_hours": {"cost": 0.10409076988749999, "feasible": true}, "emhass_rest": {"cost": 0.1038576222625, "feasible": true}}
+{"date": "2014-04-07", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-07", "naive": {"cost": 0.12801756137499998, "feasible": true}, "milp": {"cost": 0.12283239396250001, "feasible": true}, "timer": {"cost": 0.12283239396250001, "feasible": true}, "cheapest_hours": {"cost": 0.1248103367125, "feasible": true}, "emhass_rest": {"cost": 0.12283239396250001, "feasible": true}}
+{"date": "2014-04-08", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-08", "naive": {"cost": 0.1205060506625, "feasible": true}, "milp": {"cost": 0.09729560376249999, "feasible": true}, "timer": {"cost": 0.09729560376249999, "feasible": true}, "cheapest_hours": {"cost": 0.11146135037499999, "feasible": true}, "emhass_rest": {"cost": 0.09729560376249999, "feasible": true}}
+{"date": "2014-04-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-13", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-04-13", "naive": {"cost": 0.400719272375, "feasible": true}, "milp": {"cost": 0.320952401075, "feasible": true}, "timer": {"cost": 0.320952401075, "feasible": true}, "cheapest_hours": {"cost": 0.39796258643749993, "feasible": true}, "emhass_rest": {"cost": 0.320952401075, "feasible": true}}
+{"date": "2014-04-14", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-14", "naive": {"cost": 0.0331971376375, "feasible": true}, "milp": {"cost": 0.0313776198125, "feasible": true}, "timer": {"cost": 0.0313776198125, "feasible": true}, "cheapest_hours": {"cost": 0.033233786774999996, "feasible": true}, "emhass_rest": {"cost": 0.0313776198125, "feasible": true}}
+{"date": "2014-04-15", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-15", "naive": {"cost": 0.18220362334999998, "feasible": true}, "milp": {"cost": 0.13090491791249997, "feasible": true}, "timer": {"cost": 0.13090491791249997, "feasible": true}, "cheapest_hours": {"cost": 0.1352182713375, "feasible": true}, "emhass_rest": {"cost": 0.13090491791249997, "feasible": true}}
+{"date": "2014-04-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-18", "cycles": 3, "pastMidnight": 0, "priceDay": "2026-04-18", "naive": {"cost": 0.3694879730125, "feasible": true}, "milp": {"cost": 0.33949875656249995, "feasible": true}, "timer": {"cost": 0.34223513659999993, "feasible": true}, "cheapest_hours": {"cost": 0.3513442874125, "feasible": true}, "emhass_rest": {"cost": 0.3521154598125, "feasible": true}}
+{"date": "2014-04-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-23", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-23", "naive": {"cost": 0.1103115538875, "feasible": true}, "milp": {"cost": 0.1101847926125, "feasible": true}, "timer": {"cost": 0.1101847926125, "feasible": true}, "cheapest_hours": {"cost": 0.11021254066250001, "feasible": true}, "emhass_rest": {"cost": 0.1101847926125, "feasible": true}}
+{"date": "2014-04-24", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-24", "naive": {"cost": 0.11426043962499999, "feasible": true}, "milp": {"cost": 0.11283988943750001, "feasible": true}, "timer": {"cost": 0.11283988943750001, "feasible": true}, "cheapest_hours": {"cost": 0.1133184021125, "feasible": true}, "emhass_rest": {"cost": 0.11283988943750001, "feasible": true}}
+{"date": "2014-04-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-27", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-27", "naive": {"cost": 0.124033676825, "feasible": true}, "milp": {"cost": 0.11868638851249999, "feasible": true}, "timer": {"cost": 0.11868638851249999, "feasible": true}, "cheapest_hours": {"cost": 0.1210922894, "feasible": true}, "emhass_rest": {"cost": 0.11868638851249999, "feasible": true}}
+{"date": "2014-04-28", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-28", "naive": {"cost": 0.030925816675000002, "feasible": true}, "milp": {"cost": 0.029749787550000004, "feasible": true}, "timer": {"cost": 0.029749787550000004, "feasible": true}, "cheapest_hours": {"cost": 0.029753047412499997, "feasible": true}, "emhass_rest": {"cost": 0.029749787550000004, "feasible": true}}
+{"date": "2014-04-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-04-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-03", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-05-03", "naive": {"cost": 0.3002120734125, "feasible": true}, "milp": {"cost": 0.29889602707499996, "feasible": true}, "timer": {"cost": 0.29889602707499996, "feasible": true}, "cheapest_hours": {"cost": 0.30751165854999996, "feasible": true}, "emhass_rest": {"cost": 0.29889602707499996, "feasible": true}}
+{"date": "2014-05-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-08", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-08", "naive": {"cost": 0.2062603198875, "feasible": true}, "milp": {"cost": 0.2062603198875, "feasible": true}, "timer": {"cost": 0.2062603198875, "feasible": true}, "cheapest_hours": {"cost": 0.2062603198875, "feasible": true}, "emhass_rest": {"cost": 0.2062603198875, "feasible": true}}
+{"date": "2014-05-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-11", "naive": {"cost": 0.17645241642499998, "feasible": true}, "milp": {"cost": 0.13949108826249998, "feasible": true}, "timer": {"cost": 0.13949108826249998, "feasible": true}, "cheapest_hours": {"cost": 0.15083158828749998, "feasible": true}, "emhass_rest": {"cost": 0.13949108826249998, "feasible": true}}
+{"date": "2014-05-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-13", "naive": {"cost": 0.23494811075, "feasible": true}, "milp": {"cost": 0.14585931279999997, "feasible": true}, "timer": {"cost": 0.14585931279999997, "feasible": true}, "cheapest_hours": {"cost": 0.20625782871249998, "feasible": true}, "emhass_rest": {"cost": 0.14585931279999997, "feasible": true}}
+{"date": "2014-05-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-16", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-05-16", "naive": {"cost": 0.172284159825, "feasible": true}, "milp": {"cost": 0.141926864425, "feasible": true}, "timer": {"cost": 0.141926864425, "feasible": true}, "cheapest_hours": {"cost": 0.1496878816875, "feasible": true}, "emhass_rest": {"cost": 0.141926864425, "feasible": true}}
+{"date": "2014-05-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-20", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-20", "naive": {"cost": 0.21568396428749997, "feasible": true}, "milp": {"cost": 0.16169663469999998, "feasible": true}, "timer": {"cost": 0.16169663469999998, "feasible": true}, "cheapest_hours": {"cost": 0.16169663469999998, "feasible": true}, "emhass_rest": {"cost": 0.16169663469999998, "feasible": true}}
+{"date": "2014-05-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-25", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-25", "naive": {"cost": 0.14762589472499998, "feasible": true}, "milp": {"cost": 0.14056892304999996, "feasible": true}, "timer": {"cost": 0.14056892304999996, "feasible": true}, "cheapest_hours": {"cost": 0.14085487479999997, "feasible": true}, "emhass_rest": {"cost": 0.14056892304999996, "feasible": true}}
+{"date": "2014-05-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-29", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-29", "naive": {"cost": 0.0998972564125, "feasible": true}, "milp": {"cost": 0.0714343897875, "feasible": true}, "timer": {"cost": 0.0714343897875, "feasible": true}, "cheapest_hours": {"cost": 0.07253713632499999, "feasible": true}, "emhass_rest": {"cost": 0.0714343897875, "feasible": true}}
+{"date": "2014-05-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-05-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-01", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-01", "naive": {"cost": 0.3779186174875, "feasible": true}, "milp": {"cost": 0.29784158235, "feasible": true}, "timer": {"cost": 0.29784158235, "feasible": true}, "cheapest_hours": {"cost": 0.3047665311625, "feasible": true}, "emhass_rest": {"cost": 0.29784158235, "feasible": true}}
+{"date": "2014-06-02", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-06-02", "naive": {"cost": 0.20489453789999998, "feasible": true}, "milp": {"cost": 0.17579571884999998, "feasible": true}, "timer": {"cost": 0.17579571884999998, "feasible": true}, "cheapest_hours": {"cost": 0.18108006891249998, "feasible": true}, "emhass_rest": {"cost": 0.17579571884999998, "feasible": true}}
+{"date": "2014-06-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-05", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-05", "naive": {"cost": 0.16469345861249998, "feasible": true}, "milp": {"cost": 0.1525981764875, "feasible": true}, "timer": {"cost": 0.1525981764875, "feasible": true}, "cheapest_hours": {"cost": 0.1579713397625, "feasible": true}, "emhass_rest": {"cost": 0.1525981764875, "feasible": true}}
+{"date": "2014-06-06", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-06", "naive": {"cost": 0.16784343645, "feasible": true}, "milp": {"cost": 0.13938536078750002, "feasible": true}, "timer": {"cost": 0.13938536078750002, "feasible": true}, "cheapest_hours": {"cost": 0.1569756227625, "feasible": true}, "emhass_rest": {"cost": 0.13938536078750002, "feasible": true}}
+{"date": "2014-06-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-08", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-06-08", "naive": {"cost": 0.5009705831125, "feasible": true}, "milp": {"cost": 0.47443101653749997, "feasible": true}, "timer": {"cost": 0.47443101653749997, "feasible": true}, "cheapest_hours": {"cost": 0.4820921828625, "feasible": true}, "emhass_rest": {"cost": 0.47443101653749997, "feasible": true}}
+{"date": "2014-06-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-13", "naive": {"cost": 0.14422638209999994, "feasible": true}, "milp": {"cost": 0.14422638209999994, "feasible": true}, "timer": {"cost": 0.14422638209999994, "feasible": true}, "cheapest_hours": {"cost": 0.14422638209999994, "feasible": true}, "emhass_rest": {"cost": 0.14422638209999994, "feasible": true}}
+{"date": "2014-06-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-20", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-20", "naive": {"cost": 0.13838962182499998, "feasible": true}, "milp": {"cost": 0.13753689952499998, "feasible": true}, "timer": {"cost": 0.13753689952499998, "feasible": true}, "cheapest_hours": {"cost": 0.137539396975, "feasible": true}, "emhass_rest": {"cost": 0.13753689952499998, "feasible": true}}
+{"date": "2014-06-21", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-06-21", "naive": {"cost": 0.07624185239999999, "feasible": true}, "milp": {"cost": 0.07450678979999999, "feasible": true}, "timer": {"cost": 0.07450678979999999, "feasible": true}, "cheapest_hours": {"cost": 0.0745443048875, "feasible": true}, "emhass_rest": {"cost": 0.07450678979999999, "feasible": true}}
+{"date": "2014-06-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-25", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-25", "naive": {"cost": 0.16315902344999997, "feasible": true}, "milp": {"cost": 0.1294875366, "feasible": true}, "timer": {"cost": 0.1294875366, "feasible": true}, "cheapest_hours": {"cost": 0.142663951025, "feasible": true}, "emhass_rest": {"cost": 0.1294875366, "feasible": true}}
+{"date": "2014-06-26", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-26", "naive": {"cost": 0.25000407278750003, "feasible": true}, "milp": {"cost": 0.18251858442499996, "feasible": true}, "timer": {"cost": 0.18251858442499996, "feasible": true}, "cheapest_hours": {"cost": 0.1864832957125, "feasible": true}, "emhass_rest": {"cost": 0.18251858442499996, "feasible": true}}
+{"date": "2014-06-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-06-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-01", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-07-01", "naive": {"cost": 0.133737248975, "feasible": true}, "milp": {"cost": 0.128273681775, "feasible": true}, "timer": {"cost": 0.128273681775, "feasible": true}, "cheapest_hours": {"cost": 0.134659937525, "feasible": true}, "emhass_rest": {"cost": 0.128273681775, "feasible": true}}
+{"date": "2014-07-02", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-02", "naive": {"cost": 0.19744942296249998, "feasible": true}, "milp": {"cost": 0.17668931022499998, "feasible": true}, "timer": {"cost": 0.17668931022499998, "feasible": true}, "cheapest_hours": {"cost": 0.20329128794999998, "feasible": true}, "emhass_rest": {"cost": 0.17668931022499998, "feasible": true}}
+{"date": "2014-07-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-09", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-09", "naive": {"cost": 0.032426219374999996, "feasible": true}, "milp": {"cost": 0.0322110904125, "feasible": true}, "timer": {"cost": 0.0322110904125, "feasible": true}, "cheapest_hours": {"cost": 0.032426219374999996, "feasible": true}, "emhass_rest": {"cost": 0.0322110904125, "feasible": true}}
+{"date": "2014-07-10", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-10", "naive": {"cost": 0.18147577982499996, "feasible": true}, "milp": {"cost": 0.17556618562499998, "feasible": true}, "timer": {"cost": 0.17556618562499998, "feasible": true}, "cheapest_hours": {"cost": 0.18147577982499996, "feasible": true}, "emhass_rest": {"cost": 0.17556618562499998, "feasible": true}}
+{"date": "2014-07-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-17", "naive": {"cost": 0.050044107037499994, "feasible": true}, "milp": {"cost": 0.048348495362499994, "feasible": true}, "timer": {"cost": 0.048348495362499994, "feasible": true}, "cheapest_hours": {"cost": 0.0494938962125, "feasible": true}, "emhass_rest": {"cost": 0.048348495362499994, "feasible": true}}
+{"date": "2014-07-18", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-18", "naive": {"cost": 0.10892486673749999, "feasible": true}, "milp": {"cost": 0.10624743718749999, "feasible": true}, "timer": {"cost": 0.10624743718749999, "feasible": true}, "cheapest_hours": {"cost": 0.10892486673749999, "feasible": true}, "emhass_rest": {"cost": 0.10624743718749999, "feasible": true}}
+{"date": "2014-07-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-22", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-22", "naive": {"cost": 0.15539051069999998, "feasible": true}, "milp": {"cost": 0.1466536493625, "feasible": true}, "timer": {"cost": 0.1466536493625, "feasible": true}, "cheapest_hours": {"cost": 0.15368861461249997, "feasible": true}, "emhass_rest": {"cost": 0.1466536493625, "feasible": true}}
+{"date": "2014-07-23", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-23", "naive": {"cost": 0.13168398112500002, "feasible": true}, "milp": {"cost": 0.1271893649125, "feasible": true}, "timer": {"cost": 0.1271893649125, "feasible": true}, "cheapest_hours": {"cost": 0.13163067813749998, "feasible": true}, "emhass_rest": {"cost": 0.1271893649125, "feasible": true}}
+{"date": "2014-07-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-26", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-26", "naive": {"cost": 0.048582254799999995, "feasible": true}, "milp": {"cost": 0.04857739794999999, "feasible": true}, "timer": {"cost": 0.04857739794999999, "feasible": true}, "cheapest_hours": {"cost": 0.048582254799999995, "feasible": true}, "emhass_rest": {"cost": 0.04857739794999999, "feasible": true}}
+{"date": "2014-07-27", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-07-27", "naive": {"cost": 0.15513071315, "feasible": true}, "milp": {"cost": 0.14742521708749998, "feasible": true}, "timer": {"cost": 0.14742521708749998, "feasible": true}, "cheapest_hours": {"cost": 0.148614859825, "feasible": true}, "emhass_rest": {"cost": 0.14742521708749998, "feasible": true}}
+{"date": "2014-07-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-07-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-01", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-01", "naive": {"cost": 0.16466021993750002, "feasible": true}, "milp": {"cost": 0.1426601264125, "feasible": true}, "timer": {"cost": 0.1426601264125, "feasible": true}, "cheapest_hours": {"cost": 0.143520752075, "feasible": true}, "emhass_rest": {"cost": 0.1426601264125, "feasible": true}}
+{"date": "2014-08-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-06", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-06", "naive": {"cost": 0.049716831275, "feasible": true}, "milp": {"cost": 0.0496413649875, "feasible": true}, "timer": {"cost": 0.0496413649875, "feasible": true}, "cheapest_hours": {"cost": 0.049716831275, "feasible": true}, "emhass_rest": {"cost": 0.0496413649875, "feasible": true}}
+{"date": "2014-08-07", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-08-07", "naive": {"cost": 0.17549626016249997, "feasible": true}, "milp": {"cost": 0.17351852448750002, "feasible": true}, "timer": {"cost": 0.17351852448750002, "feasible": true}, "cheapest_hours": {"cost": 0.1735679903125, "feasible": true}, "emhass_rest": {"cost": 0.17355086270000003, "feasible": true}}
+{"date": "2014-08-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-11", "naive": {"cost": 0.13935023333750002, "feasible": true}, "milp": {"cost": 0.1364042526125, "feasible": true}, "timer": {"cost": 0.1364042526125, "feasible": true}, "cheapest_hours": {"cost": 0.1366559491375, "feasible": true}, "emhass_rest": {"cost": 0.1364042526125, "feasible": true}}
+{"date": "2014-08-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-16", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-08-16", "naive": {"cost": 0.150943662925, "feasible": true}, "milp": {"cost": 0.15026664690000002, "feasible": true}, "timer": {"cost": 0.15026664690000002, "feasible": true}, "cheapest_hours": {"cost": 0.15034609467499999, "feasible": true}, "emhass_rest": {"cost": 0.15026664690000002, "feasible": true}}
+{"date": "2014-08-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-18", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-08-18", "naive": {"cost": 0.12427260686249998, "feasible": true}, "milp": {"cost": 0.11718891937499999, "feasible": true}, "timer": {"cost": 0.11718891937499999, "feasible": true}, "cheapest_hours": {"cost": 0.11718891937499999, "feasible": true}, "emhass_rest": {"cost": 0.11718891937499999, "feasible": true}}
+{"date": "2014-08-19", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-19", "naive": {"cost": 0.178135986375, "feasible": true}, "milp": {"cost": 0.15913831406249998, "feasible": true}, "timer": {"cost": 0.15913831406249998, "feasible": true}, "cheapest_hours": {"cost": 0.162236039975, "feasible": true}, "emhass_rest": {"cost": 0.15913831406249998, "feasible": true}}
+{"date": "2014-08-20", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-20", "naive": {"cost": 0.22948291205, "feasible": true}, "milp": {"cost": 0.19800001969999997, "feasible": true}, "timer": {"cost": 0.19800001969999997, "feasible": true}, "cheapest_hours": {"cost": 0.20982026229999998, "feasible": true}, "emhass_rest": {"cost": 0.19800001969999997, "feasible": true}}
+{"date": "2014-08-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-22", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-22", "naive": {"cost": 0.26992624712499996, "feasible": true}, "milp": {"cost": 0.166537916425, "feasible": true}, "timer": {"cost": 0.166537916425, "feasible": true}, "cheapest_hours": {"cost": 0.19456755391249997, "feasible": true}, "emhass_rest": {"cost": 0.166537916425, "feasible": true}}
+{"date": "2014-08-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-26", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-26", "naive": {"cost": 0.36280650675000004, "feasible": true}, "milp": {"cost": 0.286739243675, "feasible": true}, "timer": {"cost": 0.286739243675, "feasible": true}, "cheapest_hours": {"cost": 0.29086304817499997, "feasible": true}, "emhass_rest": {"cost": 0.286739243675, "feasible": true}}
+{"date": "2014-08-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-28", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-08-28", "naive": {"cost": 0.1879508582, "feasible": true}, "milp": {"cost": 0.11562406928749999, "feasible": true}, "timer": {"cost": 0.11562406928749999, "feasible": true}, "cheapest_hours": {"cost": 0.12821338529999998, "feasible": true}, "emhass_rest": {"cost": 0.11562406928749999, "feasible": true}}
+{"date": "2014-08-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-08-30", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-08-30", "naive": {"cost": 0.06784551021249999, "feasible": true}, "milp": {"cost": 0.06784551021249999, "feasible": true}, "timer": {"cost": 0.06784551021249999, "feasible": true}, "cheapest_hours": {"cost": 0.06784551021249999, "feasible": true}, "emhass_rest": {"cost": 0.06784551021249999, "feasible": true}}
+{"date": "2014-09-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-09-11", "naive": {"cost": 0.24213350030000003, "feasible": true}, "milp": {"cost": 0.21322071303749995, "feasible": true}, "timer": {"cost": 0.21322071303749995, "feasible": true}, "cheapest_hours": {"cost": 0.22361824998749996, "feasible": true}, "emhass_rest": {"cost": 0.21322071303749995, "feasible": true}}
+{"date": "2014-09-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-17", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-09-17", "naive": {"cost": 0.2568952652375, "feasible": true}, "milp": {"cost": 0.2333516597625, "feasible": true}, "timer": {"cost": 0.2333516597625, "feasible": true}, "cheapest_hours": {"cost": 0.24185160847499998, "feasible": true}, "emhass_rest": {"cost": 0.2333516597625, "feasible": true}}
+{"date": "2014-09-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-22", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-09-22", "naive": {"cost": 0.34516681346249994, "feasible": true}, "milp": {"cost": 0.34516681346249994, "feasible": true}, "timer": {"cost": 0.34516681346249994, "feasible": true}, "cheapest_hours": {"cost": 0.34516681346249994, "feasible": true}, "emhass_rest": {"cost": 0.34516681346249994, "feasible": true}}
+{"date": "2014-09-23", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-09-23", "naive": {"cost": 0.15381640812499997, "feasible": true}, "milp": {"cost": 0.1004704055, "feasible": true}, "timer": {"cost": 0.1004704055, "feasible": true}, "cheapest_hours": {"cost": 0.1477440874875, "feasible": true}, "emhass_rest": {"cost": 0.1004704055, "feasible": true}}
+{"date": "2014-09-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-27", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-09-27", "naive": {"cost": 0.269105226125, "feasible": true}, "milp": {"cost": 0.2000898739375, "feasible": true}, "timer": {"cost": 0.2000898739375, "feasible": true}, "cheapest_hours": {"cost": 0.210956683625, "feasible": true}, "emhass_rest": {"cost": 0.2000898739375, "feasible": true}}
+{"date": "2014-09-28", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-09-28", "naive": {"cost": 0.12381300389999998, "feasible": true}, "milp": {"cost": 0.10687788329999999, "feasible": true}, "timer": {"cost": 0.10687788329999999, "feasible": true}, "cheapest_hours": {"cost": 0.12277372584999997, "feasible": true}, "emhass_rest": {"cost": 0.10687788329999999, "feasible": true}}
+{"date": "2014-09-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-09-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-02", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-02", "naive": {"cost": 0.2992363768, "feasible": true}, "milp": {"cost": 0.15957459285, "feasible": true}, "timer": {"cost": 0.15957459285, "feasible": true}, "cheapest_hours": {"cost": 0.2865829867625, "feasible": true}, "emhass_rest": {"cost": 0.15957459285, "feasible": true}}
+{"date": "2014-10-03", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-03", "naive": {"cost": 0.0659344087625, "feasible": true}, "milp": {"cost": 0.052871377312499995, "feasible": true}, "timer": {"cost": 0.052871377312499995, "feasible": true}, "cheapest_hours": {"cost": 0.054154210075, "feasible": true}, "emhass_rest": {"cost": 0.052871377312499995, "feasible": true}}
+{"date": "2014-10-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-07", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-07", "naive": {"cost": 0.3426619526875, "feasible": true}, "milp": {"cost": 0.1488006594375, "feasible": true}, "timer": {"cost": 0.1488006594375, "feasible": true}, "cheapest_hours": {"cost": 0.1541939403625, "feasible": true}, "emhass_rest": {"cost": 0.14881998016249998, "feasible": true}}
+{"date": "2014-10-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-10", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-10", "naive": {"cost": 0.08063711967500001, "feasible": true}, "milp": {"cost": 0.057483925874999994, "feasible": true}, "timer": {"cost": 0.057483925874999994, "feasible": true}, "cheapest_hours": {"cost": 0.0629310933625, "feasible": true}, "emhass_rest": {"cost": 0.057483925874999994, "feasible": true}}
+{"date": "2014-10-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-13", "naive": {"cost": 0.246517045875, "feasible": true}, "milp": {"cost": 0.2403907225875, "feasible": true}, "timer": {"cost": 0.2403907225875, "feasible": true}, "cheapest_hours": {"cost": 0.2403907225875, "feasible": true}, "emhass_rest": {"cost": 0.2403907225875, "feasible": true}}
+{"date": "2014-10-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-15", "cycles": 2, "pastMidnight": 0, "priceDay": "2025-10-15", "naive": {"cost": 0.1552475003125, "feasible": true}, "milp": {"cost": 0.0553979307625, "feasible": true}, "timer": {"cost": 0.0553979307625, "feasible": true}, "cheapest_hours": {"cost": 0.064325809375, "feasible": true}, "emhass_rest": {"cost": 0.0553979307625, "feasible": true}}
+{"date": "2014-10-16", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-16", "naive": {"cost": 0.106896287875, "feasible": true}, "milp": {"cost": 0.106896287875, "feasible": true}, "timer": {"cost": 0.106896287875, "feasible": true}, "cheapest_hours": {"cost": 0.106896287875, "feasible": true}, "emhass_rest": {"cost": 0.106896287875, "feasible": true}}
+{"date": "2014-10-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-18", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-18", "naive": {"cost": 0.18461057843749998, "feasible": true}, "milp": {"cost": 0.14617177642499998, "feasible": true}, "timer": {"cost": 0.14617177642499998, "feasible": true}, "cheapest_hours": {"cost": 0.18461057843749998, "feasible": true}, "emhass_rest": {"cost": 0.14617177642499998, "feasible": true}}
+{"date": "2014-10-19", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-19", "naive": {"cost": 0.0519540852625, "feasible": true}, "milp": {"cost": 0.0506102438125, "feasible": true}, "timer": {"cost": 0.0506102438125, "feasible": true}, "cheapest_hours": {"cost": 0.0519540852625, "feasible": true}, "emhass_rest": {"cost": 0.0506102438125, "feasible": true}}
+{"date": "2014-10-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-24", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-24", "naive": {"cost": 0.29060784392499994, "feasible": true}, "milp": {"cost": 0.19598401593749998, "feasible": true}, "timer": {"cost": 0.19598401593749998, "feasible": true}, "cheapest_hours": {"cost": 0.207083226525, "feasible": true}, "emhass_rest": {"cost": 0.19598401593749998, "feasible": true}}
+{"date": "2014-10-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-26", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-25", "naive": {"cost": 0.050572857362499994, "feasible": true}, "milp": {"cost": 0.05024016, "feasible": true}, "timer": {"cost": 0.05024016, "feasible": true}, "cheapest_hours": {"cost": 0.050572857362499994, "feasible": true}, "emhass_rest": {"cost": 0.05024016, "feasible": true}}
+{"date": "2014-10-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-28", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-10-28", "naive": {"cost": 0.1106060961125, "feasible": true}, "milp": {"cost": 0.09796983055, "feasible": true}, "timer": {"cost": 0.09796983055, "feasible": true}, "cheapest_hours": {"cost": 0.1106060961125, "feasible": true}, "emhass_rest": {"cost": 0.09796983055, "feasible": true}}
+{"date": "2014-10-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-10-30", "cycles": 2, "pastMidnight": 0, "priceDay": "2025-10-30", "naive": {"cost": 0.39466203997499993, "feasible": true}, "milp": {"cost": 0.2857672869625, "feasible": true}, "timer": {"cost": 0.2857672869625, "feasible": true}, "cheapest_hours": {"cost": 0.30997842379999996, "feasible": true}, "emhass_rest": {"cost": 0.2857672869625, "feasible": true}}
+{"date": "2014-10-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-08", "cycles": 2, "pastMidnight": 0, "priceDay": "2025-11-08", "naive": {"cost": 0.5079696051625, "feasible": true}, "milp": {"cost": 0.4357381586, "feasible": true}, "timer": {"cost": 0.4357381586, "feasible": true}, "cheapest_hours": {"cost": 0.5079696051625, "feasible": true}, "emhass_rest": {"cost": 0.4357381586, "feasible": true}}
+{"date": "2014-11-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-12", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-12", "naive": {"cost": 0.1603028662125, "feasible": true}, "milp": {"cost": 0.1492421935375, "feasible": true}, "timer": {"cost": 0.1492421935375, "feasible": true}, "cheapest_hours": {"cost": 0.155063815375, "feasible": true}, "emhass_rest": {"cost": 0.1492421935375, "feasible": true}}
+{"date": "2014-11-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-15", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-15", "naive": {"cost": 0.048465279387500004, "feasible": true}, "milp": {"cost": 0.04797065564999999, "feasible": true}, "timer": {"cost": 0.04797065564999999, "feasible": true}, "cheapest_hours": {"cost": 0.048196847437499996, "feasible": true}, "emhass_rest": {"cost": 0.04797065564999999, "feasible": true}}
+{"date": "2014-11-16", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-16", "naive": {"cost": 0.11952272992499999, "feasible": true}, "milp": {"cost": 0.11712047794999998, "feasible": true}, "timer": {"cost": 0.11712047794999998, "feasible": true}, "cheapest_hours": {"cost": 0.11952272992499999, "feasible": true}, "emhass_rest": {"cost": 0.11712047794999998, "feasible": true}}
+{"date": "2014-11-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-17", "naive": {"cost": 0.2692362951875, "feasible": true}, "milp": {"cost": 0.2523175711625, "feasible": true}, "timer": {"cost": 0.2523175711625, "feasible": true}, "cheapest_hours": {"cost": 0.2692362951875, "feasible": true}, "emhass_rest": {"cost": 0.2523175711625, "feasible": true}}
+{"date": "2014-11-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-21", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-21", "naive": {"cost": 0.180837574675, "feasible": true}, "milp": {"cost": 0.1412953829375, "feasible": true}, "timer": {"cost": 0.1412953829375, "feasible": true}, "cheapest_hours": {"cost": 0.15689217467499997, "feasible": true}, "emhass_rest": {"cost": 0.1412953829375, "feasible": true}}
+{"date": "2014-11-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-23", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-11-23", "naive": {"cost": 0.256332024375, "feasible": true}, "milp": {"cost": 0.256332024375, "feasible": true}, "timer": {"cost": 0.256332024375, "feasible": true}, "cheapest_hours": {"cost": 0.256332024375, "feasible": true}, "emhass_rest": {"cost": 0.256332024375, "feasible": true}}
+{"date": "2014-11-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-25", "cycles": 2, "pastMidnight": 0, "priceDay": "2025-11-25", "naive": {"cost": 0.7411862583, "feasible": true}, "milp": {"cost": 0.384589083675, "feasible": true}, "timer": {"cost": 0.384589083675, "feasible": true}, "cheapest_hours": {"cost": 0.5912462251499999, "feasible": true}, "emhass_rest": {"cost": 0.384589083675, "feasible": true}}
+{"date": "2014-11-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-11-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-02", "cycles": 2, "pastMidnight": 0, "priceDay": "2025-12-02", "naive": {"cost": 0.42277972512499995, "feasible": true}, "milp": {"cost": 0.23013178156250003, "feasible": true}, "timer": {"cost": 0.23013178156250003, "feasible": true}, "cheapest_hours": {"cost": 0.23953505731250002, "feasible": true}, "emhass_rest": {"cost": 0.23020395975000002, "feasible": true}}
+{"date": "2014-12-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-10", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-10", "naive": {"cost": 0.05635033143749999, "feasible": true}, "milp": {"cost": 0.03310650781249999, "feasible": true}, "timer": {"cost": 0.03310650781249999, "feasible": true}, "cheapest_hours": {"cost": 0.0361567978625, "feasible": true}, "emhass_rest": {"cost": 0.03310650781249999, "feasible": true}}
+{"date": "2014-12-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-11", "naive": {"cost": 0.27711942395, "feasible": true}, "milp": {"cost": 0.24987088905, "feasible": true}, "timer": {"cost": 0.24987088905, "feasible": true}, "cheapest_hours": {"cost": 0.27711942395, "feasible": true}, "emhass_rest": {"cost": 0.24987088905, "feasible": true}}
+{"date": "2014-12-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-14", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-14", "naive": {"cost": 0.1129375755, "feasible": true}, "milp": {"cost": 0.1128596807875, "feasible": true}, "timer": {"cost": 0.1128596807875, "feasible": true}, "cheapest_hours": {"cost": 0.1129375755, "feasible": true}, "emhass_rest": {"cost": 0.1128596807875, "feasible": true}}
+{"date": "2014-12-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-17", "naive": {"cost": 0.165818286875, "feasible": true}, "milp": {"cost": 0.15626535864999996, "feasible": true}, "timer": {"cost": 0.15626535864999996, "feasible": true}, "cheapest_hours": {"cost": 0.1666140980625, "feasible": true}, "emhass_rest": {"cost": 0.15626535864999996, "feasible": true}}
+{"date": "2014-12-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-20", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-20", "naive": {"cost": 0.15526526797499998, "feasible": true}, "milp": {"cost": 0.15511361063749998, "feasible": true}, "timer": {"cost": 0.15511361063749998, "feasible": true}, "cheapest_hours": {"cost": 0.15526526797499998, "feasible": true}, "emhass_rest": {"cost": 0.15511361063749998, "feasible": true}}
+{"date": "2014-12-21", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-21", "naive": {"cost": 0.011617924050000002, "feasible": true}, "milp": {"cost": 0.01159332605, "feasible": true}, "timer": {"cost": 0.01159332605, "feasible": true}, "cheapest_hours": {"cost": 0.011617924050000002, "feasible": true}, "emhass_rest": {"cost": 0.01159332605, "feasible": true}}
+{"date": "2014-12-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-23", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-23", "naive": {"cost": 0.06134961138749999, "feasible": true}, "milp": {"cost": 0.0518606254125, "feasible": true}, "timer": {"cost": 0.0518606254125, "feasible": true}, "cheapest_hours": {"cost": 0.0549077058, "feasible": true}, "emhass_rest": {"cost": 0.0518606254125, "feasible": true}}
+{"date": "2014-12-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-25", "cycles": 1, "pastMidnight": 0, "priceDay": "2025-12-25", "naive": {"cost": 0.14673810458749997, "feasible": true}, "milp": {"cost": 0.14673810458749997, "feasible": true}, "timer": {"cost": 0.14673810458749997, "feasible": true}, "cheapest_hours": {"cost": 0.14673810458749997, "feasible": true}, "emhass_rest": {"cost": 0.14673810458749997, "feasible": true}}
+{"date": "2014-12-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-29", "cycles": 2, "pastMidnight": 0, "priceDay": "2025-12-29", "naive": {"cost": 0.2477172619875, "feasible": true}, "milp": {"cost": 0.24447618370000002, "feasible": true}, "timer": {"cost": 0.24447618370000002, "feasible": true}, "cheapest_hours": {"cost": 0.2477172619875, "feasible": true}, "emhass_rest": {"cost": 0.24531314320000003, "feasible": true}}
+{"date": "2014-12-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2014-12-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-03", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-01-03", "naive": {"cost": 0.30603920469999996, "feasible": true}, "milp": {"cost": 0.27553951699999996, "feasible": true}, "timer": {"cost": 0.27553951699999996, "feasible": true}, "cheapest_hours": {"cost": 0.30022773581249995, "feasible": true}, "emhass_rest": {"cost": 0.27553951699999996, "feasible": true}}
+{"date": "2015-01-04", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-04", "naive": {"cost": 0.3914725735624999, "feasible": true}, "milp": {"cost": 0.37158261821249994, "feasible": true}, "timer": {"cost": 0.37158261821249994, "feasible": true}, "cheapest_hours": {"cost": 0.3783129447625, "feasible": true}, "emhass_rest": {"cost": 0.37158261821249994, "feasible": true}}
+{"date": "2015-01-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-07", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-07", "naive": {"cost": 0.32520907556249995, "feasible": true}, "milp": {"cost": 0.25342699116249995, "feasible": true}, "timer": {"cost": 0.25342699116249995, "feasible": true}, "cheapest_hours": {"cost": 0.32520907556249995, "feasible": true}, "emhass_rest": {"cost": 0.25342699116249995, "feasible": true}}
+{"date": "2015-01-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-12", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-12", "naive": {"cost": 0.2687764475, "feasible": true}, "milp": {"cost": 0.16863760045, "feasible": true}, "timer": {"cost": 0.16863760045, "feasible": true}, "cheapest_hours": {"cost": 0.18133631167499997, "feasible": true}, "emhass_rest": {"cost": 0.16863760045, "feasible": true}}
+{"date": "2015-01-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-13", "naive": {"cost": 0.3796545460375, "feasible": true}, "milp": {"cost": 0.31200634065, "feasible": true}, "timer": {"cost": 0.31200634065, "feasible": true}, "cheapest_hours": {"cost": 0.36731324312499997, "feasible": true}, "emhass_rest": {"cost": 0.31200634065, "feasible": true}}
+{"date": "2015-01-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-16", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-16", "naive": {"cost": 0.124291742475, "feasible": true}, "milp": {"cost": 0.08805758955, "feasible": true}, "timer": {"cost": 0.08805758955, "feasible": true}, "cheapest_hours": {"cost": 0.09274958275, "feasible": true}, "emhass_rest": {"cost": 0.08805758955, "feasible": true}}
+{"date": "2015-01-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-17", "naive": {"cost": 0.15971840643750002, "feasible": true}, "milp": {"cost": 0.15944857829999998, "feasible": true}, "timer": {"cost": 0.15944857829999998, "feasible": true}, "cheapest_hours": {"cost": 0.15971840643750002, "feasible": true}, "emhass_rest": {"cost": 0.15944857829999998, "feasible": true}}
+{"date": "2015-01-18", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-18", "naive": {"cost": 0.3526489289375, "feasible": true}, "milp": {"cost": 0.3526489289375, "feasible": true}, "timer": {"cost": 0.3526489289375, "feasible": true}, "cheapest_hours": {"cost": 0.3526489289375, "feasible": true}, "emhass_rest": {"cost": 0.3526489289375, "feasible": true}}
+{"date": "2015-01-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-22", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-22", "naive": {"cost": 0.16599569681249998, "feasible": true}, "milp": {"cost": 0.133250836075, "feasible": true}, "timer": {"cost": 0.133250836075, "feasible": true}, "cheapest_hours": {"cost": 0.1690347954, "feasible": true}, "emhass_rest": {"cost": 0.133250836075, "feasible": true}}
+{"date": "2015-01-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-24", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-24", "naive": {"cost": 0.20863331153750003, "feasible": true}, "milp": {"cost": 0.17435590755, "feasible": true}, "timer": {"cost": 0.17435590755, "feasible": true}, "cheapest_hours": {"cost": 0.2001287663875, "feasible": true}, "emhass_rest": {"cost": 0.17435590755, "feasible": true}}
+{"date": "2015-01-25", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-01-25", "naive": {"cost": 0.3870721482375, "feasible": true}, "milp": {"cost": 0.37645071301249994, "feasible": true}, "timer": {"cost": 0.37645071301249994, "feasible": true}, "cheapest_hours": {"cost": 0.3870721482375, "feasible": true}, "emhass_rest": {"cost": 0.37645071301249994, "feasible": true}}
+{"date": "2015-01-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-29", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-01-29", "naive": {"cost": 1.06163586245, "feasible": true}, "milp": {"cost": 0.8566532580624999, "feasible": true}, "timer": {"cost": 0.8566532580624999, "feasible": true}, "cheapest_hours": {"cost": 0.9631215438749999, "feasible": true}, "emhass_rest": {"cost": 0.8566532580624999, "feasible": true}}
+{"date": "2015-01-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-01-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-01", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-01", "naive": {"cost": 0.2386889739625, "feasible": true}, "milp": {"cost": 0.2386889739625, "feasible": true}, "timer": {"cost": 0.2386889739625, "feasible": true}, "cheapest_hours": {"cost": 0.24624033406249995, "feasible": true}, "emhass_rest": {"cost": 0.2386889739625, "feasible": true}}
+{"date": "2015-02-02", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-02", "naive": {"cost": 0.48853810445, "feasible": true}, "milp": {"cost": 0.2590764364125, "feasible": true}, "timer": {"cost": 0.2590764364125, "feasible": true}, "cheapest_hours": {"cost": 0.42885053662499995, "feasible": true}, "emhass_rest": {"cost": 0.2590764364125, "feasible": true}}
+{"date": "2015-02-03", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-03", "naive": {"cost": 1.0810492754749998, "feasible": true}, "milp": {"cost": 0.8099489005499999, "feasible": true}, "timer": {"cost": 0.8099489005499999, "feasible": true}, "cheapest_hours": {"cost": 1.1182043442625, "feasible": true}, "emhass_rest": {"cost": 0.8099489005499999, "feasible": true}}
+{"date": "2015-02-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-07", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-07", "naive": {"cost": 0.21835554867499996, "feasible": true}, "milp": {"cost": 0.20861910807499998, "feasible": true}, "timer": {"cost": 0.20861910807499998, "feasible": true}, "cheapest_hours": {"cost": 0.21835554867499996, "feasible": true}, "emhass_rest": {"cost": 0.20861910807499998, "feasible": true}}
+{"date": "2015-02-08", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-02-08", "naive": {"cost": 0.24373915671249996, "feasible": true}, "milp": {"cost": 0.2261093308625, "feasible": true}, "timer": {"cost": 0.2261093308625, "feasible": true}, "cheapest_hours": {"cost": 0.23171700343749999, "feasible": true}, "emhass_rest": {"cost": 0.2261093308625, "feasible": true}}
+{"date": "2015-02-09", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-09", "naive": {"cost": 0.5754133679125, "feasible": true}, "milp": {"cost": 0.4172177376874999, "feasible": true}, "timer": {"cost": 0.4172177376874999, "feasible": true}, "cheapest_hours": {"cost": 0.5754133679125, "feasible": true}, "emhass_rest": {"cost": 0.4172177376874999, "feasible": true}}
+{"date": "2015-02-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-11", "naive": {"cost": 0.34471854315, "feasible": true}, "milp": {"cost": 0.25433096766249996, "feasible": true}, "timer": {"cost": 0.25433096766249996, "feasible": true}, "cheapest_hours": {"cost": 0.29371632832499994, "feasible": true}, "emhass_rest": {"cost": 0.25433096766249996, "feasible": true}}
+{"date": "2015-02-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-13", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-15", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-17", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-02-17", "naive": {"cost": 0.5167400095125001, "feasible": true}, "milp": {"cost": 0.4425307111875, "feasible": true}, "timer": {"cost": 0.4425307111875, "feasible": true}, "cheapest_hours": {"cost": 0.47054308615, "feasible": true}, "emhass_rest": {"cost": 0.4425307111875, "feasible": true}}
+{"date": "2015-02-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-21", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-21", "naive": {"cost": 0.1366850463125, "feasible": true}, "milp": {"cost": 0.12518885726249998, "feasible": true}, "timer": {"cost": 0.12518885726249998, "feasible": true}, "cheapest_hours": {"cost": 0.1285893676125, "feasible": true}, "emhass_rest": {"cost": 0.12518885726249998, "feasible": true}}
+{"date": "2015-02-22", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-22", "naive": {"cost": 0.3011088022874999, "feasible": true}, "milp": {"cost": 0.2939086257, "feasible": true}, "timer": {"cost": 0.2939086257, "feasible": true}, "cheapest_hours": {"cost": 0.3011088022874999, "feasible": true}, "emhass_rest": {"cost": 0.2939086257, "feasible": true}}
+{"date": "2015-02-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-25", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-02-25", "naive": {"cost": 0.3425268268374999, "feasible": true}, "milp": {"cost": 0.2000829965375, "feasible": true}, "timer": {"cost": 0.2000829965375, "feasible": true}, "cheapest_hours": {"cost": 0.2033947030875, "feasible": true}, "emhass_rest": {"cost": 0.2000829965375, "feasible": true}}
+{"date": "2015-02-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-02-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-01", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-01", "naive": {"cost": 0.1104039093375, "feasible": true}, "milp": {"cost": 0.096689448175, "feasible": true}, "timer": {"cost": 0.096689448175, "feasible": true}, "cheapest_hours": {"cost": 0.1096926318125, "feasible": true}, "emhass_rest": {"cost": 0.096689448175, "feasible": true}}
+{"date": "2015-03-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-03", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-03", "naive": {"cost": 0.19122245808749996, "feasible": true}, "milp": {"cost": 0.1639928485875, "feasible": true}, "timer": {"cost": 0.1639928485875, "feasible": true}, "cheapest_hours": {"cost": 0.17985945591249997, "feasible": true}, "emhass_rest": {"cost": 0.1639928485875, "feasible": true}}
+{"date": "2015-03-04", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-07", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-07", "naive": {"cost": 0.10101632736249999, "feasible": true}, "milp": {"cost": 0.08527255943749999, "feasible": true}, "timer": {"cost": 0.08527255943749999, "feasible": true}, "cheapest_hours": {"cost": 0.09565728597499998, "feasible": true}, "emhass_rest": {"cost": 0.08527255943749999, "feasible": true}}
+{"date": "2015-03-08", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-03-08", "naive": {"cost": 0.32118279397499994, "feasible": true}, "milp": {"cost": 0.31698583552500004, "feasible": true}, "timer": {"cost": 0.31698583552500004, "feasible": true}, "cheapest_hours": {"cost": 0.32118279397499994, "feasible": true}, "emhass_rest": {"cost": 0.31698583552500004, "feasible": true}}
+{"date": "2015-03-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-11", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-13", "naive": {"cost": 0.15523054526250002, "feasible": true}, "milp": {"cost": 0.15517056567499998, "feasible": true}, "timer": {"cost": 0.15517056567499998, "feasible": true}, "cheapest_hours": {"cost": 0.1551813618125, "feasible": true}, "emhass_rest": {"cost": 0.1551840883, "feasible": true}}
+{"date": "2015-03-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-15", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-15", "naive": {"cost": 0.1040389948625, "feasible": true}, "milp": {"cost": 0.09062921318749999, "feasible": true}, "timer": {"cost": 0.09062921318749999, "feasible": true}, "cheapest_hours": {"cost": 0.09062921318749999, "feasible": true}, "emhass_rest": {"cost": 0.09062921318749999, "feasible": true}}
+{"date": "2015-03-16", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-17", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-18", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-18", "naive": {"cost": 0.16210060665, "feasible": true}, "milp": {"cost": 0.160418436025, "feasible": true}, "timer": {"cost": 0.160418436025, "feasible": true}, "cheapest_hours": {"cost": 0.16100772754999998, "feasible": true}, "emhass_rest": {"cost": 0.160418436025, "feasible": true}}
+{"date": "2015-03-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-03-30", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-03-30", "naive": {"cost": 0.10327999596249998, "feasible": true}, "milp": {"cost": 0.08609673989999998, "feasible": true}, "timer": {"cost": 0.08609673989999998, "feasible": true}, "cheapest_hours": {"cost": 0.093140471325, "feasible": true}, "emhass_rest": {"cost": 0.08609673989999998, "feasible": true}}
+{"date": "2015-03-31", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-02", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-08", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-08", "naive": {"cost": 0.19763827536249995, "feasible": true}, "milp": {"cost": 0.1663055469, "feasible": true}, "timer": {"cost": 0.1663055469, "feasible": true}, "cheapest_hours": {"cost": 0.17372246826249998, "feasible": true}, "emhass_rest": {"cost": 0.1663055469, "feasible": true}}
+{"date": "2015-04-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-10", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-10", "naive": {"cost": 0.1246624412375, "feasible": true}, "milp": {"cost": 0.08413945758749998, "feasible": true}, "timer": {"cost": 0.08413945758749998, "feasible": true}, "cheapest_hours": {"cost": 0.0969028766125, "feasible": true}, "emhass_rest": {"cost": 0.08413945758749998, "feasible": true}}
+{"date": "2015-04-11", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-11", "naive": {"cost": 0.21292167163749998, "feasible": true}, "milp": {"cost": 0.21292167163749998, "feasible": true}, "timer": {"cost": 0.21292167163749998, "feasible": true}, "cheapest_hours": {"cost": 0.21292167163749998, "feasible": true}, "emhass_rest": {"cost": 0.21292167163749998, "feasible": true}}
+{"date": "2015-04-12", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-13", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-13", "naive": {"cost": 0.24269793027499997, "feasible": true}, "milp": {"cost": 0.196109443775, "feasible": true}, "timer": {"cost": 0.196109443775, "feasible": true}, "cheapest_hours": {"cost": 0.21369518775, "feasible": true}, "emhass_rest": {"cost": 0.196109443775, "feasible": true}}
+{"date": "2015-04-14", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-15", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-15", "naive": {"cost": 0.23045549626249998, "feasible": true}, "milp": {"cost": 0.22948921214999998, "feasible": true}, "timer": {"cost": 0.22948921214999998, "feasible": true}, "cheapest_hours": {"cost": 0.23045549626249998, "feasible": true}, "emhass_rest": {"cost": 0.22948921214999998, "feasible": true}}
+{"date": "2015-04-16", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-16", "naive": {"cost": 0.17788260501249997, "feasible": true}, "milp": {"cost": 0.12200797505, "feasible": true}, "timer": {"cost": 0.12200797505, "feasible": true}, "cheapest_hours": {"cost": 0.14394659867499998, "feasible": true}, "emhass_rest": {"cost": 0.12200797505, "feasible": true}}
+{"date": "2015-04-17", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-17", "naive": {"cost": 0.0825813845, "feasible": true}, "milp": {"cost": 0.06097255918749999, "feasible": true}, "timer": {"cost": 0.06097255918749999, "feasible": true}, "cheapest_hours": {"cost": 0.06466879146249999, "feasible": true}, "emhass_rest": {"cost": 0.06097255918749999, "feasible": true}}
+{"date": "2015-04-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-20", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-04-20", "naive": {"cost": 0.30223951022499995, "feasible": true}, "milp": {"cost": 0.2784562625, "feasible": true}, "timer": {"cost": 0.2784562625, "feasible": true}, "cheapest_hours": {"cost": 0.28246443757499995, "feasible": true}, "emhass_rest": {"cost": 0.2784562625, "feasible": true}}
+{"date": "2015-04-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-24", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-24", "naive": {"cost": 0.038788950149999994, "feasible": true}, "milp": {"cost": 0.0348874155625, "feasible": true}, "timer": {"cost": 0.0348874155625, "feasible": true}, "cheapest_hours": {"cost": 0.0349586744625, "feasible": true}, "emhass_rest": {"cost": 0.0348874155625, "feasible": true}}
+{"date": "2015-04-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-27", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-27", "naive": {"cost": 0.10752425849999997, "feasible": true}, "milp": {"cost": 0.10029577852499999, "feasible": true}, "timer": {"cost": 0.10029577852499999, "feasible": true}, "cheapest_hours": {"cost": 0.10153147662499998, "feasible": true}, "emhass_rest": {"cost": 0.10029577852499999, "feasible": true}}
+{"date": "2015-04-28", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-04-28", "naive": {"cost": 0.1487975093875, "feasible": true}, "milp": {"cost": 0.1477476203125, "feasible": true}, "timer": {"cost": 0.1477476203125, "feasible": true}, "cheapest_hours": {"cost": 0.14798299556250002, "feasible": true}, "emhass_rest": {"cost": 0.1477476203125, "feasible": true}}
+{"date": "2015-04-29", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-04-30", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-01", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-02", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-02", "naive": {"cost": 0.1456038544125, "feasible": true}, "milp": {"cost": 0.13951696949999998, "feasible": true}, "timer": {"cost": 0.13951696949999998, "feasible": true}, "cheapest_hours": {"cost": 0.13951696949999998, "feasible": true}, "emhass_rest": {"cost": 0.13951696949999998, "feasible": true}}
+{"date": "2015-05-03", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-04", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-04", "naive": {"cost": 0.23847844143749997, "feasible": true}, "milp": {"cost": 0.193176044425, "feasible": true}, "timer": {"cost": 0.193176044425, "feasible": true}, "cheapest_hours": {"cost": 0.19814209511249997, "feasible": true}, "emhass_rest": {"cost": 0.193176044425, "feasible": true}}
+{"date": "2015-05-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-06", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-06", "naive": {"cost": 0.27469373485000004, "feasible": true}, "milp": {"cost": 0.27469373485000004, "feasible": true}, "timer": {"cost": 0.27469373485000004, "feasible": true}, "cheapest_hours": {"cost": 0.27469373485000004, "feasible": true}, "emhass_rest": {"cost": 0.27469373485000004, "feasible": true}}
+{"date": "2015-05-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-10", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-10", "naive": {"cost": 0.158735556325, "feasible": true}, "milp": {"cost": 0.15666453649999998, "feasible": true}, "timer": {"cost": 0.15666453649999998, "feasible": true}, "cheapest_hours": {"cost": 0.15836661456249998, "feasible": true}, "emhass_rest": {"cost": 0.15666453649999998, "feasible": true}}
+{"date": "2015-05-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-20", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-05-20", "naive": {"cost": 0.06683877745, "feasible": true}, "milp": {"cost": 0.05542284565, "feasible": true}, "timer": {"cost": 0.05542284565, "feasible": true}, "cheapest_hours": {"cost": 0.056848723312499995, "feasible": true}, "emhass_rest": {"cost": 0.05542284565, "feasible": true}}
+{"date": "2015-05-21", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-05-21", "naive": {"cost": 0.2216114987125, "feasible": true}, "milp": {"cost": 0.15854539558749997, "feasible": true}, "timer": {"cost": 0.15854539558749997, "feasible": true}, "cheapest_hours": {"cost": 0.182185118375, "feasible": true}, "emhass_rest": {"cost": 0.15854539558749997, "feasible": true}}
+{"date": "2015-05-22", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-26", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-27", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-05-28", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-05", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-06", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-07", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-08", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-09", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-10", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-18", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-19", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-20", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-21", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-22", "cycles": 2, "pastMidnight": 0, "priceDay": "2026-06-22", "naive": {"cost": 0.0416412545375, "feasible": true}, "milp": {"cost": 0.041465607875, "feasible": true}, "timer": {"cost": 0.041465607875, "feasible": true}, "cheapest_hours": {"cost": 0.041485311375, "feasible": true}, "emhass_rest": {"cost": 0.041465607875, "feasible": true}}
+{"date": "2015-06-23", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-24", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-25", "cycles": 0, "pastMidnight": 0}
+{"date": "2015-06-26", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-26", "naive": {"cost": 0.17950435993749997, "feasible": true}, "milp": {"cost": 0.17352453907499998, "feasible": true}, "timer": {"cost": 0.17352453907499998, "feasible": true}, "cheapest_hours": {"cost": 0.17950435993749997, "feasible": true}, "emhass_rest": {"cost": 0.17352453907499998, "feasible": true}}
+{"date": "2015-06-27", "cycles": 1, "pastMidnight": 0, "priceDay": "2026-06-27", "naive": {"cost": 0.07456932017500001, "feasible": true}, "milp": {"cost": 0.06484920712499999, "feasible": true}, "timer": {"cost": 0.06484920712499999, "feasible": true}, "cheapest_hours": {"cost": 0.06655638990000001, "feasible": true}, "emhass_rest": {"cost": 0.06484920712499999, "feasible": true}}
+{"date": "2015-06-28", "cycles": 0, "pastMidnight": 0}

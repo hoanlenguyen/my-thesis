@@ -2,6 +2,7 @@
 const route = useRoute()
 const houseNo = computed(() => Number(route.params.house))
 const { data: households } = await useHouseholds()
+const { data: fullPeriod } = await useFullPeriod()
 const { data: benchmarks } = await useBenchmarks()
 
 const household = computed(() => households.value?.find(h => h.house === houseNo.value))
@@ -38,6 +39,8 @@ const hasLocal = computed(() => day.value?.results.some(r => r.model === 'gpt-os
         monitored appliances use {{ totalKwh.toFixed(1) }} kWh per day on average
       </p>
     </div>
+
+    <FullPeriodCard :house="houseNo" :data="fullPeriod" />
 
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>

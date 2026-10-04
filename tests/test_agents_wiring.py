@@ -219,3 +219,52 @@ def test_oneshot_answers_without_tools_from_full_data(scenario: Scenario) -> Non
     assert run.errors == [] and run.tool_calls == 0
     parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
     assert evaluate(scenario, parsed).feasible
+
+
+def _one_cheap_hour_scenario() -> Scenario:
+    """One dishwasher, price 0.30 EUR/kWh except 0.10 from 01:00 to 02:00: any other start is valid but costly."""
+    from datetime import datetime
+
+    from hems.core.models import FlexibleAppliance
+
+    price = [0.30] * 96
+    price[4:8] = [0.10] * 4
+    return Scenario(
+        id="COST", type="C", date="2026-01-01", start_time=datetime(2026, 1, 1), spot_eur_per_kwh=price,
+        price_eur_per_kwh=price, base_load_kw=[0.0] * 96, peak_limit_kw=3.5, user_request="dishwasher_1",
+        appliances=[FlexibleAppliance(id="dishwasher_1", kind="dishwasher", profile_kw=[1.0] * 4,
+                                      earliest_slot=0, deadline_slot=96, default_start_slot=0)],
+    )  # fmt: skip
+
+
+def _cost_models(*starts: str) -> dict:
+    a = [{"appliance_id": "dishwasher_1", "start_time": s} for s in starts]
+    profile = [{"appliance_id": "dishwasher_1", "kind": "dishwasher", "flexible": True, "peak_kw": 1.0,
+                "duration_minutes": 60, "earliest_time": "00:00", "deadline_time": "24:00"}]  # fmt: skip
+    return {
+        "orchestrator": scripted(call("TaskBrief", appliance_ids=["dishwasher_1"], notes=""), "done"),
+        "profiler": scripted(call("ProfileOutput", appliances=profile)),
+        "scheduler": scripted(*[call("ScheduleOutput", assignments=[x], total_cost_eur=1.0, explanation="") for x in a]),
+        "resolver": scripted(*[call("ResolverOutput", assignments=[x], conflicts_remaining=False, changes="none") for x in a]),
+    }
+
+
+def test_cost_check_sends_a_costly_valid_schedule_back_once() -> None:
+    scenario = _one_cheap_hour_scenario()
+    models = _cost_models("12:00", "01:00")  # valid but 200 % above the bound, then the cheap hour
+    run = run_multi_agent(scenario, lambda role: models[role], cost_check=True)
+    assert run.iterations == 2 and run.assignments == {"dishwasher_1": "01:00"}
+
+
+def test_cost_check_keeps_the_cheapest_valid_schedule() -> None:
+    scenario = _one_cheap_hour_scenario()
+    models = _cost_models("05:00", "12:00")  # the revision is no cheaper: the first schedule stays
+    run = run_multi_agent(scenario, lambda role: models[role], cost_check=True)
+    assert run.iterations == 2 and run.assignments == {"dishwasher_1": "05:00"}
+
+
+def test_without_cost_check_a_valid_schedule_is_final() -> None:
+    scenario = _one_cheap_hour_scenario()
+    models = _cost_models("12:00", "01:00")
+    run = run_multi_agent(scenario, lambda role: models[role])  # the evaluated pipeline ("multi")
+    assert run.iterations == 1 and run.assignments == {"dishwasher_1": "12:00"}

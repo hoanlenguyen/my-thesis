@@ -36,6 +36,7 @@ from hems.agents.schemas import (
     assignments_to_dict,
 )
 from hems.agents.types import AgentRun
+from hems.core.evaluate import appliance_cost, evaluate
 from hems.core.models import Scenario
 from hems.tools import PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select
 
@@ -43,6 +44,10 @@ from hems.tools import PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_to
 STEP_LIMITS = {"profiler": 15, "scheduler": 35, "resolver": 25}
 ORCHESTRATOR_RECURSION_LIMIT = 6
 MAX_RESOLVE_ITERATIONS = 2
+# Design iteration 6 (system "multi_v3", off by default): a valid schedule that costs more than this much
+# above the cost of every appliance at its individually cheapest start (a lower bound that ignores the
+# peak limit) is sent back once for a cheaper staggering; the cheapest valid schedule seen is kept.
+COST_TOLERANCE = 0.03
 
 ModelFactory = Callable[[str], BaseChatModel]
 """Role name ("orchestrator" | "profiler" | "scheduler" | "resolver") -> chat model."""
@@ -58,6 +63,8 @@ class PipelineState(TypedDict, total=False):
     iterations: int
     final: dict[str, str]
     summary: str
+    best: dict[str, str]  # cost check only: cheapest valid schedule so far
+    best_cost: float
     tool_calls: Annotated[int, operator.add]
     recoveries: Annotated[int, operator.add]
     errors: Annotated[list[str], operator.add]
@@ -91,7 +98,9 @@ def _run_agent(
     return output, calls, ([] if output is not None else [f"{name}: no structured output"]), recoveries
 
 
-def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True):
+def build_pipeline(
+    scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False
+):
     tools = build_tools(scenario)
 
     def orchestrator_plan(state: PipelineState, config) -> PipelineState:
@@ -166,6 +175,24 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
                 )
         return f"OUTSIDE WINDOW: {'; '.join(problems)}." if problems else ""
 
+    def cost_feedback(state: PipelineState, final: dict[str, str]) -> tuple[float, str]:
+        """Cost of a valid schedule and, if it is well above the unconstrained lower bound, feedback."""
+        schedule = {k: scenario.time_to_slot(v) for k, v in final.items()}
+        cost = evaluate(scenario, schedule).cost_eur
+        wanted = {i for i in requested_ids(state)} & {a.id for a in scenario.appliances}
+        bound = sum(
+            min(appliance_cost(scenario, a, s) for s in a.valid_starts()) for a in scenario.appliances if a.id in wanted
+        )
+        if bound <= 0 or cost <= bound * (1 + COST_TOLERANCE) + 1e-9:
+            return cost, ""
+        return cost, (
+            f"COST: this valid schedule costs EUR {cost:.3f}, {(cost / bound - 1) * 100:.1f} % above EUR {bound:.3f}, the cost "
+            "with every appliance at its individually cheapest start (which ignores the peak limit and may be unreachable). "
+            "Look for a cheaper staggering that still respects the peak limit and every window: compare moving each of the "
+            "overlapping appliances, not only the first one, and keep the arrangement with the lowest total cost. The current "
+            "schedule is kept if no cheaper valid one is found."
+        )
+
     def resolver(state: PipelineState, config) -> PipelineState:
         proposal = state.get("proposal")
         if proposal is None:  # the Scheduler returned nothing: incomplete by definition, send it back
@@ -193,14 +220,21 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
             problems.append(missing)
         if outside := window_feedback(final):
             problems.append(outside)
-        return {
+        update: PipelineState = {
             "resolution": resolution,
-            "conflict_feedback": " ".join(problems),
             "iterations": state["iterations"] + 1,
             "tool_calls": calls,
             "errors": errors,
             "recoveries": recoveries,
         }
+        if cost_check and not problems:  # valid: remember the cheapest, ask for a cheaper one once
+            cost, feedback = cost_feedback(state, final)
+            if state.get("best_cost") is None or cost < state["best_cost"]:
+                update["best"], update["best_cost"] = final, cost
+            if feedback and state["iterations"] + 1 < MAX_RESOLVE_ITERATIONS:
+                problems.append(feedback)
+        update["conflict_feedback"] = " ".join(problems)
+        return update
 
     def after_resolver(state: PipelineState) -> str:
         if state.get("conflict_feedback") and state["iterations"] < MAX_RESOLVE_ITERATIONS:
@@ -215,6 +249,8 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
         if resolution is None:
             return {"errors": ["orchestrator: no schedule produced"]}
         final = assignments_to_dict(resolution.assignments)
+        if cost_check and state.get("best"):  # the cheapest valid schedule, not necessarily the last one
+            final = state["best"]
         summary = ""
         if summarize:
             check = tools["detect_conflicts"].invoke({"schedule": final})
@@ -251,8 +287,11 @@ def build_pipeline(scenario: Scenario, models: ModelFactory, *, human_review: bo
     return graph.compile()
 
 
-def run_multi_agent(scenario: Scenario, models: ModelFactory, config: dict[str, Any] | None = None, summarize: bool = True) -> AgentRun:
-    pipeline = build_pipeline(scenario, models, summarize=summarize)
+def run_multi_agent(
+    scenario: Scenario, models: ModelFactory, config: dict[str, Any] | None = None, summarize: bool = True,
+    cost_check: bool = False,
+) -> AgentRun:  # fmt: skip
+    pipeline = build_pipeline(scenario, models, summarize=summarize, cost_check=cost_check)
     state: PipelineState = pipeline.invoke({"request": scenario.user_request}, config={"recursion_limit": 50, **(config or {})})
     return AgentRun(
         assignments=state.get("final"),

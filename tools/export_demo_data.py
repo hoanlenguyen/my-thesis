@@ -33,6 +33,7 @@ BENCHMARKS = {
 }
 SYSTEMS = {  # order = display order
     "multi": "Multi-agent pipeline",
+    "multi_v3": "Multi-agent pipeline v3 (cost check)",
     "single": "Single agent",
     "timer": "Smart timer",
     "emhass_rest": "EMHASS, profiles",

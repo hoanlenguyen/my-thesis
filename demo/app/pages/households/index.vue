@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const { data: households, status } = await useHouseholds()
 const { data: benchmarks } = await useBenchmarks()
+const { data: fullPeriod } = await useFullPeriod()
+const bestPerYear = (house: number) => {
+  const h = fullPeriod.value?.households.find(x => x.house === house)
+  return h?.totals.milp ? (h.totals.milp.saving / h.recordedDays) * 365 : null
+}
 
 const daysOf = (house: number) =>
   (benchmarks.value ?? []).flatMap(b => b.scenarios.filter(s => s.house === house)).length
@@ -38,6 +43,9 @@ const scheduledKinds = (h: { appliances: { kind: string, scheduled: boolean }[] 
               {{ applianceName(k, k) }}
             </UBadge>
           </div>
+          <p v-if="bestPerYear(h.house) != null" class="mt-2 text-xs text-success">
+            Best possible saving ≈ {{ euro(bestPerYear(h.house)) }} per year at today's prices
+          </p>
         </UCard>
       </NuxtLink>
     </div>

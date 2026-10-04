@@ -119,6 +119,35 @@ export function useBenchmarks() {
   return useFetch<Benchmark[]>('/data/benchmarks.json', { key: 'benchmarks' })
 }
 
+/** Estimated saving over a household's whole REFIT recording period (tools/estimate_full_period.py). */
+export interface FullPeriodTotal {
+  saving: number
+  validDays: number | null
+  estimated: boolean
+  share?: number
+}
+
+export interface FullPeriodHousehold {
+  house: number
+  recordedDays: number
+  daysWithCycles: number
+  cycles: number
+  cyclesPastMidnight: number
+  naiveCost: number
+  firstDay: string
+  lastDay: string
+  totals: Record<string, FullPeriodTotal>
+}
+
+export interface FullPeriod {
+  priceYear: string
+  households: FullPeriodHousehold[]
+}
+
+export function useFullPeriod() {
+  return useFetch<FullPeriod>('/data/fullperiod.json', { key: 'fullperiod' })
+}
+
 export function useHouseholds() {
   return useFetch<Household[]>('/data/households.json', { key: 'households' })
 }

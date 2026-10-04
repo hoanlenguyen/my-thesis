@@ -95,6 +95,7 @@ export const SCENARIO_TYPES: Record<string, string> = {
 
 export const SYSTEM_GROUPS: Record<string, 'agent' | 'llm' | 'rule' | 'tool' | 'reference'> = {
   multi: 'agent',
+  multi_v3: 'agent',
   single: 'agent',
   oneshot: 'llm',
   timer: 'rule',
