@@ -20,8 +20,8 @@ import pandas as pd
 from hems.core.models import Scenario
 from hems.solvers.naive import has_coordination_conflict
 
-AGENT_SYSTEMS = ("single", "multi", "multi_v3")
-BASELINE_SYSTEMS = ("timer", "oneshot", "emhass", "emhass_nominal", "cheapest_hours", "cheapest_hours_hourly", "emhass_rest", "emhass_rest_nominal")  # incl. real HEMS tools
+AGENT_SYSTEMS = ("single", "multi", "multi_v3", "multi_rag", "multi_rag_opt")
+BASELINE_SYSTEMS = ("timer", "oneshot", "emhass", "emhass_nominal", "cheapest_hours", "cheapest_hours_hourly", "cheapest_window", "emhass_rest", "emhass_rest_nominal")  # incl. real HEMS tools
 SCORED_SYSTEMS = (*AGENT_SYSTEMS, *BASELINE_SYSTEMS)
 
 
@@ -43,6 +43,9 @@ def scored_runs(runs: pd.DataFrame) -> pd.DataFrame:
     agents = runs[runs.system.isin(SCORED_SYSTEMS)].merge(ref, on="scenario_id", how="inner")
     agents["scored_cost"] = np.where(agents.feasible, agents.cost_eur, agents.naive_cost)
     agents["gap_pct"] = (agents.scored_cost - agents.milp_cost) / agents.milp_cost * 100
+    # Primary metric from Amendment 2: saving against no scheduling, which needs no optimum as reference.
+    agents["saving_eur"] = agents.naive_cost - agents.scored_cost
+    agents["saving_pct"] = agents.saving_eur / agents.naive_cost * 100
     achievable = agents.naive_cost - agents.milp_cost
     agents["savings_captured"] = np.where(achievable > 1e-9, (agents.naive_cost - agents.scored_cost) / achievable, np.nan)
     return agents
@@ -54,6 +57,8 @@ def per_scenario(scored: pd.DataFrame) -> pd.DataFrame:
         scored.groupby(["model", "system", "scenario_id", "scenario_type"])
         .agg(
             gap_pct=("gap_pct", "mean"),
+            saving_pct=("saving_pct", "mean"),
+            saving_eur=("saving_eur", "mean"),
             savings_captured=("savings_captured", "mean"),
             feasible_rate=("feasible", "mean"),
             gap_sd=("gap_pct", "std"),
@@ -86,6 +91,8 @@ def pooled_savings_captured(scored: pd.DataFrame) -> pd.DataFrame:
     return grouped.apply(
         lambda g: pd.Series({
             "savings_captured_pooled": (g.naive_cost.sum() - g.scored_cost.sum()) / (g.naive_cost.sum() - g.milp_cost.sum()),
+            "saving_pct_pooled": (g.naive_cost.sum() - g.scored_cost.sum()) / g.naive_cost.sum() * 100,
+            "saving_eur_total": g.naive_cost.sum() - g.scored_cost.sum(),
             "runs": len(g),
         }),
         include_groups=False,

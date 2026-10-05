@@ -21,7 +21,7 @@ from hems.agents.types import AgentRun
 from hems.core.models import Scenario, Schedule
 from hems.solvers.emhass import emhass_schedule
 from hems.solvers.milp import solve_milp
-from hems.solvers.naive import cheapest_hours_schedule, naive_schedule, smart_timer_schedule
+from hems.solvers.naive import cheapest_hours_schedule, cheapest_window_schedule, naive_schedule, smart_timer_schedule
 
 Kind = Literal["reference", "external", "llm"]
 
@@ -63,6 +63,12 @@ def _emhass(mode: str) -> Callable[[Scenario], Planned]:
     return plan
 
 
+def _retriever() -> Callable[[Scenario], str]:
+    from hems.rag import default_retriever  # loads data/rag/cases.jsonl on first use only
+
+    return default_retriever()
+
+
 SYSTEMS: dict[str, System] = {
     s.name: s
     for s in (
@@ -71,8 +77,12 @@ SYSTEMS: dict[str, System] = {
         System("timer", "reference", "rule-based smart timer, peak-aware", plan=_rule(smart_timer_schedule)),
         System("cheapest_hours", "reference", "HA Nord Pool cheapest-hours blueprint, 15-min prices",
                plan=_rule(cheapest_hours_schedule)),  # fmt: skip
-        System("cheapest_hours_hourly", "reference", "HA cheapest-hours blueprint, hourly prices",
+        System("cheapest_hours_hourly", "reference",
+               "HA cheapest-hours blueprint with hourly prices; also shelly-porssisahko cheapest hours (scattered)",
                plan=_rule(partial(cheapest_hours_schedule, resolution="hourly"))),  # fmt: skip
+        System("cheapest_window", "reference",
+               "lowest-average hour block: HA Nordpool Planner; shelly-porssisahko cheapest hours (sequential)",
+               plan=_rule(cheapest_window_schedule)),  # fmt: skip
         System("emhass", "external", "EMHASS with measured power profiles", plan=_emhass("profile")),
         System("emhass_nominal", "external", "EMHASS with constant nominal power", plan=_emhass("nominal")),
         System("single", "llm", "single ReAct agent, all tools",
@@ -81,6 +91,10 @@ SYSTEMS: dict[str, System] = {
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize)),  # fmt: skip
         System("multi_v3", "llm", "pipeline with cost-aware verification (design iteration 6)",
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, cost_check=True)),  # fmt: skip
+        System("multi_rag", "llm", "pipeline with retrieved worked examples of solved days (design iteration 7)",
+               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever())),  # fmt: skip
+        System("multi_rag_opt", "llm", "pipeline with retrieved examples and an optimiser tool (design iteration 7)",
+               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True)),  # fmt: skip
         System("oneshot", "llm", "language model without tools",
                agent=lambda sc, model, config, summarize: run_oneshot(sc, model, config)),  # fmt: skip
     )

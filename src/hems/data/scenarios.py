@@ -169,13 +169,22 @@ def select_days(
     rng: np.random.Generator,
     crisis: tuple[str, str] | None = ("2022-12-01", "2022-12-31"),
     min_negative_slots: int = 8,
+    per_type: int = INSTANCES_PER_TYPE,
+    exclude: set[date] | None = None,
+    allow_fewer: bool = False,
 ) -> dict[str, list[date]]:
-    """Pick INSTANCES_PER_TYPE days per scenario type; no day is used by two types.
+    """Pick ``per_type`` days per scenario type; no day is used by two types.
 
     Type E ("price spike") days come from ``crisis`` (default: the Dec 2022 energy crisis), sampled from
     its 16 highest-peak days. With ``crisis=None`` (e.g. a 15-minute-price benchmark covering only
     Oct 2025 onwards) E uses the 16 highest-peak days of the whole period instead.
+    ``exclude``: days that must not be drawn (the RAG case library excludes every benchmark day).
+    ``allow_fewer``: take every candidate when a type has fewer than ``per_type`` (library only).
+    The defaults reproduce the frozen benchmarks exactly.
     """
+    INSTANCES_PER_TYPE = per_type  # noqa: N806 - shadows the module default for this call
+    if exclude:
+        days = days[[d not in exclude for d in days.index]]
     stats = daily_stats(days)
     in_crisis = stats.index.isin(pd.date_range(*crisis).date) if crisis else np.zeros(len(stats), dtype=bool)
     normal = stats[(stats.n_negative == 0) & ~in_crisis]
@@ -193,6 +202,8 @@ def select_days(
 
     def draw(pool: pd.Index, k: int, name: str) -> list[date]:
         available = [d for d in pool if d not in used]
+        if allow_fewer:
+            k = min(k, len(available))
         if len(available) < k:
             raise ValueError(f"only {len(available)} candidate days for {name}, need {k}")
         chosen = sorted(rng.choice(np.asarray(available, dtype=object), size=k, replace=False).tolist())

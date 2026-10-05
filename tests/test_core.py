@@ -9,7 +9,7 @@ from hems.core.evaluate import evaluate
 from hems.core.models import Scenario
 from hems.solvers.milp import solve_milp
 from hems.solvers.naive import cheapest_hours_schedule, greedy_schedule, naive_schedule, smart_timer_schedule
-from hems.tools import ALL_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools
+from hems.tools import ALL_TOOLS, OPTIMIZER_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools
 
 from .conftest import make_scenario
 
@@ -71,7 +71,7 @@ def test_tool_partition_is_fair() -> None:
 
 def test_tools_report_conflicts_and_errors(scenario: Scenario) -> None:
     tools = build_tools(scenario)
-    assert set(tools) == set(ALL_TOOLS)
+    assert set(tools) == set(ALL_TOOLS) | set(OPTIMIZER_TOOLS)
     clash = {a.id: scenario.slot_to_time(a.earliest_slot + 4) for a in scenario.appliances}
     clash = {k: list(clash.values())[0] for k in clash}
     detected = tools["detect_conflicts"].invoke({"schedule": clash})
@@ -178,6 +178,24 @@ def test_cheapest_hours_hourly_starts_on_full_hours_inside_the_window(scenario_t
     assert cheapest_hours_schedule(scenario) == cheapest_hours_schedule(scenario, hours=None, resolution="15min")
     with pytest.raises(ValueError):
         cheapest_hours_schedule(scenario, resolution="5min")
+
+
+@pytest.mark.parametrize("scenario_type", list("ABCDEF"))
+def test_cheapest_window_takes_the_lowest_average_full_hour_block(scenario_type: str) -> None:
+    from hems.solvers.naive import cheapest_window_schedule
+
+    scenario = make_scenario(scenario_type, seed=5)
+    prices = scenario.price_eur_per_kwh
+    schedule = cheapest_window_schedule(scenario)
+    for a in scenario.appliances:
+        block = -(-a.duration_slots // 4) * 4
+        starts = [s for s in a.valid_starts() if s % 4 == 0 and s + block <= a.deadline_slot]
+        assert schedule[a.id] in a.valid_starts()
+        if starts:
+            assert schedule[a.id] in starts
+            assert sum(prices[schedule[a.id] : schedule[a.id] + block]) == min(sum(prices[s : s + block]) for s in starts)
+        else:
+            assert schedule[a.id] == a.default_start_slot
 
 
 def test_system_registry_is_consistent() -> None:

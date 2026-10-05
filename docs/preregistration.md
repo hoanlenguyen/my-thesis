@@ -104,3 +104,60 @@ sections 1 to 6 above has been changed.
 - The Holm families of section 5 are unchanged: H1-single and H1-multi form one family (2 tests);
   H2a, H2b-tokens, H2b-cost and H2c form the other (4 tests). The reported results already follow them.
 - **H4 (informal requests) is not pursued** and will not be registered; it was never run.
+
+## Amendment 2 (5 October 2026): thesis redesign around retrieval, an optimiser tool and real tools
+
+Recorded after the confirmatory run and Amendment 1. Sections 1 to 6 and Amendment 1 are unchanged, and the
+confirmatory results (`results/confirmation/confirmatory_tests.csv`, all six hypotheses supported) stay on
+record exactly as computed by `src/hems/analysis/confirm.py`, which is not modified. A pilot of the new
+systems on the 16 type C and D scenarios of the main benchmark (`results/rag_pilot.jsonl`, 1 run each) had
+already been run and inspected when this amendment was written, so every result about them is exploratory.
+
+**1. The single agent is removed from the thesis comparison.**
+- The thesis no longer asks whether a multi-agent pipeline beats a single agent. H2a to H2c remain confirmed
+  in this document and in the repository; the thesis mentions them once, as the earlier design comparison,
+  and does not build its research questions on them.
+- **H3** (multi vs single with a small local model) is **withdrawn**. The local-model campaign
+  (`configs/full_evaluation.json`, stopped at 521 of 672 runs) is not completed for this purpose. If a
+  local-model question is kept, it is registered anew before its run.
+- The single agent stays in the code base so that the recorded results remain reproducible.
+
+**2. The MILP optimum is no longer a compared system, and the primary outcome changes.**
+- **Primary outcome: saving against no scheduling**, in euros and as a share of the naive cost,
+  pooled over runs: (Σ naive cost − Σ scored cost) / Σ naive cost. The per-scenario saving
+  (naive − scored) / naive × 100 is the unit for paired tests. The scoring convention is unchanged: an
+  infeasible run or one without a schedule is scored at the naive cost.
+- The optimality gap is still computed (`analysis.metrics`) and H1 to H2c keep their registered gap-based
+  results. Any savings-based test of the same comparisons is reported as secondary and unregistered.
+- The MILP is still used, in roles other than a competitor: it confirms during benchmark construction that
+  every scenario has a feasible schedule, it solves the cases of the retrieval library, and it is the solver
+  behind the optimiser tool below.
+
+**3. New systems (design iteration 7, `src/hems/rag.py`, `src/hems/agents/multi_agent.py`).**
+- `multi_rag`: the pipeline, unchanged otherwise, with the two most similar solved days from a case library
+  given to the Scheduler and the Resolver as worked examples.
+- `multi_rag_opt`: as `multi_rag`, and the Scheduler also has `optimize_schedule`, which solves the whole
+  day with the MILP; the agents call it, check the result and explain it.
+- Case library (`data/rag/cases.jsonl`, manifest beside it): 164 days (30 per type, 14 for type D) from the
+  hourly prices up to 30 September 2025, excluding all 94 days of the main and Q benchmarks, composed like the
+  benchmark scenarios (seed 7) and solved with the MILP. Retrieval is a fixed similarity on the price shape
+  and the appliance structure (`rag.features`, `rag.similarity`); no text embeddings and no tuning on the
+  benchmark.
+
+**4. New and relabelled baselines (real tools, `src/hems/solvers/naive.py`).**
+- `cheapest_window`: the lowest-average block of whole hours inside the appliance window, as computed by the
+  Home Assistant Nordpool Planner (dala318/nordpool_planner, static planner) and by the sequential
+  cheapest-hours mode of shelly-porssisahko (jisotalo).
+- `cheapest_hours_hourly` (unchanged rule) also represents the scattered cheapest-hours mode of
+  shelly-porssisahko, since for a cycle appliance both start at the first hour inside the cheapest set.
+- EMHASS (`emhass_rest`, Docker REST API) remains the main real-tool comparison.
+
+**5. What will be confirmatory.**
+- The Q set is used and is not reused for new claims. Confirmatory claims about iteration 7 need a new
+  held-out set **Q2**: 48 scenarios from the Elering 15-minute prices of 1 October 2025 to 25 September 2026,
+  with no day of the Q set, built with a new seed before any run on it.
+- Planned hypotheses, to be fixed in a separate registration after the full main-benchmark run of
+  `multi_rag` and `multi_rag_opt` (3 runs per scenario) and before any run on Q2:
+  - the optimiser arm saves as much as EMHASS (equivalence on the per-scenario saving, margin to be stated);
+  - the retrieval arm saves more than the pipeline without retrieval;
+  - both arms save more than the deployed cheapest-hours rules.

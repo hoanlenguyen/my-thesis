@@ -8,10 +8,32 @@ from pathlib import Path
 
 import numpy as np
 
+from hems.core.models import load_scenarios
 from hems.data import prices as price_data
 from hems.data import refit
 from hems.data.scenarios import compose_scenario, select_days
 from hems.data.tariff import Tariff
+
+
+def load_household_data(
+    refit_dir: str | Path, houses: tuple[int, ...]
+) -> tuple[dict[str, list[list[list[float]]]], dict[int, np.ndarray], dict[str, int]]:
+    """Cycle pool by kind, typical base load per house, and cycle counts per monitored appliance."""
+    # kind -> one group of cycles per monitored appliance, so heavy-use households don't dominate sampling
+    pool: dict[str, list[list[list[float]]]] = {"washing_machine": [], "dishwasher": [], "tumble_dryer": []}
+    base_loads, cycle_counts = {}, {}
+    for house in houses:
+        df = refit.load_house(refit_dir, house)
+        base_loads[house] = refit.typical_base_load(df, house)
+        for column, kind in refit.FLEXIBLE_COLUMNS[house].items():
+            cycles = refit.detect_cycles(df[column], max_gap_min=refit.MERGE_GAP_MIN[kind])
+            if cycles:
+                pool[kind].append(cycles)
+            cycle_counts[f"house{house}/{column}/{kind}"] = len(cycles)
+    empty = [k for k, v in pool.items() if not v]
+    if empty:
+        raise ValueError(f"no REFIT cycles detected for {empty}; check the column mapping")
+    return pool, base_loads, cycle_counts
 
 
 def build_benchmark(
@@ -28,29 +50,19 @@ def build_benchmark(
     date_to: date | None = None,
     crisis: tuple[str, str] | None = ("2022-12-01", "2022-12-31"),
     id_prefix: str = "",
+    exclude_dirs: tuple[str | Path, ...] = (),
 ) -> dict:
+    """``exclude_dirs``: scenario sets whose days must not be reused (a further held-out set, e.g. Q2)."""
     rng = np.random.default_rng(seed)
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
-    # kind -> one group of cycles per monitored appliance, so heavy-use households don't dominate sampling
-    pool: dict[str, list[list[list[float]]]] = {"washing_machine": [], "dishwasher": [], "tumble_dryer": []}
-    base_loads, cycle_counts = {}, {}
-    for house in houses:
-        df = refit.load_house(refit_dir, house)
-        base_loads[house] = refit.typical_base_load(df, house)
-        for column, kind in refit.FLEXIBLE_COLUMNS[house].items():
-            cycles = refit.detect_cycles(df[column], max_gap_min=refit.MERGE_GAP_MIN[kind])
-            if cycles:
-                pool[kind].append(cycles)
-            cycle_counts[f"house{house}/{column}/{kind}"] = len(cycles)
-    empty = [k for k, v in pool.items() if not v]
-    if empty:
-        raise ValueError(f"no REFIT cycles detected for {empty}; check the column mapping")
+    pool, base_loads, cycle_counts = load_household_data(refit_dir, houses)
 
     days = price_data.to_daily_slots(price_data.load_price_csv(price_csv, **(price_kwargs or {})))
     days = days[[(date_from is None or d >= date_from) and (date_to is None or d <= date_to) for d in days.index]]
-    chosen = select_days(days, rng, crisis=crisis)
+    excluded = {date.fromisoformat(s.date) for d in exclude_dirs for s in load_scenarios(d)}
+    chosen = select_days(days, rng, crisis=crisis, exclude=excluded)
 
     written = []
     base_houses = list(rng.permutation(houses))
@@ -89,6 +101,7 @@ def build_benchmark(
         "cycles_detected": cycle_counts,
         "days": {t: [d.isoformat() for d in ds] for t, ds in chosen.items()},
         "scenarios": written,
+        "excluded_sets": [str(d) for d in exclude_dirs],
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return manifest

@@ -38,7 +38,7 @@ from hems.agents.schemas import (
 from hems.agents.types import AgentRun
 from hems.core.evaluate import appliance_cost, evaluate
 from hems.core.models import Scenario
-from hems.tools import PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select
+from hems.tools import OPTIMIZER_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select
 
 # Step budget split by workload; the total equals the single agent's RECURSION_LIMIT (75).
 STEP_LIMITS = {"profiler": 15, "scheduler": 35, "resolver": 25}
@@ -48,6 +48,9 @@ MAX_RESOLVE_ITERATIONS = 2
 # above the cost of every appliance at its individually cheapest start (a lower bound that ignores the
 # peak limit) is sent back once for a cheaper staggering; the cheapest valid schedule seen is kept.
 COST_TOLERANCE = 0.03
+# Design iteration 7 ("multi_rag", "multi_rag_opt"): ``retriever`` returns worked examples of similar solved
+# days (hems.rag) for the Scheduler's and the Resolver's messages; ``optimizer`` gives the Scheduler the
+# optimize_schedule tool and its prompt. Both off by default, so "multi" is unchanged.
 
 ModelFactory = Callable[[str], BaseChatModel]
 """Role name ("orchestrator" | "profiler" | "scheduler" | "resolver") -> chat model."""
@@ -99,9 +102,13 @@ def _run_agent(
 
 
 def build_pipeline(
-    scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False
-):
+    scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False,
+    retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False,
+):  # fmt: skip
     tools = build_tools(scenario)
+    examples = f"\n\n{retriever(scenario)}" if retriever else ""
+    scheduler_tools = SCHEDULER_TOOLS + (OPTIMIZER_TOOLS if optimizer else ())
+    scheduler_prompt = prompts.SCHEDULER_OPT if optimizer else prompts.SCHEDULER
 
     def orchestrator_plan(state: PipelineState, config) -> PipelineState:
         brief, calls, errors, recoveries = _run_agent(
@@ -129,7 +136,7 @@ def build_pipeline(
 
     def scheduler(state: PipelineState, config) -> PipelineState:
         flexible = [p.model_dump() for p in state["profile"].appliances if p.flexible]
-        message = f"Appliance profiles:\n{json.dumps(flexible, indent=1)}"
+        message = f"Appliance profiles:\n{json.dumps(flexible, indent=1)}{examples}"
         if state.get("conflict_feedback"):
             previous = assignments_to_dict(state["resolution"].assignments) if state.get("resolution") else {}
             message += (
@@ -138,7 +145,7 @@ def build_pipeline(
                 "Propose a revised schedule that gives every requested appliance a start time."
             )
         proposal, calls, errors, recoveries = _run_agent(
-            models("scheduler"), select(tools, SCHEDULER_TOOLS), prompts.SCHEDULER, ScheduleOutput, message,
+            models("scheduler"), select(tools, scheduler_tools), scheduler_prompt, ScheduleOutput, message,
             "scheduler", STEP_LIMITS["scheduler"], config,
         )  # fmt: skip
         update: PipelineState = {"tool_calls": calls, "errors": errors, "recoveries": recoveries}
@@ -204,7 +211,7 @@ def build_pipeline(
         windows = {p.appliance_id: f"{p.earliest_time}-{p.deadline_time}" for p in state["profile"].appliances}
         message = (
             f"Proposed schedule: {json.dumps(assignments_to_dict(proposal.assignments))}\n"
-            f"User windows (earliest start - finish by): {json.dumps(windows)}"
+            f"User windows (earliest start - finish by): {json.dumps(windows)}{examples}"
         )
         resolution, calls, errors, recoveries = _run_agent(
             models("resolver"), select(tools, RESOLVER_TOOLS), prompts.RESOLVER, ResolverOutput, message,
@@ -289,9 +296,11 @@ def build_pipeline(
 
 def run_multi_agent(
     scenario: Scenario, models: ModelFactory, config: dict[str, Any] | None = None, summarize: bool = True,
-    cost_check: bool = False,
+    cost_check: bool = False, retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False,
 ) -> AgentRun:  # fmt: skip
-    pipeline = build_pipeline(scenario, models, summarize=summarize, cost_check=cost_check)
+    pipeline = build_pipeline(
+        scenario, models, summarize=summarize, cost_check=cost_check, retriever=retriever, optimizer=optimizer
+    )
     state: PipelineState = pipeline.invoke({"request": scenario.user_request}, config={"recursion_limit": 50, **(config or {})})
     return AgentRun(
         assignments=state.get("final"),

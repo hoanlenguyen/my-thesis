@@ -61,6 +61,16 @@ SCHEDULER = (
 
 RESOLVER = f"You are the Conflict Resolver agent. {GOAL}\nYour task: {RESOLVER_ROLE}\n{REACT_STYLE}"
 
+# Design iteration 7, optimiser arm: the Scheduler formulates the solver call and checks its result.
+SCHEDULER_OPT = (
+    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: call optimize_schedule once with the ids of ALL "
+    "flexible appliances to schedule; it solves the whole problem exactly (windows, peak limit, cost). Then check "
+    "the result with calculate_schedule_cost for any appliance whose time looks unusual, and return the solver's "
+    "start time for every appliance. If the solver reports no schedule, fall back to find_cheapest_window per "
+    "appliance. If you receive conflict feedback, call optimize_schedule again with the complete list of appliances.\n"
+    f"{REACT_STYLE}"
+)
+
 ONESHOT = (
     f"You are a home energy management assistant. {GOAL}\n"
     "You have no tools. All household data, the price of every 15-minute slot and the measured base load "

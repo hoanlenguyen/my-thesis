@@ -49,7 +49,7 @@ def cmd_build(args: argparse.Namespace) -> None:
         date_from=date.fromisoformat(args.date_from) if args.date_from else None,
         date_to=date.fromisoformat(args.date_to) if args.date_to else None,
         crisis=None if args.spike_days == "top" else ("2022-12-01", "2022-12-31"),
-        id_prefix=args.id_prefix,
+        id_prefix=args.id_prefix, exclude_dirs=tuple(args.exclude or ()),
     )  # fmt: skip
     print(json.dumps({k: manifest[k] for k in ("cycles_detected", "days", "price_days_available")}, indent=1))
 
@@ -184,6 +184,13 @@ def cmd_confirm(args: argparse.Namespace) -> None:
         print(f"\nwritten to {args.out}")
 
 
+def cmd_rag_build(args: argparse.Namespace) -> None:
+    from hems.rag import build_library
+
+    manifest = build_library(args.refit, args.prices, args.out, per_type=args.per_type, seed=args.seed)
+    print(json.dumps({k: manifest[k] for k in ("cases", "excluded_benchmark_days", "price_days_up_to")}, indent=1))
+
+
 def main() -> None:
     # Windows consoles default to cp1252; model output (e.g. "≈") must never crash a batch while logging.
     # Line buffering makes progress visible immediately when output goes to a log file.
@@ -219,6 +226,7 @@ def main() -> None:
     p.add_argument("--spike-days", choices=["crisis", "top"], default="crisis",
                    help="type E days: Dec 2022 crisis, or the 16 highest-peak days of the period")
     p.add_argument("--id-prefix", default="", help="prefix for scenario ids, e.g. Q- for the 15-min set")
+    p.add_argument("--exclude", nargs="*", help="scenario directories whose days must not be reused (e.g. data/scenarios_15min for Q2)")
     p.set_defaults(func=cmd_build)
 
     p = sub.add_parser("prices", help="download Nord Pool FI day-ahead prices (EUR/MWh, UTC) to CSV")
@@ -279,6 +287,14 @@ def main() -> None:
     p.add_argument("--runs", default="results/confirmation.jsonl")
     p.add_argument("--out", default="results/confirmation/confirmatory_tests.csv")
     p.set_defaults(func=cmd_confirm)
+
+    p = sub.add_parser("rag-build", help="build the RAG case library of solved days outside every benchmark")
+    p.add_argument("--refit", default="data/raw/refit")
+    p.add_argument("--prices", default="data/raw/prices_fi_sahkotin.csv")
+    p.add_argument("--out", default="data/rag/cases.jsonl")
+    p.add_argument("--per-type", type=int, default=30)
+    p.add_argument("--seed", type=int, default=7)
+    p.set_defaults(func=cmd_rag_build)
 
     args = parser.parse_args()
     args.func(args)

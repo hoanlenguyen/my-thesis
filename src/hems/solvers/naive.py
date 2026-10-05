@@ -69,6 +69,30 @@ def cheapest_hours_schedule(scenario: Scenario, hours: int | None = None, resolu
     return schedule
 
 
+def cheapest_window_schedule(scenario: Scenario) -> Schedule:
+    """Lowest-average consecutive window: Home Assistant Nordpool Planner (dala318/nordpool_planner, static
+    planner) and the sequential cheapest-hours mode of shelly-porssisahko (jisotalo).
+
+    Both tools slide a block of `duration` whole hours over hourly prices between a start and an end hour
+    and switch the device on for the block with the lowest average price. For a cycle appliance the
+    household sets the block to the cycle length rounded up to whole hours and the search span to
+    [ready time, deadline]; the cycle starts at the first hour of the block. Blocks must lie on full hours
+    within the window, so a cycle shorter than its rounded duration still finishes in time. The price is
+    a flat hourly average, not weighted by the cycle's power profile. Each appliance has its own planner:
+    there is no peak coordination. If no full-hour block fits, the appliance starts when ready.
+    """
+    prices = scenario.price_eur_per_kwh
+    schedule: Schedule = {}
+    for a in scenario.appliances:
+        block = -(-a.duration_slots // 4) * 4  # whole hours, in slots
+        starts = [s for s in a.valid_starts() if s % 4 == 0 and s + block <= a.deadline_slot]
+        if not starts:
+            schedule[a.id] = a.default_start_slot
+            continue
+        schedule[a.id] = min(starts, key=lambda s: (sum(prices[s : s + block]), s))
+    return schedule
+
+
 def has_coordination_conflict(scenario: Scenario) -> bool:
     """True when independently optimal starts overload the household.
 

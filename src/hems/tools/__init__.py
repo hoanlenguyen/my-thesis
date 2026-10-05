@@ -4,6 +4,10 @@ Fairness rule: the single-agent baseline receives exactly the union of the
 tools given to the three specialist agents. No tool solves the whole problem:
 ``find_cheapest_window`` looks at one appliance and ignores the peak limit, so
 coordinating appliances is left to the agents under test.
+
+Exception (design iteration 7, system "multi_rag_opt" only): ``optimize_schedule``
+solves the whole problem with the MILP. In that arm the agents formulate the call,
+check its result and explain it; the solver does the search.
 """
 
 from __future__ import annotations
@@ -24,6 +28,7 @@ PROFILER_TOOLS = ("read_household_data", "classify_appliance")
 SCHEDULER_TOOLS = ("get_spot_prices", "calculate_schedule_cost", "find_cheapest_window")
 RESOLVER_TOOLS = ("sum_load", "detect_conflicts", "adjust_schedule")
 ALL_TOOLS = PROFILER_TOOLS + SCHEDULER_TOOLS + RESOLVER_TOOLS
+OPTIMIZER_TOOLS = ("optimize_schedule",)  # not in ALL_TOOLS: only the optimiser arm receives it
 
 
 def _ranges(scenario: Scenario, slots: list[int]) -> str:
@@ -216,6 +221,28 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
             f"{appliance_id} {'within' if window_ok else 'OUTSIDE'} its window; {status}.{alternatives}"
         )
 
+    # ── Optimiser (multi_rag_opt only) ───────────────────────────────────────
+    @_guard
+    def optimize_schedule(appliance_ids: list[str]) -> str:
+        """Solve the scheduling problem exactly for the given appliances with an optimisation solver (MILP).
+
+        Respects every user window and the household peak limit (with the base load) and minimises the
+        total cost. Returns the start time per appliance, the cost and the maximum load."""
+        from hems.solvers.milp import solve_milp
+
+        wanted = [sc.appliance(i) for i in dict.fromkeys(appliance_ids)]  # raises ValueError for unknown ids
+        if not wanted:
+            return "ERROR: give at least one appliance id"
+        result = solve_milp(sc.model_copy(update={"appliances": wanted}))
+        if result.status != "Optimal":
+            return f"Solver status {result.status}: no schedule within the windows and the peak limit was found."
+        plan = {k: sc.slot_to_time(v) for k, v in result.schedule.items()}
+        after = evaluate(sc, result.schedule)
+        return (
+            f"Optimal schedule: {plan}\nTotal cost EUR {after.cost_eur:.4f}; max load {total_load(sc, result.schedule).max():.2f} kW "
+            f"(limit {sc.peak_limit_kw:.2f} kW)."
+        )
+
     fns = [
         read_household_data,
         classify_appliance,
@@ -225,6 +252,7 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
         sum_load,
         detect_conflicts,
         adjust_schedule,
+        optimize_schedule,
     ]
     return {fn.__name__: tool(fn) for fn in fns}
 
