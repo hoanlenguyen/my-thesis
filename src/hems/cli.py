@@ -59,7 +59,7 @@ def cmd_prices(args: argparse.Namespace) -> None:
 
     from hems.data.fetch_prices import fetch
 
-    df = fetch(args.source, date.fromisoformat(args.start), date.fromisoformat(args.end), args.out)
+    df = fetch(args.source, date.fromisoformat(args.start), date.fromisoformat(args.end), args.out, area=args.area)
     step = df.timestamp_utc.diff().value_counts().head(2).to_dict()
     print(f"{len(df)} prices {df.timestamp_utc.min()} .. {df.timestamp_utc.max()} (steps: {step}) -> {args.out}")
 
@@ -196,11 +196,14 @@ def cmd_build_factorial(args: argparse.Namespace) -> None:
     from datetime import date
 
     from hems.data.factorial import build_factorial
+    from hems.data.tariff import Tariff
 
     manifest = build_factorial(
         args.refit, args.prices, args.out, per_cell=args.per_cell, seed=args.seed, id_prefix=args.id_prefix,
         date_from=date.fromisoformat(args.date_from) if args.date_from else None,
         date_to=date.fromisoformat(args.date_to) if args.date_to else None, exclude_dirs=tuple(args.exclude),
+        tariff=Tariff.uk_2015() if args.tariff == "uk2015" else Tariff(), local_tz=args.tz,
+        price_scale=args.price_scale, allow_fewer=args.allow_fewer,
     )  # fmt: skip
     print(json.dumps({k: manifest[k] for k in ("price_period", "excluded_days", "price_days_available")}, indent=1))
     print(f"{len(manifest['scenarios'])} scenarios")
@@ -249,6 +252,7 @@ def main() -> None:
     p.add_argument("--start", default="2022-01-01")
     p.add_argument("--end", default="2026-09-25", help="exclusive")
     p.add_argument("--out", default="data/raw/prices_fi.csv")
+    p.add_argument("--area", default="FI", choices=["FI", "GB"], help="bidding zone (GB: ENTSO-E only, GBP/MWh)")
     p.set_defaults(func=cmd_prices)
 
     p = sub.add_parser("refit-inspect", help="cycle statistics per mapped REFIT column")
@@ -321,6 +325,10 @@ def main() -> None:
     p.add_argument("--from", dest="date_from")
     p.add_argument("--to", dest="date_to")
     p.add_argument("--exclude", nargs="*", default=[], help="scenario directories whose days must not be reused")
+    p.add_argument("--tz", default="Europe/Helsinki", help="time zone of the household day (Europe/London for UK)")
+    p.add_argument("--price-scale", type=float, default=1.0, help="multiply prices, e.g. EUR per GBP for GB prices")
+    p.add_argument("--tariff", default="fi", choices=["fi", "uk2015"], help="consumer tariff (data.tariff)")
+    p.add_argument("--allow-fewer", action="store_true", help="take every candidate day when a pattern has too few")
     p.set_defaults(func=cmd_build_factorial)
 
     args = parser.parse_args()

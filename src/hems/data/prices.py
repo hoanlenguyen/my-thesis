@@ -25,10 +25,14 @@ def load_price_csv(
     source_tz: str = "UTC",
     vat_included: float = 0.0,
     sep: str | None = None,
+    local_tz: str = LOCAL_TZ,
+    scale: float = 1.0,
 ) -> pd.Series:
     """Return spot EUR/kWh (excl. VAT) indexed by tz-aware local timestamps.
 
     ``vat_included``: VAT rate already contained in the prices (e.g. 0.255), which is removed.
+    ``local_tz``: time zone of the household's day (Europe/London for the UK appendix set).
+    ``scale``: currency conversion applied to the values (e.g. EUR per GBP for GB prices).
     """
     df = pd.read_csv(path, sep=sep, engine="python")
     time_col = time_col or next(c for c in df.columns if pd.to_datetime(df[c], errors="coerce").notna().mean() > 0.9)
@@ -36,7 +40,8 @@ def load_price_csv(
     times = pd.to_datetime(df[time_col], utc=False)
     if times.dt.tz is None:
         times = times.dt.tz_localize(source_tz, ambiguous="infer", nonexistent="shift_forward")
-    prices = pd.Series(df[price_col].astype(float).to_numpy() * UNIT_TO_EUR_PER_KWH[unit], index=times.dt.tz_convert(LOCAL_TZ))
+    values = df[price_col].astype(float).to_numpy() * UNIT_TO_EUR_PER_KWH[unit] * scale
+    prices = pd.Series(values, index=times.dt.tz_convert(local_tz))
     prices = prices / (1 + vat_included)
     return prices[~prices.index.duplicated()].sort_index()
 
@@ -45,7 +50,7 @@ def to_daily_slots(prices: pd.Series) -> pd.DataFrame:
     """Index = local date, columns 0..95. DST-change days (92/100 slots) are dropped."""
     step = prices.index.to_series().diff().median()
     end = prices.index[-1] + step
-    grid = pd.date_range(prices.index[0], end, freq=f"{SLOT_MINUTES}min", inclusive="left", tz=LOCAL_TZ)
+    grid = pd.date_range(prices.index[0], end, freq=f"{SLOT_MINUTES}min", inclusive="left", tz=prices.index.tz)
     slotted = prices.reindex(prices.index.union(grid)).ffill().reindex(grid)
     frame = pd.DataFrame({"price": slotted.to_numpy(), "date": grid.date, "slot": grid.hour * 4 + grid.minute // SLOT_MINUTES})
     counts = frame.groupby("date").size()

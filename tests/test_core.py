@@ -198,6 +198,14 @@ def test_cheapest_window_takes_the_lowest_average_full_hour_block(scenario_type:
             assert schedule[a.id] == a.default_start_slot
 
 
+def test_uk_2015_tariff_matches_the_2015_average_unit_cost() -> None:
+    from hems.data.tariff import Tariff
+
+    spot_gbp_per_kwh = 0.040472  # mean GB day-ahead price of the window
+    eur = Tariff.uk_2015().consumer_price([spot_gbp_per_kwh * 1.366848])[0]
+    assert abs(eur * 0.73161 - 0.154) < 0.0005  # 15.4 p/kWh incl. VAT
+
+
 def test_system_registry_is_consistent() -> None:
     from hems.run import ALL_SYSTEMS, LLM_SYSTEMS, REFERENCE_SYSTEMS
     from hems.systems import SYSTEMS

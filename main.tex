@@ -1411,14 +1411,21 @@ sum exceeding the aggregate).
 
 \subsection{Electricity price data}
 
-Day-ahead spot prices for the Nord Pool FI bidding zone were obtained
-for 1 January 2022 to 24 September 2026 from the public Sähkötin price
-service, which republishes Nord Pool data (Pakastin Oy, 2026). The
-values are in EUR/MWh excluding VAT and were verified against an
-independent source for the December 2022 crisis period. The service
-provides hourly values, which are repeated across the four fifteen-minute
-slots of each hour; days with a daylight-saving transition are dropped,
-leaving 1,718 complete days.
+Day-ahead spot prices for the Nord Pool FI bidding zone come from two
+public services that republish Nord Pool data. The hourly prices of the
+exploratory benchmark and the case library, 1 January 2022 to 30
+September 2025, come from Sähkötin (Pakastin Oy, 2026); each hourly value
+is repeated across the four fifteen-minute slots of its hour. The
+fifteen-minute prices of the held-out benchmarks, from 1 October 2025,
+come from Elering (Elering AS, 2026). All values are in EUR/MWh excluding
+VAT, and days with a daylight-saving transition are dropped. Both
+sources were checked against the official day-ahead prices of the
+ENTSO-E Transparency Platform for the whole period (ENTSO-E, 2026). The
+Elering prices are identical to the official ones at all 67,411
+timestamps. The Sähkötin prices are identical for every hour before
+October 2025 except one hour on a daylight-saving transition day, which
+no benchmark uses. Every price in the scenarios of the exploratory and
+the held-out benchmarks therefore matches the official data.
 
 Scheduling cost is computed with the consumer price rather than the raw
 spot price. For spot price $s$, the consumer price per kWh is
@@ -2142,6 +2149,11 @@ Energy Authority (Energiavirasto). (2025, July 10).
 households: Fixed-term contracts still the most common type in 2024}
 [Press release].
 \url{https://energiavirasto.fi/en/-/dynamic-price-contracts-held-by-more-than-one-third-of-households-fixed-term-contracts-still-the-most-common-type-in-2024}
+
+ENTSO-E. (2026). \textit{Transparency Platform: Day-ahead prices,
+bidding zone FI} [Data set]. European Network of Transmission System
+Operators for Electricity. Retrieved 6 October 2026, from
+\url{https://transparency.entsoe.eu}
 
 Fingrid. (2024). \textit{Fingrid's Open data service now provides data on
 electricity consumption and small-scale electricity production from

@@ -104,15 +104,20 @@ def build_factorial(
     exclude_dirs: tuple[str | Path, ...] = (),
     houses: tuple[int, ...] = refit.ALL_HOUSES,
     tariff: Tariff = Tariff(),
+    local_tz: str = price_data.LOCAL_TZ,
+    price_scale: float = 1.0,
+    allow_fewer: bool = False,
 ) -> dict:
+    """``local_tz``, ``price_scale`` and ``allow_fewer`` serve the UK appendix set: GB prices in GBP on London
+    time, converted to EUR, with no negative-price days (that pattern then gets no scenarios)."""
     rng = np.random.default_rng(seed)
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     excluded = {date.fromisoformat(s.date) for d in exclude_dirs for s in load_scenarios(d)}
     pool, base_loads, cycle_counts = load_household_data(refit_dir, houses)
-    days = price_data.to_daily_slots(price_data.load_price_csv(price_csv))
+    days = price_data.to_daily_slots(price_data.load_price_csv(price_csv, local_tz=local_tz, scale=price_scale))
     days = days[[(date_from is None or d >= date_from) and (date_to is None or d <= date_to) for d in days.index]]
-    chosen = select_regime_days(days, rng, per_cell, excluded)
+    chosen = select_regime_days(days, rng, per_cell, excluded, allow_fewer=allow_fewer)
 
     written: list[str] = []
     base_houses = list(rng.permutation(houses))
@@ -133,6 +138,7 @@ def build_factorial(
         "houses": list(houses), "price_csv": str(price_csv), "price_days_available": len(days),
         "price_period": [days.index.min().isoformat(), days.index.max().isoformat()],
         "price_resolution_min": price_data.native_resolution_minutes(price_csv, date_from),
+        "local_tz": local_tz, "price_scale": price_scale,
         "excluded_sets": [str(d) for d in exclude_dirs], "excluded_days": len(excluded),
         "profile_sources": {k: len(v) for k, v in pool.items()}, "cycles_detected": cycle_counts,
         "days": {f"{r}-{lo}": [d.isoformat() for d in ds] for (r, lo), ds in chosen.items()},

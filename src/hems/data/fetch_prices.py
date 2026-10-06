@@ -62,23 +62,32 @@ def fetch_elering(start: date, end: date) -> pd.DataFrame:
     return df
 
 
-def fetch_entsoe(start: date, end: date, api_key: str | None = None) -> pd.DataFrame:
+AREA_TZ = {"FI": "Europe/Helsinki", "GB": "Europe/London"}
+
+
+def fetch_entsoe(start: date, end: date, api_key: str | None = None, area: str = "FI") -> pd.DataFrame:
+    """Day-ahead prices of a bidding zone, in the zone's currency per MWh (EUR for FI, GBP for GB)."""
     from entsoe.entsoe import EntsoePandasClient
 
     api_key = api_key or os.environ.get("ENTSOE_API_KEY")
     if not api_key:
         raise SystemExit("ENTSOE_API_KEY is not set (see src/hems/data/fetch_prices.py for how to get one)")
     client = EntsoePandasClient(api_key=api_key)
-    series = client.query_day_ahead_prices(
-        "FI", start=pd.Timestamp(start, tz="Europe/Helsinki"), end=pd.Timestamp(end, tz="Europe/Helsinki")
-    )
+    tz = AREA_TZ[area]
+    series = client.query_day_ahead_prices(area, start=pd.Timestamp(start, tz=tz), end=pd.Timestamp(end, tz=tz))
     series = series[~series.index.duplicated()].sort_index()
     timestamps = pd.DatetimeIndex(series.index).tz_convert("UTC")
-    return pd.DataFrame({"timestamp_utc": timestamps, "price_eur_mwh": series.to_numpy()})
+    column = "price_gbp_mwh" if area == "GB" else "price_eur_mwh"
+    return pd.DataFrame({"timestamp_utc": timestamps, column: series.to_numpy()})
 
 
-def fetch(source: str, start: date, end: date, out: str | Path) -> pd.DataFrame:
-    df = {"sahkotin": fetch_sahkotin, "elering": fetch_elering, "entsoe": fetch_entsoe}[source](start, end)
+def fetch(source: str, start: date, end: date, out: str | Path, area: str = "FI") -> pd.DataFrame:
+    if source == "entsoe":
+        df = fetch_entsoe(start, end, area=area)
+    elif area != "FI":
+        raise SystemExit(f"--area {area} needs --source entsoe")
+    else:
+        df = {"sahkotin": fetch_sahkotin, "elering": fetch_elering}[source](start, end)
     df = df.drop_duplicates("timestamp_utc").sort_values("timestamp_utc")
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
