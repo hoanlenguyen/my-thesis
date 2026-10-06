@@ -184,9 +184,9 @@ optimiser tool that they call, check and explain. The study asks how
 much the recommendations save, how often they are valid and what they
 cost to produce compared with a language model answering without tools
 (SQ1), and under which price patterns, household loads
-and peak limits the recommendations save more than, or as much as, the
-cheapest-hours automations that Finnish households deploy and the
-open-source optimiser EMHASS (SQ2).
+and peak limits the recommendations save more than, or as much as,
+existing home energy management tools available to households:
+cheapest-hours automations and the open-source optimiser EMHASS (SQ2).
 
 The evaluation combines appliance cycles from the REFIT dataset with
 Finnish Nord Pool prices in 48 exploratory scenarios and tests
@@ -339,8 +339,9 @@ recommendations save, how often are they valid, and what do they cost to
 produce, compared with a language model that answers without tools?
 
 \textbf{SQ2 (conditions):} Under which price patterns, household loads and
-peak limits do the recommendations save more than, or as much as, the
-tools households deploy today?
+peak limits do the recommendations save more than, or as much as,
+existing home energy management tools available to households, namely
+cheapest-hours automations and the EMHASS optimizer?
 \end{quote}
 
 The main RQ states the design aim: recommendations that are reliable,
@@ -354,12 +355,15 @@ the premise of the ReAct approach, that reasoning grounded in tool
 observations does better than unaided generation, by comparing the
 pipeline with the same language model answering directly, and it checks
 the response time and API cost of each recommendation against the
-design objectives. SQ2 concerns where the system is worth using. It
-compares the
-recommendations with cheapest-hours automations of the kind shared for
-Home Assistant and Shelly relays and with the open-source optimizer
-EMHASS, and asks how the comparison depends on the day's prices, on how
-many appliances the household runs, and on how tight its peak limit is.
+design objectives. SQ2 concerns where the system is worth using. Its
+"existing home energy management tools" are real, freely available
+software that a household can install without programming: the
+cheapest-hours automations shared for Home Assistant and Shelly smart
+relays, which switch a device on in the day's cheapest hours, and the
+open-source optimizer EMHASS, which computes a schedule for the whole
+household. SQ2 compares the recommendations with these tools and asks
+how the comparison depends on the day's prices, on how many appliances
+the household runs, and on how tight its peak limit is.
 
 \section{Design Science Research approach}
 
@@ -395,6 +399,7 @@ eight topics and ends with the research gap that the research questions
 address.
 
 \section{Home energy management systems}
+\label{sec:hems}
 
 A Home Energy Management System (HEMS) is a software or hardware system
 that monitors, controls, and optimizes residential electricity
@@ -408,21 +413,45 @@ preferences or physical constraints.
 
 HEMS scheduling approaches fall into three broad groups. Rule-based
 systems apply expert-defined heuristics, for example starting an
-appliance when the price falls below a threshold. Mathematical
-optimization methods such as Mixed Integer Linear Programming (MILP)
-compute optimal schedules for a precisely specified problem; Moradzadeh
-and Tomsovic (2013), for instance, formulate residential energy
-management as a two-stage optimization that respects the operational
-constraints of the distribution network. Such methods require every
-constraint to be expressed in mathematical form, so a household's
-preferences must first be translated into that form. Learning-based
-methods acquire a scheduling policy from data, as in the deep
-reinforcement learning approach of Mocanu et al. (2019), which is
+appliance when the price falls below a threshold or in the cheapest
+hours of a window. They are simple to run and easy to follow, because
+each decision follows from one stated rule, but each rule covers only
+the situation it was written for. A rule that picks the cheapest hours
+for one device does not see the other devices, so it cannot keep the
+household under a limit on its total power, and a new requirement means
+writing and testing a new rule.
+
+Mathematical optimization methods such as Mixed Integer Linear
+Programming (MILP) compute the best schedule for a precisely specified
+problem. Sou et al. (2011) formulate appliance scheduling with binary
+start variables, uninterrupted cycles and time windows, and Moradzadeh
+and Tomsovic (2013) formulate residential energy management as a
+two-stage optimization that respects the operational constraints of the
+distribution network. Such methods are optimal for the model they solve,
+but every constraint must first be expressed in mathematical form, so a
+household's preferences have to be translated into variables and
+constraints by someone who can do so, and a new kind of constraint needs
+a new formulation. Their output is a schedule, not a reason for it.
+
+Learning-based methods acquire a scheduling policy from data, as in the
+deep reinforcement learning approach of Mocanu et al. (2019), which is
 trained on measured building data and then optimizes schedules on-line.
-None of the three groups explains its decisions in terms that
-non-expert household users can readily understand, and adapting any of
-them to a new type of constraint requires a new rule, a new formulation
-or new training.
+They adapt to the household they are trained on, but a change in the
+task, such as a new appliance or a new tariff, generally requires new
+training, and the learned policy is hard to inspect.
+
+Optimization and learning-based controllers have been described as
+black boxes that are hard for users to understand and trust, which has
+led to work on explainable HEMS, for example by distilling a
+reinforcement-learning policy into a decision tree that can be explained
+to end-users (Gokhale et al., 2024). Zharova et al. (2024) argue that
+users need to understand why and how a recommendation system reaches
+its recommendations before they trust and accept them, and add a
+dedicated explainability agent to a multi-agent system that recommends
+when to run household appliances. Explanation in terms a non-expert
+understands, and adaptation to new constraint types without a new rule,
+formulation or training run, are therefore the two properties that a
+language model agent could add to these approaches.
 
 Rule-based and optimization approaches are both available to households
 today as open-source tools. Among Home Assistant users in Finland and
@@ -451,41 +480,51 @@ cheapest-hours rules and EMHASS as reference points for the agents
 
 \section{LLM-based agents for energy management}
 
-Studies applying LLMs to energy management have appeared since 2023.
-El Makroum et al. (2025) present a
-hierarchical agentic AI architecture with one orchestrator agent and
-three specialist agents that follow the ReAct pattern, evaluated with
-three open-weight models (Llama 3.3 70B, Qwen 3 32B and GPT-OSS 120B) on
-Austrian day-ahead prices against MILP benchmarks. All three models
-scheduled single appliances optimally, but only Llama 3.3 70B
-coordinated all appliances in the multi-appliance scenarios. The
-evaluation comprises 75 runs on a single day for one household with a
-washing machine, a dishwasher and an electric vehicle charger, and the
-authors note that thermal loads such as heat pumps, electric heating and
-hot water storage are not included. Of the published systems, this
-design is the closest to the pipeline of this thesis, but it is not
-compared with the tools households deploy and the price conditions are
-not varied.
+Studies applying LLMs to energy management have appeared since 2023, and
+two recent ones are close to this thesis. El Makroum et al. (2025)
+present a hierarchical agentic architecture for home energy management
+in which an orchestrator agent delegates to three specialist agents that
+follow the ReAct pattern. The household has three flexible loads: a
+washing machine (2.0\,kW for 120 minutes), a dishwasher (1.8\,kW for 90
+minutes) and an electric vehicle charger (7.4\,kW for 360 minutes). The
+agents receive Austrian day-ahead prices from ENTSO-E for one day, 14
+October 2025, and are run with three open-weight models, Llama 3.3 70B,
+Qwen 3 32B and GPT-OSS 120B. The evaluation consists of 75 runs: 15
+single-appliance runs, 15 multi-appliance runs and 45 runs in which the
+user asks analytical questions about the schedule. Each schedule is
+compared with the optimum of a MILP model rather than with an
+unscheduled baseline, so the study reports how often the agents reach
+the optimal cost, not how much they save. All three models scheduled
+single appliances optimally, but only Llama 3.3 70B coordinated all
+appliances in every multi-appliance scenario, and the analytical
+questions were answered unreliably unless the agents were given explicit
+guidance. The authors describe the study as a proof of concept: one
+household, one day and one price series, without thermal loads such as
+heat pumps, electric heating and hot water storage. They name pilot
+deployments and evaluation across electricity markets and household
+types as future work. Of the published systems, this design is the
+closest to the pipeline of this thesis.
 
-Jonah et al. (2026) evaluate a single tool-calling ReAct agent with
-half-hourly dynamic prices from the United Kingdom, weather and
-photovoltaic forecasts and household demand data, using five language
-models, among them GPT-4o-mini. Building on El Makroum et al., they list
-multi-appliance coordination failures, scheduling on price alone, a
-single-day evaluation horizon and untested constraint safety as open
-problems. Their agents capture 96.7 to 98.0\,\% of the savings available
-between an off-peak timer and a MILP optimum, but the authors also
-observe fabricated schedules and cases in which a model reasons
-correctly about a constraint and still commits a schedule that violates
-it. They therefore recommend that every schedule be validated
-independently against duration, deadline and power constraints before it
-is executed. Their evaluation covers one household over twelve tariff
-days and a one-week deployment. These open problems shape the design of
-this thesis: coordination under a household peak load limit, a
-deterministic verification step for every schedule, a comparison with
-the tools households already deploy, and an evaluation across price
-patterns, household loads and peak limits on an exploratory and a
-held-out benchmark.
+Jonah et al. (2026) take the opposite design choice: a single
+tool-calling ReAct agent that turns a household's request into appliance
+schedules, using half-hourly dynamic prices from the United Kingdom
+(Octopus Agile), weather and photovoltaic forecasts and household demand
+data. They test five language models, among them Claude Sonnet 4.6,
+GPT-4o-mini and Qwen 3. Their agents capture 96.7 to 98.0\,\% of the
+savings available between an off-peak timer and a MILP optimum and do
+better than rule-based policies. Their failure analysis is the more
+important result for this thesis. The models sometimes fabricated
+schedules or failed to commit one, and in some cases a model explained a
+deadline correctly and still committed a schedule that violated it.
+Actions parsed from text were less reliable than native function calls.
+Building on El Makroum et al., they list multi-appliance coordination
+failures, scheduling on price alone, a single-day evaluation horizon and
+untested constraint safety as open problems, and they recommend that an
+independent deterministic validator check every schedule against
+duration, deadline and power constraints before it is executed. Their
+evaluation covers one household over twelve tariff days and a one-week
+deployment. Section~\ref{sec:gap} sets out how these open problems
+shape the design and evaluation of this thesis.
 
 \section{The ReAct framework}
 
@@ -497,16 +536,31 @@ a structured call to an external tool or API; and an Observation, which
 is the result the tool returns. The loop repeats until the agent reaches
 a final answer.
 
-Yao et al. (2023) compare ReAct with chain-of-thought reasoning and with
-acting alone on four benchmark tasks. ReAct does better than both on all
-four, with the largest gains on tasks that need information looked up
-during a multi-step plan. Household scheduling is such a task: the agent
-has to look up prices, loads and costs while it builds the schedule. The
-trace also makes the result explainable, because it records the
+Yao et al. (2023) evaluate ReAct on four benchmarks of two kinds. Two are
+knowledge-intensive reasoning tasks, in which the agent can query a
+Wikipedia API: HotpotQA, multi-hop question answering, and FEVER, fact
+verification. Two are interactive decision-making tasks: ALFWorld, a
+text-based game in which the agent carries out household chores in a
+simulated home, and WebShop, in which it shops on a simulated website to
+match a customer's instructions. Their baselines are built by removing
+parts of the ReAct trajectories: standard prompting without reasoning or
+actions, chain-of-thought prompting with reasoning but no actions, and
+acting alone without reasoning, so that each comparison isolates the
+contribution of reasoning or of acting. With PaLM-540B, ReAct reached 27.4
+exact match on HotpotQA, slightly below chain-of-thought (29.4), and
+60.9\,\% accuracy on FEVER, above it (56.3\,\%), while the best results on both
+came from combining the two. On the interactive tasks the advantage was
+clear: on ALFWorld the best ReAct trial reached a 71\,\% success rate
+against 45\,\% for acting alone, and on WebShop 40.0\,\% against 30.1\,\%.
+The gains were largest where the agent has to act on information it
+looks up during a multi-step task. Household scheduling is such a task:
+the agent looks up prices, loads and costs while it builds the schedule.
+The trace also makes the result explainable, because it records the
 reasoning behind every tool call, so it shows why an appliance was given
 a particular start time.
 
 \section{Multi-agent LLM systems}
+\label{sec:multi-agent}
 
 Multi-agent LLM systems have been proposed as a solution to the context
 window and coordination limitations of single-agent designs. Han et al.
@@ -529,6 +583,28 @@ code-generation benchmarks at the time. Structured hand-offs between
 specialists address the same kind of problem as the multi-appliance
 coordination failures reported for LLM-based HEMS (El Makroum et al.,
 2025).
+
+The move from one agent to a hierarchy of agents is motivated by three
+problems of a single agent that handles a whole task. First, its context
+grows with every tool call and observation, and the model has to keep
+track of all of them, while a specialist sees only the information of
+its own step. Second, a single agent has access to every tool, so it can
+call any of them at any point, while a specialist is limited to the few
+tools its subtask needs, which narrows the choices it can get wrong.
+Third, the intermediate results of a single agent stay inside its own
+reasoning, while a hierarchy passes them between agents as structured
+outputs, which can be checked before the next step (Hong et al., 2024).
+In a hierarchical design an orchestrator splits the task, hands each part
+to a specialist and combines the results; the survey of Guo et al.
+(2024) describes such layered structures alongside centralized and
+decentralized ones as ways in which the agents of an LLM-based
+multi-agent system communicate. The hierarchy has a
+price: more model calls per task, hand-offs that can lose information,
+and the need to decide in advance how the task is split. For household
+scheduling the split follows the structure of the problem: which
+appliances can move, when each is cheapest, and how they fit under the
+peak limit together. The verification step between the specialists is
+where the independent check recommended by Jonah et al. (2026) fits.
 
 \section{Retrieval and solver tools for LLM agents}
 \label{sec:rag-lit}
@@ -624,21 +700,64 @@ matters for the power system as well as for household bills.
 \label{sec:gap}
 
 Three findings come out of the reviewed literature. First, HEMS
-scheduling is a multi-step,
-multi-constraint optimization problem that LLM-based agents can address
-more flexibly than rule-based or classical optimization approaches.
-Second, the first LLM-based HEMS implementations, both hierarchical and
+scheduling is a multi-step, multi-constraint optimization problem. Rules
+and optimizers solve it for the cases they were written or formulated
+for but do not explain their decisions, and language model agents have
+been proposed because they can take constraints stated in words and
+explain what they did (Section~\ref{sec:hems}). Second, the first
+LLM-based HEMS implementations, both hierarchical and
 single-agent, have documented limitations in multi-appliance
 coordination, in scheduling on price alone, in the safety of committed
 schedules, and in evaluation scope (El Makroum et al., 2025; Jonah et
-al., 2026). Third, the tools households already deploy range from
+al., 2026). Third, the existing home energy management tools that households can install range from
 cheapest-hours rules that plan each device alone to optimizers such as
 EMHASS, and retrieval of solved examples and solver tools are
 established ways to strengthen language model agents (Lewis et al.,
 2020; Li et al., 2023). No published HEMS study measures what an agent
-adds over the deployed tools across several price patterns,
+adds over these existing tools across several price patterns,
 or whether retrieval or a solver tool lets an agent reach the saving of
-an optimizer.
+an optimizer. Table~\ref{tab:gap} links each limitation of the prior work
+to the design or evaluation choice of this thesis that responds to it,
+and to the research question that tests it.
+
+\begin{table}[h!]
+\caption{Limitations of prior work and how this thesis responds to them.}
+\label{tab:gap}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Limitation in prior work & Response in this thesis & Tested in \\
+\midrule
+Multi-appliance coordination fails for some models (El Makroum et al.,
+  2025; Jonah et al., 2026) &
+  A Conflict Resolver, retrieval of solved days, an optimiser tool, and a
+  household peak limit that forces appliances to be staggered on
+  heavy-load days & SQ1, SQ2 \\[3pt]
+Committed schedules can violate constraints the model reasoned about
+  correctly; an independent check is recommended (Jonah et al., 2026) &
+  A deterministic verification step checks every schedule for conflicts,
+  missing appliances and window violations, and returns it for revision &
+  SQ1 (validity) \\[3pt]
+Evaluation on a single day or a few days, one household, one price
+  series (El Makroum et al., 2025; Jonah et al., 2026) &
+  A factorial benchmark of four price patterns, two household loads and
+  two peak limits, built from 18 REFIT households, and a held-out
+  benchmark with pre-registered hypotheses & SQ2 \\[3pt]
+Scheduling on the price signal alone (Jonah et al., 2026) & Partly
+  addressed: every schedule must also keep base load plus appliances
+  under a peak limit, with a strict and a realistic limit compared; the
+  objective remains the electricity cost, and other signals such as
+  carbon intensity are not added & SQ2 \\[3pt]
+No comparison with existing home energy management tools &
+  Comparison with cheapest-hours automations for Home Assistant and
+  Shelly relays and with the optimizer EMHASS & SQ2 \\[3pt]
+Rules and optimizers do not explain their decisions (Gokhale et al.,
+  2024; Zharova et al., 2024) &
+  The Orchestrator explains every recommendation and states the result
+  of the final peak-load check & design \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 This thesis addresses that gap with three contributions. The first is
 the Multi-Agent Pipeline, a hierarchical ReAct multi-agent system in
@@ -649,8 +768,8 @@ what its recommendations save, how often they are valid and what they
 cost to produce compared with a language model answering without tools
 (SQ1). The third is a map of the conditions, four
 price patterns, two household loads and two peak limits, under which the
-recommendations save more than, or as much as, deployed cheapest-hours
-automations and EMHASS (SQ2). The hypotheses were fixed in advance and
+recommendations save more than, or as much as, existing home energy
+management tools, cheapest-hours automations and EMHASS (SQ2). The hypotheses were fixed in advance and
 tested on a held-out benchmark.
 
 % ════════════════════════════════════════════════════════════════════════════
@@ -658,8 +777,10 @@ tested on a held-out benchmark.
 
 This chapter describes the research methodology and explains how Design
 Science Research is applied in this thesis. It presents the rationale
-for the selected approach, the phase mapping to thesis activities, and
-the evaluation strategy including the statistical methods used.
+for the approach and the mapping of its phases to the thesis, the
+theories on which the design of the artifact draws, and the evaluation
+strategy: the systems compared, how the data were collected, and how
+they were analysed.
 
 \section{Design Science Research methodology}
 
@@ -677,9 +798,8 @@ artifact is an instantiation, that is, a working software implementation
 of a hierarchical multi-agent scheduling pipeline. It is supported by
 architectural models (the LangGraph state graph design) and constructs
 (the agent role taxonomy: Profiler, Scheduler, Resolver, Orchestrator).
-
 Table~\ref{tab:dsr} maps the six DSR phases defined by Peffers et al.
-(2007) to the specific activities and outputs in this thesis.
+(2007) to the activities and outputs of this thesis.
 
 \begin{table}[h!]
 \caption{DSR phase mapping.}
@@ -710,7 +830,7 @@ Phase & DSR step & Activity in this thesis & Output \\
 5 & Evaluation &
   Exploratory run on 48 hourly-price scenarios; two pre-registered
   confirmatory runs on held-out fifteen-minute scenarios (Q, Q2);
-  comparison with deployed home energy management tools; Wilcoxon and
+  comparison with existing home energy management tools; Wilcoxon and
   TOST tests &
   Quantitative evaluation results \\[4pt]
 6 & Communication &
@@ -719,6 +839,55 @@ Phase & DSR step & Activity in this thesis & Output \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\section{Theoretical foundations}
+\label{sec:theory}
+
+Design science research grounds the design of an artifact in kernel
+theories, the existing theories from which its design principles are
+derived, and positions its contribution against them (Gregor \& Hevner,
+2013). Four bodies of work serve this role here. The first is demand
+flexibility under time-varying prices: a household lowers its cost by
+moving flexible loads to low-price periods, within the time windows its
+members accept and the power limits of its connection. This is the
+problem that rule-based and optimization-based HEMS address
+(Section~\ref{sec:hems}), and the MILP formulation of Sou et al. (2011)
+states it precisely. It defines what a good recommendation is: the
+cheapest schedule that respects every window and the peak limit.
+
+The second is reasoning grounded in tool observations. ReAct (Yao et al.,
+2023) holds that a language model solves multi-step tasks more reliably
+when it alternates between reasoning and actions whose results it
+observes, instead of producing an answer from its parameters alone. It
+yields the design principle that every number an agent uses comes from a
+deterministic tool, and the LLM without tools is the baseline that tests
+it (H1a). The third is task decomposition with role specialization in
+multi-agent systems (Hong et al., 2024; Guo et al., 2024): a task split
+into specialist roles with structured hand-offs keeps each agent's
+context and tool set small and makes intermediate results checkable
+(Section~\ref{sec:multi-agent}). It yields the four roles of the pipeline
+and the verification step between them.
+
+The fourth is the reuse of solved problems. Case-based reasoning solves a
+new problem by retrieving similar past cases and adapting their
+solutions (Aamodt \& Plaza, 1994), and retrieval-augmented generation
+supplies a language model with such material at the time of the request
+(Lewis et al., 2020). Together with the use of a solver as a tool (Li et
+al., 2023), it yields the case library and the optimiser tool of the
+final design. Guidelines for human-AI interaction (Amershi et al., 2019)
+add the requirement that the system explain what it did and state when
+a constraint is not met, which the Orchestrator's summary implements.
+
+The evaluation follows the Framework for Evaluation in Design Science
+Research (FEDS) of Venable et al. (2016). All evaluations are artificial,
+on simulated household days, and they move from formative to summative.
+The design iterations were formative evaluations on an exploratory
+benchmark, and the pre-registered run on a held-out benchmark is the
+summative evaluation. Of the strategies FEDS describes, this corresponds
+to Technical Risk and Efficacy, which is suited to an artifact whose main
+risk is whether it works technically before it is evaluated with users.
+A naturalistic evaluation with real households is left to future work
+(Section~\ref{sec:future}).
 
 \section{Evaluation strategy}
 \label{sec:evaluation}
@@ -786,7 +955,7 @@ pipeline is compared with the following alternatives:
   isolates the contribution of tool use.
 \end{itemize}
 The cheapest-hours rules plan each appliance on its own and ignore the
-household's total load, exactly as the deployed tools do. Because
+household's total load, exactly as the real tools do. Because
 language model output varies between runs, each system that uses a
 language model is run three times per scenario, while the deterministic
 systems are run once.
@@ -811,7 +980,7 @@ single-agent comparison.
 The research design was then revised. The single agent was dropped as a
 compared system, the saving against no scheduling replaced the gap to
 the optimum as the primary outcome, retrieval and the optimiser tool
-were added, and the cheapest-window rule joined the deployed tools. The
+were added, and the cheapest-window rule joined the existing tools. The
 six scenario types were replaced by a factorial design in which the
 price pattern, the household load and the peak limit vary separately
 (Section~\ref{sec:dataset}), because each of the old types changed
@@ -851,7 +1020,40 @@ H2c & It saves the same as EMHASS within $\pm 1$ percentage point. &
 \end{tabularx}
 \end{table}
 
-\subsection{Scoring}
+\subsection{Data collection}
+\label{sec:data-collection}
+
+The study uses secondary data only; no new measurements were taken and
+no human participants were involved. Two kinds of input data are used.
+Appliance cycles, base loads and fixed appliances come from the REFIT
+Electrical Load Measurements dataset, which records appliance-level
+power in 20 UK households at eight-second resolution between 2013 and
+2015 and is published under an open licence with the households
+anonymised (Murray et al., 2017). Day-ahead electricity prices for the
+Nord Pool FI bidding zone come from two public services that republish
+Nord Pool data, Sähkötin and Elering, and were checked against the
+official prices of the ENTSO-E Transparency Platform
+(Section~\ref{sec:dataset}). Both are combined into benchmark scenarios
+by a fixed, seeded procedure, described in Section~\ref{sec:dataset},
+so that every benchmark can be rebuilt exactly.
+
+The evaluation data are generated by running the systems on these
+scenarios. Every run is stored as one record in a results file. The
+record contains the schedule, its cost, whether it is valid and which
+constraint it violates if not, the number of input and output tokens,
+the API cost, the response time, the number of tool calls and feedback
+rounds, and any error the agents reported. The reasoning trace and tool
+calls of every language model run are also recorded with LangSmith.
+EMHASS is called through its REST interface, and its schedules are
+scored by the same function as all other systems. Runs are resumable,
+so an interruption repeats only the run in progress, and a run that
+failed because of a provider or network error is retried and not
+recorded. Every completed run is kept, including invalid ones.
+
+\subsection{Data analysis}
+\label{sec:data-analysis}
+
+\subsubsection*{Scoring}
 
 All schedules are scored by the same function. The cost of a schedule is
 the consumer price of electricity multiplied by the energy of the flexible
@@ -901,8 +1103,9 @@ and validity of the pipeline with those of the LLM without tools, and
 checks its response time and API cost per recommendation against the
 design objectives of Section~\ref{sec:objectives} (60\,s and \$0.10);
 tokens (input plus output) are reported alongside. SQ2 compares the
-saving and validity of the pipeline with those of the deployed
-cheapest-hours rules and EMHASS, first over all scenarios and
+saving and validity of the pipeline with those of the existing home
+energy management tools, the cheapest-hours rules and EMHASS, first over
+all scenarios and
 then separately for each price pattern, household load and peak limit.
 The breakdown by condition is descriptive; the registered tests concern
 all scenarios together. Also reported without hypotheses are the total
@@ -912,7 +1115,7 @@ which is the share of valid runs among the scenarios that require
 coordination (those in which starting every appliance at its
 individually cheapest time would exceed the peak limit).
 
-\subsection{Statistical analysis}
+\subsubsection*{Statistical analysis}
 
 Two systems are compared per scenario, using the mean saving over the
 runs as the paired observation. The Wilcoxon signed-rank test assesses
@@ -2057,6 +2260,7 @@ more than the agents
 (Section~\ref{sec:baselines}).
 
 \section{Future research}
+\label{sec:future}
 
 Several directions for future research emerge from this study. First,
 extending the pipeline to thermal loads such as electric space heating,
@@ -2160,6 +2364,13 @@ electricity consumption and small-scale electricity production from
 accounting points in Finland} [News release]. Retrieved 5 October 2026,
 from
 \url{https://www.fingrid.fi/en/news/news/2024/fingrids-open-data-service-now-provides-data-on-electricity-consumption-and-small-scale-electricity-production-from-accounting-points-in-finland/}
+
+Gokhale, G., Claessens, B., \& Develder, C. (2024). Explainable home
+energy management systems based on reinforcement learning using
+differentiable decision trees. In \textit{Proceedings of the 15th ACM
+International Conference on Future and Sustainable Energy Systems
+(e-Energy '24)} (pp. 687--691). ACM.
+\url{https://doi.org/10.1145/3632775.3663310}
 
 Guo, T., Chen, X., Wang, Y., Chang, R., Pei, S., Chawla, N. V., Wiest,
 O., \& Zhang, X. (2024). Large language model based multi-agents: A
@@ -2298,6 +2509,11 @@ Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., \& Cao,
 Y. (2023). ReAct: Synergizing reasoning and acting in language models.
 \textit{International Conference on Learning Representations (ICLR
 2023)}. arXiv:2210.03629.
+
+Zharova, A., Boer, A., Knoblauch, J., Schewina, K. I., \& Vihs, J.
+(2024). An explainable multi-agent recommendation system for
+energy-efficient decision support in smart homes. \textit{Environmental
+Data Science, 3}, e7. \url{https://doi.org/10.1017/eds.2024.8}
 
 \end{hangparas}
 

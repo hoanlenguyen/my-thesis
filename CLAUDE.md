@@ -54,7 +54,7 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   (retrieval + optimiser tool); `multi` and `multi_rag` are design iterations (§5.3), not compared
   systems, and are not run on Q2. **SQ1 (value and cost)**: saving and validity vs the LLM without tools,
   latency < 60 s and API cost < $0.10 per recommendation (H1a–c). **SQ2 (conditions)**: under which price
-  pattern / load / peak limit the pipeline beats or matches deployed tools (cheapest window, cheapest
+  pattern / load / peak limit the pipeline beats or matches existing home energy management tools (cheapest window, cheapest
   hours, EMHASS) (H2a–c; per-condition breakdown descriptive).
 - Primary outcome: **saving vs no scheduling** (`metrics.scored_runs` saving_pct); gap to MILP secondary.
 - The single agent and the MILP are no longer compared systems (Amendment 2); old H1–H2c stay confirmed
