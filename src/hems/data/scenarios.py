@@ -73,8 +73,10 @@ def compose_scenario(
     tariff: Tariff = Tariff(),
     peak_limit_kw: float = 4.0,
     synthetic: bool = False,
+    spec: TypeSpec | None = None,
 ) -> Scenario:
-    spec = TYPE_SPECS[scenario_type]
+    """``spec`` overrides the appliance set and windows of ``scenario_type`` (factorial design)."""
+    spec = spec or TYPE_SPECS[scenario_type]
     kinds = list(spec.appliances)
     if spec.variable_count:
         kinds = list(rng.permutation(kinds)[: int(rng.integers(3, 6))])

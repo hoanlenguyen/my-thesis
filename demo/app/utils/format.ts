@@ -93,12 +93,12 @@ export const SCENARIO_TYPES: Record<string, string> = {
   F: 'Negative spot prices'
 }
 
-export const SYSTEM_GROUPS: Record<string, 'agent' | 'llm' | 'rule' | 'tool' | 'reference'> = {
+export const SYSTEM_GROUPS: Record<string, 'agent' | 'llm' | 'rule' | 'heuristic' | 'tool' | 'reference'> = {
   multi: 'agent',
   multi_v3: 'agent',
   single: 'agent',
   oneshot: 'llm',
-  timer: 'rule',
+  timer: 'heuristic',
   cheapest_hours: 'rule',
   emhass_rest: 'tool',
   emhass_rest_nominal: 'tool',
@@ -110,6 +110,7 @@ export const GROUP_BADGE: Record<string, { label: string, color: 'primary' | 'wa
   agent: { label: 'LLM agent', color: 'primary' },
   llm: { label: 'LLM, no tools', color: 'error' },
   rule: { label: 'Rule-based', color: 'warning' },
+  heuristic: { label: 'Own heuristic', color: 'neutral' },
   tool: { label: 'Real HEMS tool', color: 'info' },
   reference: { label: 'Reference', color: 'neutral' }
 }

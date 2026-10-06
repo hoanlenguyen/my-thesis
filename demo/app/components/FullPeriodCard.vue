@@ -5,7 +5,7 @@ import type { FullPeriod } from '~/composables/useDemoData'
 
 const props = defineProps<{ house: number, data: FullPeriod | null | undefined }>()
 const LABELS: Record<string, string> = {
-  milp: 'MILP optimum', multi: 'Multi-agent pipeline', single: 'Single agent', timer: 'Smart timer',
+  milp: 'MILP optimum', multi: 'Multi-agent pipeline', single: 'Single agent', timer: 'Smart timer (own heuristic)',
   emhass_rest: 'EMHASS, profiles', cheapest_hours: 'Cheapest hours (HA)', oneshot: 'LLM without tools'
 }
 const h = computed(() => props.data?.households.find(x => x.house === props.house))
@@ -19,7 +19,7 @@ const rows = computed(() => {
 })
 const barColor = (system: string) => {
   const g = SYSTEM_GROUPS[system]
-  return g === 'agent' ? 'bg-primary' : g === 'tool' ? 'bg-info' : g === 'rule' ? 'bg-warning' : g === 'llm' ? 'bg-error' : 'bg-success'
+  return g === 'agent' ? 'bg-primary' : g === 'tool' ? 'bg-info' : g === 'rule' ? 'bg-warning' : g === 'heuristic' ? 'bg-slate-500' : g === 'llm' ? 'bg-error' : 'bg-success'
 }
 </script>
 

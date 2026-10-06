@@ -1,0 +1,9 @@
+{
+  "name": "confirmation Q2 (pre-registered, docs/preregistration_q2.md)",
+  "scenarios": "data/scenarios_q2",
+  "systems": ["milp", "naive", "timer", "cheapest_hours", "cheapest_hours_hourly", "cheapest_window", "multi_rag_opt", "oneshot"],
+  "models": ["gpt-4o-mini"],
+  "runs": 3,
+  "out": "results/confirmation_q2.jsonl",
+  "order": "model"
+}

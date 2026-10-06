@@ -187,8 +187,23 @@ def cmd_confirm(args: argparse.Namespace) -> None:
 def cmd_rag_build(args: argparse.Namespace) -> None:
     from hems.rag import build_library
 
-    manifest = build_library(args.refit, args.prices, args.out, per_type=args.per_type, seed=args.seed)
+    manifest = build_library(args.refit, args.prices, args.out, per_cell=args.per_cell, seed=args.seed)
     print(json.dumps({k: manifest[k] for k in ("cases", "excluded_benchmark_days", "price_days_up_to")}, indent=1))
+    print({cell: len(days) for cell, days in manifest["days"].items()})
+
+
+def cmd_build_factorial(args: argparse.Namespace) -> None:
+    from datetime import date
+
+    from hems.data.factorial import build_factorial
+
+    manifest = build_factorial(
+        args.refit, args.prices, args.out, per_cell=args.per_cell, seed=args.seed, id_prefix=args.id_prefix,
+        date_from=date.fromisoformat(args.date_from) if args.date_from else None,
+        date_to=date.fromisoformat(args.date_to) if args.date_to else None, exclude_dirs=tuple(args.exclude),
+    )  # fmt: skip
+    print(json.dumps({k: manifest[k] for k in ("price_period", "excluded_days", "price_days_available")}, indent=1))
+    print(f"{len(manifest['scenarios'])} scenarios")
 
 
 def main() -> None:
@@ -292,9 +307,21 @@ def main() -> None:
     p.add_argument("--refit", default="data/raw/refit")
     p.add_argument("--prices", default="data/raw/prices_fi_sahkotin.csv")
     p.add_argument("--out", default="data/rag/cases.jsonl")
-    p.add_argument("--per-type", type=int, default=30)
+    p.add_argument("--per-cell", type=int, default=20, help="days per regime x load cell (each under both limits)")
     p.add_argument("--seed", type=int, default=7)
     p.set_defaults(func=cmd_rag_build)
+
+    p = sub.add_parser("build-factorial", help="build a factorial benchmark: price regime x load x peak limit")
+    p.add_argument("--refit", default="data/raw/refit")
+    p.add_argument("--prices", required=True)
+    p.add_argument("--out", required=True)
+    p.add_argument("--per-cell", type=int, default=6, help="days per regime x load cell")
+    p.add_argument("--seed", type=int, required=True)
+    p.add_argument("--id-prefix", default="")
+    p.add_argument("--from", dest="date_from")
+    p.add_argument("--to", dest="date_to")
+    p.add_argument("--exclude", nargs="*", default=[], help="scenario directories whose days must not be reused")
+    p.set_defaults(func=cmd_build_factorial)
 
     args = parser.parse_args()
     args.func(args)

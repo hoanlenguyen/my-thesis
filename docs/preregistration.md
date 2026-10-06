@@ -156,8 +156,38 @@ already been run and inspected when this amendment was written, so every result 
 - The Q set is used and is not reused for new claims. Confirmatory claims about iteration 7 need a new
   held-out set **Q2**: 48 scenarios from the Elering 15-minute prices of 1 October 2025 to 25 September 2026,
   with no day of the Q set, built with a new seed before any run on it.
-- Planned hypotheses, to be fixed in a separate registration after the full main-benchmark run of
+- Q2 is built with the factorial design of point 6 (`data/scenarios_q2`, seed 2029, 96 scenarios, no day
+  of any other set or of the case library).
+- Planned hypotheses, to be fixed in `docs/preregistration_q2.md` after the full main-benchmark run of
   `multi_rag` and `multi_rag_opt` (3 runs per scenario) and before any run on Q2:
   - the optimiser arm saves as much as EMHASS (equivalence on the per-scenario saving, margin to be stated);
   - the retrieval arm saves more than the pipeline without retrieval;
   - both arms save more than the deployed cheapest-hours rules.
+
+**5b. One reported system.** The thesis presents one system, the *Multi-Agent Pipeline*, which is
+`multi_rag_opt`. The base pipeline (`multi`) and the pipeline with retrieval only (`multi_rag`) are
+reported as design iterations from the exploratory run and are not run on Q2. SQ1 becomes a question
+about value and cost (saving and validity against the LLM without tools; response time and API cost
+against the design objectives); the hypotheses in `docs/preregistration_q2.md` follow from that.
+- **Design iteration 8** (6 October 2026), after the exploratory run on `data/scenarios_v2`: in 2 of 288
+  runs the final pipeline left one appliance out of its schedule even after the feedback round (a rare
+  slip of the model, not reproduced in 8 reruns of the same days). The verification step now places an
+  appliance that is still missing after the last round at its cheapest start within the peak limit,
+  keeping the agents' other start times, and the Scheduler's missing-appliance retry lists the day's
+  appliances (`complete_missing`, `multi_rag_opt` only). The earlier runs are archived in
+  `results/main_v2_iter7_multi_rag_opt.jsonl`, and `multi_rag_opt` is rerun on `data/scenarios_v2`.
+
+**6. Benchmark redesign (factorial).**
+- The six scenario types A to F varied the price pattern, the number of appliances and the window style
+  together, so an effect could not be attributed to one of them (types A and B, for example, share the
+  price pattern and differ only in the appliances). New scenario sets use a factorial design
+  (`src/hems/data/factorial.py`): price pattern (stable, volatile, spike, negative) x household load
+  (light, heavy) x peak limit (strict 3.5 kW, realistic 8 kW). Six price days per pattern x load cell;
+  each day is scheduled under both limits with the same appliances, giving 96 scenarios per set.
+- New exploratory main set `data/scenarios_v2` (hourly prices up to 30 September 2025, seed 2028); every
+  system of the redesigned study is rerun on it (`configs/main_v2.json`). The first main benchmark and its
+  results, including the pilot and the interrupted full run of iteration 7 (`results/iteration7.jsonl`),
+  remain as archived exploratory evidence.
+- The case library is rebuilt with the same design: 20 days per cell under both limits, 320 cases, hourly
+  prices up to 30 September 2025, no day of any benchmark.
+- The sets Q (first confirmation) and the first main benchmark keep the A to F types; they are not rebuilt.

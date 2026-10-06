@@ -74,7 +74,7 @@ SYSTEMS: dict[str, System] = {
     for s in (
         System("milp", "reference", "MILP optimum (PuLP/CBC)", plan=_milp),
         System("naive", "reference", "every appliance starts when ready", plan=_rule(naive_schedule)),
-        System("timer", "reference", "rule-based smart timer, peak-aware", plan=_rule(smart_timer_schedule)),
+        System("timer", "reference", "smart timer: own peak-aware heuristic written for this study (not a deployed product)", plan=_rule(smart_timer_schedule)),
         System("cheapest_hours", "reference", "HA Nord Pool cheapest-hours blueprint, 15-min prices",
                plan=_rule(cheapest_hours_schedule)),  # fmt: skip
         System("cheapest_hours_hourly", "reference",
@@ -93,8 +93,9 @@ SYSTEMS: dict[str, System] = {
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, cost_check=True)),  # fmt: skip
         System("multi_rag", "llm", "pipeline with retrieved worked examples of solved days (design iteration 7)",
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever())),  # fmt: skip
-        System("multi_rag_opt", "llm", "pipeline with retrieved examples and an optimiser tool (design iteration 7)",
-               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True)),  # fmt: skip
+        System("multi_rag_opt", "llm",
+               "Multi-Agent Pipeline: retrieved examples, optimiser tool, completion of missing appliances (iterations 7-8)",
+               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True, complete_missing=True)),  # fmt: skip
         System("oneshot", "llm", "language model without tools",
                agent=lambda sc, model, config, summarize: run_oneshot(sc, model, config)),  # fmt: skip
     )

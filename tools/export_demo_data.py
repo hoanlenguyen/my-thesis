@@ -35,7 +35,7 @@ SYSTEMS = {  # order = display order
     "multi": "Multi-agent pipeline",
     "multi_v3": "Multi-agent pipeline v3 (cost check)",
     "single": "Single agent",
-    "timer": "Smart timer",
+    "timer": "Smart timer (own heuristic)",
     "emhass_rest": "EMHASS, profiles",
     "emhass_rest_nominal": "EMHASS, nominal power",
     "cheapest_hours": "Cheapest hours (HA)",

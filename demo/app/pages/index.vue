@@ -22,7 +22,7 @@ const totals = computed(() => {
 const barWidth = (v: number | null) => `${Math.max(0, Math.min(100, (v ?? 0) * 100))}%`
 const barColor = (r: SystemSummary) => {
   const g = SYSTEM_GROUPS[r.system]
-  return g === 'agent' ? 'bg-primary' : g === 'tool' ? 'bg-info' : g === 'rule' ? 'bg-warning' : 'bg-error'
+  return g === 'agent' ? 'bg-primary' : g === 'tool' ? 'bg-info' : g === 'rule' ? 'bg-warning' : g === 'heuristic' ? 'bg-slate-500' : 'bg-error'
 }
 </script>
 

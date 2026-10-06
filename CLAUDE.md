@@ -45,14 +45,21 @@ latexmk -xelatex main                           # TeX Live at C:\texlive\2026\bi
 
 Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evaluation`, `rebuild-benchmark`.
 
-## Research questions (since 4 Oct 2026, pre-registration Amendment 1)
+## Research questions (since 5 Oct 2026, pre-registration Amendment 2 and draft `docs/preregistration_q2.md`)
 
 - Framing: the artifact gives each household a **daily recommendation** from its appliance plan for the
   day (the scenario's `user_request` field holds that plan; the agent input is unchanged).
-- **SQ1**: cost reduction of the pipeline vs no scheduling, no-tools LLM, rule-based (timer, cheapest
-  hours) and EMHASS (contains H1). **SQ2**: multi- vs single-agent quality / inference cost / latency, and
-  whether it holds with the local gpt-oss-20b (H2a–c, H3). Informal requests (old SQ4) dropped; a third SQ
-  may be added later only if results warrant it.
+- **RQ**: how to design a hierarchical ReAct multi-agent system for reliable, cost-saving daily
+  recommendations. The thesis reports **one system, the "Multi-Agent Pipeline" = `multi_rag_opt`**
+  (retrieval + optimiser tool); `multi` and `multi_rag` are design iterations (§5.3), not compared
+  systems, and are not run on Q2. **SQ1 (value and cost)**: saving and validity vs the LLM without tools,
+  latency < 60 s and API cost < $0.10 per recommendation (H1a–c). **SQ2 (conditions)**: under which price
+  pattern / load / peak limit the pipeline beats or matches deployed tools (cheapest window, cheapest
+  hours, EMHASS) (H2a–c; per-condition breakdown descriptive).
+- Primary outcome: **saving vs no scheduling** (`metrics.scored_runs` saving_pct); gap to MILP secondary.
+- The single agent and the MILP are no longer compared systems (Amendment 2); old H1–H2c stay confirmed
+  on Q as history. Benchmarks: factorial `data/scenarios_v2` (exploratory) and `data/scenarios_q2`
+  (held out, run only after the Q2 registration is committed).
 
 ## Methodology invariants (keep these true)
 

@@ -181,6 +181,40 @@ def test_pipeline_sends_missing_appliances_back_to_scheduler(scenario: Scenario)
     assert set(run.assignments) == set(ids)
 
 
+def _always_partial_models(scenario: Scenario) -> tuple[dict, list[dict]]:
+    """Scheduler and Resolver leave out the last appliance in both rounds."""
+    ids = [a.id for a in scenario.appliances]
+    partial = _optimal_assignments(scenario)[:-1]
+    profiles = [
+        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
+         "earliest_time": "00:00", "deadline_time": "24:00"}
+        for a in scenario.appliances
+    ]  # fmt: skip
+    return {
+        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
+        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
+        "scheduler": scripted(*[call("ScheduleOutput", assignments=partial, total_cost_eur=1.0, explanation="p")] * 2),
+        "resolver": scripted(*[call("ResolverOutput", assignments=partial, conflicts_remaining=False, changes="n")] * 2),
+    }, partial
+
+
+def test_verification_places_an_appliance_still_missing_after_the_last_round(scenario: Scenario) -> None:
+    models, partial = _always_partial_models(scenario)
+    run = run_multi_agent(scenario, lambda role: models[role], complete_missing=True)
+    assert set(run.assignments) == {a.id for a in scenario.appliances}
+    kept = {p["appliance_id"]: p["start_time"] for p in partial}
+    assert all(run.assignments[k] == v for k, v in kept.items())  # the agents' other start times are unchanged
+    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
+    assert evaluate(scenario, parsed).feasible
+    assert any("placed missing" in e for e in run.errors)
+
+
+def test_without_completion_a_missing_appliance_stays_missing(scenario: Scenario) -> None:
+    models, partial = _always_partial_models(scenario)
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert set(run.assignments) == {p["appliance_id"] for p in partial}
+
+
 def test_pipeline_sends_out_of_window_starts_back_to_scheduler(scenario: Scenario) -> None:
     # Reproduces pilot/evaluation failure E03: the Resolver moved an appliance past its deadline.
     ids = [a.id for a in scenario.appliances]

@@ -1,8 +1,9 @@
 """Retrieval-augmented generation for the pipeline (design iteration 7): a case library of solved days.
 
-The library holds days that are in no benchmark: hourly prices up to 30 Sep 2025 minus every day of the
-main benchmark (the 15-minute sets Q and Q2 start on 1 Oct 2025). Each case is composed exactly like a
-benchmark scenario (same REFIT cycle pool, scenario types and peak limit) and solved with the MILP. At
+The library holds days that are in no benchmark: hourly prices up to 30 Sep 2025 minus every day of any
+benchmark (the 15-minute sets Q and Q2 start on 1 Oct 2025). Each case is composed exactly like a
+factorial benchmark scenario (same REFIT cycle pool, price regimes, loads and both peak limits) and solved
+with the MILP. At
 run time the k most similar cases are retrieved and their optimal staggering is given to the Scheduler
 and the Resolver as worked examples. Retrieval uses a fixed numeric description of the day (price shape
 and appliance structure), not text embeddings, so it is deterministic and free.
@@ -22,12 +23,14 @@ from hems.core.models import Scenario, load_scenarios
 from hems.data import prices as price_data
 from hems.data import refit
 from hems.data.build import load_household_data
-from hems.data.scenarios import compose_scenario, select_days
+from hems.data.factorial import CODES, compose_cell, select_regime_days
 from hems.data.tariff import Tariff
 from hems.solvers.milp import solve_milp
 from hems.solvers.naive import has_coordination_conflict, naive_schedule
 
 LIBRARY_PATH = Path("data/rag/cases.jsonl")
+# Every benchmark day is excluded from the library (first design, factorial main set and both held-out sets).
+BENCHMARK_DIRS = ("data/scenarios", "data/scenarios_15min", "data/scenarios_v2", "data/scenarios_q2")
 TOP_K = 2
 LABELS = {"washing_machine": "washing machine", "dishwasher": "dishwasher", "tumble_dryer": "tumble dryer"}
 
@@ -134,48 +137,47 @@ def build_library(
     price_csv: str | Path,
     out_path: str | Path = LIBRARY_PATH,
     *,
-    exclude_dirs: tuple[str | Path, ...] = ("data/scenarios", "data/scenarios_15min"),
-    per_type: int = 30,
+    exclude_dirs: tuple[str | Path, ...] = BENCHMARK_DIRS,
+    per_cell: int = 20,
     seed: int = 7,
     date_to: date = date(2025, 9, 30),
-    peak_limit_kw: float = 3.5,
     houses: tuple[int, ...] = refit.ALL_HOUSES,
     tariff: Tariff = Tariff(),
 ) -> dict:
+    """Solved days composed with the factorial design (regime x load, both peak limits) of the benchmarks."""
     rng = np.random.default_rng(seed)
     excluded = {date.fromisoformat(s.date) for d in exclude_dirs if Path(d).exists() for s in load_scenarios(d)}
     pool, base_loads, _ = load_household_data(refit_dir, houses)
     days = price_data.to_daily_slots(price_data.load_price_csv(price_csv))
     days = days[[d <= date_to for d in days.index]]
-    # Type E uses the highest-peak days of the period: most Dec 2022 crisis days are in the main benchmark.
-    # Few winter days are volatile enough for type D, so that type may have fewer cases.
-    chosen = select_days(days, rng, crisis=None, per_type=per_type, exclude=excluded, allow_fewer=True)
+    chosen = select_regime_days(days, rng, per_cell, excluded, allow_fewer=True)
 
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     base_houses = list(rng.permutation(houses))
-    written = 0
+    written, n = 0, 0
     with out.open("w", encoding="utf-8") as fh:
-        for scenario_type, type_days in chosen.items():
-            for i, day in enumerate(type_days, 1):
-                house = int(base_houses[written % len(base_houses)])
-                scenario = compose_scenario(
-                    scenario_id=f"L-{scenario_type}{i:02d}", scenario_type=scenario_type,  # type: ignore[arg-type]
-                    day=day, spot_eur_per_kwh=days.loc[day].to_numpy(), base_load_kw=base_loads[house],
-                    profile_pool=pool, fixed_appliances=refit.fixed_appliances(house), rng=rng, tariff=tariff,
-                    peak_limit_kw=peak_limit_kw,
-                )  # fmt: skip
-                optimal = solve_milp(scenario).schedule
-                record = {
-                    "id": scenario.id, "type": scenario_type, "date": scenario.date, "house": house,
-                    "features": features(scenario), "text": example_text(scenario, optimal),
-                }  # fmt: skip
-                fh.write(json.dumps(record) + "\n")
-                written += 1
+        for (regime, load), cell_days in chosen.items():
+            for i, day in enumerate(cell_days, 1):
+                house = int(base_houses[n % len(base_houses)])
+                n += 1
+                for scenario in compose_cell(
+                    f"L-{CODES[regime]}{CODES[load]}{i:02d}", regime, load, day, days.loc[day].to_numpy(),
+                    base_loads[house], pool, refit.fixed_appliances(house), rng, tariff, house,
+                ):  # fmt: skip
+                    optimal = solve_milp(scenario).schedule
+                    record = {
+                        "id": scenario.id, "type": scenario.type, "date": scenario.date, "house": house,
+                        "features": features(scenario), "text": example_text(scenario, optimal),
+                    }  # fmt: skip
+                    fh.write(json.dumps(record) + "\n")
+                    written += 1
     manifest = {
-        "cases": written, "per_type": per_type, "seed": seed, "price_csv": str(price_csv),
+        "design": "factorial: regime x load x limit (hems.data.factorial)",
+        "cases": written, "per_cell": per_cell, "seed": seed, "price_csv": str(price_csv),
         "price_days_up_to": date_to.isoformat(), "excluded_benchmark_days": len(excluded),
-        "days": {t: [d.isoformat() for d in ds] for t, ds in chosen.items()},
+        "excluded_sets": [str(d) for d in exclude_dirs],
+        "days": {f"{r}-{lo}": [d.isoformat() for d in ds] for (r, lo), ds in chosen.items()},
     }  # fmt: skip
     out.with_name("manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return manifest

@@ -29,6 +29,7 @@ from pydantic import BaseModel
 from hems.agents import prompts
 from hems.agents.errors import MAX_RECOVERIES, invoke_with_recovery, model_output_failure
 from hems.agents.schemas import (
+    Assignment,
     ProfileOutput,
     ResolverOutput,
     ScheduleOutput,
@@ -36,7 +37,7 @@ from hems.agents.schemas import (
     assignments_to_dict,
 )
 from hems.agents.types import AgentRun
-from hems.core.evaluate import appliance_cost, evaluate
+from hems.core.evaluate import PEAK_TOLERANCE_KW, appliance_cost, evaluate, total_load
 from hems.core.models import Scenario
 from hems.tools import OPTIMIZER_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select
 
@@ -51,6 +52,10 @@ COST_TOLERANCE = 0.03
 # Design iteration 7 ("multi_rag", "multi_rag_opt"): ``retriever`` returns worked examples of similar solved
 # days (hems.rag) for the Scheduler's and the Resolver's messages; ``optimizer`` gives the Scheduler the
 # optimize_schedule tool and its prompt. Both off by default, so "multi" is unchanged.
+# Design iteration 8 (``complete_missing``, final Multi-Agent Pipeline only): on a missing-appliance retry the
+# Scheduler is told every appliance of the day's plan, and if one is still missing after the last feedback
+# round, the verification step places it at its cheapest start that keeps the load within the limit, with
+# the other start times unchanged. The language model rarely drops an appliance (2 of 288 exploratory runs).
 
 ModelFactory = Callable[[str], BaseChatModel]
 """Role name ("orchestrator" | "profiler" | "scheduler" | "resolver") -> chat model."""
@@ -103,9 +108,31 @@ def _run_agent(
 
 def build_pipeline(
     scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False,
-    retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False,
+    retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False, complete_missing: bool = False,
 ):  # fmt: skip
     tools = build_tools(scenario)
+    plan_ids = [a.id for a in scenario.appliances]  # every cycle in the day's appliance plan
+
+    def place_missing(final: dict[str, str]) -> tuple[dict[str, str], list[str]]:
+        """Give each appliance of the plan without a valid start its cheapest start that keeps the load within the
+        limit, leaving the other start times unchanged (most energy first; cheapest start if none fits)."""
+        schedule = {}
+        for appliance_id, clock in final.items():
+            try:
+                if appliance_id in plan_ids:
+                    schedule[appliance_id] = scenario.time_to_slot(clock)
+            except (ValueError, AttributeError):
+                continue
+        missing = sorted(
+            (a for a in scenario.appliances if a.id not in schedule), key=lambda a: (-a.energy_kwh, a.id)
+        )  # fmt: skip
+        limit = scenario.peak_limit_kw + PEAK_TOLERANCE_KW
+        for a in missing:
+            load = total_load(scenario, schedule)
+            by_cost = sorted(a.valid_starts(), key=lambda s: appliance_cost(scenario, a, s))
+            fits = [s for s in by_cost if all(load[s + i] + p <= limit for i, p in enumerate(a.profile_kw))]
+            schedule[a.id] = (fits or by_cost)[0]
+        return {k: scenario.slot_to_time(v) for k, v in schedule.items()}, [a.id for a in missing]
     examples = f"\n\n{retriever(scenario)}" if retriever else ""
     scheduler_tools = SCHEDULER_TOOLS + (OPTIMIZER_TOOLS if optimizer else ())
     scheduler_prompt = prompts.SCHEDULER_OPT if optimizer else prompts.SCHEDULER
@@ -144,6 +171,8 @@ def build_pipeline(
                 f"Verification feedback: {state['conflict_feedback']}\n"
                 "Propose a revised schedule that gives every requested appliance a start time."
             )
+            if complete_missing and "MISSING" in state["conflict_feedback"]:
+                message += f"\nThe day's plan has these appliances; schedule all of them: {', '.join(plan_ids)}."
         proposal, calls, errors, recoveries = _run_agent(
             models("scheduler"), select(tools, scheduler_tools), scheduler_prompt, ScheduleOutput, message,
             "scheduler", STEP_LIMITS["scheduler"], config,
@@ -227,6 +256,18 @@ def build_pipeline(
             problems.append(missing)
         if outside := window_feedback(final):
             problems.append(outside)
+        last_round = state["iterations"] + 1 >= MAX_RESOLVE_ITERATIONS
+        if complete_missing and last_round and any(i not in final for i in plan_ids):
+            final, placed = place_missing(final)
+            resolution = ResolverOutput(
+                assignments=[Assignment(appliance_id=k, start_time=v) for k, v in final.items()],
+                conflicts_remaining=resolution.conflicts_remaining, changes=f"{resolution.changes}; verification placed {placed}",
+            )  # fmt: skip
+            errors = [*errors, f"verification: placed missing {', '.join(placed)} automatically"]
+            conflicts = tools["detect_conflicts"].invoke({"schedule": final})
+            problems = [conflicts] if conflicts.startswith(("CONFLICT", "ERROR")) else []
+            if outside := window_feedback(final):
+                problems.append(outside)
         update: PipelineState = {
             "resolution": resolution,
             "iterations": state["iterations"] + 1,
@@ -297,10 +338,12 @@ def build_pipeline(
 def run_multi_agent(
     scenario: Scenario, models: ModelFactory, config: dict[str, Any] | None = None, summarize: bool = True,
     cost_check: bool = False, retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False,
+    complete_missing: bool = False,
 ) -> AgentRun:  # fmt: skip
     pipeline = build_pipeline(
-        scenario, models, summarize=summarize, cost_check=cost_check, retriever=retriever, optimizer=optimizer
-    )
+        scenario, models, summarize=summarize, cost_check=cost_check, retriever=retriever, optimizer=optimizer,
+        complete_missing=complete_missing,
+    )  # fmt: skip
     state: PipelineState = pipeline.invoke({"request": scenario.user_request}, config={"recursion_limit": 50, **(config or {})})
     return AgentRun(
         assignments=state.get("final"),

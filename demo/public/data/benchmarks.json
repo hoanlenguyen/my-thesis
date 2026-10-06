@@ -53,7 +53,7 @@
    },
    {
     "system": "timer",
-    "label": "Smart timer",
+    "label": "Smart timer (own heuristic)",
     "model": "-",
     "runs": 48,
     "feasible": 48,
@@ -625,7 +625,7 @@
    },
    {
     "system": "timer",
-    "label": "Smart timer",
+    "label": "Smart timer (own heuristic)",
     "model": "-",
     "runs": 48,
     "feasible": 48,

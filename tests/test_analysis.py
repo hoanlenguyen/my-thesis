@@ -44,6 +44,30 @@ def test_holm_adjustment() -> None:
     assert holm([0.5]) == [0.5]
 
 
+def test_q2_confirmatory_tests_on_stand_in_means() -> None:
+    from hems.analysis import confirm_q2 as q2
+
+    rng = np.random.default_rng(1)
+    n = 48
+    emhass = rng.uniform(10, 40, n)
+    systems = {  # (model, system) -> (saving_pct, validity rate, latency_s, cost_usd)
+        q2.EMHASS: (emhass, 1.0, 1, 0),
+        q2.PIPELINE: (emhass + rng.normal(0, 0.1, n), 1.0, 17, 0.003),
+        q2.WINDOW: (emhass - rng.uniform(5, 20, n), 0.6, 0, 0),
+        q2.HOURS: (emhass - rng.uniform(5, 20, n), 0.6, 0, 0),
+        q2.ONESHOT: (rng.uniform(0, 5, n), 0.0, 2, 0.0005),
+    }
+    rows = [
+        {"model": m, "system": s, "scenario_id": f"S{i:02d}", "saving_pct": v[0][i],
+         "feasible_rate": min(1.0, v[1] + (0.67 if s == "oneshot" and i % 3 == 0 else 0)),
+         "latency_s": v[2] + rng.uniform(0, 1), "cost_usd": v[3] * rng.uniform(0.9, 1.1)}
+        for (m, s), v in systems.items() for i in range(n)
+    ]  # fmt: skip
+    result = q2.confirmatory_tests(pd.DataFrame(rows))
+    assert len(result) == 7 and set(result.sq) == {"SQ1", "SQ2"}
+    assert result.supported.all()
+
+
 def test_report_end_to_end(tmp_path) -> None:
     scenarios = generate(tmp_path / "scen", per_type=2, seed=3)
     runs_path = tmp_path / "runs.jsonl"

@@ -19,7 +19,9 @@ SLOT_MINUTES = 15
 SLOTS_PER_DAY = 96
 SLOT_HOURS = SLOT_MINUTES / 60
 
-ScenarioType = Literal["A", "B", "C", "D", "E", "F"]
+# "A".."F": the six types of the first benchmarks (data/scenarios, data/scenarios_15min).
+# "<regime>-<load>-<limit>", e.g. "volatile-heavy-strict": the factorial design (hems.data.factorial).
+ScenarioType = str
 FlexibleKind = Literal["washing_machine", "dishwasher", "tumble_dryer"]
 
 
