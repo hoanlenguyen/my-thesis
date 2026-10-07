@@ -36,3 +36,14 @@ pnpm dev          # http://localhost:3001
   appliances come from one household; its cycles to schedule are REFIT cycles drawn from all households.
 - `/today`: today's Nord Pool FI price by hour, fetched live from Sähkötin and converted with the
   thesis tariff (the only live part of the demo).
+
+## "Try it" page (live)
+
+`/try` runs the real systems on a profile entered in the browser. It needs the local Python API:
+
+1. `scripts\demo-api.cmd` (or `uv run --extra demo uvicorn hems.demo_api:app --port 8001`) in the thesis root.
+   Uses `ENTSOE_API_KEY` (day-ahead prices; the base load is the typical REFIT household shape) and
+   `OPENAI_API_KEY` (Multi-Agent Pipeline, about USD 0.003 per run) from `.env`. EMHASS is included when the
+   `emhass-thesis` Docker container answers on localhost:5000.
+2. `scripts\demo-dev.cmd` (or `pnpm dev --port 3001` here). The dev server proxies `/api` to port 8001
+   (`nitro.devProxy` in `nuxt.config.ts`). A static build calls `NUXT_PUBLIC_API_BASE` instead.

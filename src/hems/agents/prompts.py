@@ -71,6 +71,32 @@ SCHEDULER_OPT = (
     f"{REACT_STYLE}"
 )
 
+# Design iteration 9 ("multi_lean"): fewer sequential model calls. The Profiler receives the household data
+# and classifications in its message, and the Scheduler returns the solver's result without re-costing it,
+# because the Orchestrator's verification step checks the schedule anyway.
+PROFILER_LEAN = (
+    f"You are the Appliance Profiler agent. {GOAL}\nYour task: {PROFILER_ROLE} The household data and the "
+    "classification of every appliance are given in the message, so answer directly with the profiles."
+)
+
+SCHEDULER_LEAN = (
+    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: start by calling optimize_schedule once with the ids "
+    "of ALL flexible appliances to schedule; it reads the prices itself and solves the whole problem exactly "
+    "(windows, peak limit, cost), so you do not need to fetch the prices first. Return the "
+    "solver's start time for every appliance; do not re-check its costs, because the Orchestrator verifies the "
+    "schedule after you. If the solver reports no schedule, fall back to find_cheapest_window per appliance. If you "
+    "receive conflict feedback, call optimize_schedule again with the complete list of appliances.\n"
+    f"{REACT_STYLE}"
+)
+
+ORCHESTRATOR_SUMMARY_LEAN = (
+    "You are the Orchestrator of a home energy management system. Write a short, friendly summary (max 4 "
+    "sentences) of the final schedule for the household: when each appliance runs, its cost and how much it saves "
+    "compared with starting every appliance as soon as it is ready. Use only the figures you are given. You are "
+    "given the result of an automatic peak-load check; if it reports a conflict, say plainly that the schedule "
+    "still exceeds the household limit. Never claim constraints are met unless the check confirms it."
+)
+
 ONESHOT = (
     f"You are a home energy management assistant. {GOAL}\n"
     "You have no tools. All household data, the price of every 15-minute slot and the measured base load "

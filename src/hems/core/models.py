@@ -22,7 +22,9 @@ SLOT_HOURS = SLOT_MINUTES / 60
 # "A".."F": the six types of the first benchmarks (data/scenarios, data/scenarios_15min).
 # "<regime>-<load>-<limit>", e.g. "volatile-heavy-strict": the factorial design (hems.data.factorial).
 ScenarioType = str
-FlexibleKind = Literal["washing_machine", "dishwasher", "tumble_dryer"]
+# The benchmarks use the three REFIT kinds; the demo's "Try it" view also offers constant-power loads
+# from the Low-carbon-alerts appliance catalog (EV charger, sauna, hot tub, electric oven).
+FlexibleKind = Literal["washing_machine", "dishwasher", "tumble_dryer", "ev_charger", "sauna", "hot_tub", "electric_oven"]
 
 
 class FlexibleAppliance(BaseModel):

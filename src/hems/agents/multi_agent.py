@@ -56,6 +56,10 @@ COST_TOLERANCE = 0.03
 # Scheduler is told every appliance of the day's plan, and if one is still missing after the last feedback
 # round, the verification step places it at its cheapest start that keeps the load within the limit, with
 # the other start times unchanged. The language model rarely drops an appliance (2 of 288 exploratory runs).
+# Design iteration 9 (``lean``, system "multi_lean"): the response time is almost entirely sequential model calls
+# (tools take < 0.5 s of ~20 s). The Profiler gets the household data and classifications in its message and answers
+# in one call; the Scheduler returns the solver's result without re-costing it; the Resolver runs only when the
+# proposal fails the verification step; the summary is given the schedule's cost and its saving.
 
 ModelFactory = Callable[[str], BaseChatModel]
 """Role name ("orchestrator" | "profiler" | "scheduler" | "resolver") -> chat model."""
@@ -109,6 +113,7 @@ def _run_agent(
 def build_pipeline(
     scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False,
     retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False, complete_missing: bool = False,
+    lean: bool = False,
 ):  # fmt: skip
     tools = build_tools(scenario)
     plan_ids = [a.id for a in scenario.appliances]  # every cycle in the day's appliance plan
@@ -136,6 +141,18 @@ def build_pipeline(
     examples = f"\n\n{retriever(scenario)}" if retriever else ""
     scheduler_tools = SCHEDULER_TOOLS + (OPTIMIZER_TOOLS if optimizer else ())
     scheduler_prompt = prompts.SCHEDULER_OPT if optimizer else prompts.SCHEDULER
+    if lean:
+        scheduler_prompt = prompts.SCHEDULER_LEAN
+
+    def verification_problems(state: PipelineState, final: dict[str, str]) -> list[str]:
+        """The Orchestrator's verification gate: peak-load conflicts, completeness and user time windows."""
+        conflicts = tools["detect_conflicts"].invoke({"schedule": final})
+        problems = [conflicts] if conflicts.startswith(("CONFLICT", "ERROR")) else []
+        if missing := completeness_feedback(state, final):
+            problems.append(missing)
+        if outside := window_feedback(final):
+            problems.append(outside)
+        return problems
 
     def orchestrator_plan(state: PipelineState, config) -> PipelineState:
         brief, calls, errors, recoveries = _run_agent(
@@ -155,8 +172,19 @@ def build_pipeline(
             f"Orchestrator brief: appliances {', '.join(brief.appliance_ids)}; notes: {brief.notes or 'none'}.\n"
             "Profile every appliance the user's request asks to schedule."
         )
+        profiler_tools, profiler_prompt = select(tools, PROFILER_TOOLS), prompts.PROFILER
+        if lean:  # the deterministic reads are done here, not in separate model turns
+            classes = "\n".join(
+                tools["classify_appliance"].invoke({"appliance_id": i})
+                for i in [a.id for a in scenario.appliances] + [f.id for f in scenario.fixed_appliances]
+            )
+            message += (
+                f"\n\nHousehold data (read_household_data):\n{tools['read_household_data'].invoke({})}"
+                f"\n\nClassification (classify_appliance):\n{classes}"
+            )
+            profiler_tools, profiler_prompt = [], prompts.PROFILER_LEAN
         profile, calls, errors, recoveries = _run_agent(
-            models("profiler"), select(tools, PROFILER_TOOLS), prompts.PROFILER, ProfileOutput, message,
+            models("profiler"), profiler_tools, profiler_prompt, ProfileOutput, message,
             "profiler", STEP_LIMITS["profiler"], config,
         )  # fmt: skip
         return {"profile": profile or ProfileOutput(appliances=[]), "tool_calls": calls, "errors": errors, "recoveries": recoveries}
@@ -237,6 +265,16 @@ def build_pipeline(
                 "iterations": state["iterations"] + 1,
                 "errors": ["resolver: no proposal to resolve"],
             }
+        if lean and not verification_problems(state, assignments_to_dict(proposal.assignments)):
+            # The proposal already passes the verification gate: nothing for the Resolver to resolve.
+            return {
+                "resolution": ResolverOutput(
+                    assignments=proposal.assignments, conflicts_remaining=False,
+                    changes="none (the proposal passed the verification step)",
+                ),
+                "iterations": state["iterations"] + 1,
+                "conflict_feedback": "",
+            }  # fmt: skip
         windows = {p.appliance_id: f"{p.earliest_time}-{p.deadline_time}" for p in state["profile"].appliances}
         message = (
             f"Proposed schedule: {json.dumps(assignments_to_dict(proposal.assignments))}\n"
@@ -292,6 +330,21 @@ def build_pipeline(
     def review(state: PipelineState) -> PipelineState:
         return {}  # graph is interrupted before this node; the caller resumes after approval
 
+    def cost_facts(final: dict[str, str]) -> str:
+        """Cost of the final schedule and of starting every appliance when ready, for the summary (iteration 9)."""
+        try:
+            schedule = {k: scenario.time_to_slot(v) for k, v in final.items()}
+        except (ValueError, AttributeError):
+            return ""
+        cost = sum(appliance_cost(scenario, scenario.appliance(k), s) for k, s in schedule.items() if k in plan_ids)
+        ready = sum(appliance_cost(scenario, a, a.earliest_slot) for a in scenario.appliances if a.id in schedule)
+        saving = ready - cost
+        share = f" ({saving / ready * 100:.0f} %)" if ready > 0 else ""
+        return (
+            f"\nCost of the scheduled cycles: EUR {cost:.3f}. Cost if every appliance started as soon as it is ready: "
+            f"EUR {ready:.3f}. Saving: EUR {saving:.3f}{share}."
+        )
+
     def orchestrator_finalize(state: PipelineState, config) -> PipelineState:
         resolution = state.get("resolution")
         if resolution is None:
@@ -302,11 +355,11 @@ def build_pipeline(
         summary = ""
         if summarize:
             check = tools["detect_conflicts"].invoke({"schedule": final})
+            facts = f"Request:\n{state['request']}\n\nFinal schedule: {json.dumps(final)}\nPeak-load check: {check}"
+            if lean:
+                facts += cost_facts(final)
             reply = models("orchestrator").invoke(
-                [
-                    SystemMessage(prompts.ORCHESTRATOR_SUMMARY),
-                    HumanMessage(f"Request:\n{state['request']}\n\nFinal schedule: {json.dumps(final)}\nPeak-load check: {check}"),
-                ],
+                [SystemMessage(prompts.ORCHESTRATOR_SUMMARY_LEAN if lean else prompts.ORCHESTRATOR_SUMMARY), HumanMessage(facts)],
                 config=config,
             )
             summary = reply.text if hasattr(reply, "text") else str(reply.content)
@@ -338,11 +391,11 @@ def build_pipeline(
 def run_multi_agent(
     scenario: Scenario, models: ModelFactory, config: dict[str, Any] | None = None, summarize: bool = True,
     cost_check: bool = False, retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False,
-    complete_missing: bool = False,
+    complete_missing: bool = False, lean: bool = False,
 ) -> AgentRun:  # fmt: skip
     pipeline = build_pipeline(
         scenario, models, summarize=summarize, cost_check=cost_check, retriever=retriever, optimizer=optimizer,
-        complete_missing=complete_missing,
+        complete_missing=complete_missing, lean=lean,
     )  # fmt: skip
     state: PipelineState = pipeline.invoke({"request": scenario.user_request}, config={"recursion_limit": 50, **(config or {})})
     return AgentRun(

@@ -109,7 +109,7 @@ const ROW = 'grid grid-cols-[11rem_1fr_6.5rem] gap-3 items-center'
         </template>
         <template v-else>
           {{ euro(saving(r), 3) }}
-          <span v-if="achievable > 1e-6" class="text-dimmed font-normal">· {{ Math.round((saving(r) / achievable) * 100) }} %</span>
+          <span v-if="achievable >= 0.005" class="text-dimmed font-normal">· {{ Math.round((saving(r) / achievable) * 100) }} %</span>
         </template>
       </span>
     </button>

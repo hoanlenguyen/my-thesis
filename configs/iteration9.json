@@ -1,0 +1,9 @@
+{
+  "name": "design iteration 9: lean pipeline vs final pipeline, interleaved (exploratory main set)",
+  "scenarios": "data/scenarios_v2",
+  "systems": ["multi_rag_opt", "multi_lean"],
+  "models": ["gpt-4o-mini"],
+  "runs": 3,
+  "out": "results/iteration9.jsonl",
+  "order": "model"
+}

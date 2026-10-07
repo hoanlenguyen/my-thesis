@@ -128,3 +128,23 @@ most systems reach nearly the same saving, so the saving differences come mainly
   optimum as a secondary measure; TOST at ±0.5 and ±2 points and its Wilcoxon version.
 - Any deviation (for example a rerun after a bug fix) is described in the thesis with the result under
   the original plan.
+
+## Note added after the confirmatory run (7 October 2026): design iteration 9, exploratory
+
+This note does not change the registered plan, the analysis code (`hems.analysis.confirm_q2`) or the
+registered results, which stay as reported, including H1c (latency) *not supported*.
+
+After the run, the pipeline's response time was profiled: about 97 % of a run is spent waiting for
+11–13 sequential language-model calls; the tools, including the optimiser, take under 0.5 s. Design
+iteration 9 (system `multi_lean`, flag `lean=True` in `hems.agents.multi_agent`) reduces the number of
+calls without changing the tools, the model or the optimiser:
+
+1. the Profiler receives the household data and the classification of every appliance in its message
+   (the same deterministic tool outputs) and answers in one call;
+2. the Scheduler starts with `optimize_schedule` and returns its start times without re-costing them;
+3. the Resolver runs only when the Scheduler's proposal fails the verification step;
+4. the Orchestrator's summary is given the schedule's cost and its saving against no scheduling.
+
+It is evaluated as an exploratory comparison on the exploratory main set (`configs/iteration9.json`),
+interleaved per scenario with the registered pipeline `multi_rag_opt` so that both meet the same API
+conditions. It is not a confirmatory test, and Q2 is not used for it.

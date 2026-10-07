@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from langchain_core.messages import AIMessage
+
 from hems.agents.multi_agent import run_multi_agent
 from hems.agents.oneshot import run_oneshot, scenario_message
 from hems.agents.single_agent import run_single_agent
@@ -9,7 +11,7 @@ from hems.core.evaluate import evaluate
 from hems.core.models import Scenario
 from hems.solvers.milp import solve_milp
 
-from .fakes import call, scripted
+from .fakes import ScriptedModel, call, scripted
 
 
 def _optimal_assignments(scenario: Scenario) -> list[dict[str, str]]:
@@ -302,3 +304,56 @@ def test_without_cost_check_a_valid_schedule_is_final() -> None:
     models = _cost_models("12:00", "01:00")
     run = run_multi_agent(scenario, lambda role: models[role])  # the evaluated pipeline ("multi")
     assert run.iterations == 1 and run.assignments == {"dishwasher_1": "12:00"}
+
+
+# ── Design iteration 9: lean pipeline ────────────────────────────────────────
+SEEN: list[str] = []
+
+
+class _Recording(ScriptedModel):
+    """Scripted model that also records the text of the last message it receives."""
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):  # type: ignore[no-untyped-def]
+        SEEN.append(str(messages[-1].content))
+        return super()._generate(messages, stop, run_manager, **kwargs)
+
+
+def _lean_models(scenario: Scenario, first: list[dict[str, str]], second: list[dict[str, str]] | None = None) -> dict:
+    ids = [a.id for a in scenario.appliances]
+    profiles = [
+        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
+         "earliest_time": "00:00", "deadline_time": "24:00"}
+        for a in scenario.appliances
+    ]  # fmt: skip
+    proposals = [first] + ([second] if second else [])
+    return {
+        "orchestrator": _Recording(messages=iter([call("TaskBrief", appliance_ids=ids, notes=""), AIMessage(content="done")])),
+        "profiler": _Recording(messages=iter([call("ProfileOutput", appliances=profiles)])),
+        "scheduler": scripted(*[call("ScheduleOutput", assignments=p, total_cost_eur=1.0, explanation="") for p in proposals]),
+        "resolver": scripted(call("ResolverOutput", assignments=second or first, conflicts_remaining=False, changes="moved")),
+    }
+
+
+def test_lean_pipeline_skips_the_resolver_for_a_verified_proposal(scenario: Scenario) -> None:
+    SEEN.clear()
+    optimal = _optimal_assignments(scenario)
+    models = _lean_models(scenario, optimal)
+    run = run_multi_agent(scenario, lambda role: models[role], lean=True, complete_missing=True)
+    assert run.iterations == 1 and run.errors == []
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+    assert next(models["resolver"].messages, None) is not None  # the Resolver's scripted turn was never used
+    profiler_message = SEEN[1]
+    assert "Household data" in profiler_message and "FLEXIBLE" in profiler_message  # data handed over, no tool turns
+    assert "Saving: EUR" in SEEN[-1]  # the summary is given the cost and the saving
+
+
+def test_lean_pipeline_still_resolves_a_conflicting_proposal(scenario: Scenario) -> None:
+    clash = [{"appliance_id": a.id, "start_time": scenario.slot_to_time(scenario.appliances[0].earliest_slot + 8)}
+             for a in scenario.appliances]  # fmt: skip
+    assert not evaluate(scenario, {c["appliance_id"]: scenario.time_to_slot(c["start_time"]) for c in clash}).feasible
+    optimal = _optimal_assignments(scenario)
+    models = _lean_models(scenario, clash)
+    models["resolver"] = scripted(call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="moved"))
+    run = run_multi_agent(scenario, lambda role: models[role], lean=True, complete_missing=True)
+    assert run.iterations == 1
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}

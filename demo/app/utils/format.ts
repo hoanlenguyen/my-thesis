@@ -35,7 +35,12 @@ export const APPLIANCE_ICONS: Record<string, string> = {
   router: 'i-lucide-router',
   network_site: 'i-lucide-router',
   dehumidifier: 'i-lucide-droplets',
-  games_console: 'i-lucide-gamepad-2'
+  games_console: 'i-lucide-gamepad-2',
+  // constant-power loads of the Low-carbon-alerts catalog (Try it view)
+  ev_charger: 'i-lucide-battery-charging',
+  sauna: 'i-lucide-flame',
+  hot_tub: 'i-lucide-bath',
+  electric_oven: 'i-lucide-cooking-pot'
 }
 
 export const APPLIANCE_LABELS: Record<string, string> = {
@@ -45,7 +50,10 @@ export const APPLIANCE_LABELS: Record<string, string> = {
   washer_dryer: 'Washer-dryer',
   fridge_freezer: 'Fridge-freezer',
   hifi: 'Hi-fi',
-  television: 'Television'
+  television: 'Television',
+  ev_charger: 'EV charger',
+  hot_tub: 'Hot tub',
+  electric_oven: 'Electric oven'
 }
 
 const titleCase = (s: string) => s.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())
@@ -96,6 +104,8 @@ export const SCENARIO_TYPES: Record<string, string> = {
 export const SYSTEM_GROUPS: Record<string, 'agent' | 'llm' | 'rule' | 'heuristic' | 'tool' | 'reference'> = {
   multi: 'agent',
   multi_v3: 'agent',
+  multi_rag_opt: 'agent',
+  cheapest_window: 'rule',
   single: 'agent',
   oneshot: 'llm',
   timer: 'heuristic',

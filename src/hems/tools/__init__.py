@@ -22,7 +22,8 @@ from langchain_core.tools import BaseTool, tool
 from hems.core.evaluate import appliance_cost, evaluate, total_load
 from hems.core.models import Scenario, Schedule
 
-SHIFTABLE_KINDS = {"washing_machine", "dishwasher", "tumble_dryer"}
+# The extra kinds only occur in the demo, where the household gives each of them a time window.
+SHIFTABLE_KINDS = {"washing_machine", "dishwasher", "tumble_dryer", "ev_charger", "sauna", "hot_tub", "electric_oven"}
 
 PROFILER_TOOLS = ("read_household_data", "classify_appliance")
 SCHEDULER_TOOLS = ("get_spot_prices", "calculate_schedule_cost", "find_cheapest_window")

@@ -8,7 +8,7 @@ const group = computed(() => groupBadge(props.result.system))
 const saving = computed(() => props.naiveCost - (props.result.feasible ? (props.result.costEur ?? props.naiveCost) : props.naiveCost))
 const share = computed(() => {
   const achievable = props.naiveCost - props.milpCost
-  return achievable > 1e-6 ? saving.value / achievable : null
+  return achievable >= 0.005 ? saving.value / achievable : null
 })
 const gap = computed(() => props.result.costEur == null ? null : ((props.result.costEur - props.milpCost) / props.milpCost) * 100)
 </script>

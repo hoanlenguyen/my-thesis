@@ -96,6 +96,9 @@ SYSTEMS: dict[str, System] = {
         System("multi_rag_opt", "llm",
                "Multi-Agent Pipeline: retrieved examples, optimiser tool, completion of missing appliances (iterations 7-8)",
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True, complete_missing=True)),  # fmt: skip
+        System("multi_lean", "llm",
+               "Multi-Agent Pipeline with fewer sequential model calls (design iteration 9, exploratory)",
+               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True, complete_missing=True, lean=True)),  # fmt: skip
         System("oneshot", "llm", "language model without tools",
                agent=lambda sc, model, config, summarize: run_oneshot(sc, model, config)),  # fmt: skip
     )
