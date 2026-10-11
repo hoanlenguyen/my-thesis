@@ -113,8 +113,12 @@ def _run_agent(
 def build_pipeline(
     scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False,
     retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False, complete_missing: bool = False,
-    lean: bool = False,
+    lean: bool = False, parallel_start: bool = False,
 ):  # fmt: skip
+    """``parallel_start`` (demo only, with ``lean``; not evaluated): the Profiler starts at the same time as the
+    Orchestrator's planning step instead of waiting for its brief, since it already receives the household data."""
+    if parallel_start and not lean:
+        raise ValueError("parallel_start requires lean")
     tools = build_tools(scenario)
     plan_ids = [a.id for a in scenario.appliances]  # every cycle in the day's appliance plan
 
@@ -166,12 +170,9 @@ def build_pipeline(
     def profiler(state: PipelineState, config) -> PipelineState:
         # The original request travels in the shared state alongside the Orchestrator's brief, so an
         # appliance omitted from the brief is not silently lost at this hand-off (observed in the pilot).
-        brief = state["brief"]
-        message = (
-            f"User request:\n{state['request']}\n\n"
-            f"Orchestrator brief: appliances {', '.join(brief.appliance_ids)}; notes: {brief.notes or 'none'}.\n"
-            "Profile every appliance the user's request asks to schedule."
-        )
+        brief = state.get("brief")  # not yet available when the Profiler starts in parallel
+        handoff = f"Orchestrator brief: appliances {', '.join(brief.appliance_ids)}; notes: {brief.notes or 'none'}.\n" if brief else ""
+        message = f"User request:\n{state['request']}\n\n{handoff}Profile every appliance the user's request asks to schedule."
         profiler_tools, profiler_prompt = select(tools, PROFILER_TOOLS), prompts.PROFILER
         if lean:  # the deterministic reads are done here, not in separate model turns
             classes = "\n".join(
@@ -372,8 +373,12 @@ def build_pipeline(
     graph.add_node("resolver", resolver)
     graph.add_node("orchestrator_finalize", orchestrator_finalize)
     graph.add_edge(START, "orchestrator_plan")
-    graph.add_edge("orchestrator_plan", "profiler")
-    graph.add_edge("profiler", "scheduler")
+    if parallel_start:  # both start at once; the Scheduler waits for both
+        graph.add_edge(START, "profiler")
+        graph.add_edge(["orchestrator_plan", "profiler"], "scheduler")
+    else:
+        graph.add_edge("orchestrator_plan", "profiler")
+        graph.add_edge("profiler", "scheduler")
     graph.add_edge("scheduler", "resolver")
     targets = ["scheduler", "orchestrator_finalize"]
     if human_review:

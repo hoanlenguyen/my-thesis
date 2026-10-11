@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
 from langchain_core.messages import AIMessage
 
-from hems.agents.multi_agent import run_multi_agent
+from hems.agents.multi_agent import build_pipeline, run_multi_agent
 from hems.agents.oneshot import run_oneshot, scenario_message
 from hems.agents.single_agent import run_single_agent
 from hems.core.evaluate import evaluate
@@ -357,3 +358,18 @@ def test_lean_pipeline_still_resolves_a_conflicting_proposal(scenario: Scenario)
     run = run_multi_agent(scenario, lambda role: models[role], lean=True, complete_missing=True)
     assert run.iterations == 1
     assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+
+
+def test_parallel_start_runs_profiler_and_orchestrator_together_and_returns_the_same_schedule(scenario: Scenario) -> None:
+    optimal = _optimal_assignments(scenario)
+    models = _lean_models(scenario, optimal)
+    pipeline = build_pipeline(scenario, lambda role: models[role], lean=True, complete_missing=True, parallel_start=True)
+    assert {"orchestrator_plan", "profiler"} <= {e.target for e in pipeline.get_graph().edges if e.source == "__start__"}
+    state = pipeline.invoke({"request": scenario.user_request})
+    assert state["final"] == {o["appliance_id"]: o["start_time"] for o in optimal}
+    assert state["iterations"] == 1 and state["errors"] == []
+
+
+def test_parallel_start_needs_the_lean_pipeline(scenario: Scenario) -> None:
+    with pytest.raises(ValueError, match="lean"):
+        build_pipeline(scenario, lambda _role: scripted(), parallel_start=True)

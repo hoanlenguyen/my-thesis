@@ -66,12 +66,29 @@ export interface PlanRequest {
   appliances: { kind: string, ready: string, finish_by: string, power_kw?: number, duration_min?: number }[]
 }
 
+/** One event of the pipeline's live run (POST /api/plan/agent/stream, server-sent events). */
+export type AgentName = 'orchestrator' | 'profiler' | 'scheduler' | 'resolver' | 'summary'
+export interface AgentEvent {
+  type: 'start' | 'working' | 'tool' | 'done' | 'summary_delta' | 'result' | 'error'
+  agent: AgentName | null
+  t: number // seconds since the run started
+  name?: string // tool
+  input?: string
+  output?: string | Record<string, unknown>
+  ms?: number
+  tokens?: number
+  errors?: string[]
+  text?: string // summary_delta
+  result?: PlanResult
+  message?: string // error
+}
+
 /** Map an API result to the shape of the recorded results, so the existing components can show it. */
 export function toRunResult(r: PlanResult): RunResult {
   return {
     system: r.system,
     label: r.label,
-    model: r.system === 'multi_rag_opt' ? 'gpt-4o-mini' : '-',
+    model: r.system === 'multi_lean' ? 'gpt-4o-mini' : '-',
     run: 0,
     starts: r.starts,
     costEur: r.costEur,
@@ -100,6 +117,32 @@ export function useTryItApi() {
     catalog: () => $fetch<{ appliances: CatalogItem[], housing: Record<Housing, number>, entsoe: boolean }>(`${base}/api/catalog`),
     tools: (body: PlanRequest) => $fetch<ToolsResponse>(`${base}/api/plan/tools`, { method: 'POST', body }),
     agent: (body: PlanRequest) => $fetch<{ result: PlanResult }>(`${base}/api/plan/agent`, { method: 'POST', body, timeout: 180_000 }),
+    /** Run the pipeline and call onEvent for each agent event as it arrives. */
+    async agentStream(body: PlanRequest, onEvent: (e: AgentEvent) => void) {
+      const res = await fetch(`${base}/api/plan/agent/stream`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      if (!res.ok || !res.body) {
+        const detail = await res.json().catch(() => null) as { detail?: unknown } | null
+        throw { data: detail ?? undefined, message: `Request failed (${res.status})` }
+      }
+      const reader = res.body.pipeThrough(new TextDecoderStream()).getReader()
+      let buffer = ''
+      for (;;) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buffer += value
+        let cut
+        while ((cut = buffer.indexOf('\n\n')) >= 0) {
+          const block = buffer.slice(0, cut)
+          buffer = buffer.slice(cut + 2)
+          const data = block.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('')
+          if (data) onEvent(JSON.parse(data) as AgentEvent)
+        }
+      }
+    },
     errorText
   }
 }

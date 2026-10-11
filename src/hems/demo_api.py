@@ -11,7 +11,7 @@ Low-carbon-alerts appliance catalog.
 
 The systems run exactly as in the evaluation (hems.run.execute): no scheduling, MILP optimum, smart
 timer, cheapest hours, cheapest window, EMHASS (Docker REST, if reachable) and the Multi-Agent Pipeline
-(GPT-4o-mini, live; about 20 s and USD 0.003 per run). This module is not used by any benchmark.
+(GPT-4o-mini, live, the lean variant of design iteration 9; about 10 s and USD 0.001 per run). This module is not used by any benchmark.
 """
 
 from __future__ import annotations
@@ -21,6 +21,11 @@ import json
 import os
 import time
 import urllib.error
+import queue
+import threading
+import urllib.request
+from collections.abc import AsyncIterator, Iterator
+from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
@@ -31,6 +36,8 @@ import pandas as pd
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from langchain_core.callbacks import BaseCallbackHandler
 from pydantic import BaseModel, Field
 
 from hems.core.evaluate import evaluate
@@ -59,13 +66,28 @@ CATALOG = {
     "electric_oven": {"label": "Electric oven", "measured": False, "power_kw": 2.5, "duration_min": 60},
 }
 SYSTEM_LABELS = {
-    "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)", "multi_rag_opt": "Multi-Agent Pipeline",
+    "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)", "multi_lean": "Multi-Agent Pipeline",
     "timer": "Smart timer (own heuristic)", "cheapest_hours": "Cheapest hours", "cheapest_window": "Cheapest window",
     "emhass_rest": "EMHASS",
 }  # fmt: skip
 TOOL_SYSTEMS = ("naive", "timer", "cheapest_hours", "cheapest_window")  # the optimum is computed with the fee
 
-app = FastAPI(title="HEMS demo API")
+@asynccontextmanager
+async def _warm_up(_app: FastAPI) -> AsyncIterator[None]:
+    """Load the case library, the REFIT cycles and the agent libraries once at start-up, so the first
+    recommendation does not wait for them (about 4 s)."""
+    from langchain_openai import ChatOpenAI  # noqa: F401 - the model client
+
+    from hems.agents.multi_agent import build_pipeline  # noqa: F401 - imports LangChain and LangGraph
+    from hems.rag import default_retriever
+
+    default_retriever()
+    typical_cycles()
+    refit_shape()
+    yield
+
+
+app = FastAPI(title="HEMS demo API", lifespan=_warm_up)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 
@@ -88,12 +110,21 @@ def typical_cycles() -> dict[str, list[float]]:
 
 
 def cycle_for(kind: str, power_kw: float | None, duration_min: int | None) -> list[float]:
+    """The appliance's cycle per 15-minute slot. A measured REFIT cycle keeps its shape when the household
+    changes its runtime or peak power: it is stretched to the runtime and scaled so its peak is that power."""
     entry = CATALOG[kind]
-    if entry["measured"] and power_kw is None and duration_min is None:
-        return typical_cycles()[kind]
-    power = power_kw if power_kw is not None else entry.get("power_kw", max(typical_cycles().get(kind, [2.0])))
-    minutes = duration_min if duration_min is not None else entry.get("duration_min", len(typical_cycles().get(kind, [0] * 4)) * 15)
-    return [round(float(power), 3)] * max(1, int(np.ceil(minutes / 15)))
+    if not entry["measured"]:
+        power = power_kw if power_kw is not None else entry["power_kw"]
+        minutes = duration_min if duration_min is not None else entry["duration_min"]
+        return [round(float(power), 3)] * max(1, int(np.ceil(minutes / 15)))
+    measured = np.asarray(typical_cycles()[kind], dtype=float)
+    slots = max(1, int(np.ceil(duration_min / 15))) if duration_min is not None else len(measured)
+    if slots != len(measured):  # stretch or compress in time, keeping the shape
+        old = (np.arange(len(measured)) + 0.5) / len(measured)
+        measured = np.interp((np.arange(slots) + 0.5) / slots, old, measured)
+    if power_kw is not None and measured.max() > 0 and abs(power_kw - measured.max()) > 1e-3:
+        measured = measured * power_kw / measured.max()
+    return [round(float(p), 3) for p in measured]
 
 
 # ── Prices (ENTSO-E) ────────────────────────────────────────────────────────
@@ -182,8 +213,8 @@ class ApplianceIn(BaseModel):
     kind: str
     ready: str = Field("07:00", description='"HH:MM"')
     finish_by: str = Field("22:00", description='"HH:MM" or "24:00"')
-    power_kw: float | None = None
-    duration_min: int | None = None
+    power_kw: float | None = Field(None, gt=0, le=50, description="peak power; default from the catalog")
+    duration_min: int | None = Field(None, ge=15, le=1440, description="runtime; default from the catalog")
 
 
 class PlanIn(BaseModel):
@@ -271,6 +302,12 @@ def _emhass(scenario: Scenario) -> dict[str, Any] | None:
     spec = importlib.util.spec_from_file_location("emhass_rest", ROOT / "tools" / "emhass_rest.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore[union-attr]
+    try:  # a stuck Docker engine can keep the port open without answering: give up quickly instead of after 60 s
+        urllib.request.urlopen(EMHASS_URL, timeout=3).close()
+    except urllib.error.HTTPError:
+        pass  # it answered, so it is running
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None
     raw = json.loads(scenario.model_dump_json())
     started = time.perf_counter()
     starts, status = {a.id: None for a in scenario.appliances}, "no plan"
@@ -358,5 +395,145 @@ def plan_agent(body: PlanIn) -> dict[str, Any]:
     """The Multi-Agent Pipeline with GPT-4o-mini, live, with its message to the household. Its tools and checks
     treat the limit as a target; exceeding it is charged the fee like every other system."""
     scenario, _ = build_scenario(body)
-    record = execute(scenario, "multi_rag_opt", "gpt-4o-mini", summarize=True)
-    return {"result": _result(scenario, "multi_rag_opt", record, _naive(scenario, body.fee_eur_per_kw), body.fee_eur_per_kw)}
+    record = execute(scenario, "multi_lean", "gpt-4o-mini", summarize=True)
+    return {"result": _result(scenario, "multi_lean", record, _naive(scenario, body.fee_eur_per_kw), body.fee_eur_per_kw)}
+
+
+# ── The pipeline, agent by agent (streamed) ─────────────────────────────────
+
+# Pipeline node -> the agent the page shows. The Resolver node also holds the Orchestrator's verification step.
+AGENT_OF_NODE = {"orchestrator_plan": "orchestrator", "profiler": "profiler", "scheduler": "scheduler",
+                 "resolver": "resolver", "orchestrator_finalize": "summary"}  # fmt: skip
+REDUCED = {"errors": list, "tool_calls": int, "recoveries": int}  # state keys the pipeline adds up across nodes
+
+
+def _node(metadata: dict[str, Any] | None) -> str | None:
+    """The pipeline node a callback belongs to; inside an agent, the first part of the checkpoint namespace."""
+    meta = metadata or {}
+    namespace = str(meta.get("langgraph_checkpoint_ns") or "").split(":")[0]
+    node = namespace if namespace in AGENT_OF_NODE else meta.get("langgraph_node")
+    return node if node in AGENT_OF_NODE else None
+
+
+class _AgentWatch(BaseCallbackHandler):
+    """Turns the callbacks of a pipeline run into page events: an agent starts working, calls a tool, uses tokens."""
+
+    def __init__(self, emit: Any) -> None:
+        self.emit = emit
+        self.tools: dict[Any, tuple[str | None, str, str, float]] = {}
+        self.tokens: dict[str, int] = {}
+        self.lock = threading.Lock()
+
+    def on_chat_model_start(self, serialized, messages, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
+        if node := _node(metadata):
+            self.emit({"type": "working", "node": node})
+
+    def on_llm_end(self, response, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
+        try:
+            usage = response.generations[0][0].message.usage_metadata or {}
+        except (AttributeError, IndexError):
+            return
+        node = _node(metadata) or "?"
+        with self.lock:
+            self.tokens[node] = self.tokens.get(node, 0) + usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+
+    def on_tool_start(self, serialized, input_str, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
+        self.tools[run_id] = (_node(metadata), (serialized or {}).get("name", "tool"), str(input_str), time.perf_counter())
+
+    def on_tool_end(self, output, *, run_id, **kwargs):  # type: ignore[no-untyped-def]
+        node, name, args, started = self.tools.pop(run_id, (None, "tool", "", time.perf_counter()))
+        text = str(getattr(output, "content", output))
+        self.emit({"type": "tool", "node": node, "name": name, "input": args[:300], "output": text[:600],
+                   "ms": round((time.perf_counter() - started) * 1000)})  # fmt: skip
+
+
+def _agent_output(node: str, update: dict[str, Any]) -> dict[str, Any]:
+    """What an agent handed on, in a form the page can show."""
+
+    def starts(assignments: Any) -> dict[str, str]:
+        return {a.appliance_id: a.start_time for a in assignments or []}
+
+    if node == "orchestrator_plan" and (brief := update.get("brief")):
+        return {"appliances": brief.appliance_ids, "notes": brief.notes}
+    if node == "profiler" and (profile := update.get("profile")):
+        return {"appliances": [{"id": p.appliance_id, "kind": p.kind, "flexible": p.flexible, "peakKw": p.peak_kw,
+                                "durationMin": p.duration_minutes, "window": f"{p.earliest_time}-{p.deadline_time}"}
+                               for p in profile.appliances]}  # fmt: skip
+    if node == "scheduler" and (proposal := update.get("proposal")):
+        return {"starts": starts(proposal.assignments), "costEur": proposal.total_cost_eur, "explanation": proposal.explanation}
+    if node == "resolver" and (resolution := update.get("resolution")):
+        feedback = update.get("conflict_feedback") or ""
+        return {"starts": starts(resolution.assignments), "changes": resolution.changes, "feedback": feedback,
+                "skipped": resolution.changes.startswith("none (the proposal passed"), "verified": not feedback}  # fmt: skip
+    if node == "orchestrator_finalize":
+        return {"starts": update.get("final") or {}, "summary": update.get("summary", "")}
+    return {}
+
+
+def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
+    """Run the Multi-Agent Pipeline (lean, with the Orchestrator and Profiler starting in parallel) and stream
+    server-sent events: each agent starting, its tool calls, what it handed on, the summary as it is written, and
+    finally the scored result, the same record as /api/plan/agent."""
+    from langchain_core.callbacks import get_usage_metadata_callback
+
+    from hems.agents.llm import make_model, usage_cost_usd
+    from hems.agents.multi_agent import build_pipeline
+    from hems.agents.types import AgentRun
+    from hems.rag import default_retriever
+    from hems.run import _record, parse_assignments
+
+    events: queue.Queue[dict[str, Any] | None] = queue.Queue()
+    started = time.perf_counter()
+
+    def emit(event: dict[str, Any]) -> None:
+        agent = AGENT_OF_NODE.get(event.get("node") or "")
+        events.put({**event, "agent": agent, "t": round(time.perf_counter() - started, 2)})
+
+    def work() -> None:
+        try:
+            watch = _AgentWatch(emit)
+            model = make_model("gpt-4o-mini")
+            pipeline = build_pipeline(scenario, lambda _role: model, retriever=default_retriever(), optimizer=True,
+                                      complete_missing=True, lean=True, parallel_start=True)  # fmt: skip
+            state: dict[str, Any] = {key: kind() for key, kind in REDUCED.items()}
+            emit({"type": "start"})
+            with get_usage_metadata_callback() as usage_cb:
+                stream = pipeline.stream({"request": scenario.user_request}, config={"recursion_limit": 50, "callbacks": [watch]},
+                                         stream_mode=["updates", "messages"])  # fmt: skip
+                for mode, chunk in stream:
+                    if mode == "messages":
+                        message, meta = chunk
+                        if meta.get("langgraph_node") == "orchestrator_finalize" and getattr(message, "content", ""):
+                            emit({"type": "summary_delta", "node": "orchestrator_finalize", "text": message.content})
+                        continue
+                    for node, update in chunk.items():
+                        update = update or {}
+                        for key, value in update.items():
+                            state[key] = state[key] + value if key in REDUCED else value
+                        if node in AGENT_OF_NODE:
+                            emit({"type": "done", "node": node, "output": _agent_output(node, update),
+                                  "tokens": watch.tokens.get(node, 0), "errors": update.get("errors", [])})  # fmt: skip
+                usage = dict(usage_cb.usage_metadata)
+            run = AgentRun(assignments=state.get("final"), explanation=state.get("summary", ""), errors=state["errors"],
+                           tool_calls=state["tool_calls"], recoveries=state["recoveries"], iterations=state.get("iterations", 0))  # fmt: skip
+            schedule, problems = parse_assignments(scenario, run.assignments)
+            tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
+            record = _record(scenario, "multi_lean", "gpt-4o-mini", 0, run, schedule, problems,
+                             time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
+            emit({"type": "result", "result": _result(scenario, "multi_lean", record, _naive(scenario, fee), fee)})
+        except Exception as exc:  # noqa: BLE001 - shown on the page instead of a broken stream
+            emit({"type": "error", "message": f"{type(exc).__name__}: {exc}"})
+        finally:
+            events.put(None)
+
+    threading.Thread(target=work, daemon=True).start()
+    while (event := events.get()) is not None:
+        yield f"data: {json.dumps(event, default=str)}\n\n"
+
+
+@app.post("/api/plan/agent/stream")
+def plan_agent_stream(body: PlanIn) -> StreamingResponse:
+    """The Multi-Agent Pipeline agent by agent, as server-sent events (see _pipeline_events)."""
+    scenario, _ = build_scenario(body)  # input errors are answered as JSON before the stream starts
+    return StreamingResponse(_pipeline_events(scenario, body.fee_eur_per_kw), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})  # fmt: skip

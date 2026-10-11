@@ -105,6 +105,7 @@ export const SYSTEM_GROUPS: Record<string, 'agent' | 'llm' | 'rule' | 'heuristic
   multi: 'agent',
   multi_v3: 'agent',
   multi_rag_opt: 'agent',
+  multi_lean: 'agent',
   cheapest_window: 'rule',
   single: 'agent',
   oneshot: 'llm',

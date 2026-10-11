@@ -229,7 +229,26 @@ Yueqiang Xu, PhD, Postdoctoral Researcher
 % ── FOREWORD ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Foreword}
 
-Work in progress.
+This thesis was written for the Master's programme in Information
+Processing Science at the University of Oulu. The idea for it came from
+my traineeship at the university, where I worked on an AI-assisted
+service that tells Finnish households when to shift their electricity
+use. That work left me with a question I wanted to study properly: can
+language model agents give a household advice on when to run its
+appliances that is worth following, and what does that advice cost to
+produce?
+
+I thank my supervisor, Yueqiang Xu, for his guidance and feedback. The
+study relies on open data and software: the REFIT appliance measurements
+of the University of Strathclyde, the electricity prices published on
+the ENTSO-E Transparency Platform and by Elering, and the open-source
+EMHASS optimizer.
+
+\vspace{12pt}
+Oulu, October 2026
+
+\vspace{6pt}
+Hoan Le
 
 % ── ABBREVIATIONS ───────────────────────────────────────────────────────────
 \unnumberedchapter{Abbreviations}
@@ -399,10 +418,7 @@ methodology and evaluation strategy. Chapter 4 presents the system
 design and implementation. Chapter 5 presents the results on an
 exploratory and a held-out benchmark of 96 scenarios each. Chapter 6
 discusses findings, limitations, and future work. Chapter 7 concludes
-the thesis. Appendix A repeats the comparison with UK prices of the
-period in which the appliance data were recorded, and Appendix B reports
-the evaluation of an earlier design that compared the pipeline with a
-single agent.
+the thesis.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Literature Review}
@@ -990,7 +1006,7 @@ iterations of Section~\ref{sec:iterations}. A first confirmatory run,
 on 48 held-out scenarios with fifteen-minute prices (the Q set,
 Section~\ref{sec:resolution}), tested hypotheses registered in advance
 about the pipeline, the LLM without tools and an earlier single-agent
-design. Its results are reported in Appendix~\ref{app:earlier} and
+design. Its results are summarised in Section~\ref{sec:earlier-design} and
 remain valid, but the thesis no longer builds its questions on the
 single-agent comparison.
 
@@ -1569,8 +1585,7 @@ before any agent is evaluated. Section~\ref{sec:demonstration} reports
 the demonstration of the pipeline on representative scenarios (DSR
 Phase 4) and the design iterations that led to it.
 Section~\ref{sec:earlier-design} summarises the evaluation of the
-earlier design, which compared the pipeline with a single agent and is
-reported in full in Appendix~\ref{app:earlier}.
+earlier design, which compared the pipeline with a single agent.
 Section~\ref{sec:exploratory-v2} follows the final design through its
 last iterations on the exploratory factorial benchmark, and
 Section~\ref{sec:confirmatory-q2} reports the pre-registered test of the
@@ -1805,7 +1820,12 @@ prices up to 30 September 2025. The held-out set Q2 uses the native
 fifteen-minute prices from 1 October 2025 to 25 September 2026, and was
 built before any system was run on it. The case library for retrieval
 (Section~\ref{sec:rag-design}) is built with the same design from 320
-further days up to 30 September 2025. In Q2, 30 of the 96 scenarios
+further days up to 30 September 2025. Q2 is therefore held out in time
+as well: all its days come after every day of the exploratory main set
+and the case library, on which the final design was developed, so the
+test imitates using the system on future days. The benchmarks of the
+earlier design contain days from the same period, but none of the Q2
+days. In Q2, 30 of the 96 scenarios
 require coordination, almost all of them heavy-load days under the
 strict limit, and every scenario has a feasible schedule. The cost of
 starting every appliance when it is ready has a median of \EUR{0.56}
@@ -1950,7 +1970,7 @@ scenarios of the main benchmark, one per type (A01, B03, C02, D01, E01
 and F04); the fifth used the full main benchmark. Because the pipeline
 was refined on these scenarios, the main benchmark is treated as
 exploratory, and the hypotheses of that design were confirmed on the
-held-out Q set (Appendix~\ref{app:earlier}). The last three iterations,
+held-out Q set (Section~\ref{sec:earlier-design}). The last three iterations,
 which added the cost check, retrieval, the optimiser tool and the
 completion step, are reported in Section~\ref{sec:exploratory-v2}, and
 a ninth, made after the registered test to shorten the response time,
@@ -2026,11 +2046,17 @@ statistically significant (Wilcoxon $p = 0.65$, $N = 48$).
 
 Before the redesign described in Section~\ref{sec:evaluation}, the study
 compared the base pipeline with a single ReAct agent and measured each
-schedule by its gap to the optimal cost. Appendix~\ref{app:earlier}
-reports that evaluation in full: the exploratory tests on the first
-benchmark, the comparison with the baselines and real tools, and the
-first confirmatory run on the held-out Q set. Three of its results
-shaped the final design.
+schedule by its gap to the optimal cost. It comprised exploratory tests
+on the first benchmark, a comparison with the baselines and real tools,
+and a first confirmatory run on the held-out Q set, whose hypotheses were
+registered on 30 September 2026. All six registered tests of that run
+were supported: both agent designs had a smaller gap than the LLM
+without tools (17.7 and 17.9 percentage points smaller, $p < 0.001$), and
+the pipeline was equivalent to the single agent within $\pm 1$
+percentage point of the optimum ($+0.22$ points), used 31\,\% fewer input
+tokens, cost 21\,\% less per run and responded 52\,\% more slowly. The
+run records and the analysis of this evaluation are kept in the project
+repository. Three of its results shaped the final design.
 
 First, tools made the agents viable. With GPT-4o-mini, both agent
 designs came within 1.5\,\% of the optimal cost on average, whereas the
@@ -2273,10 +2299,16 @@ that plan each appliance on its own. Its advantage over these tools comes
 from coordinating the appliances under the household's peak limit and is
 largest where that limit binds. It did not beat the LLM without tools on
 validity by a significant margin, and it missed the latency objective on
-the day of the run. Appendix~\ref{app:uk2015} repeats the comparison
-with UK prices and a UK tariff of the period in which the REFIT data
-were recorded; the savings are smaller, but the ranking of the systems
-is the same.
+the day of the run. A robustness check that was not pre-registered
+repeated the comparison on 48 scenarios built with the same factorial
+design from UK day-ahead prices and a UK tariff of December 2014 to July
+2015, the period in which the REFIT data were recorded. The savings were
+about a quarter of those on the Finnish days, because UK prices varied
+much less within the day, but the ranking of the systems was the same:
+the pipeline saved 6.69\,\% with a valid schedule in every run, equal to
+the optimum, EMHASS 6.45\,\%, the smart timer 6.55\,\%, the
+cheapest-hours tools 2.6 to 3.6\,\% and the LLM without tools
+0.18\,\%.
 
 \section{Post-registration iteration: response time}
 \label{sec:iteration9}
@@ -2591,7 +2623,7 @@ REFIT, so in a real Finnish house the peak limit, in particular the
 realistic 8\,kW limit, would bind more often than in these scenarios.
 Pricing the REFIT cycles at UK prices and a UK tariff of their own
 period instead gives smaller savings but the same ranking of the
-systems (Appendix~\ref{app:uk2015}).
+systems (Section~\ref{sec:confirmatory-q2}).
 
 Third, LLM output is non-deterministic, and two runs of the same
 scenario may produce different schedules. Each scenario is run three
@@ -2606,7 +2638,7 @@ scheduling. On these fully specified problems, the smart timer, a simple
 rule written for this study, came within 0.1 percentage points of the
 pipeline on the held-out set (Section~\ref{sec:confirmatory-q2}), and on
 the first benchmark it saved more than the earlier agent designs
-(Appendix~\ref{app:earlier}).
+(Section~\ref{sec:earlier-design}).
 
 Sixth, the final design was evaluated with one language model,
 GPT-4o-mini, through one cloud service, and the held-out run took place
@@ -2808,11 +2840,6 @@ dala318. (n.d.). \textit{nordpool\_planner} [Home Assistant custom
 component]. GitHub. Retrieved 5 October 2026, from
 \url{https://github.com/dala318/nordpool_planner}
 
-Department of Energy \& Climate Change. (2016). Domestic energy bills in
-2015: The impact of variable consumption. In \textit{Energy Trends:
-March 2016}. UK Government. Retrieved 6 October 2026, from
-\url{https://assets.publishing.service.gov.uk/media/5a7f857740f0b6230268ffdc/Domestic_energy_bills_in_2015_-_The_impact_of_variable_consumption.pdf}
-
 El Makroum, R., Zwickl-Bernhard, S., \& Kranzl, L. (2025). Agentic AI
 home energy management system: A large language model framework for
 residential load scheduling [Preprint]. arXiv:2510.26603.
@@ -2836,10 +2863,6 @@ ENTSO-E. (2026). \textit{Transparency Platform: Day-ahead prices,
 bidding zones FI and GB} [Data set]. European Network of Transmission System
 Operators for Electricity. Retrieved 6 October 2026, from
 \url{https://transparency.entsoe.eu}
-
-European Central Bank. (2026). \textit{Euro foreign exchange reference
-rates: Pound sterling (GBP)} [Data set]. Retrieved 6 October 2026, from
-\url{https://data.ecb.europa.eu/data/datasets/EXR}
 
 Fingrid. (2024). \textit{Fingrid's Open data service now provides data on
 electricity consumption and small-scale electricity production from
@@ -2998,411 +3021,5 @@ energy-efficient decision support in smart homes. \textit{Environmental
 Data Science, 3}, e7. \url{https://doi.org/10.1017/eds.2024.8}
 
 \end{hangparas}
-
-% ════════════════════════════════════════════════════════════════════════════
-\appendix
-\renewcommand{\thechapter}{\Alph{chapter}}
-
-\chapter{Robustness check: UK prices of the REFIT period}
-\label{app:uk2015}
-
-% Data: data/scenarios_uk2015 (manifest), data/raw/prices_gb_entsoe.csv; results:
-% results/uk2015.jsonl (configs/uk2015.json) and results/tools/scenarios_uk2015.jsonl (EMHASS).
-The benchmarks of this thesis combine appliance cycles recorded in UK
-homes in 2013--2015 with Finnish prices of 2022--2026
-(Section~\ref{sec:dataset}). This appendix checks whether the results
-also hold when the appliance data are priced in their own country and
-period. It is a robustness check that was not pre-registered, and its
-results are exploratory.
-
-\section{Prices, tariff and scenarios}
-
-The ENTSO-E Transparency Platform publishes day-ahead prices for the
-Great Britain bidding zone only from 17 December 2014, in GBP per MWh
-(ENTSO-E, 2026). This covers the last months of the REFIT recordings,
-which ended in mid-2015 (Murray et al., 2017). The prices of 18 December
-2014 to 31 July 2015, hourly, give 224 complete days on London time.
-They were converted to euros at the mean of the European Central Bank's
-daily reference rates for the same period, 0.73161 GBP per EUR
-(European Central Bank, 2026), so that the agents' tools and the costs
-use the same currency as in the other benchmarks. The saving in percent
-does not depend on the currency.
-
-The consumer price follows the form of the Finnish tariff
-(Section~\ref{sec:dataset}): the spot price plus a constant charge per
-kilowatt-hour, with VAT. The constant charge stands for all
-non-wholesale costs of a UK household in 2015, that is network costs,
-policy costs, the supplier's costs and margin, and the standing charge
-spread over consumption. It was set so that the average consumer price
-equals the average UK unit cost of standard electricity in 2015, 15.4
-pence per kWh including 5\,\% VAT, which follows from DECC's average bill
-of \pounds 584 for an annual consumption of 3\,800\,kWh (Department of
-Energy \& Climate Change, 2016). With a mean spot price of 4.05 pence per
-kWh in the window, the charge is 10.62 pence per kWh, or 0.1452 euros
-per kWh. In 2014--2015 almost no UK household had a dynamic hourly
-tariff, so the set describes a hypothetical household on such a tariff
-rather than a real one.
-
-The scenarios follow the factorial design of
-Section~\ref{sec:factorial} with one change. The window contains no day
-with a negative price, so the set has three price patterns, stable,
-volatile and spike, each defined relative to the days of the window.
-With two household loads, two peak limits and four days per pattern and
-load, the set has 48 scenarios, 14 of which require coordination. The
-cost of starting every appliance when it is ready has a median of
-\EUR{0.63} per scenario. Every system of the confirmatory evaluation was
-run on the set in the same way as on Q2: the Multi-Agent Pipeline and
-the LLM without tools three times per scenario with GPT-4o-mini, and
-EMHASS and the rule-based systems once.
-
-\section{Results}
-
-Table~\ref{tab:uk-systems} summarises the results. The ranking of the
-systems is the same as on the Finnish benchmarks. The pipeline produced
-a valid schedule in all 144 runs and saved 6.69\,\% of the cost without
-scheduling, the same as the optimal schedule. EMHASS saved 6.45\,\% and
-the smart timer 6.55\,\%. The cheapest-hours automations saved 2.6 to
-3.6\,\%, and on the 14 scenarios that require coordination only 7\,\% of
-their schedules were valid, against 100\,\% for the pipeline, EMHASS and
-the smart timer. The LLM without tools saved 0.18\,\%, and a quarter of
-its runs cost more than starting every appliance when ready. The
-pipeline's mean latency was 18.5 seconds, and its API cost \$0.0025 per
-recommendation.
-
-\begin{table}[h!]
-\caption{Robustness set: UK prices and tariff, December 2014 to July 2015 (48 scenarios; saving pooled over all runs).}
-\label{tab:uk-systems}
-\small
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}Xcccc}
-\toprule
-System & Valid & Saving & \makecell{Saving,\\strict limit} & \makecell{Saving,\\realistic limit} \\
-\midrule
-Multi-Agent Pipeline & 100\,\% & 6.69\,\% & 6.4\,\% & 6.9\,\% \\
-Smart timer (own heuristic) & 100\,\% & 6.55\,\% & 6.2\,\% & 6.9\,\% \\
-EMHASS, measured profiles & 100\,\% & 6.45\,\% & 6.0\,\% & 6.9\,\% \\
-EMHASS, nominal power & 100\,\% & 6.06\,\% & 5.6\,\% & 6.5\,\% \\
-Cheapest window & 70.8\,\% & 3.55\,\% & 1.5\,\% & 5.6\,\% \\
-Cheapest-hours automation & 68.8\,\% & 2.62\,\% & 0.9\,\% & 4.3\,\% \\
-LLM without tools & 95.1\,\% & 0.18\,\% & 0.3\,\% & 0.1\,\% \\
-\midrule
-Optimum (upper bound) & 100\,\% & 6.69\,\% & 6.4\,\% & 6.9\,\% \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Paired per scenario, the pipeline saved more than the cheapest-hours
-automation (by 3.3 percentage points), the cheapest window (2.1) and the
-LLM without tools (6.4), with Wilcoxon $p < 0.001$ in each case, and it
-saved the same as EMHASS within $\pm 1$ percentage point (mean difference
-$+0.20$ points, 90\,\% confidence interval $[0.06, 0.34]$). These tests
-mirror the registered ones but were not registered for this set, so they
-are reported without adjustment.
-
-The savings are about a quarter of those on the Finnish benchmarks.
-Because the price patterns are defined relative to the days of the
-window, even the volatile and spike days of 2015 are mild compared with
-the Finnish ones: on these days the spot price varied within the day by
-8 to 9 cents per kWh on average, against 16 to 20 cents on the
-corresponding days of Q2. The window also has no negative prices. In addition,
-the constant charge makes up most of the consumer price, so a given
-shift in time changes a smaller share of the cost. The order of the
-price patterns also differs from the Finnish sets: the stable days gave
-the largest saving (9.8\,\% at the optimum) and the volatile days the
-smallest (3.0\,\%). The reason was not analysed further.
-
-\section{Conclusion}
-
-Priced at the prices and tariff of their own country and period, the
-REFIT appliance cycles give much smaller savings, but the comparison
-between the systems does not change. The pipeline again reaches the
-optimal saving with a valid schedule every time, matches EMHASS, and
-saves more than the cheapest-hours automations, whose schedules again
-fail where the household's appliances must be staggered. The main
-results of this thesis therefore do not depend on combining UK
-appliance data with Finnish prices, although the size of the saving
-does depend on the price conditions.
-
-
-% ════════════════════════════════════════════════════════════════════════════
-\chapter{Evaluation of the earlier design}
-\label{app:earlier}
-
-This appendix reports the evaluation of the earlier design of the study,
-summarised in Section~\ref{sec:earlier-design}. It compared the base
-multi-agent pipeline, without retrieval or the optimiser tool, with a
-single ReAct agent that had the first seven tools of
-Table~\ref{tab:tools} and the same step budget, on the first benchmark of
-48 scenarios in six types (Section~\ref{sec:dataset}) and on the
-held-out Q set (Section~\ref{sec:resolution}). Its outcome was the
-optimality gap, the cost of a schedule above the optimal cost in percent
-of the optimal cost, with an infeasible schedule scored at the cost of
-starting every appliance when ready. The research questions and
-hypotheses of this design were replaced in the redesign, so the labels
-SQ1, SQ2, H1 and H2 in Section~\ref{sec:confirmatory} refer to the first
-pre-registration. The results remain valid for that design.
-
-\section{Pipeline and single agent on the first benchmark}
-\label{sec:statistics}
-
-% Hand-typed from `hems analyze` (results/tables/equivalence.csv, efficiency_tests.csv), GPT-4o-mini only.
-This section reports the tests of the earlier design for GPT-4o-mini on
-the first benchmark, with the mean over three runs per scenario as the
-paired observation ($N = 48$). These results are exploratory; the
-pre-registered confirmatory results are reported in
-Section~\ref{sec:confirmatory}. A run with the local model gpt-oss-20b
-was stopped before completion and is not reported.
-
-\paragraph{Schedule quality.} The multi-agent pipeline reached a mean
-optimality gap of 1.25\,\% and the single agent 1.43\,\%. The Wilcoxon
-signed-rank test finds no significant difference ($W = 449$,
-$Z = -0.14$, $p = 0.89$, $r = 0.02$), and the median paired difference
-is zero, because both designs reach the same cost in most scenarios. The
-equivalence test shows that this is not merely a lack of evidence. The
-mean paired difference is $-0.18$ percentage points, with a 90\,\%
-confidence interval of $[-0.71, 0.35]$, which lies inside the primary
-margin of $\pm 1$ percentage point (Table~\ref{tab:equivalence}). The two
-designs are therefore equivalent in schedule quality within one
-percentage point of the optimum. At the narrower margin of 0.5
-percentage points the $t$ version of the test does not conclude
-equivalence, because a few scenarios with large differences in either
-direction widen the interval, although the Wilcoxon version does.
-
-\begin{table}[h!]
-\caption{Equivalence test (TOST) of the optimality gap, multi-agent vs.\ single-agent (GPT-4o-mini, $N = 48$).}
-\label{tab:equivalence}
-\small
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccc}
-\toprule
-Margin & $p$, paired $t$ TOST & $p$, Wilcoxon TOST & Equivalent \\
-\midrule
-$\pm 0.5$ percentage points & 0.156 & $<$\,0.001 & No \\
-$\pm 1$ percentage point (primary) & 0.006 & $<$\,0.001 & Yes \\
-$\pm 2$ percentage points & $<$\,0.001 & $<$\,0.001 & Yes \\
-\bottomrule
-\end{tabular*}
-\end{table}
-
-\paragraph{Efficiency.} The two designs differ significantly in every
-efficiency measure (Table~\ref{tab:efficiency-tests}). The pipeline used
-34\,\% fewer input tokens, because each specialist works with a short
-context and only its own tools, while the single agent carries the
-entire conversation and all eight tool descriptions through every step.
-It produced 83\,\% more output tokens and made 23\,\% more tool calls,
-since four agents each write their own structured output and call their
-tools separately. Input tokens dominate the price, so the API cost per run was
-21\,\% lower for the pipeline, and lower in 35 of the 48 scenarios. The
-sequential hand-offs made the pipeline 69\,\% slower, with a mean of
-21.4 seconds against 12.7 seconds, and it was faster in only two
-scenarios.
-
-\begin{table}[h!]
-\caption{Efficiency per run, multi-agent vs.\ single-agent (GPT-4o-mini; tokens and tool calls per run, API cost in USD, latency in seconds; each value is the mean over $N = 48$ scenarios of the per-scenario mean of three runs; Wilcoxon signed-rank test).}
-\label{tab:efficiency-tests}
-\small
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
-\toprule
-Measure & \makecell{Single\\agent} & \makecell{Multi-\\agent} & Difference & \makecell{Multi-agent\\lower} & $p$ & $r$ \\
-\midrule
-Input tokens & 21\,686 & 14\,292 & $-34$\,\% & 43/48 & $<$\,0.001 & 0.79 \\
-Output tokens & 661 & 1\,208 & $+83$\,\% & 1/48 & $<$\,0.001 & 0.87 \\
-Total tokens & 22\,347 & 15\,500 & $-31$\,\% & 40/48 & $<$\,0.001 & 0.75 \\
-API cost (USD) & 0.0037 & 0.0029 & $-21$\,\% & 35/48 & $<$\,0.001 & 0.54 \\
-Latency (s) & 12.7 & 21.4 & $+69$\,\% & 2/48 & $<$\,0.001 & 0.86 \\
-Tool calls & 16.5 & 20.3 & $+23$\,\% & 1/48 & $<$\,0.001 & 0.81 \\
-\bottomrule
-\end{tabular*}
-\end{table}
-
-Taken together, decomposing the task into specialist agents did not
-lower the cost of the schedules, but it reached the same quality with
-about a third fewer tokens and a fifth lower inference cost, at the price
-of a longer response time.
-
-\section{Comparison with baselines and real tools}
-\label{sec:baselines}
-
-% Hand-typed from `hems analyze --runs results/runs.jsonl results/baselines.jsonl` (GPT-4o-mini).
-Table~\ref{tab:baselines} compares the two agent designs with the smart
-timer, the LLM without tools and the two real home energy management
-tools. All systems that use a language model use GPT-4o-mini.
-
-% EMHASS rows: Docker/REST service with default settings (tools/emhass_rest.py, systems emhass_rest*); cheapest hours;
-% all in results/tools/scenarios.jsonl (secondary, added after the pre-registration). Savings captured = pooled.
-\begin{table}[h!]
-\caption{Agent designs, simpler baselines and real home energy management tools (GPT-4o-mini, main benchmark, 48 scenarios).}
-\label{tab:baselines}
-\small
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
-\toprule
-System & \makecell{Feasible\\runs} & \makecell{Mean\\gap} & \makecell{Median\\gap} & \makecell{Gap,\\type D} & \makecell{Savings\\captured} & \makecell{Time\\per run} \\
-\midrule
-Smart timer (own heuristic) & 48/48 & 0.23\,\% & 0.00\,\% & 1.2\,\% & 99\,\% & $<$\,0.01\,s \\
-EMHASS, profiles & 48/48 & 0.32\,\% & 0.00\,\% & 0.1\,\% & 99\,\% & 1.2\,s \\
-Multi-agent pipeline & 144/144 & 1.25\,\% & 0.01\,\% & 5.9\,\% & 93\,\% & 21.4\,s \\
-Single agent & 143/144 & 1.43\,\% & 0.00\,\% & 6.5\,\% & 90\,\% & 12.7\,s \\
-EMHASS, nominal power & 48/48 & 2.24\,\% & 0.45\,\% & 8.5\,\% & 87\,\% & 1.0\,s \\
-Cheapest hours & 25/48 & 17.6\,\% & 4.2\,\% & 62.7\,\% & 25\,\% & $<$\,0.01\,s \\
-LLM without tools & 126/144 & 23.1\,\% & 11.9\,\% & 66.0\,\% & 13\,\% & 2.0\,s \\
-\bottomrule
-\end{tabular*}
-\end{table}
-
-Without tools, GPT-4o-mini schedules poorly. Its mean optimality gap is
-23.1\,\%, and 18 of its 144 schedules are infeasible: 14 exceed the peak
-limit and 4 start a cycle outside its window. A further 22 of its
-feasible schedules cost more than starting every appliance as soon as it
-is ready, and over all its runs it captures only 13\,\% of the
-achievable saving, against about 90\,\% for the agents. Both agent designs are significantly better (Wilcoxon
-$p < 0.001$, $r = 0.87$ for each), with median paired differences of
-10.8 percentage points for the single agent and 11.4 for the pipeline.
-The same model that fails to schedule from a single prompt comes close to
-the optimum when it can query prices, costs and loads through tools and
-check its own work. Tool use, rather than the language model's own
-calculation, is therefore what makes the agents viable.
-
-The smart timer, however, outperforms both agent designs. It finds a
-feasible schedule in every scenario, is optimal in 30 of the 48, and its
-largest gap is 3.7\,\% (D04). Both agent designs have significantly
-larger gaps than the timer (single agent $p < 0.001$, $r = 0.63$;
-pipeline $p < 0.001$, $r = 0.68$). The difference is concentrated in
-type D, where the timer's mean gap is 1.2\,\% against 5.9\,\% for the
-pipeline and 6.5\,\% for the single agent. The median paired differences
-are small (0.002 percentage points for the single agent and 0.017 for the
-pipeline), because in most scenarios all three systems reach the optimum
-or come very close to it. The timer needs no language model, runs in
-about two milliseconds and has no inference cost. In this benchmark,
-where the power profile and window of every appliance are known exactly
-and the horizon is one day, placing the appliances one at a time is
-almost always enough. The agents come within about one percentage point
-of this rule but do not improve on it. What they add is the ability to
-start from a request written in natural language rather than from
-structured appliance data, and to explain the schedule they produce.
-
-The two real home energy management tools, added after the
-pre-registration, bracket the agents. Configured with the measured power
-profiles, EMHASS comes close to the optimum: every schedule is feasible,
-32 of the 48 are optimal, and the mean gap is 0.32\,\%. Its largest gap,
-4.2\,\% in F02, comes from its default solver tolerance of 1\,\%
-(the setting \texttt{lp\_solver\_mip\_rel\_gap} = 0.01; EMHASS
-contributors, 2026), which
-applies to the whole electricity bill including the base load and can
-therefore amount to several percent of the appliance cost scored here.
-With an exact tolerance the same optimization comes within 0.2\,\% of
-the optimum in every scenario, which confirms that the MILP reference reflects what a
-deployed open-source optimizer can achieve. The agents' mean gaps are
-about one percentage point higher, but the difference from EMHASS as
-deployed is not significant (Wilcoxon $p = 0.24$ for the single agent and
-$p = 0.19$ for the pipeline). Configured with a constant nominal power,
-EMHASS still keeps every schedule within the peak limit, because it
-plans each cycle at its peak power, but it misjudges the cost of the real
-cycles and reaches a mean gap of 2.2\,\%. Both agent designs are
-significantly better than this configuration (Wilcoxon $p < 0.001$ for
-each, $r = 0.67$ for the single agent and $0.64$ for the pipeline). The
-cheapest-hours automation, under the assumption stated in
-Section~\ref{sec:evaluation} that its trigger starts a cycle which then
-runs to completion, exceeds the peak limit in 23 of the 48 scenarios,
-because each appliance follows
-its own cheap period and appliances whose windows share a price minimum
-start together. Scored at the naive cost when infeasible, it reaches a
-mean gap of 17.6\,\%, and both agent designs are significantly better
-($p < 0.001$, $r = 0.82$ and $0.81$). The agents are therefore
-outperformed by the smart timer and are not significantly different from
-a well-configured optimizer as deployed, while they outperform a simply
-configured optimizer and the per-device automation that is common among
-households.
-
-Two checks show that this ranking does not depend on how the costs are
-scored. First, scoring an infeasible run at the cost of the naive
-schedule does not drive the result. Restricted to feasible runs, the
-mean gaps are 0.23\,\% for the smart timer, 0.32\,\% for EMHASS with
-profiles, 1.25\,\% for the pipeline, 1.45\,\% for the single agent,
-2.24\,\% for EMHASS with nominal power, 7.9\,\% for the cheapest-hours
-automation and 23.0\,\% for the LLM without tools, the same order as in
-Table~\ref{tab:baselines}, and the order on the held-out benchmark is
-also unchanged. The cheapest-hours automation looks better on feasible
-runs only because these are the days on which its appliances happen not
-to collide. Second, the ranking is the same under the spot price alone
-as under the consumer price, as explained in
-Section~\ref{sec:evaluation}.
-
-\section{Confirmatory run on the held-out Q set}
-\label{sec:confirmatory}
-
-% Hand-typed from `hems confirm` (results/confirmation/confirmatory_tests.csv) and
-% `hems analyze --runs results/confirmation.jsonl` for the secondary results.
-The hypotheses of the earlier SQ1 and SQ2 were fixed in the pre-registration, which
-was committed to the project repository on 30 September 2026 together
-with the code, prompts, tools and analysis script. The confirmatory run
-followed on the held-out benchmark of 48 scenarios with fifteen-minute
-prices (Section~\ref{sec:resolution}), on which no language model had
-been run before. All systems that use a language model used GPT-4o-mini
-with three runs per scenario, and the analysis was run exactly as
-registered. The run cost USD~0.92 in API fees. Table~\ref{tab:confirmatory}
-reports the six registered tests.
-
-\begin{table}[h!]
-\caption{Pre-registered confirmatory tests on the held-out fifteen-minute benchmark (GPT-4o-mini, $N = 48$; $p$-values Holm-adjusted within each sub-question).}
-\label{tab:confirmatory}
-\small
-\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}Xcccc}
-\toprule
-& Hypothesis & Estimate & $p$ & $r$ & Supported \\
-\midrule
-H1 & Single agent gap $<$ LLM without tools & $-17.9$ pp & $<$\,0.001 & 0.86 & Yes \\
-H1 & Pipeline gap $<$ LLM without tools & $-17.7$ pp & $<$\,0.001 & 0.86 & Yes \\
-H2a & Pipeline equivalent to single agent ($\pm 1$ pp) & $+0.22$ pp & $<$\,0.001 & -- & Yes \\
-H2b & Pipeline uses fewer input tokens & $-31$\,\% & $<$\,0.001 & 0.84 & Yes \\
-H2b & Pipeline has a lower API cost per run & $-21$\,\% & $<$\,0.001 & 0.70 & Yes \\
-H2c & Pipeline has a longer latency & $+52$\,\% & $<$\,0.001 & 0.80 & Yes \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-All six hypotheses are supported. For H1, both agent designs reached a
-mean optimality gap of about one percent (0.86\,\% for the single agent
-and 1.08\,\% for the pipeline), whereas the LLM without tools reached
-18.8\,\%. Fifteen of its 144 schedules were infeasible, and over all its
-runs it captured only 24\,\% of the achievable saving, against 92\,\% for
-the single agent and 90\,\% for the pipeline. For H2a,
-the mean paired difference in gap was $+0.22$ percentage points with a
-90\,\% confidence interval of $[-0.15, 0.59]$, which lies well inside
-the margin of $\pm 1$ percentage point. On this benchmark the pipeline
-was thus marginally worse than the single agent on average, the reverse
-of the exploratory result, but in both runs the difference is small
-enough to count as equivalent. For H2b and H2c, the pipeline used
-13\,310 input tokens per run against 19\,189 for the single agent, its API
-cost was 21\,\% lower, and its latency was 20.4 seconds against 13.4
-seconds.
-
-The confirmatory estimates are close to the exploratory ones:
-input tokens fell by 31\,\% in both runs, API cost by 21\,\% in both, and
-latency rose by 52\,\% here against 69\,\% before. The secondary results
-also replicate. The equivalence test is again not significant at the
-narrower margin of $\pm 0.5$ percentage points in its $t$ version
-($p = 0.11$), although its Wilcoxon version is. The smart timer again
-outperforms both agent designs, with a mean gap of 0.17\,\% (Wilcoxon
-$p < 0.001$ against each design, $r = 0.69$ for the single agent and
-$0.64$ for the pipeline). Type D remains the hardest scenario type, with
-mean gaps of 3.9\,\% for the single agent and 5.5\,\% for the pipeline,
-while the LLM without tools fails most clearly in type E, with a mean gap
-of 56\,\%.
-
-The real home energy management tools were added after the
-pre-registration, so the following comparisons are secondary and not
-registered; their $p$-values are descriptive and not adjusted for
-multiple testing. EMHASS as deployed reaches a mean gap of 0.36\,\% with
-measured profiles, not significantly different from either agent design
-(Wilcoxon $p = 0.90$ for the single agent and $p = 0.69$ for the
-pipeline), and 3.5\,\% with nominal power, significantly worse than both
-($p < 0.001$). The cheapest-hours automation exceeds the peak limit in 26
-of the 48 scenarios, with a mean gap of 18.7\,\%. These patterns match
-those on the main benchmark.
-
-The registered findings, H1 for SQ1 and H2 for SQ2, are therefore not
-specific to the benchmark on which the pipeline was developed: they hold
-on unseen days with a different price resolution. They cover GPT-4o-mini
-only. The registered hypothesis on a small model run locally (H3) was
-withdrawn in the first amendment of the pre-registration, before its run
-on the first benchmark was completed.
 
 \end{document}

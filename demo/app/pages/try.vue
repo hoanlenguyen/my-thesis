@@ -3,7 +3,7 @@
 // real day-ahead prices (ENTSO-E), builds the base load from the typical REFIT household shape, and runs the
 // Multi-Agent Pipeline live next to the existing home energy management tools. Exceeding the peak limit is
 // allowed but pays a fee per kW.
-import type { ApplianceInput, CatalogItem, Housing, PlanRequest, PlanResult, ToolsResponse } from '~/composables/useTryIt'
+import type { AgentEvent, ApplianceInput, CatalogItem, Housing, PlanRequest, PlanResult, ToolsResponse } from '~/composables/useTryIt'
 import { toRunResult, useTryItApi } from '~/composables/useTryIt'
 
 const api = useTryItApi()
@@ -31,6 +31,7 @@ onMounted(async () => {
   try {
     const c = await api.catalog()
     catalog.value = c.appliances
+    for (const a of appliances.value) setDefaults(a)
   } catch (e) {
     apiError.value = api.errorText(e)
   }
@@ -50,8 +51,33 @@ const limitItems = [
 const kindItems = computed(() => catalog.value.map(c => ({ label: c.label, value: c.kind })))
 const item = (kind: string) => catalog.value.find(c => c.kind === kind)
 
+/** Runtime and peak power start at the appliance's catalog values (the measured REFIT cycle for the three measured kinds). */
+const defaultPower = (kind: string) => {
+  const c = item(kind)
+  return c ? Math.round(c.peakKw * 10) / 10 : undefined
+}
+function setDefaults(a: ApplianceInput) {
+  a.durationMin = item(a.kind)?.durationMin
+  a.powerKw = defaultPower(a.kind)
+}
+function changeKind(a: ApplianceInput, kind: string) {
+  a.kind = kind
+  setDefaults(a)
+}
+/** Energy of one cycle: the catalog energy scaled by the runtime and power the household entered. */
+function energyKwh(a: ApplianceInput) {
+  const c = item(a.kind)
+  const power = defaultPower(a.kind)
+  if (!c || !power || !a.durationMin || !a.powerKw) return undefined
+  return c.energyKwh * (a.durationMin / c.durationMin) * (a.powerKw / power)
+}
+function isDefault(a: ApplianceInput) {
+  return !!item(a.kind) && a.durationMin === item(a.kind)?.durationMin && a.powerKw === defaultPower(a.kind)
+}
 function addAppliance(kind: string) {
-  appliances.value.push({ uid: ++uid, kind, ready: activeStart.value, finishBy: activeEnd.value })
+  const a: ApplianceInput = { uid: ++uid, kind, ready: activeStart.value, finishBy: activeEnd.value }
+  setDefaults(a)
+  appliances.value.push(a)
 }
 function applyActiveHours() {
   for (const a of appliances.value) { a.ready = activeStart.value; a.finishBy = activeEnd.value }
@@ -65,6 +91,8 @@ const loadingTools = ref(false)
 const loadingAgent = ref(false)
 const runError = ref('')
 const agentError = ref('')
+const agentEvents = ref<AgentEvent[]>([]) // the pipeline's live run, agent by agent
+const summaryText = ref('') // the Orchestrator's summary as it is written
 
 function request(): PlanRequest {
   return {
@@ -77,8 +105,9 @@ function request(): PlanRequest {
       kind: a.kind,
       ready: a.ready,
       finish_by: a.finishBy,
-      power_kw: item(a.kind)?.measured ? undefined : a.powerKw,
-      duration_min: item(a.kind)?.measured ? undefined : a.durationMin
+      // unchanged defaults are left out, so a measured appliance keeps its exact REFIT cycle
+      power_kw: a.powerKw === defaultPower(a.kind) ? undefined : a.powerKw,
+      duration_min: a.durationMin === item(a.kind)?.durationMin ? undefined : a.durationMin
     }))
   }
 }
@@ -88,36 +117,40 @@ async function run() {
   agentError.value = ''
   tools.value = null
   agent.value = null
+  agentEvents.value = []
+  summaryText.value = ''
   loadingTools.value = true
-  const body = request()
-  try {
-    tools.value = await api.tools(body)
-  } catch (e) {
-    runError.value = api.errorText(e)
-    loadingTools.value = false
-    return
-  }
-  loadingTools.value = false
   loadingAgent.value = true
-  try {
-    agent.value = (await api.agent(body)).result
-  } catch (e) {
-    agentError.value = api.errorText(e)
-  } finally {
-    loadingAgent.value = false
-  }
+  const body = request()
+  // The comparison systems and the pipeline start together, so the agents do not wait for prices and EMHASS.
+  const comparison = api.tools(body)
+    .then((r) => { tools.value = r })
+    .catch((e) => { runError.value = api.errorText(e) })
+    .finally(() => { loadingTools.value = false })
+  const pipeline = api.agentStream(body, (e) => {
+    agentEvents.value.push(e)
+    if (e.type === 'summary_delta') summaryText.value += e.text ?? ''
+    else if (e.type === 'result' && e.result) agent.value = e.result
+    else if (e.type === 'error') agentError.value = e.message ?? 'The pipeline stopped with an error.'
+  })
+    .then(() => {
+      if (!agent.value && !agentError.value) agentError.value = 'The pipeline ended without a schedule.'
+    })
+    .catch((e) => { agentError.value = api.errorText(e) })
+    .finally(() => { loadingAgent.value = false })
+  await Promise.all([comparison, pipeline])
 }
 
 // ── results ──
-const ORDER = ['multi_rag_opt', 'emhass_rest', 'timer', 'cheapest_window', 'cheapest_hours', 'naive', 'milp']
+const ORDER = ['multi_lean', 'emhass_rest', 'timer', 'cheapest_window', 'cheapest_hours', 'naive', 'milp']
 const allResults = computed<PlanResult[]>(() => {
   const rs = [...(tools.value?.results ?? []), ...(agent.value ? [agent.value] : [])]
   return rs.sort((a, b) => ORDER.indexOf(a.system) - ORDER.indexOf(b.system))
 })
 const runResults = computed(() => allResults.value.map(toRunResult))
-const selected = ref('multi_rag_opt|gpt-4o-mini')
+const selected = ref('multi_lean|gpt-4o-mini')
 const current = computed(() => runResults.value.find(r => `${r.system}|${r.model}` === selected.value) ?? runResults.value[0])
-const pipelineRun = computed(() => runResults.value.find(r => r.system === 'multi_rag_opt'))
+const pipelineRun = computed(() => runResults.value.find(r => r.system === 'multi_lean'))
 const priceCents = computed(() => (tools.value?.priceEurPerKwh ?? []).map(p => p * 100))
 const hourlyPrices = computed(() => hourly(priceCents.value))
 const priceSpread = computed(() => (hourlyPrices.value.length ? Math.max(...hourlyPrices.value) - Math.min(...hourlyPrices.value) : 0))
@@ -133,7 +166,7 @@ const comparison = computed(() => allResults.value.filter(r => r.system !== 'mil
         prices from ENTSO-E, adds a typical household base load, and asks the Multi-Agent Pipeline for a
         recommendation. It is compared with the home energy management tools households can install. Going over the
         peak limit is allowed but costs a fee per kW, as under a power-based tariff. The pipeline runs live with
-        GPT-4o-mini (about 20 seconds).
+        GPT-4o-mini (about 10 seconds).
       </p>
     </div>
 
@@ -155,13 +188,13 @@ const comparison = computed(() => allResults.value.filter(r => r.system !== 'mil
           <USelect v-model="housing" :items="housingItems" class="w-full" />
         </UFormField>
         <UFormField label="Average base load, kW" help="Everything except the appliances below">
-          <UInputNumber v-model="baseKw" :min="0.05" :max="5" :step="0.05" placeholder="default" class="w-full" />
+          <UInputNumber v-model="baseKw" :step-snapping="false" :min="0.05" :max="5" :step="0.05" placeholder="default" class="w-full" />
         </UFormField>
         <UFormField label="Peak limit" help="Above it, each kW of the day's peak pays the fee">
           <USelect v-model="peakLimit" :items="limitItems" class="w-full" />
         </UFormField>
         <UFormField label="Fee above the limit, €/kW" help="Default: Helen's power charge, €1.57/kW + VAT">
-          <UInputNumber v-model="fee" :min="0" :max="50" :step="0.1" :format-options="{ minimumFractionDigits: 2 }" class="w-full" />
+          <UInputNumber v-model="fee" :step-snapping="false" :min="0" :max="50" :step="0.1" :format-options="{ minimumFractionDigits: 2 }" class="w-full" />
         </UFormField>
       </div>
     </UCard>
@@ -183,27 +216,35 @@ const comparison = computed(() => allResults.value.filter(r => r.system !== 'mil
         </div>
       </template>
       <div class="space-y-2">
-        <div v-for="a in appliances" :key="a.uid" class="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[14rem_7rem_7rem_1fr_auto] items-end">
-          <UFormField label="Appliance">
-            <USelect v-model="a.kind" :items="kindItems" class="w-full" :icon="applianceIcon(a.kind)" />
-          </UFormField>
-          <UFormField label="Ready from">
-            <UInput v-model="a.ready" type="time" class="w-full" />
-          </UFormField>
-          <UFormField label="Finish by">
-            <UInput v-model="a.finishBy" type="time" class="w-full" />
-          </UFormField>
-          <div class="text-xs text-muted pb-2">
-            <template v-if="item(a.kind)?.measured">
-              Measured REFIT cycle: {{ item(a.kind)?.durationMin }} min, up to {{ item(a.kind)?.peakKw.toFixed(1) }} kW,
-              {{ item(a.kind)?.energyKwh }} kWh
-            </template>
-            <div v-else-if="item(a.kind)" class="flex flex-wrap items-center gap-2">
-              <UInputNumber v-model="a.powerKw" :min="0.1" :max="22" :step="0.1" :placeholder="String(item(a.kind)?.peakKw)" size="xs" class="w-24" /> kW
-              <UInputNumber v-model="a.durationMin" :min="15" :max="720" :step="15" :placeholder="String(item(a.kind)?.durationMin)" size="xs" class="w-24" /> min
-            </div>
+        <div v-for="a in appliances" :key="a.uid" class="space-y-1">
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-[13rem_7rem_7rem_7rem_7rem_auto] items-end">
+            <UFormField label="Appliance" class="col-span-2 sm:col-span-1">
+              <USelect :model-value="a.kind" :items="kindItems" class="w-full" :icon="applianceIcon(a.kind)" @update:model-value="(k: string) => changeKind(a, k)" />
+            </UFormField>
+            <UFormField label="Ready from">
+              <UInput v-model="a.ready" type="time" class="w-full" />
+            </UFormField>
+            <UFormField label="Finish by">
+              <UInput v-model="a.finishBy" type="time" class="w-full" />
+            </UFormField>
+            <UFormField label="Runtime, min">
+              <UInputNumber v-model="a.durationMin" :step-snapping="false" :min="15" :max="1440" :step="15" class="w-full" />
+            </UFormField>
+            <UFormField label="Power, kW">
+              <UInputNumber v-model="a.powerKw" :step-snapping="false" :min="0.1" :max="50" :step="0.1" :format-options="{ maximumFractionDigits: 1 }" class="w-full" />
+            </UFormField>
+            <UButton icon="i-lucide-trash-2" color="neutral" variant="ghost" size="sm" aria-label="Remove appliance" @click="appliances = appliances.filter(x => x.uid !== a.uid)" />
           </div>
-          <UButton icon="i-lucide-trash-2" color="neutral" variant="ghost" size="sm" aria-label="Remove appliance" @click="appliances = appliances.filter(x => x.uid !== a.uid)" />
+          <div v-if="item(a.kind)" class="flex flex-wrap items-center gap-x-2 text-xs text-muted">
+            <span v-if="item(a.kind)?.measured">
+              Measured REFIT cycle{{ isDefault(a) ? '' : ', stretched to this runtime and scaled to this peak power' }}
+            </span>
+            <span v-else>Constant power for the whole runtime</span>
+            <span v-if="energyKwh(a) !== undefined">· about {{ energyKwh(a)!.toFixed(2) }} kWh per cycle</span>
+            <UButton v-if="!isDefault(a)" size="xs" variant="link" color="neutral" class="p-0" @click="setDefaults(a)">
+              Reset to {{ item(a.kind)?.durationMin }} min, {{ defaultPower(a.kind)?.toFixed(1) }} kW
+            </UButton>
+          </div>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
           <UDropdownMenu :items="addMenu">
@@ -214,31 +255,32 @@ const comparison = computed(() => allResults.value.filter(r => r.system !== 'mil
           </UButton>
         </div>
         <p class="text-xs text-dimmed">
-          Appliance types, powers and durations follow the Low-carbon-alerts appliance catalog; washing machine,
-          dishwasher and tumble dryer use real cycles measured in the REFIT homes.
+          Default runtimes and powers follow the Low-carbon-alerts appliance catalog; washing machine,
+          dishwasher and tumble dryer use real cycles measured in the REFIT homes, whose power is the cycle's peak.
+          Change them to match your own appliances.
         </p>
       </div>
     </UCard>
 
     <UAlert v-if="runError" color="error" variant="subtle" icon="i-lucide-triangle-alert" title="Could not plan this day" :description="runError" />
+
+    <!-- the pipeline's recommendation, then how its agents got there (live while it runs) -->
+    <UAlert v-if="!loadingAgent && agentError && !runError" color="error" variant="subtle" icon="i-lucide-bot-off" title="The Multi-Agent Pipeline did not answer" :description="agentError" />
+    <SystemRecommendationCard
+      v-else-if="tools && !loadingAgent && pipelineRun"
+      :result="pipelineRun"
+      :appliances="tools.appliances"
+      :naive-cost="tools.naiveCost"
+      :milp-cost="tools.milpCost" />
+    <AgentActivity
+      v-if="!runError && (agentEvents.length || loadingAgent)"
+      :events="agentEvents"
+      :running="loadingAgent"
+      :summary="summaryText"
+      :result="agent" />
     <div v-if="loadingTools" class="h-40 rounded-lg bg-elevated/40 animate-pulse" />
 
     <template v-if="tools">
-      <!-- the pipeline's recommendation -->
-      <UCard v-if="loadingAgent">
-        <div class="flex items-center gap-3 text-sm text-muted">
-          <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin text-primary" />
-          The Multi-Agent Pipeline is planning your day: the Orchestrator, Profiler, Scheduler and Resolver are at work
-          (about 20 seconds). The other systems are already shown below.
-        </div>
-      </UCard>
-      <UAlert v-else-if="agentError" color="error" variant="subtle" icon="i-lucide-bot-off" title="The Multi-Agent Pipeline did not answer" :description="agentError" />
-      <SystemRecommendationCard
-        v-else-if="pipelineRun"
-        :result="pipelineRun"
-        :appliances="tools.appliances"
-        :naive-cost="tools.naiveCost"
-        :milp-cost="tools.milpCost" />
 
       <!-- comparison -->
       <UCard>
@@ -262,7 +304,7 @@ const comparison = computed(() => allResults.value.filter(r => r.system !== 'mil
               </tr>
             </thead>
             <tbody>
-              <tr v-for="r in comparison" :key="r.system" class="border-t border-default" :class="r.system === 'multi_rag_opt' ? 'bg-primary/5' : ''">
+              <tr v-for="r in comparison" :key="r.system" class="border-t border-default" :class="r.system === 'multi_lean' ? 'bg-primary/5' : ''">
                 <td class="py-1.5 pr-3">
                   <span class="text-highlighted">{{ r.label }}</span>
                   <UBadge :color="groupBadge(r.system).color" variant="subtle" size="xs" class="ml-2">{{ groupBadge(r.system).label }}</UBadge>

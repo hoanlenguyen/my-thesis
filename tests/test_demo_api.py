@@ -67,3 +67,24 @@ def test_the_optimum_trades_the_fee_against_energy(client: TestClient) -> None:
 def test_profile_errors_are_explained(client: TestClient) -> None:
     short = {**PROFILE, "appliances": [{"kind": "washing_machine", "ready": "08:00", "finish_by": "08:30"}]}
     assert "shorter than" in client.post("/api/plan/tools", json=short).json()["detail"]
+
+
+def test_a_measured_cycle_keeps_its_shape_at_a_new_runtime_and_power() -> None:
+    measured = demo_api.typical_cycles()["washing_machine"]
+    assert demo_api.cycle_for("washing_machine", None, None) == measured  # defaults: the exact REFIT cycle
+    longer = demo_api.cycle_for("washing_machine", 2.0, len(measured) * 15 * 2)
+    assert len(longer) == 2 * len(measured)
+    assert max(longer) == pytest.approx(2.0, abs=1e-3)
+    assert np.argmax(longer) // 2 == pytest.approx(np.argmax(measured), abs=1)  # the peak stays in the same phase
+
+
+def test_a_constant_appliance_uses_the_entered_runtime_and_power(client: TestClient) -> None:
+    sauna = {**PROFILE, "appliances": [{"kind": "sauna", "ready": "16:00", "finish_by": "22:00", "power_kw": 9, "duration_min": 90}]}
+    out = client.post("/api/plan/tools", json=sauna).json()
+    profile = out["appliances"][0]["profileKw"]
+    assert profile == [9.0] * 6
+
+
+def test_runtime_and_power_are_validated(client: TestClient) -> None:
+    bad = {**PROFILE, "appliances": [{"kind": "dishwasher", "ready": "08:00", "finish_by": "22:00", "power_kw": 0}]}
+    assert client.post("/api/plan/tools", json=bad).status_code == 422
