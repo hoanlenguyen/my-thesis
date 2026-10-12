@@ -27,10 +27,10 @@ Prices: `uv run hems prices --source elering|sahkotin|entsoe`. REFIT sanity: `uv
 ## Update the thesis (hand-typed numbers)
 
 After a rebuild, update in `main.tex` and recompile (`compile-thesis` skill):
-- §5.1 text: households used/excluded, cycle counts per appliance type and monitor counts
+- `sec:dataset` text: households used/excluded, cycle counts per appliance type and monitor counts
   (`manifest.json` → `cycles_detected`, `profile_sources`), price period and day count
   (`price_period`, `price_days_available`), scenarios requiring coordination.
-- Table 5.2 (`tab:benchmark`): per-type mean appliances, coordination, naive within limit, MILP saving.
-- If the Q set changed: rerun `uv run hems resolution` (regenerates Table 5.3) and update the §5.2
-  numbers (39/48 improved, ρ, largest case, starts changed, cents per day).
+- `tab:benchmark`: per-type mean appliances, coordination, naive within limit, MILP saving.
+- If the Q set changed: rerun `uv run hems resolution` (regenerates `tab:resolution`) and update the
+  `sec:resolution` numbers (scenarios improved, ρ, largest case, starts changed, cents per day).
 - Any agent results computed on the old scenarios are invalid — archive them (`run-evaluation` skill).

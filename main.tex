@@ -274,6 +274,7 @@ Hoan Le
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Introduction}
+\label{ch:intro}
 
 Smart meters, dynamic electricity contracts and a growing share of
 renewable generation have changed what a household pays for electricity
@@ -927,6 +928,32 @@ hardware. Its inputs come from public datasets and APIs, and every
 scenario is built from measured appliance data and historical prices.
 The comparison is paired: every system receives the same scenarios and
 is scored by the same function.
+
+\paragraph{Research questions.} The evaluation answers the research
+question and the two sub-questions posed in Chapter~\ref{ch:intro}, which
+are restated here because the rest of this section is organised around
+them:
+\begin{quote}
+\textbf{RQ:} How can a hierarchical ReAct multi-agent system be designed
+to give households reliable, cost-saving daily appliance recommendations
+under dynamic electricity prices?
+
+\textbf{SQ1 (value and cost):} How much do the pipeline's
+recommendations save, how often are they valid, and what do they cost to
+produce, compared with a language model that answers without tools?
+
+\textbf{SQ2 (conditions):} Under which price patterns, household loads and
+peak limits do the recommendations save more than, or as much as,
+existing home energy management tools available to households, namely
+cheapest-hours automations and the EMHASS optimizer?
+\end{quote}
+The RQ is answered by the design itself and by the evidence that the
+design meets its objectives (Section~\ref{sec:objectives}). SQ1 and SQ2
+are answered by measurement: each is tested by the registered hypotheses
+of Table~\ref{tab:hypotheses}, H1a to H1c for SQ1 and H2a to H2c for SQ2,
+and SQ2 is also examined descriptively for each price pattern, household
+load and peak limit. The systems that SQ1 and SQ2 compare are defined
+next.
 
 \paragraph{Systems compared.} The artifact is the \emph{Multi-Agent
 Pipeline} with GPT-4o-mini (Chapter~\ref{ch:design}). Its Scheduler and
@@ -2650,7 +2677,10 @@ model run locally was explored only for an earlier design. Seventh, the peak lim
 every benchmark, whereas real power-based tariffs price the peak instead
 of forbidding it. Only the demonstration application lets a schedule
 exceed the limit, charging a fee for each kilowatt above it; none of the
-reported results use that fee. The explanations that the pipeline gives were not
+reported results use that fee. The demonstration application also
+starts the Orchestrator and the Profiler at the same time to shorten the
+wait, which goes beyond the evaluated design, so the response times
+reported in this thesis do not describe it. The explanations that the pipeline gives were not
 evaluated with users. The study shows that the pipeline produces an
 explanation for every schedule, not that households understand or trust
 it more than the plan of an optimizer.

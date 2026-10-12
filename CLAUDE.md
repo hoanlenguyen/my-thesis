@@ -20,7 +20,7 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 | `main.tex` | thesis (XeLaTeX, Times New Roman/Arial, Oulu cover with `attachments/uni_logo.jpeg`) |
 | `attachments/` | Word draft, research plan, Oulu template, figures |
 | `src/hems/core/` | `Scenario` model (96 × 15-min slots), `evaluate()` — the only scoring function |
-| `src/hems/tools/` | 8 tools; specialists get subsets, the single agent gets all (fairness rule) |
+| `src/hems/tools/` | 8 shared tools (specialists get subsets, the single agent gets all) + `optimize_schedule` (MILP call, `multi_rag_opt` only) |
 | `src/hems/agents/` | `single_agent.py`, `multi_agent.py` (Orchestrator → Profiler → Scheduler → Resolver + verification gate), `prompts.py`, `llm.py` (model registry), `errors.py` (recovery nudge) |
 | `src/hems/solvers/` | `milp.py` (PuLP/CBC ground truth), `naive.py` |
 | `src/hems/data/` | REFIT loader, price fetch/load, day selection, scenario composition, benchmark build |
@@ -38,7 +38,7 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 uv run pytest                                   # offline tests with scripted fake models (must pass)
 uv run hems run --scenarios data/scenarios --systems milp naive single multi --models gpt-4o-mini --runs 3 --out results/runs.jsonl
 uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out results
-uv run hems resolution --scenarios data/scenarios_15min   # regenerates Table 5.3
+uv run hems resolution --scenarios data/scenarios_15min   # regenerates tab:resolution
 uv run hems demo data/scenarios/D01.json --system multi --model gpt-4o-mini
 latexmk -xelatex main                           # TeX Live at C:\texlive\2026\bin\windows
 ```
@@ -65,16 +65,18 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 - Every system is scored by `core.evaluate.evaluate`; cost = consumer price × flexible appliance energy
   (`data/tariff.py`); base load counts toward the peak limit only.
-- Tool fairness: `set(PROFILER_TOOLS) | SCHEDULER_TOOLS | RESOLVER_TOOLS == ALL_TOOLS`; no tool solves the
-  whole problem (no MILP tool). The single-agent prompt is built from the same role texts.
+- Tool fairness: `set(PROFILER_TOOLS) | SCHEDULER_TOOLS | RESOLVER_TOOLS == ALL_TOOLS`; none of these solves
+  the whole problem. The one exception is `optimize_schedule` (`OPTIMIZER_TOOLS`, a MILP call given only to
+  the `multi_rag_opt` Scheduler). The single-agent prompt is built from the same role texts.
 - Step budget parity: specialists get profiler 15 + scheduler 35 + resolver 25 = single agent 75
   (`multi_agent.STEP_LIMITS`, split by workload after the pilot).
 - Recovery nudge (`agents/errors.py`) applies identically to every model and agent; recoveries are logged.
 - Infeasible agent schedules are scored at the naive cost; feasibility is reported separately.
 - **Pre-registration** (`docs/preregistration.md`): H1/H2 are confirmed on the held-out Q set
   (`configs/confirmation.json` → `results/confirmation.jsonl`, analysed only by `hems confirm` /
-  `analysis/confirm.py`). Once registered, never change `confirm.py`, the Q scenarios, prompts or tools
-  before that run; report any deviation. The main benchmark is exploratory.
+  `analysis/confirm.py`; Q2: `configs/confirmation_q2.json` → `results/confirmation_q2.jsonl`,
+  `analysis/confirm_q2.py`). Once registered, never change the confirm script, the held-out scenarios,
+  prompts or tools before that run; report any deviation. The main benchmark is exploratory.
 - All systems are registered in `src/hems/systems.py` (kind reference / external / llm); `run.execute`
   looks them up. Adding a system = one registry entry; `tests/test_regression.py` must keep reproducing
   the recorded deterministic results exactly.
@@ -96,7 +98,7 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 - Benchmark settings: 18 REFIT houses (12 and 19 excluded — reasons in `refit.EXCLUDED_HOUSES`),
   peak limit 3.5 kW, type E windows anchored at the daily price peak, seed 2026.
 
-## Next design iteration (wait until the gpt-oss-20b campaign is complete; version, archive, rerun)
+## Open design issues (fixing either changes results: version, archive, rerun)
 
 - `time_to_slot` rejects `"24:00"`, so `get_spot_prices(to_time="24:00")` returns an error turn (Gemini review).
 - `multi_agent.requested_ids` trusts the Orchestrator's brief: a fixed appliance id in it would cause
@@ -104,7 +106,8 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 ## Models (`agents/llm.py`)
 
-The evaluation uses **two models**: commercial cloud vs small open-weight model run locally.
+The registered Q2 confirmation uses `gpt-4o-mini` only. The earlier-design campaign
+(`configs/full_evaluation.json`) used two models: commercial cloud vs small open-weight model run locally.
 
 - `gpt-4o-mini` (OpenAI API) — primary; 3 runs per scenario.
 - `gpt-oss-20b` — local via Ollama (`gpt-oss:20b`, 32k context, CPU/GPU split on the RTX 4070 laptop),
@@ -129,7 +132,7 @@ The evaluation uses **two models**: commercial cloud vs small open-weight model 
 ## Thesis writing conventions
 
 - Numbers in the text must match the data. Generated tables (`results/**/*.tex`, `\input` in `main.tex`)
-  are regenerated by code; hand-typed numbers (Table 5.2, §5.1 counts, §5.2 statistics) must be updated
+  are regenerated by code; hand-typed numbers (`tab:benchmark`, the counts in `sec:dataset`, the statistics in `sec:resolution`) must be updated
   whenever the benchmark or analysis changes — see `rebuild-benchmark` skill.
 - APA-style references in the `hangparas` block, alphabetical; cite data sources (REFIT dataset DOI,
   Nord Pool via Sahkotin/Elering).

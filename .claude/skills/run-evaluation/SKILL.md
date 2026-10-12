@@ -23,9 +23,11 @@ description: Run pilot or full agent evaluations (hems run) across models, keep 
 ## Running
 
 - Pilot (one scenario per type): `--ids A01 B03 C02 D01 E01 F04 --runs 1`.
-- Full: all 48 scenarios, `--runs 3`, `--models gpt-4o-mini gpt-oss-20b` (the evaluation's two models).
-  The local gpt-oss-20b runs take ~1–10 min each, so the full local part runs for many hours: start it
-  in the background and let the resumable runner continue after any interruption.
+- Full runs are plans in `configs/*.json`, run with `uv run hems campaign run --plan <plan>` (resumable;
+  `campaign status` shows progress). The registered one is `configs/confirmation_q2.json` (96 scenarios,
+  `gpt-4o-mini`, `multi_rag_opt`); `configs/full_evaluation.json` is the earlier two-model, 48-scenario
+  plan. Local gpt-oss-20b runs take ~1–10 min each, so start them in the background and let the
+  resumable runner continue after any interruption.
 - Run long jobs with `run_in_background`, writing output to a log file in the scratchpad rather than
   long pipes (a Git Bash fork failure killed an earlier batch), then grep the log for
   `^\[|jobs|FAILED|quota`.

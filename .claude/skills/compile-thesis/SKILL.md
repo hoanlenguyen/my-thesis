@@ -18,7 +18,8 @@ description: Compile main.tex with XeLaTeX, check the log for errors/warnings, a
 3. Find the page of the edited section and render it (Ghostscript ships with TeX Live as `rungs`):
    ```bash
    S=<session scratchpad>
-   for pg in $(seq 1 40); do rungs -q -dNOPAUSE -dBATCH -sDEVICE=txtwrite -dFirstPage=$pg -dLastPage=$pg \
+   N=$(grep -oE '\([0-9]+ pages' main.log | grep -oE '[0-9]+')
+   for pg in $(seq 1 "$N"); do rungs -q -dNOPAUSE -dBATCH -sDEVICE=txtwrite -dFirstPage=$pg -dLastPage=$pg \
      -sOutputFile=- main.pdf 2>/dev/null | grep -q "<heading text>" && echo "page $pg"; done
    rungs -q -dNOPAUSE -dBATCH -sDEVICE=png16m -r75 -dFirstPage=<pg> -dLastPage=<pg> -sOutputFile="$S/page.png" main.pdf
    ```
