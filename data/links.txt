@@ -14,4 +14,23 @@ Tool
 https://emhass.readthedocs.io/en/latest/installation_methods.html
 https://github.com/davidusb-geek/emhass-add-on
 
+For the literature review, here are some tentative search string examples for the main databases that you could try and modify. Please adapt them as needed:
 
+Scopus (Advanced search):
+TITLE-ABS-KEY ( ( "large language model*" OR llm* OR "agentic AI" OR "language agent*" ) AND ( "home energy management" OR "demand response" OR "smart home*" OR ( ( appliance* OR load* ) W/3 schedul* ) ) ) AND PUBYEAR > 2019 AND ( LIMIT-TO ( DOCTYPE , "ar" ) OR LIMIT-TO ( DOCTYPE , "cp" ) ) AND ( LIMIT-TO ( LANGUAGE , "English" ) )
+
+Web of Science Core Collection (Advanced Search, then set the years with Refine):
+TS=(("large language model*" OR LLM* OR "agentic AI" OR "language agent*") AND ("home energy management" OR "demand response" OR "smart home*" OR ((appliance* OR load*) NEAR/3 schedul*)))
+
+IEEE Xplore (Command Search):
+("All Metadata":"large language model*" OR "All Metadata":LLM* OR "All Metadata":"agentic AI" OR "All Metadata":"language agent*") AND ("All Metadata":"home energy management" OR "All Metadata":"demand response" OR "All Metadata":"appliance scheduling" OR "All Metadata":"smart home*")
+
+ScienceDirect (field Title, abstract, keywords):
+("large language model" OR LLM OR "agentic AI" OR "language agent") AND ("home energy management" OR "demand response" OR "appliance scheduling" OR "smart home")
+
+Google Scholar (only for snowballing and grey literature):
+"large language model" "home energy management" OR "demand response" OR "appliance scheduling" OR "load scheduling"
+
+A few tips:
+1. Keep a search log with the date, database, exact string, filters and number of results.
+2. Export the results to RIS or BibTeX, remove duplicates in Zotero or Rayyan, and report the numbers in a PRISMA 2020 flow diagram.
