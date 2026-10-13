@@ -1,0 +1,105 @@
+TY  - JOUR
+AU  - Oprea, Simona-Vasilica
+AU  - Bâra, Adela
+TI  - A recommendation system for prosumers based on large language models
+JO  - Sensors
+VL  - 24
+IS  - 11
+SP  - 3530
+PY  - 2024
+DO  - 10.3390/s24113530
+ER  -
+
+TY  - JOUR
+AU  - Giudici, Mathyas
+AU  - Padalino, Luca
+AU  - Paolino, Giovanni
+AU  - Paratici, Ilaria
+AU  - Pascu, Alexandru Ionut
+AU  - Garzotto, Franca
+TI  - Designing home automation routines using an LLM-based chatbot
+JO  - Designs
+VL  - 8
+IS  - 3
+SP  - 43
+PY  - 2024
+DO  - 10.3390/designs8030043
+ER  -
+
+TY  - JOUR
+AU  - Papaioannou, Alexios
+AU  - Dimara, Asimina
+AU  - Krinidis, Stelios
+TI  - GUIDE: A prescriptive hybrid AI framework for energy-efficient appliances usage through behavioral modeling and LLM guidance
+JO  - Energy and Buildings
+VL  - 348
+SP  - 116463
+PY  - 2025
+DO  - 10.1016/j.enbuild.2025.116463
+ER  -
+
+TY  - JOUR
+AU  - Zhang, Liang
+AU  - Chen, Zhelun
+TI  - Large language model-based interpretable machine learning control in building energy systems
+JO  - Energy and Buildings
+VL  - 313
+SP  - 114278
+PY  - 2024
+DO  - 10.1016/j.enbuild.2024.114278
+ER  -
+
+TY  - CONF
+AU  - Michelon, François
+AU  - Zhou, Yihong
+AU  - Morstyn, Thomas
+TI  - Large language model interface for home energy management systems
+T2  - Proceedings of the 16th ACM International Conference on Future and Sustainable Energy Systems (e-Energy '25)
+SP  - 590
+EP  - 602
+PY  - 2025
+DO  - 10.1145/3679240.3734586
+ER  -
+
+TY  - JOUR
+AU  - Jahanbakhsh, Negin
+AU  - Vega-Barbas, Mario
+AU  - Pau, Iván
+AU  - Elvira-Martín, Lucas
+AU  - Moosavi, Hirad
+AU  - García-Vázquez, Carolina
+TI  - Leveraging retrieval-augmented generation for automated smart home orchestration
+JO  - Future Internet
+VL  - 17
+IS  - 5
+SP  - 198
+PY  - 2025
+DO  - 10.3390/fi17050198
+ER  -
+
+TY  - JOUR
+AU  - King, Evan
+AU  - Yu, Haoxiang
+AU  - Lee, Sangsu
+AU  - Julien, Christine
+TI  - Sasha: Creative goal-oriented reasoning in smart homes with large language models
+JO  - Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies
+VL  - 8
+IS  - 1
+SP  - 12
+PY  - 2024
+DO  - 10.1145/3643505
+ER  -
+
+TY  - JOUR
+AU  - Papaioannou, Ioannis
+AU  - Korkas, Christos
+AU  - Kosmatopoulos, Elias
+TI  - Smart building recommendations with LLMs: A semantic comparison approach
+JO  - Buildings
+VL  - 15
+IS  - 13
+SP  - 2303
+PY  - 2025
+DO  - 10.3390/buildings15132303
+ER  -

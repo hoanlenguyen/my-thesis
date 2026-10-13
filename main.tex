@@ -262,12 +262,48 @@ Hoan Le
 \item[MCP] Model Context Protocol
 \item[MILP] Mixed Integer Linear Programming
 \item[Nord Pool FI] Nord Pool Finland Bidding Zone
+\item[PRISMA] Preferred Reporting Items for Systematic reviews and Meta-Analyses
 \item[RAG] Retrieval-Augmented Generation
 \item[ReAct] Reasoning and Acting
 \item[REFIT] Personalised Retrofit Decision Support Tools for UK Homes using Smart Home Technology (the research project that produced the dataset)
 \item[SLM] Small Language Model
-\item[SLR] Systematic Literature Review
 \end{description}
+
+% ── DECLARATION OF GENERATIVE AI ─────────────────────────────────────────────
+% DRAFT: the bracketed bold passages must be confirmed or rewritten by the
+% author before submission. Check Oulu's current guidance on AI disclosure.
+\unnumberedchapter{Declaration of Generative AI in the Thesis}
+
+I used the generative AI tool Claude (Anthropic), through Claude Code,
+during this thesis work, in the following ways:
+
+\begin{itemize}[leftmargin=*]
+\item \textit{Software.} To help write, test and debug the code of the
+  evaluated system, the reference systems and the analysis scripts.
+  \textbf{[Author to confirm the extent, and add any other tools used for
+  code, such as the Gemini review mentioned in the project notes.]}
+\item \textit{Literature search.} To run the database searches of
+  Section~\ref{sec:litsearch} in my own browser session, to screen the
+  titles, to retrieve abstracts and bibliographic data, and to propose
+  an eligibility decision for each report. These screening and
+  eligibility decisions were not checked by a second person
+  (Section~\ref{sec:litsearch}).
+\item \textit{Writing.} To draft and edit passages of the thesis text,
+  among them parts of the literature review in Chapter~\ref{ch:literature}
+  and of Chapter~3, and to check the reference list against
+  bibliographic databases. \textbf{[Author to confirm which other
+  chapters were drafted or edited with the tool.]}
+\end{itemize}
+
+I reviewed and edited the text and code produced with the tool, and I
+take full responsibility for the content, accuracy and integrity of this
+thesis. \textbf{[Author to confirm: the research questions, the
+hypotheses and their pre-registration, and the interpretation of the
+results are my own.]}
+
+The language models GPT-4o-mini and gpt-oss-20b, and in the pilot
+gpt-oss-120b, are objects of study in this thesis: they run inside the
+evaluated system and were not used to write it.
 
 % ── TABLE OF CONTENTS ───────────────────────────────────────────────────────
 \tableofcontents
@@ -296,7 +332,7 @@ and affect the distribution network (Haakana et al., 2025). Language
 models have recently been applied to the same problem: in the first
 Home Energy Management Systems (HEMS) built on large language models,
 agents schedule household appliances, a task that earlier needed
-hand-written rules or an optimization solver (El Makroum et al., 2025;
+hand-written rules or an optimization solver (El Makroum, Zwickl-Bernhard, \& Kranzl, 2026;
 Jonah et al., 2026). These first systems have documented limitations,
 which this thesis takes up.
 
@@ -335,7 +371,7 @@ model later.
 
 \section{Research problem}
 
-In the hierarchical multi-agent system of El Makroum et al. (2025), only one
+In the hierarchical multi-agent system of El Makroum, Zwickl-Bernhard, and Kranzl (2026), only one
 of three evaluated models coordinated all appliances, and the evaluation
 covers a single day. Reviewing that work, Jonah et al. (2026) list
 multi-appliance coordination failures, scheduling on price alone, a
@@ -404,8 +440,9 @@ the hierarchical ReAct multi-agent system, and evaluates it over several
 iterations, which is the kind of work DSR is meant for. As Hevner et al.
 (2004) explain, DSR produces knowledge about a design problem and its
 solution by building and evaluating an artifact. The artifact is the
-main research contribution. A Systematic Literature Review (SLR) forms
-DSR Phase 1: it confirms the research gap and grounds the architectural
+main research contribution. A structured literature search, reported
+with a PRISMA 2020 flow diagram (Section~\ref{sec:litsearch}), forms DSR
+Phase 1: it identifies the research gap and grounds the architectural
 decisions in prior work.
 
 \section{Structure of the thesis}
@@ -423,6 +460,7 @@ the thesis.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Literature Review}
+\label{ch:literature}
 
 This chapter reviews the background and prior empirical work on which
 the design and evaluation of the multi-agent system rest. It covers
@@ -479,7 +517,16 @@ to end-users (Gokhale et al., 2024). Zharova et al. (2024) argue that
 users need to understand why and how a recommendation system reaches
 its recommendations before they trust and accept them, and add a
 dedicated explainability agent to a multi-agent system that recommends
-when to run household appliances. Explanation in terms a non-expert
+when to run household appliances. Language models have also been used
+to supply the explanation: Zhang and Chen (2024) combine Shapley values
+with a language model that turns the feature contributions of a machine
+learning controller into a narrative, and test the approach on model
+predictive precooling during demand response events in a virtual
+testbed. Kovacs et al. (2025) add textual explanations generated by a
+language model to a recommender that suggests when to run
+energy-intensive household activities during solar production peaks;
+in a questionnaire with 27 respondents, a hybrid of text and visual
+explanation was preferred. Explanation in terms a non-expert
 understands, and adaptation to new constraint types without a new rule,
 formulation or training run, are therefore the two properties that a
 language model agent could add to these approaches.
@@ -512,7 +559,7 @@ cheapest-hours rules and EMHASS as reference points for the agents
 \section{LLM-based agents for energy management}
 
 Studies applying LLMs to energy management have appeared since 2023, and
-two recent ones are close to this thesis. El Makroum et al. (2025)
+two recent ones are close to this thesis. El Makroum, Zwickl-Bernhard, and Kranzl (2026)
 present a hierarchical agentic architecture for home energy management
 in which an orchestrator agent delegates to three specialist agents that
 follow the ReAct pattern. The household has three flexible loads: a
@@ -533,8 +580,12 @@ guidance. The authors describe the study as a proof of concept: one
 household, one day and one price series, without thermal loads such as
 heat pumps, electric heating and hot water storage. They name pilot
 deployments and evaluation across electricity markets and household
-types as future work. Of the published systems, this design is the
-closest to the pipeline of this thesis.
+types as future work. Its architecture is close to the pipeline of this
+thesis, and several of the systems described below share parts of it.
+The difference lies less in the architecture than in the evaluation:
+this thesis measures the saving against no scheduling on held-out days,
+across several price patterns, and against tools that households already
+use.
 
 Jonah et al. (2026) take the opposite design choice: a single
 tool-calling ReAct agent that turns a household's request into appliance
@@ -548,7 +599,7 @@ important result for this thesis. The models sometimes fabricated
 schedules or failed to commit one, and in some cases a model explained a
 deadline correctly and still committed a schedule that violated it.
 Actions parsed from text were less reliable than native function calls.
-Building on El Makroum et al., they list multi-appliance coordination
+Building on the study of El Makroum, Zwickl-Bernhard, and Kranzl, they list multi-appliance coordination
 failures, scheduling on price alone, a single-day evaluation horizon and
 untested constraint safety as open problems, and they recommend that an
 independent deterministic validator check every schedule against
@@ -556,6 +607,88 @@ duration, deadline and power constraints before it is executed. Their
 evaluation covers one household over twelve tariff days and a one-week
 deployment. Section~\ref{sec:gap} sets out how these open problems
 shape the design and evaluation of this thesis.
+
+Further studies, mostly conference papers from 2024 to 2026, apply
+language models to the scheduling itself. Siino and Tinnirello (2024)
+ask a GPT model to re-time the use of household appliances in a
+residential consumption dataset so as to reduce cost while keeping each
+appliance's daily use unchanged, and describe this as a first and
+preliminary attempt. Yang et al. (2025) propose LLM-MAC, a zero-shot
+hierarchical framework in which one agent defines constraints, a second
+optimizes the schedule and a third resolves conflicts iteratively; they
+report feasible, cost-efficient and interpretable schedules across
+household configurations. S. Liu et al. (2025) apply a similar
+zero-shot idea to smart buildings, with zone agents that express local
+intent, a building agent that reconciles them and an LLM scheduler that
+makes and explains the final decision. Raghavan and Giridhar (2025) use
+a small language model, Phi-3 Mini, to interpret commands and call the
+tools of a model predictive controller that schedules a battery, and
+report a higher net profit in a daily scenario than a general
+controller and a price-blind baseline. Mongaillard et al. (2024)
+construct three language model agents that turn a voice request into an
+optimization problem, identify its parameters and solve it, and test
+the architecture on electric vehicle charging requests with Llama 3 8B.
+In El Makroum, Zwickl-Bernhard, Kranzl, and Auer (2026), an aggregator agent and a household
+energy management agent negotiate flexibility requests in natural
+language, and the household agent assesses deliverability and cost by
+calling an optimization-based tool; interactions complete in under 12
+seconds in a proof of concept. Rashed et al. (2025) use a language model
+for the load forecasting agent of a five-agent demand response system
+and report a 14\,\% reduction in residential consumption, Dolinin and
+Kiourt (2026) coordinate device agents under an orchestrator and report
+up to 16\,\% lower air-conditioning power under critical load, and
+Moghanjooghi et al. (2025) combine LSTM forecasts of appliance use with
+GPT-4o to guide users in shifting consumption to off-peak hours.
+
+A second group of studies uses language models on the interface,
+advice and recommendation side of household energy management and
+leaves the schedule to another component. Michelon et al. (2025) build
+an interface in which a language model, using ReAct and few-shot
+prompting, turns a household's loosely worded answers into the
+parameters of a home energy management system. With users simulated by
+another language model, it retrieves 88\,\% of the parameters correctly
+on average, more than the same interface without ReAct or few-shot
+prompting. Oprea and Bâra (2024) use zero-shot classification with a
+language model to recommend, for a prosumer with a 5.9\,kW system,
+whether to decrease or increase consumption or to sell or buy
+electricity in two scenarios. A. Papaioannou et al. (2025) disaggregate
+appliance-level consumption, profile household routines and fine-tune a
+language model to turn the result into personalized energy-saving
+advice. I. Papaioannou et al. (2025) fine-tune several language models,
+among them GPT-4, to generate recommendations from building conditions,
+forecasts and electricity prices, and report an estimated reduction of
+10\,\% in electricity consumption during a two-week operation in a
+residential building. These studies measure the accuracy of parameters,
+labels or advice, or total consumption, and none of them produces a
+schedule whose cost is compared with an unscheduled day or an optimum.
+
+Assistants that combine a language model with domain tools follow the
+same pattern. Jung (2026) presents HEMA, an open-source multi-agent
+assistant with analysis, knowledge and control agents and 36
+domain-specific tools, and evaluates it with language-model-simulated
+users on 23 metrics. Gkalinikis et al. (2025) fine-tune a pre-trained
+model to generate calls to three external energy analytics tools only
+when needed, as the core of a home energy adviser. Gonçalves et al.
+(2025) connect IoT sensor data to a language model that gives
+personalized recommendations through a conversational interface, and
+report a 5.66\,\% reduction in energy consumption against baseline in a
+12-month randomized controlled trial with 100 households. Systematic
+reviews describe the language model in this field mainly as a
+decision-support and knowledge-integration component: Cali et al. (2026)
+analyse 106 studies of generative AI in renewable energy and smart
+grids, and Ghafari et al. (2025) review language models in power
+systems.
+
+Smart-home assistants show a related pattern without a price signal.
+Sasha (King et al., 2024) lets a language model plan device actions and
+automation routines for goals stated without naming devices, such as
+helping the user save energy, and its user study documents failure
+patterns that reduce its usefulness. Giudici et al. (2024) present
+GreenIFTTT, a GPT-4 assistant that helps users create and control home
+automation routines for energy consumption optimization; an exploratory
+study with 13 participants found it usable and engaging. Both studies
+concern how users express intent and how routines are created, not the
+quality of a multi-appliance schedule.
 
 \section{The ReAct framework}
 
@@ -612,8 +745,8 @@ pool, reduces the inconsistencies that arise when language model calls
 are simply chained, and MetaGPT reported state-of-the-art results on
 code-generation benchmarks at the time. Structured hand-offs between
 specialists address the same kind of problem as the multi-appliance
-coordination failures reported for LLM-based HEMS (El Makroum et al.,
-2025).
+coordination failures reported for LLM-based HEMS (El Makroum,
+Zwickl-Bernhard, \& Kranzl, 2026).
 
 The move from one agent to a hierarchy of agents is motivated by three
 problems of a single agent that handles a whole task. First, its context
@@ -645,6 +778,9 @@ retraining it. Retrieval-augmented generation (RAG) gives the model
 relevant documents from an external store at the time of the request,
 so that its answer draws on knowledge it was not trained on and the
 store can be updated independently of the model (Lewis et al., 2020).
+In smart homes, retrieval has been used to give the model the
+capabilities of the installed devices, so that a requirement stated in
+words becomes executable service code (Jahanbakhsh et al., 2025).
 For a planning task, the retrieved material can be solved examples of
 similar problems, which show the model what a good solution looks like.
 Whether such examples improve the search of a multi-step plan, rather
@@ -658,8 +794,16 @@ solvers in tandem with language models rather than to replace them (Li
 et al., 2023). A household scheduling agent can be built the same way:
 the agents collect the household's constraints, call a solver, check
 its answer and explain it, while the solver guarantees the best
-schedule. Neither technique has been evaluated for household appliance
-scheduling. This thesis studies both as extensions of the pipeline
+schedule. Solver tools have recently been combined with language models
+in home energy management: an agent calls a model predictive controller
+(Raghavan \& Giridhar, 2025) or an optimization-based tool to assess
+flexibility requests (El Makroum, Zwickl-Bernhard, Kranzl, \& Auer,
+2026), and a deterministic supervisor checks the plan of a language
+model before a MILP scheduler executes it (Raghavan \& Giridhar, 2026).
+Retrieval of solved examples has not been evaluated for household
+appliance scheduling in the studies reviewed here, and neither technique
+has been compared with the home energy management tools that households
+already use. This thesis studies both as extensions of the pipeline
 (Section~\ref{sec:rag-design}).
 
 \section{Agentic AI trends in 2025--2026}
@@ -685,7 +829,7 @@ adapters library makes MCP tools usable by LangGraph agents, so the
 price API and data reader of this thesis could be offered as reusable
 MCP servers.
 
-The third is a growing set of design patterns for such agents. Liu et
+The third is a growing set of design patterns for such agents. Y. Liu et
 al. (2025) catalogue eighteen architectural patterns for agents built on
 foundation models, three of which match designs in this thesis:
 role-based cooperation, in which agents with assigned
@@ -739,15 +883,19 @@ explain what they did (Section~\ref{sec:hems}). Second, the first
 LLM-based HEMS implementations, both hierarchical and
 single-agent, have documented limitations in multi-appliance
 coordination, in scheduling on price alone, in the safety of committed
-schedules, and in evaluation scope (El Makroum et al., 2025; Jonah et
-al., 2026). Third, the existing home energy management tools that households can install range from
+schedules, and in evaluation scope (El Makroum, Zwickl-Bernhard, \& Kranzl, 2026; Jonah et
+al., 2026). Other studies use language models for the interface, advice
+or recommendation side of household energy management, without
+producing a schedule whose cost is compared with a baseline or an
+optimum (Michelon et al., 2025; Oprea \& Bâra, 2024; A. Papaioannou et
+al., 2025; I. Papaioannou et al., 2025). Third, the existing home energy management tools that households can install range from
 cheapest-hours rules that plan each device alone to optimizers such as
 EMHASS, and retrieval of solved examples and solver tools are
 established ways to strengthen language model agents (Lewis et al.,
-2020; Li et al., 2023). No published HEMS study measures what an agent
-adds over these existing tools across several price patterns,
-or whether retrieval or a solver tool lets an agent reach the saving of
-an optimizer. Table~\ref{tab:gap} links each limitation of the prior work
+2020; Li et al., 2023). None of the HEMS studies reviewed here measures
+what an agent adds over these existing tools across several price
+patterns, or whether retrieval or a solver tool lets an agent reach the
+saving of an optimizer. Table~\ref{tab:gap} links each limitation of the prior work
 to the design or evaluation choice of this thesis that responds to it,
 and to the research question that tests it.
 
@@ -759,8 +907,8 @@ and to the research question that tests it.
 \toprule
 Limitation in prior work & Response in this thesis & Tested in \\
 \midrule
-Multi-appliance coordination fails for some models (El Makroum et al.,
-  2025; Jonah et al., 2026) &
+Multi-appliance coordination fails for some models (El Makroum,
+  Zwickl-Bernhard, \& Kranzl, 2026; Jonah et al., 2026) &
   A Conflict Resolver, retrieval of solved days, an optimiser tool, and a
   household peak limit that forces appliances to be staggered on
   heavy-load days & SQ1, SQ2 \\[3pt]
@@ -770,7 +918,7 @@ Committed schedules can violate constraints the model reasoned about
   missing appliances and window violations, and returns it for revision &
   SQ1 (validity) \\[3pt]
 Evaluation on a single day or a few days, one household, one price
-  series (El Makroum et al., 2025; Jonah et al., 2026) &
+  series (El Makroum, Zwickl-Bernhard, \& Kranzl, 2026; Jonah et al., 2026) &
   A factorial benchmark of four price patterns, two household loads and
   two peak limits, built from 18 REFIT households, and a held-out
   benchmark with pre-registered hypotheses & SQ2 \\[3pt]
@@ -842,8 +990,9 @@ Table~\ref{tab:dsr} maps the six DSR phases defined by Peffers et al.
 Phase & DSR step & Activity in this thesis & Output \\
 \midrule
 1 & Problem identification &
-  SLR confirming no multi-agent ReAct HEMS addresses multi-appliance
-  coordination across multiple price patterns &
+  Structured literature search (Section~\ref{sec:litsearch}); in the
+  studies reviewed, no LLM-based HEMS is evaluated across several price
+  patterns against tools that households already use &
   Gap statement; confirmed RQs \\[4pt]
 2 & Define objectives &
   Specify measurable success criteria: saving against no scheduling,
@@ -870,6 +1019,60 @@ Phase & DSR step & Activity in this thesis & Output \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\section{Literature search}
+\label{sec:litsearch}
+
+The literature review in Chapter~\ref{ch:literature} draws on a
+structured search of two databases, reported following the PRISMA 2020
+statement (Page et al., 2021). Scopus was searched on 12 October 2026 in
+titles, abstracts and keywords, limited to articles and conference
+papers in English:
+\begin{quote}\small\ttfamily\raggedright
+TITLE-ABS-KEY ( ( "large language model*" OR llm* OR "agentic AI" OR
+"language agent*" ) AND ( "home energy management" OR "demand response"
+OR "smart home*" OR ( ( appliance* OR load* ) W/3 schedul* ) ) ) AND
+PUBYEAR > 2019
+\end{quote}
+IEEE Xplore was searched on 13 October 2026 in all metadata:
+\begin{quote}\small\ttfamily\raggedright
+("All Metadata":"large language model*" OR "All Metadata":LLM* OR "All
+Metadata":"agentic AI" OR "All Metadata":"language agent*") AND ("All
+Metadata":"home energy management" OR "All Metadata":"demand response"
+OR "All Metadata":"appliance scheduling" OR "All Metadata":"smart
+home*")
+\end{quote}
+
+The two searches returned 608 records, 358 from Scopus and 250 from IEEE
+Xplore (Figure~\ref{fig:prisma}). Fourteen records appeared in both
+databases, which left 594. These were screened on their titles against
+one criterion: a language model or language model agent applied to
+household or building energy management, demand response or appliance
+scheduling. Screening was done by a single reviewer with the help of an
+AI assistant, and 540 records were excluded. Of the remaining 54
+reports, the full texts of 7 were available and the other 47 were
+assessed on their abstracts. Two further studies known to the author,
+on language model agents in smart homes, were added. Of the 56 reports
+assessed, 7 were excluded: four do not use a language model, two do not
+concern energy, and one is an earlier version of an included study. Of
+the 49 eligible studies, 23 are discussed in
+Chapter~\ref{ch:literature}.
+
+The procedure deviates from PRISMA 2020 in three respects. Duplicates
+were identified only among the records that passed title screening,
+because complete record exports were not available; 47 of the 56
+eligibility decisions rest on abstracts rather than full texts; and
+screening was done by one reviewer, so its reliability was not checked.
+The references on design science, agent architectures, statistics and
+the Finnish electricity market were collected separately and are not
+part of the flow.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{attachments/prisma_2020_flow.pdf}
+\caption{PRISMA 2020 flow diagram of the literature search.}
+\label{fig:prisma}
+\end{figure}
 
 \section{Theoretical foundations}
 \label{sec:theory}
@@ -2563,7 +2766,7 @@ at a fraction of a cent per recommendation.
 
 The results address the open problems that Jonah et al. (2026) listed for
 LLM-based home energy management. Multi-appliance coordination, which
-failed for two of the three models of El Makroum et al. (2025), did not
+failed for two of the three models of El Makroum, Zwickl-Bernhard, and Kranzl (2026), did not
 fail once in the final design, but only because the coordination was
 delegated to a solver; the earlier designs, in which the agents
 coordinated the appliances themselves, produced valid schedules but fell
@@ -2691,7 +2894,7 @@ it more than the plan of an optimizer.
 Several directions for future research emerge from this study. First,
 extending the pipeline to thermal loads such as electric space heating,
 heat pumps and domestic hot water systems would address the gap
-explicitly identified by El Makroum et al. (2025). Second,
+explicitly identified by El Makroum, Zwickl-Bernhard, and Kranzl (2026). Second,
 implementing the price API and data reader as MCP servers would enable
 reuse by future researchers without custom integration code,
 contributing to the emerging standardization of agent tool interfaces.
@@ -2838,6 +3041,10 @@ recognized in Finland} [News release on a study by S. Numminen and S.
 Karhinen, Aalto University and Finnish Environment Institute].
 \url{https://www.aalto.fi/en/news/energy-poverty-is-not-recognized-in-finland}
 
+Aamodt, A., \& Plaza, E. (1994). Case-based reasoning: Foundational
+issues, methodological variations, and system approaches. \textit{AI
+Communications, 7}(1), 39--59. \url{https://doi.org/10.3233/AIC-1994-7104}
+
 Adato Energia. (2008). \textit{Kotitalouksien sähkönkäyttö 2006}
 [Household electricity use 2006]. Adato Energia Oy.
 ISBN 978-952-9696-41-3.
@@ -2862,6 +3069,14 @@ Lin, Y. C., \& Molchanov, P. (2025). \textit{Small language models are
 the future of agentic AI} [Position paper, NVIDIA Research].
 arXiv:2506.02153. \url{https://doi.org/10.48550/arXiv.2506.02153}
 
+Cali, U., Halden, U., Andoni, M., Catak, F. O., Chen, S., Couraud, B.,
+Kantar, E., Knapper, S., Kucukdemiral, I., Kusetogullari, H., Kuzlu, M.,
+Mousavi, Y., Norbu, S., Ustun, T. S., \& Flynn, D. (2026). Generative AI
+and LLM applications in renewable energy and smart grids: A systematic
+review for the sustainable energy transition. \textit{Artificial
+Intelligence Review, 59}(7), 153.
+\url{https://doi.org/10.1007/s10462-026-11545-2}
+
 Caruna. (2026, March 20). \textit{The strategic stockpile fee included in
 the electricity tax will increase from 1 April 2026} [News release].
 \url{https://caruna.fi/en/news/strategic-stockpile-fee-included-electricity-tax-will-increase-1-april-2026}
@@ -2870,10 +3085,19 @@ dala318. (n.d.). \textit{nordpool\_planner} [Home Assistant custom
 component]. GitHub. Retrieved 5 October 2026, from
 \url{https://github.com/dala318/nordpool_planner}
 
-El Makroum, R., Zwickl-Bernhard, S., \& Kranzl, L. (2025). Agentic AI
+Dolinin, E., \& Kiourt, C. (2026). Multi-agent-based smart-home energy
+management with adaptive reasoning. \textit{Applied Sciences, 16}(4),
+1896. \url{https://doi.org/10.3390/app16041896}
+
+El Makroum, R., Zwickl-Bernhard, S., \& Kranzl, L. (2026). Agentic AI
 home energy management system: A large language model framework for
-residential load scheduling [Preprint]. arXiv:2510.26603.
-\url{https://doi.org/10.48550/arXiv.2510.26603}
+residential load scheduling. \textit{Results in Engineering, 29},
+109857. \url{https://doi.org/10.1016/j.rineng.2026.109857}
+
+El Makroum, R., Zwickl-Bernhard, S., Kranzl, L., \& Auer, H. (2026).
+\textit{Conversational demand response: Bidirectional
+aggregator-prosumer coordination through agentic AI} [Preprint].
+arXiv:2603.06217. \url{https://arxiv.org/abs/2603.06217}
 
 Elering AS. (2026). \textit{Nord Pool day-ahead prices, bidding zone FI}
 [Data service; data owner Nord Pool]. Retrieved 26 September 2026, from
@@ -2900,12 +3124,40 @@ accounting points in Finland} [News release]. Retrieved 5 October 2026,
 from
 \url{https://www.fingrid.fi/en/news/news/2024/fingrids-open-data-service-now-provides-data-on-electricity-consumption-and-small-scale-electricity-production-from-accounting-points-in-finland/}
 
+Ghafari, M., Sami, A., Rezapour, H., Saravani Ghayour, S., Lin, F.,
+Basaran, K., Lazaroiu, G. C., \& Siano, P. (2025). A comprehensive review
+on the application of large language models (LLMs) in power systems.
+\textit{IEEE Access, 13}, 209450--209486.
+\url{https://doi.org/10.1109/ACCESS.2025.3637226}
+
+Giudici, M., Padalino, L., Paolino, G., Paratici, I., Pascu, A. I., \&
+Garzotto, F. (2024). Designing home automation routines using an
+LLM-based chatbot. \textit{Designs, 8}(3), 43.
+\url{https://doi.org/10.3390/designs8030043}
+
+Gkalinikis, N. V., Nalmpantis, C., Vrakas, D., Chatzigeorgiou, S.,
+Athanasiadis, C., \& Doukas, D. (2025). RHEA: Residential home energy
+advisor. In \textit{2025 10th International Conference on Smart and
+Sustainable Technologies (SpliTech)} (pp. 1--6). IEEE.
+\url{https://doi.org/10.23919/SpliTech65624.2025.11091692}
+
 Gokhale, G., Claessens, B., \& Develder, C. (2024). Explainable home
 energy management systems based on reinforcement learning using
 differentiable decision trees. In \textit{Proceedings of the 15th ACM
 International Conference on Future and Sustainable Energy Systems
 (e-Energy '24)} (pp. 687--691). ACM.
 \url{https://doi.org/10.1145/3632775.3663310}
+
+Gonçalves, V. P., Serrano, A. L. M., Rodrigues, G. A. P., de Oliveira,
+M. N., Meneguette, R. I., Bispo, G. D., Peixoto, M. G. M., \& Filho, G.
+P. R. (2025). An empirically validated framework for automated and
+personalized residential energy-management integrating large language
+models and the Internet of Energy. \textit{Energies, 18}(14), 3744.
+\url{https://doi.org/10.3390/en18143744}
+
+Gregor, S., \& Hevner, A. R. (2013). Positioning and presenting design
+science research for maximum impact. \textit{MIS Quarterly, 37}(2),
+337--355. \url{https://doi.org/10.25300/MISQ/2013/37.2.01}
 
 Guo, T., Chen, X., Wang, Y., Chang, R., Pei, S., Chawla, N. V., Wiest,
 O., \& Zhang, X. (2024). Large language model based multi-agents: A
@@ -2943,6 +3195,11 @@ multi-agent collaborative framework. In \textit{International Conference
 on Learning Representations (ICLR 2024)}.
 \url{https://doi.org/10.48550/arXiv.2308.00352}
 
+Jahanbakhsh, N., Vega-Barbas, M., Pau, I., Elvira-Martín, L., Moosavi,
+H., \& García-Vázquez, C. (2025). Leveraging retrieval-augmented
+generation for automated smart home orchestration. \textit{Future
+Internet, 17}(5), 198. \url{https://doi.org/10.3390/fi17050198}
+
 jisotalo. (n.d.). \textit{shelly-porssisahko: Nordpool electricity spot
 price control for Shelly devices} (Version 3.4) [Computer software].
 GitHub. Retrieved 5 October 2026, from
@@ -2952,9 +3209,26 @@ Jonah, S., Moses, Q., Babatunde, A., Ajao-Olarinoye, M., \& Bammeke, D.
 (2026). LLMs for agentic home energy management [Preprint].
 arXiv:2607.04569. \url{https://doi.org/10.48550/arXiv.2607.04569}
 
+Jung, W. (2026). Multi-agent home energy management assistant (HEMA).
+\textit{SoftwareX, 34}, 102633.
+\url{https://doi.org/10.1016/j.softx.2026.102633}
+
 Kert, K. (n.d.). \textit{Nordpool cheapest hours actions} [Home Assistant
 blueprint]. GitHub. Retrieved 3 October 2026, from
 \url{https://github.com/kullarkert/ha_nordpool_hours_blueprint}
+
+King, E., Yu, H., Lee, S., \& Julien, C. (2024). Sasha: Creative
+goal-oriented reasoning in smart homes with large language models.
+\textit{Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies, 8}(1), Article 12.
+\url{https://doi.org/10.1145/3643505}
+
+Kovacs, A., Meteier, Q., Angelini, L., Mugellini, E., \& Abou Khaled, O.
+(2025). Explanation modalities for a recommender system optimizing
+energy management in a solar-powered smart home. In \textit{Companion
+Proceedings of the 30th International Conference on Intelligent User
+Interfaces} (pp. 43--47). ACM.
+\url{https://doi.org/10.1145/3708557.3716331}
 
 Lakens, D. (2017). Equivalence tests: A practical primer for \textit{t}
 tests, correlations, and meta-analyses. \textit{Social Psychological and
@@ -2972,6 +3246,12 @@ Li, B., Mellou, K., Zhang, B., Pathuri, J., \& Menache, I. (2023).
 [Preprint]. arXiv:2307.03875.
 \url{https://doi.org/10.48550/arXiv.2307.03875}
 
+Liu, S., Hu, R., Yang, Y., Zhang, H., Ding, X., Sun, H., \& Sun, L.
+(2025). LLM-BEM: Zero-shot LLM-agent scheduling for smart building
+energy management. In \textit{2025 IEEE 26th China Conference on System
+Simulation Technology and its Applications (CCSSTA)} (pp. 69--74). IEEE.
+\url{https://doi.org/10.1109/IEEECONF65522.2025.11137227}
+
 Liu, Y., Lo, S. K., Lu, Q., Zhu, L., Zhao, D., Xu, X., Harrer, S., \&
 Whittle, J. (2025). Agent design pattern catalogue: A collection of
 architectural patterns for foundation model based agents.
@@ -2988,11 +3268,30 @@ March, S. T., \& Smith, G. F. (1995). Design and natural science
 research on information technology. \textit{Decision Support Systems,
 15}(4), 251--266.
 
+Michelon, F., Zhou, Y., \& Morstyn, T. (2025). Large language model
+interface for home energy management systems. In \textit{Proceedings of
+the 16th ACM International Conference on Future and Sustainable Energy
+Systems (e-Energy '25)} (pp. 590--602). ACM.
+\url{https://doi.org/10.1145/3679240.3734586}
+
 Mocanu, E., Mocanu, D. C., Nguyen, P. H., Liotta, A., Webber, M. E.,
 Gibescu, M., \& Slootweg, J. G. (2019). On-line building energy
 optimization using deep reinforcement learning. \textit{IEEE
 Transactions on Smart Grid, 10}(4), 3698--3708.
 \url{https://doi.org/10.1109/TSG.2018.2834219}
+
+Moghanjooghi, A. A., Mazloomi, M., Asgari, M., \& Mehrabikia, M. S.
+(2025). HyLL: Hybrid LSTM and large language model-based recommendation
+system for energy management and consumption optimization in smart
+homes. In \textit{2025 6th International Conference on Optimizing
+Electrical Energy Consumption (OEEC)} (pp. 1--6). IEEE.
+\url{https://doi.org/10.1109/OEEC66525.2025.11100170}
+
+Mongaillard, T., Lasaulce, S., Hicheur, O., Zhang, C., Bariah, L.,
+Varma, V. S., Zou, H., Zhao, Q., \& Debbah, M. (2024). \textit{Large
+language models for power scheduling: A user-centric approach}
+[Preprint]. arXiv:2407.00476.
+\url{https://doi.org/10.48550/arXiv.2407.00476}
 
 Moradzadeh, B., \& Tomsovic, K. (2013). Two-stage residential energy
 management considering network operational constraints. \textit{IEEE
@@ -3013,14 +3312,55 @@ OpenHEMS contributors. (2026). \textit{OpenHEMS: Home energy management
 system based on Home Assistant} [Computer software]. GitHub. Retrieved
 5 October 2026, from \url{https://github.com/abriotde/openhems-sample}
 
+Oprea, S.-V., \& Bâra, A. (2024). A recommendation system for prosumers
+based on large language models. \textit{Sensors, 24}(11), 3530.
+\url{https://doi.org/10.3390/s24113530}
+
+Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann,
+T. C., Mulrow, C. D., Shamseer, L., Tetzlaff, J. M., Akl, E. A.,
+Brennan, S. E., Chou, R., Glanville, J., Grimshaw, J. M., Hróbjartsson,
+A., Lalu, M. M., Li, T., Loder, E. W., Mayo-Wilson, E., McDonald, S.,
+\ldots{} Moher, D. (2021). The PRISMA 2020 statement: An updated
+guideline for reporting systematic reviews. \textit{BMJ, 372}, n71.
+\url{https://doi.org/10.1136/bmj.n71}
+
 Pakastin Oy. (2026). \textit{Sähkötin: Nord Pool FI day-ahead spot
 prices} [Data service]. Retrieved 25 September 2026, from
 \url{https://sahkotin.fi}
+
+Papaioannou, A., Dimara, A., \& Krinidis, S. (2025). GUIDE: A
+prescriptive hybrid AI framework for energy-efficient appliances usage
+through behavioral modeling and LLM guidance. \textit{Energy and
+Buildings, 348}, 116463.
+\url{https://doi.org/10.1016/j.enbuild.2025.116463}
+
+{\emergencystretch=3em
+Papaioannou, I., Korkas, C., \& Kosmatopoulos, E. (2025). Smart building
+recommendations with LLMs: A semantic comparison approach.
+\textit{Buildings, 15}(13), 2303.
+\url{https://doi.org/10.3390/buildings15132303}\par}
 
 Peffers, K., Tuunanen, T., Rothenberger, M. A., \& Chatterjee, S.
 (2007). A design science research methodology for information systems
 research. \textit{Journal of Management Information Systems, 24}(3),
 45--77.
+
+Raghavan, V. S., \& Giridhar, A. V. (2025). Cost-optimal residential
+energy scheduling via a zero-shot LLM agent and model predictive
+control. \textit{Journal of Building Performance Simulation, 19}(3),
+492--510. \url{https://doi.org/10.1080/19401493.2025.2605465}
+
+Raghavan, V. S., \& Giridhar, A. V. (2026). Integrating large language
+models into peer-to-peer energy management for multi-tenant buildings: A
+guardrail approach to ensuring resilience. \textit{Neural Networks,
+200}, 108814. \url{https://doi.org/10.1016/j.neunet.2026.108814}
+
+Rashed, G. I., Bahageel, A. O. M., Gony, H. A. I., Badjan, A., \&
+Shaheen, H. I. (2025). AI-driven multi-agent demand response framework
+for residential load optimization using CrewAI. In \textit{2025 IEEE
+20th Conference on Industrial Electronics and Applications (ICIEA)}
+(pp. 1--10). IEEE.
+\url{https://doi.org/10.1109/ICIEA65512.2025.11149013}
 
 Schuirmann, D. J. (1987). A comparison of the two one-sided tests
 procedure and the power approach for assessing the equivalence of
@@ -3028,11 +3368,22 @@ average bioavailability. \textit{Journal of Pharmacokinetics and
 Biopharmaceutics, 15}(6), 657--680.
 \url{https://doi.org/10.1007/BF01068419}
 
+Siino, M., \& Tinnirello, I. (2024). GPT prompt engineering for
+scheduling appliances usage for energy cost optimization. In
+\textit{2024 IEEE International Symposium on Measurements \& Networking
+(M\&N)} (pp. 1--6). IEEE.
+\url{https://doi.org/10.1109/MN60932.2024.10615758}
+
 Sou, K. C., Weimer, J., Sandberg, H., \& Johansson, K. H. (2011).
 Scheduling smart home appliances using mixed integer linear
 programming. In \textit{Proceedings of the 50th IEEE Conference on
 Decision and Control and European Control Conference} (pp. 5144--5149).
 IEEE. \url{https://doi.org/10.1109/CDC.2011.6161081}
+
+Venable, J., Pries-Heje, J., \& Baskerville, R. (2016). FEDS: A
+framework for evaluation in design science research. \textit{European
+Journal of Information Systems, 25}(1), 77--89.
+\url{https://doi.org/10.1057/ejis.2014.36}
 
 Wang, L., Ma, C., Feng, X., Zhang, Z., Yang, H., Zhang, J., Chen, Z.,
 Tang, J., Chen, X., Lin, Y., Zhao, W. X., Wei, Z., \& Wen, J. (2024). A
@@ -3040,10 +3391,21 @@ survey on large language model based autonomous agents.
 \textit{Frontiers of Computer Science, 18}, 186345.
 \url{https://doi.org/10.1007/s11704-024-40231-1}
 
+Yang, Y., Yang, Q., Li, D., Sun, L., Liu, S., \& Liu, R. (2025).
+LLM-MAC: LLM-driven multi-agent coordination for generalizable home
+energy management. In \textit{2025 44th Chinese Control Conference
+(CCC)} (pp. 7318--7323). IEEE.
+\url{https://doi.org/10.23919/CCC64809.2025.11179521}
+
 Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., \& Cao,
 Y. (2023). ReAct: Synergizing reasoning and acting in language models.
 \textit{International Conference on Learning Representations (ICLR
 2023)}. arXiv:2210.03629.
+
+Zhang, L., \& Chen, Z. (2024). Large language model-based interpretable
+machine learning control in building energy systems. \textit{Energy and
+Buildings, 313}, 114278.
+\url{https://doi.org/10.1016/j.enbuild.2024.114278}
 
 Zharova, A., Boer, A., Knoblauch, J., Schewina, K. I., \& Vihs, J.
 (2024). An explainable multi-agent recommendation system for
