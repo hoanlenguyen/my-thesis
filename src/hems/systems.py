@@ -78,10 +78,10 @@ SYSTEMS: dict[str, System] = {
         System("cheapest_hours", "reference", "HA Nord Pool cheapest-hours blueprint, 15-min prices",
                plan=_rule(cheapest_hours_schedule)),  # fmt: skip
         System("cheapest_hours_hourly", "reference",
-               "HA cheapest-hours blueprint with hourly prices; also shelly-porssisahko cheapest hours (scattered)",
+               "HA cheapest-hours blueprint with hourly prices",
                plan=_rule(partial(cheapest_hours_schedule, resolution="hourly"))),  # fmt: skip
         System("cheapest_window", "reference",
-               "lowest-average hour block: HA Nordpool Planner; shelly-porssisahko cheapest hours (sequential)",
+               "lowest-average hour block: HA Nordpool Planner",
                plan=_rule(cheapest_window_schedule)),  # fmt: skip
         System("emhass", "external", "EMHASS with measured power profiles", plan=_emhass("profile")),
         System("emhass_nominal", "external", "EMHASS with constant nominal power", plan=_emhass("nominal")),

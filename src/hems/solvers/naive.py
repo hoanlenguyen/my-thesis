@@ -71,10 +71,10 @@ def cheapest_hours_schedule(scenario: Scenario, hours: int | None = None, resolu
 
 def cheapest_window_schedule(scenario: Scenario) -> Schedule:
     """Lowest-average consecutive window: Home Assistant Nordpool Planner (dala318/nordpool_planner, static
-    planner) and the sequential cheapest-hours mode of shelly-porssisahko (jisotalo).
+    planner).
 
-    Both tools slide a block of `duration` whole hours over hourly prices between a start and an end hour
-    and switch the device on for the block with the lowest average price. For a cycle appliance the
+    The planner slides a block of `duration` whole hours over hourly prices between a start and an end hour
+    and switches the device on for the block with the lowest average price. For a cycle appliance the
     household sets the block to the cycle length rounded up to whole hours and the search span to
     [ready time, deadline]; the cycle starts at the first hour of the block. Blocks must lie on full hours
     within the window, so a cycle shorter than its rounded duration still finishes in time. The price is

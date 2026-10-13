@@ -404,8 +404,7 @@ the response time and API cost of each recommendation against the
 design objectives. SQ2 concerns where the system is worth using. Its
 "existing home energy management tools" are real, freely available
 software that a household can install without programming: the
-cheapest-hours automations shared for Home Assistant and Shelly smart
-relays, which switch a device on in the day's cheapest hours, and the
+cheapest-hours automations shared for Home Assistant, which switch a device on in the day's cheapest hours, and the
 open-source optimizer EMHASS, which computes a schedule for the whole
 household. SQ2 compares the recommendations with these tools and asks
 how the comparison depends on the day's prices, on how many appliances
@@ -515,12 +514,9 @@ today as open-source tools. Among Home Assistant users in Finland and
 the other Nordic countries, a widely shared approach is to automate
 devices with community blueprints that switch a device on during the
 cheapest hours of a user-defined time window, based on Nord Pool
-day-ahead prices (Kert, n.d.). Related tools choose the block of
-consecutive hours with the lowest average price before a set end time,
-such as the Nordpool Planner integration for Home Assistant (dala318,
-n.d.), or switch Shelly smart relays on in the cheapest hours of a
-period, as the shelly-porssisahko script widely used in Finland does
-(jisotalo, n.d.). Such rules handle each device separately and do not
+day-ahead prices (Kert, n.d.). A related tool, the Home Assistant
+integration Nordpool Planner (Daniel, 2022), chooses the block of
+consecutive hours with the lowest average price before a set end time. Such rules handle each device separately and do not
 consider the household's total load. EMHASS (Energy
 Management for Home Assistant) is an open-source optimizer that
 schedules deferrable loads, batteries and photovoltaic production
@@ -908,7 +904,7 @@ Scheduling on the price signal alone (Jonah et al., 2026) & Partly
   carbon intensity are not added & SQ2 \\[3pt]
 No comparison with existing home energy management tools &
   Comparison with cheapest-hours automations for Home Assistant and
-  Shelly relays and with the optimizer EMHASS & SQ2 \\[3pt]
+  with the optimizer EMHASS & SQ2 \\[3pt]
 Rules and optimizers do not explain their decisions (Gokhale et al.,
   2024; Zharova et al., 2024) &
   The Orchestrator explains every recommendation and states the result
@@ -1158,13 +1154,11 @@ pipeline is compared with the following alternatives:
   up to whole hours. The blueprint switches a device on whenever the
   price is at or below the threshold; for a cycle appliance, it is
   assumed that this trigger starts the cycle, which then runs to
-  completion. With hourly prices, the same rule describes the scattered
-  cheapest-hours mode of shelly-porssisahko (jisotalo, n.d.).
+  completion.
 \item \emph{Cheapest window}: the block of whole hours, as long as the
   cycle rounded up, with the lowest average price between the ready time
-  and the deadline. This is how the Nordpool Planner integration for Home
-  Assistant (dala318, n.d.) and the sequential cheapest-hours mode of
-  shelly-porssisahko (jisotalo, n.d.) choose when to switch a device on.
+  and the deadline. This is how the Home Assistant integration Nordpool
+  Planner (Daniel, 2022) chooses when to switch a device on.
 \item \emph{Smart timer (own heuristic)}: a peak-aware rule written for
   this study as a reference point, not a deployed product. It shows how
   far a simple rule gets without a language model or optimisation, and a
@@ -2781,7 +2775,7 @@ roles were given to work with.
 \label{sec:implications}
 
 For households, the results suggest caution with the cheapest-hours
-automations that are widely shared for Home Assistant and Shelly relays.
+automations that are widely shared for Home Assistant.
 They work when the household runs one or two appliances and has power to
 spare, but they ignore the household's total load and exceeded a tight
 limit on most days that required coordination. Under the power-based
@@ -2941,8 +2935,8 @@ recommendations valuable.
 \textbf{SQ2} asked under which price patterns, household loads and peak
 limits the recommendations save more than, or as much as, existing home
 energy management tools. The pipeline saved 8.6 to 10.0 percentage points
-more than the cheapest-hours automations shared for Home Assistant and
-Shelly relays, and the gap was largest where several appliances had to
+more than the cheapest-hours automations shared for Home Assistant, and
+the gap was largest where several appliances had to
 share a tight limit: there the automations, which plan each appliance on
 its own, rarely produced a schedule within the limit. On light-load days
 with power to spare the difference was smaller. The pipeline saved the
@@ -3060,7 +3054,7 @@ Caruna. (2026, March 20). \textit{The strategic stockpile fee included in
 the electricity tax will increase from 1 April 2026} [News release].
 \url{https://caruna.fi/en/news/strategic-stockpile-fee-included-electricity-tax-will-increase-1-april-2026}
 
-dala318. (n.d.). \textit{nordpool\_planner} [Home Assistant custom
+Daniel. (2022). \textit{Nordpool Planner} [Home Assistant custom
 component]. GitHub. Retrieved 5 October 2026, from
 \url{https://github.com/dala318/nordpool_planner}
 
@@ -3179,11 +3173,6 @@ H., \& García-Vázquez, C. (2025). Leveraging retrieval-augmented
 generation for automated smart home orchestration. \textit{Future
 Internet, 17}(5), 198. \url{https://doi.org/10.3390/fi17050198}
 
-jisotalo. (n.d.). \textit{shelly-porssisahko: Nordpool electricity spot
-price control for Shelly devices} (Version 3.4) [Computer software].
-GitHub. Retrieved 5 October 2026, from
-\url{https://github.com/jisotalo/shelly-porssisahko-en}
-
 Jonah, S., Moses, Q., Babatunde, A., Ajao-Olarinoye, M., \& Bammeke, D.
 (2026). LLMs for agentic home energy management [Preprint].
 arXiv:2607.04569. \url{https://doi.org/10.48550/arXiv.2607.04569}
@@ -3286,7 +3275,6 @@ measurements dataset of United Kingdom households from a two-year
 longitudinal study. \textit{Scientific Data, 4}, 160122.
 \url{https://doi.org/10.1038/sdata.2016.122}
 
-
 OpenHEMS contributors. (2026). \textit{OpenHEMS: Home energy management
 system based on Home Assistant} [Computer software]. GitHub. Retrieved
 5 October 2026, from \url{https://github.com/abriotde/openhems-sample}
@@ -3346,7 +3334,6 @@ procedure and the power approach for assessing the equivalence of
 average bioavailability. \textit{Journal of Pharmacokinetics and
 Biopharmaceutics, 15}(6), 657--680.
 \url{https://doi.org/10.1007/BF01068419}
-
 Siino, M., \& Tinnirello, I. (2024). GPT prompt engineering for
 scheduling appliances usage for energy cost optimization. In
 \textit{2024 IEEE International Symposium on Measurements \& Networking
