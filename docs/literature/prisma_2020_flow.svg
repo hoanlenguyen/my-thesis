@@ -1,82 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" font-family="Arial, Helvetica, sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 55 892 600" width="892" height="600" font-family="Arial, Helvetica, sans-serif" font-size="13">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#333"/></marker>
   </defs>
-  <rect width="900" height="760" fill="#fff"/>
-  <text x="450" y="26" text-anchor="middle" font-size="16" font-weight="bold">PRISMA 2020 flow diagram: LLM / agentic AI for home energy management</text>
-  <text x="450" y="46" text-anchor="middle" fill="#555">Searches run 12-13 October 2026; single reviewer, title-level screening of database records</text>
+  <rect x="0" y="0" width="910" height="700" fill="#fff"/>
 
-  <!-- column labels -->
+  <!-- stage labels -->
   <text x="20" y="84" font-weight="bold" fill="#555">IDENTIFICATION</text>
-  <text x="20" y="274" font-weight="bold" fill="#555">SCREENING</text>
-  <text x="20" y="622" font-weight="bold" fill="#555">INCLUDED</text>
+  <text x="20" y="188" font-weight="bold" fill="#555">SCREENING</text>
+  <text x="20" y="582" font-weight="bold" fill="#555">INCLUDED</text>
 
   <!-- identification -->
-  <rect x="140" y="62" width="400" height="92" fill="#eef3fa" stroke="#456" />
+  <rect x="140" y="62" width="400" height="74" fill="#eef3fa" stroke="#456"/>
   <text x="150" y="82" font-weight="bold">Records identified from databases (n = 608)</text>
   <text x="150" y="102">Scopus, Advanced search: n = 358</text>
-  <text x="150" y="120">(357 on first run, 358 when re-run for screening)</text>
-  <text x="150" y="138">IEEE Xplore, Command Search: n = 250</text>
+  <text x="150" y="120">IEEE Xplore, Command Search: n = 250</text>
 
-  <rect x="600" y="62" width="280" height="92" fill="#eef3fa" stroke="#456" />
+  <rect x="600" y="62" width="280" height="74" fill="#eef3fa" stroke="#456"/>
   <text x="610" y="82" font-weight="bold">Records identified from other</text>
   <text x="610" y="98" font-weight="bold">methods (n = 2)</text>
-  <text x="610" y="120">Reports supplied by the author,</text>
-  <text x="610" y="138">not found by title screening</text>
+  <text x="610" y="120">Studies known to the author</text>
 
-  <!-- duplicates -->
-  <rect x="140" y="184" width="400" height="56" fill="#fff" stroke="#456"/>
-  <text x="150" y="206" font-weight="bold">Duplicate records removed (n = 14)</text>
-  <text x="150" y="226">Scopus / IEEE Xplore overlap, found among retained records</text>
-  <line x1="340" y1="154" x2="340" y2="184" stroke="#333" marker-end="url(#a)"/>
+  <!-- title screening -->
+  <rect x="140" y="166" width="400" height="58" fill="#fff" stroke="#456"/>
+  <text x="150" y="188" font-weight="bold">Records screened on title (n = 608)</text>
+  <text x="150" y="208">All records identified from databases</text>
+  <line x1="340" y1="136" x2="340" y2="166" stroke="#333" marker-end="url(#a)"/>
 
-  <!-- screened -->
-  <rect x="140" y="296" width="400" height="58" fill="#fff" stroke="#456"/>
-  <text x="150" y="318" font-weight="bold">Records screened on title (n = 594)</text>
-  <text x="150" y="338">608 identified minus 14 duplicates</text>
-  <line x1="340" y1="240" x2="340" y2="296" stroke="#333" marker-end="url(#a)"/>
+  <rect x="600" y="166" width="280" height="58" fill="#fff" stroke="#456"/>
+  <text x="610" y="188" font-weight="bold">Records excluded (n = 540)</text>
+  <text x="610" y="208">Not LLM-based and/or not energy</text>
+  <line x1="540" y1="195" x2="600" y2="195" stroke="#333" marker-end="url(#a)"/>
 
-  <rect x="600" y="296" width="280" height="58" fill="#fff" stroke="#456"/>
-  <text x="610" y="318" font-weight="bold">Records excluded (n = 540)</text>
-  <text x="610" y="338">Not LLM-based and/or not energy</text>
-  <line x1="540" y1="325" x2="600" y2="325" stroke="#333" marker-end="url(#a)"/>
+  <!-- retained, duplicates -->
+  <rect x="140" y="254" width="400" height="58" fill="#fff" stroke="#456"/>
+  <text x="150" y="276" font-weight="bold">Records retained after title screening (n = 68)</text>
+  <text x="150" y="296">Scopus: n = 45; IEEE Xplore: n = 23</text>
+  <line x1="340" y1="224" x2="340" y2="254" stroke="#333" marker-end="url(#a)"/>
+
+  <rect x="600" y="254" width="280" height="58" fill="#fff" stroke="#456"/>
+  <text x="610" y="276" font-weight="bold">Duplicate records removed (n = 14)</text>
+  <text x="610" y="296">In both Scopus and IEEE Xplore</text>
+  <line x1="540" y1="283" x2="600" y2="283" stroke="#333" marker-end="url(#a)"/>
 
   <!-- sought -->
-  <rect x="140" y="384" width="400" height="58" fill="#fff" stroke="#456"/>
-  <text x="150" y="406" font-weight="bold">Reports sought for retrieval (n = 54)</text>
-  <text x="150" y="426">Unique records that passed title screening</text>
-  <line x1="340" y1="354" x2="340" y2="384" stroke="#333" marker-end="url(#a)"/>
-
-  <rect x="600" y="384" width="280" height="58" fill="#fff" stroke="#456"/>
-  <text x="610" y="406" font-weight="bold">Full text not retrieved (n = 47)</text>
-  <text x="610" y="426">Assessed on abstract instead</text>
-  <line x1="540" y1="413" x2="600" y2="413" stroke="#333" stroke-dasharray="4 3"/>
+  <rect x="140" y="342" width="400" height="76" fill="#fff" stroke="#456"/>
+  <text x="150" y="364" font-weight="bold">Reports sought for retrieval (n = 54)</text>
+  <text x="150" y="384">Full text retrieved: n = 7</text>
+  <text x="150" y="402">Full text not retrieved: n = 47 (abstract used)</text>
+  <line x1="340" y1="312" x2="340" y2="342" stroke="#333" marker-end="url(#a)"/>
 
   <!-- assessed -->
-  <rect x="140" y="472" width="400" height="76" fill="#fff" stroke="#456"/>
-  <text x="150" y="494" font-weight="bold">Reports assessed for eligibility (n = 56)</text>
-  <text x="150" y="514">54 from database searches (7 full text, 47 abstract only)</text>
-  <text x="150" y="532">+ 2 supplied by the author (full text, other methods)</text>
-  <line x1="340" y1="442" x2="340" y2="472" stroke="#333" marker-end="url(#a)"/>
-  <polyline points="880,108 893,108 893,498 540,498" fill="none" stroke="#333" marker-end="url(#a)"/>
+  <rect x="140" y="448" width="400" height="76" fill="#fff" stroke="#456"/>
+  <text x="150" y="470" font-weight="bold">Reports assessed for eligibility (n = 56)</text>
+  <text x="150" y="490">Full text: n = 9 (7 from databases, 2 from other methods)</text>
+  <text x="150" y="508">Abstract only: n = 47 (deviation from PRISMA 2020)</text>
+  <line x1="340" y1="418" x2="340" y2="448" stroke="#333" marker-end="url(#a)"/>
+  <polyline points="880,99 893,99 893,476 540,476" fill="none" stroke="#333" marker-end="url(#a)"/>
 
-  <rect x="600" y="540" width="280" height="96" fill="#fff" stroke="#456"/>
-  <text x="610" y="562" font-weight="bold">Reports excluded (n = 7)</text>
-  <text x="610" y="582">Not LLM-based (n = 4)</text>
-  <text x="610" y="600">Not about energy (n = 2)</text>
-  <text x="610" y="618">Second version of a cited study (n = 1)</text>
-  <line x1="540" y1="520" x2="570" y2="520" stroke="#333"/>
-  <line x1="570" y1="520" x2="570" y2="578" stroke="#333"/>
-  <line x1="570" y1="578" x2="600" y2="578" stroke="#333" marker-end="url(#a)"/>
+  <rect x="600" y="496" width="280" height="96" fill="#fff" stroke="#456"/>
+  <text x="610" y="518" font-weight="bold">Reports excluded (n = 7)</text>
+  <text x="610" y="538">Not LLM-based (n = 4)</text>
+  <text x="610" y="556">Not about energy (n = 2)</text>
+  <text x="610" y="574">Second version of a cited study (n = 1)</text>
+  <line x1="540" y1="500" x2="570" y2="500" stroke="#333"/>
+  <line x1="570" y1="500" x2="570" y2="530" stroke="#333"/>
+  <line x1="570" y1="530" x2="600" y2="530" stroke="#333" marker-end="url(#a)"/>
 
   <!-- included -->
-  <rect x="140" y="600" width="400" height="104" fill="#e8f4ea" stroke="#375"/>
-  <text x="150" y="622" font-weight="bold">Studies judged eligible (n = 49)</text>
-  <text x="150" y="642">Cited in the thesis: 23 (8 full text, 15 abstract only)</text>
-  <text x="150" y="662">Eligible, not yet cited: 26 (abstract only)</text>
-  <text x="150" y="682">Thesis references: 43 existing + 23 new = 66</text>
-  <line x1="340" y1="548" x2="340" y2="600" stroke="#333" marker-end="url(#a)"/>
-
-  <text x="20" y="734" fill="#555">Deviation from PRISMA 2020: duplicates were identified after title screening, among the 68 retained records only, because full</text>
-  <text x="20" y="750" fill="#555">record exports were not downloaded. Title screening was done by one reviewer (AI-assisted); 47 eligibility decisions rest on abstracts only.</text>
+  <rect x="140" y="560" width="400" height="74" fill="#e8f4ea" stroke="#375"/>
+  <text x="150" y="582" font-weight="bold">Studies judged eligible (n = 49), see Appendix A</text>
+  <text x="150" y="602">Discussed in Chapter 2: n = 25 (8 full text, 17 abstract only)</text>
+  <text x="150" y="620">Not discussed: n = 24 (abstract only)</text>
+  <line x1="340" y1="524" x2="340" y2="560" stroke="#333" marker-end="url(#a)"/>
 </svg>

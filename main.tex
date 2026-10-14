@@ -275,10 +275,13 @@ Hoan Le
 \unnumberedchapter{Declaration of Generative AI in the Thesis}
 
 I used the generative AI tool Claude (Anthropic) in this thesis work: to
-help write and test the software of the evaluated system. The language models GPT-4o-mini and gpt-oss-20b are objects of study in
-this thesis and were not used to write it. All content produced with the tool was
-reviewed and edited by me, and I take full responsibility for the
-accuracy and integrity of the final work.
+help write and test the software of the evaluated system, and to help
+search and screen the literature reported in
+Section~\ref{sec:litsearch}. The language models GPT-4o-mini and
+gpt-oss-20b are objects of study in this thesis and were not used to
+write it. All content produced with the tool was reviewed and edited by
+me, and I take full responsibility for the accuracy and integrity of the
+final work.
 
 
 % ── TABLE OF CONTENTS ───────────────────────────────────────────────────────
@@ -511,7 +514,7 @@ today as open-source tools. Among Home Assistant users in Finland and
 the other Nordic countries, a widely shared approach is to automate
 devices with community blueprints that switch a device on during the
 cheapest hours of a user-defined time window, based on Nord Pool
-day-ahead prices (Kert, n.d.). A related tool, the Home Assistant
+day-ahead prices (Kert, 2023). A related tool, the Home Assistant
 integration Nordpool Planner (Daniel, 2022), chooses the block of
 consecutive hours with the lowest average price before a set end time. Such rules handle each device separately and do not
 consider the household's total load. EMHASS (Energy
@@ -1016,23 +1019,25 @@ home*")
 \end{quote}
 
 The two searches returned 608 records, 358 from Scopus and 250 from IEEE
-Xplore (Figure~\ref{fig:prisma}). Fourteen records appeared in both
-databases, which left 594. These were screened on their titles against
-one criterion: a language model or language model agent applied to
-household or building energy management, demand response or appliance
-scheduling. Screening was done by a single reviewer with the help of an
-AI assistant, and 540 records were excluded. Of the remaining 54
-reports, the full texts of 7 were available and the other 47 were
-assessed on their abstracts. Two further studies known to the author,
-on language model agents in smart homes, were added. Of the 56 reports
-assessed, 7 were excluded: four do not use a language model, two do not
-concern energy, and one is an earlier version of an included study. Of
-the 49 eligible studies, 23 are discussed in
-Chapter~\ref{ch:literature}.
+Xplore (Figure~\ref{fig:prisma}); the Scopus search returned 357 records
+on its first run and 358 when it was rerun for screening. All 608
+records were screened on their titles against one criterion: a language
+model or language model agent applied to household or building energy
+management, demand response or appliance scheduling. Screening was done
+by a single reviewer with the help of an AI assistant, and 540 records
+were excluded. Of the 68 records that remained, 14 appeared in both
+databases, which left 54 reports. The full texts of 7 were available and
+the other 47 were assessed on their abstracts. Two further studies known
+to the author, on language model agents in smart homes, were added. Of
+the 56 reports assessed, 7 were excluded: four do not use a language
+model, two do not concern energy, and one is an earlier version of an
+included study. Of the 49 eligible studies, 25 are discussed in
+Chapter~\ref{ch:literature}; Appendix~\ref{app:studies} lists all 49.
 
 The procedure deviates from PRISMA 2020 in three respects. Duplicates
 were identified only among the records that passed title screening,
-because complete record exports were not available; 47 of the 56
+because complete record exports were not available, so the count of
+excluded records may include duplicates; 47 of the 56
 eligibility decisions rest on abstracts rather than full texts; and
 screening was done by one reviewer, so its reliability was not checked.
 The references on design science, agent architectures, statistics and
@@ -1145,7 +1150,7 @@ pipeline is compared with the following alternatives:
   allows. It defines the saving of every other system.
 \item \emph{Cheapest-hours automation}: the selection rule of the
   ``Nordpool cheapest hours actions'' blueprint for Home Assistant (Kert,
-  n.d.). Within the appliance's window, the
+  2023). Within the appliance's window, the
   prices are sorted in ascending order and the threshold is the price at
   index $4h$ (counting from zero), where $h$ is the cycle length rounded
   up to whole hours. The blueprint switches a device on whenever the
@@ -3178,7 +3183,7 @@ Jung, W. (2026). Multi-agent home energy management assistant (HEMA).
 \textit{SoftwareX, 34}, 102633.
 \url{https://doi.org/10.1016/j.softx.2026.102633}
 
-Kert, K. (n.d.). \textit{Nordpool cheapest hours actions} [Home Assistant
+Kert, K. (2023). \textit{Nordpool cheapest hours actions} [Home Assistant
 blueprint]. GitHub. Retrieved 3 October 2026, from
 \url{https://github.com/kullarkert/ha_nordpool_hours_blueprint}
 
@@ -3376,5 +3381,103 @@ energy-efficient decision support in smart homes. \textit{Environmental
 Data Science, 3}, e7. \url{https://doi.org/10.1017/eds.2024.8}
 
 \end{hangparas}
+
+% ── APPENDIX ─────────────────────────────────────────────────────────────────
+\appendix
+\titleformat{\chapter}[block]
+  {\sffamily\fontsize{18}{22}\bfseries}
+  {Appendix \thechapter.}{0.5em}{}
+
+\chapter{Eligible studies}
+\label{app:studies}
+
+The literature search (Section~\ref{sec:litsearch}) found 49 eligible
+studies. Table~\ref{tab:studies-discussed} lists the 25 discussed in
+Chapter~\ref{ch:literature}; they are in the reference list.
+Table~\ref{tab:studies-other} lists the 24 that are not discussed. They
+are not cited in the text and are therefore identified by title and DOI
+instead of a reference list entry. All 24 were assessed on their
+abstracts only.
+
+{\small\urlstyle{same}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.28\textwidth}>{\raggedright\arraybackslash}p{0.50\textwidth}>{\raggedright\arraybackslash}p{0.13\textwidth}}
+\caption{Eligible studies discussed in Chapter~\ref{ch:literature}.}
+\label{tab:studies-discussed}\\
+\toprule
+Study & Title & Assessed on \\
+\midrule
+\endfirsthead
+\toprule
+Study & Title & Assessed on \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Cali et al. (2026) & Generative AI and LLM applications in renewable energy and smart grids: a systematic review for the sustainable energy transition & Abstract \\[3pt]
+Dolinin and Kiourt (2026) & Multi-Agent-Based Smart-Home Energy Management with Adaptive Reasoning & Abstract \\[3pt]
+El Makroum, Zwickl-Bernhard, Kranzl, and Auer (2026) & Conversational Demand Response: Bidirectional Aggregator-Prosumer Coordination through Agentic AI & Abstract \\[3pt]
+El Makroum, Zwickl-Bernhard, and Kranzl (2026) & Agentic AI home energy management system: A large language model framework for residential load scheduling & Abstract \\[3pt]
+Ghafari et al. (2025) & A Comprehensive Review on the Application of Large Language Models (LLMs) in Power Systems & Abstract \\[3pt]
+Giudici et al. (2024) & Designing Home Automation Routines Using an LLM-Based Chatbot & Full text \\[3pt]
+Gkalinikis et al. (2025) & RHEA: Residential Home Energy Advisor & Abstract \\[3pt]
+Gonçalves et al. (2025) & An Empirically Validated Framework for Automated and Personalized Residential Energy-Management Integrating Large Language Models and the Internet of Energy & Abstract \\[3pt]
+Jahanbakhsh et al. (2025) & Leveraging Retrieval-Augmented Generation for Automated Smart Home Orchestration & Full text \\[3pt]
+Jung (2026) & Multi-agent home energy management assistant (HEMA) & Abstract \\[3pt]
+King et al. (2024) & Sasha: Creative Goal-Oriented Reasoning in Smart Homes with Large Language Models & Full text \\[3pt]
+Kovacs et al. (2025) & Explanation Modalities for a Recommender System Optimizing Energy Management in a Solar-Powered Smart Home & Abstract \\[3pt]
+Liu et al. (2025) & LLM-BEM: Zero-shot LLM-Agent Scheduling for Smart Building Energy Management & Abstract \\[3pt]
+Michelon et al. (2025) & Large Language Model Interface for Home Energy Management Systems & Full text \\[3pt]
+Moghanjooghi et al. (2025) & HyLL: Hybrid LSTM and Large Language Model-Based Recommendation System for Energy Management and Consumption Optimization in Smart Homes & Abstract \\[3pt]
+Mongaillard et al. (2024) & Large Language Models for Power Scheduling: A User-Centric Approach & Abstract \\[3pt]
+Oprea and Bâra (2024) & A Recommendation System for Prosumers Based on Large Language Models & Full text \\[3pt]
+A. Papaioannou et al. (2025) & GUIDE: A prescriptive hybrid AI framework for energy-efficient appliances usage through behavioral modeling and LLM guidance & Full text \\[3pt]
+I. Papaioannou et al. (2025) & Smart Building Recommendations with LLMs: A Semantic Comparison Approach & Full text \\[3pt]
+Raghavan and Giridhar (2025) & Cost-optimal residential energy scheduling via a zero-shot LLM agent and model predictive control & Abstract \\[3pt]
+Raghavan and Giridhar (2026) & Integrating large language models into Peer-to-Peer energy management for multi-tenant buildings: A guardrail approach to ensuring resilience & Abstract \\[3pt]
+Rashed et al. (2025) & AI-Driven Multi-Agent Demand Response Framework for Residential Load Optimization Using CrewAi & Abstract \\[3pt]
+Siino and Tinnirello (2024) & GPT Prompt Engineering for Scheduling Appliances Usage for Energy Cost Optimization & Abstract \\[3pt]
+Yang et al. (2025) & LLM-MAC: LLM-Driven Multi-Agent Coordination for Generalizable Home Energy Management & Abstract \\[3pt]
+Zhang and Chen (2024) & Large language model-based interpretable machine learning control in building energy systems & Full text \\[3pt]
+\end{longtable}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.52\textwidth}>{\raggedright\arraybackslash}p{0.32\textwidth}}
+\caption{Eligible studies not discussed in the text.}
+\label{tab:studies-other}\\
+\toprule
+Year & Title & DOI \\
+\midrule
+\endfirsthead
+\toprule
+Year & Title & DOI \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+2026 & A Large Language Model-Based Agent Framework for Simulating Building Users’ Air-Conditioning Setpoint Adjustment Behavior Under Demand Response & \href{https://doi.org/10.3390/buildings16050887}{\nolinkurl{10.3390/buildings16050887}} \\[3pt]
+2026 & A Method for Characterizing the Adjustable Potential Features of Air Conditioning Loads Based on LLM Agents & \href{https://doi.org/10.1109/iceemt71099.2026.11686325}{\nolinkurl{10.1109/iceemt71099.2026.11686325}} \\[3pt]
+2026 & A smart home platform integrating an energy-aware digital twin and an LLM-enabled conversational agent & \href{https://doi.org/10.1080/0144929x.2026.2672579}{\nolinkurl{10.1080/0144929x.2026.2672579}} \\[3pt]
+2026 & Adaptive home energy management to self-motivated user preferences via iterative LLM-augmented reinforcement learning & \href{https://doi.org/10.1016/j.apenergy.2026.127976}{\nolinkurl{10.1016/j.apenergy.2026.127976}} \\[3pt]
+2025 & AI-driven smart home energy optimization: integrating AI agents with IoT for adaptive decision-making & \href{https://doi.org/10.1049/icp.2025.2536}{\nolinkurl{10.1049/icp.2025.2536}} \\[3pt]
+2025 & An LLM Framework for Inferring Household Energy Consumption Through Behaviour Simulation & \href{https://doi.org/10.1145/3736425.3770093}{\nolinkurl{10.1145/3736425.3770093}} \\[3pt]
+2023 & Assessing LLMs Responses in the Field of Domestic Sustainability: An Exploratory Study & \href{https://doi.org/10.1109/ddp60485.2023.00019}{\nolinkurl{10.1109/ddp60485.2023.00019}} \\[3pt]
+2025 & BitRL-Light: 1-Bit LLM Agents with Deep Reinforcement Learning for Energy-Efficient Smart Home Lighting Optimization & \href{https://doi.org/10.1109/ipccc66453.2025.11304691}{\nolinkurl{10.1109/ipccc66453.2025.11304691}} \\[3pt]
+2025 & Data and Knowledge–Driven Approach for Energy Profiling in Smart Context-Aware Buildings & \href{https://doi.org/10.1007/978-3-032-11402-0_6}{\nolinkurl{10.1007/978-3-032-11402-0_6}} \\[3pt]
+2025 & FlexiDigital: A Comprehensive Approach to Energy Flexibility Services using Digital Twins and Large Language Models & \href{https://doi.org/10.1145/3679240.3734662}{\nolinkurl{10.1145/3679240.3734662}} \\[3pt]
+2025 & Implementing AI in Smart Buildings: A Modular, Proof-of-Concept Approach & \href{https://doi.org/10.1109/epec65543.2025.11230379}{\nolinkurl{10.1109/epec65543.2025.11230379}} \\[3pt]
+2025 & Integrating AI and IoT for Smart Home Energy Management & \href{https://doi.org/10.1109/icitr69413.2025.11353739}{\nolinkurl{10.1109/icitr69413.2025.11353739}} \\[3pt]
+2026 & Integrating Large Language Models and Reinforcement Learning for Efficient Home Energy Management & \href{https://doi.org/10.1109/jiot.2026.3719299}{\nolinkurl{10.1109/jiot.2026.3719299}} \\[3pt]
+2026 & Large Language Model Assisted Peer-to-Peer Energy Trading System & \href{https://doi.org/10.1061/jleed9.eyeng-6440}{\nolinkurl{10.1061/jleed9.eyeng-6440}} \\[3pt]
+2026 & Large Language Model Driven Two-Layer Demand Response Framework for Electric Vehicle and Aggregators & \href{https://doi.org/10.1007/978-981-92-1257-6_8}{\nolinkurl{10.1007/978-981-92-1257-6_8}} \\[3pt]
+2026 & Large language model-enhanced home energy management with dynamic user preference elicitation and hierarchical data-sharing & \href{https://doi.org/10.1016/j.apenergy.2026.127540}{\nolinkurl{10.1016/j.apenergy.2026.127540}} \\[3pt]
+2026 & Large Language Models in Home Energy and Comfort Management: Opportunities, Framework, and Challenges & \href{https://doi.org/10.46855/energy-proceedings-12239}{\nolinkurl{10.46855/energy-proceedings-12239}} \\[3pt]
+2026 & LLM-Assisted Edge Intelligence Framework for Smart Home Energy Management & \href{https://doi.org/10.1109/apan70967.2026.11709693}{\nolinkurl{10.1109/apan70967.2026.11709693}} \\[3pt]
+2026 & Personalized Home Energy Management Using Non-Intrusive Load Monitoring and Human-in-the-Loop Reinforcement Learning & \href{https://doi.org/10.1109/pesgm58988.2026.11693075}{\nolinkurl{10.1109/pesgm58988.2026.11693075}} \\[3pt]
+2024 & Privacy-Preserving Energy Recommendations Using Federated Learning and Local LLMs on the Edge & \href{https://doi.org/10.1109/bdcat63179.2024.00065}{\nolinkurl{10.1109/bdcat63179.2024.00065}} \\[3pt]
+2025 & Review of optimization control methods for HVAC systems in Demand Response (DR): Transition from model-driven to model-free approaches and challenges & \href{https://doi.org/10.1016/j.buildenv.2025.113045}{\nolinkurl{10.1016/j.buildenv.2025.113045}} \\[3pt]
+2025 & Sustainable Energy Management via Integrating Model Context Protocol with Home Assistant & \href{https://doi.org/10.1109/isgtmiddleeast65737.2025.11314322}{\nolinkurl{10.1109/isgtmiddleeast65737.2025.11314322}} \\[3pt]
+2026 & Toward a Unified Architecture for Smart Home Energy Monitoring: Requirements, Design, and Use-Case Validation & \href{https://doi.org/10.1109/ccnc65079.2026.11366485}{\nolinkurl{10.1109/ccnc65079.2026.11366485}} \\[3pt]
+2026 & What LLM-Simulated Users Can and Cannot Tell Us About Conversational Energy Management Systems & \href{https://doi.org/10.1145/3765611.3815484}{\nolinkurl{10.1145/3765611.3815484}} \\[3pt]
+\end{longtable}
+}
 
 \end{document}
