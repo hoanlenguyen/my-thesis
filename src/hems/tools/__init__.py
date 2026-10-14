@@ -72,6 +72,9 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
 
     def describe_window(appliance_id: str) -> str:
         a = sc.appliance(appliance_id)
+        if a.windows is not None:  # several allowed periods (demo only)
+            periods = " or ".join(f"{sc.slot_to_time(s)}-{sc.boundary_to_time(e)}" for s, e in a.windows)
+            return f"may run only within {periods}; the cycle must start and finish inside one of these periods"
         return f"ready from {sc.slot_to_time(a.earliest_slot)}, must finish by {sc.boundary_to_time(a.deadline_slot)}"
 
     # ── Appliance Profiler ───────────────────────────────────────────────────

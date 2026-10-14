@@ -34,6 +34,9 @@ const savingClass = (r: RunResult) => {
   return s > 0.0005 ? 'text-highlighted' : 'text-muted'
 }
 const ROW = 'grid grid-cols-[11rem_1fr_6.5rem] gap-3 items-center'
+// One lane per appliance in each system row, so no cycle is drawn over another (thinner lanes when there are many)
+const laneHeight = computed(() => (props.appliances.length > 4 ? 4 : 6))
+const rowHeight = computed(() => `${Math.max(24, props.appliances.length * laneHeight.value + 6)}px`)
 </script>
 
 <template>
@@ -70,11 +73,13 @@ const ROW = 'grid grid-cols-[11rem_1fr_6.5rem] gap-3 items-center'
     <div :class="ROW" class="pt-1">
       <span class="text-xs text-muted">Allowed windows</span>
       <div class="relative rounded bg-elevated/40" :style="{ height: `${appliances.length * 6 + 4}px` }">
-        <div
-          v-for="(a, i) in appliances"
-          :key="a.id"
-          class="absolute h-1 rounded-full opacity-60"
-          :style="{ left: left(a.earliest), width: width(a.deadline - a.earliest), top: `${2 + i * 6}px`, background: color(i) }" />
+        <template v-for="(a, i) in appliances" :key="a.id">
+          <div
+            v-for="([p0, p1], j) in a.periods ?? [[a.earliest, a.deadline]]"
+            :key="j"
+            class="absolute h-1 rounded-full opacity-60"
+            :style="{ left: left(p0), width: width(p1 - p0), top: `${2 + i * 6}px`, background: color(i) }" />
+        </template>
       </div>
       <span />
     </div>
@@ -89,14 +94,14 @@ const ROW = 'grid grid-cols-[11rem_1fr_6.5rem] gap-3 items-center'
       <span class="text-xs truncate" :class="selected === keyOf(r) ? 'text-highlighted font-medium' : 'text-muted'">
         {{ r.label }}<span v-if="MODEL_LABELS[r.model]" class="text-dimmed"> · {{ MODEL_LABELS[r.model] }}</span>
       </span>
-      <div class="relative h-6 rounded bg-elevated/40">
+      <div class="relative rounded bg-elevated/40" :style="{ height: rowHeight }">
         <template v-for="(a, i) in appliances" :key="a.id">
           <UTooltip
             v-if="r.starts[a.id] != null"
             :text="`${applianceName(a.id, a.kind)} ${slotTime(r.starts[a.id]!)}–${slotTime(Math.min(SLOTS, r.starts[a.id]! + a.profileKw.length))}`">
             <div
               class="absolute rounded-sm opacity-90"
-              :style="{ left: left(r.starts[a.id]!), width: width(a.profileKw.length), top: `${3 + (i % 3) * 6}px`, height: '6px', background: color(i) }" />
+              :style="{ left: left(r.starts[a.id]!), width: width(a.profileKw.length), top: `${3 + i * laneHeight}px`, height: `${laneHeight}px`, background: color(i) }" />
           </UTooltip>
         </template>
       </div>

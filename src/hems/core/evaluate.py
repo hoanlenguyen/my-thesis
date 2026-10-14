@@ -58,7 +58,10 @@ def evaluate(scenario: Scenario, schedule: Schedule) -> Evaluation:
         if start is None:
             violations.append(f"{appliance.id}: not scheduled")
             continue
-        if start not in appliance.valid_starts():
+        if start not in appliance.valid_starts() and appliance.windows is not None:  # several periods (demo)
+            periods = " or ".join(f"{scenario.slot_to_time(s)}-{scenario.boundary_to_time(e)}" for s, e in appliance.windows)
+            violations.append(f"{appliance.id}: start {scenario.slot_to_time(start)} outside the periods {periods}")
+        elif start not in appliance.valid_starts():
             violations.append(
                 f"{appliance.id}: start {scenario.slot_to_time(start)} outside window "
                 f"{scenario.slot_to_time(appliance.earliest_slot)}-{scenario.slot_to_time(appliance.latest_start_slot)}"

@@ -5,8 +5,8 @@ import type { FullPeriod } from '~/composables/useDemoData'
 
 const props = defineProps<{ house: number, data: FullPeriod | null | undefined }>()
 const LABELS: Record<string, string> = {
-  milp: 'MILP optimum', multi: 'Multi-agent pipeline', single: 'Single agent', timer: 'Smart timer (own heuristic)',
-  emhass_rest: 'EMHASS, profiles', cheapest_hours: 'Cheapest hours (HA)', oneshot: 'LLM without tools'
+  milp: 'MILP optimum', multi_rag_opt: 'Multi-Agent Pipeline', timer: 'Smart timer (own heuristic)',
+  emhass_rest: 'EMHASS, profiles', cheapest_hours: 'Cheapest hours (HA blueprint)', oneshot: 'LLM without tools'
 }
 const h = computed(() => props.data?.households.find(x => x.house === props.house))
 const perYear = (v: number) => (h.value ? (v / h.value.recordedDays) * 365 : 0)
@@ -73,11 +73,14 @@ const barColor = (system: string) => {
     </div>
 
     <p class="mt-4 text-xs text-dimmed leading-relaxed">
-      Every washing-machine, dishwasher and tumble-dryer cycle the household actually ran is scheduled on its own day: ready
-      at its recorded start, finished by midnight, with the household's typical base load and the 3.5 kW peak limit.
-      Each day is priced at the same calendar day of {{ data?.priceYear }} (what a household pays today). No scheduling = the
-      recorded start times; a plan that breaks the peak limit saves nothing that day. The LLM systems are not run on these
-      days: their saving is estimated from their share of the optimum on the held-out benchmark.
+      This estimate is separate from the benchmark days on the other pages. Every washing-machine, dishwasher and
+      tumble-dryer cycle the household actually ran is scheduled on its own recorded day: ready at its recorded start,
+      finished by midnight, with the household's typical base load. Every day uses the strict 3.5 kW limit (raised, as in
+      the benchmark, where the largest cycle would not fit otherwise), so the figures show a tight limit, not the
+      realistic 8 kW one. Each day is priced at the same calendar day of {{ data?.priceYear }} (what a household pays
+      today). No scheduling = the recorded start times; a plan that breaks the peak limit saves nothing that day. The
+      LLM systems are not run on these days: their saving is the optimum's saving times their share of the optimal
+      saving on the held-out set Q2 (all 96 days, both limits).
     </p>
   </UCard>
   <UCard v-else>

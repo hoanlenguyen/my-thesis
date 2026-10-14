@@ -85,7 +85,9 @@ def cheapest_window_schedule(scenario: Scenario) -> Schedule:
     schedule: Schedule = {}
     for a in scenario.appliances:
         block = -(-a.duration_slots // 4) * 4  # whole hours, in slots
-        starts = [s for s in a.valid_starts() if s % 4 == 0 and s + block <= a.deadline_slot]
+        # the whole block inside one allowed period (one window: s + block <= deadline, as before)
+        starts = [s for s in a.valid_starts() if s % 4 == 0
+                  and any(p0 <= s and s + block <= p1 for p0, p1 in a.window_periods())]  # fmt: skip
         if not starts:
             schedule[a.id] = a.default_start_slot
             continue

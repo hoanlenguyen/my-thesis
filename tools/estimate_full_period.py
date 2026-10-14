@@ -157,7 +157,7 @@ def run_house(house: int, spot: pd.DataFrame, consumer: pd.DataFrame, with_emhas
 def summary() -> None:
     """Totals per household and system -> demo/public/data/fullperiod.json."""
     benchmarks = json.loads((DEMO.parent / "benchmarks.json").read_text(encoding="utf-8"))
-    q = next(b for b in benchmarks if b["id"] == "q")  # recent (15-minute) price era, as here
+    q = next(b for b in benchmarks if b["id"] == "q2")  # held-out set, recent (15-minute) price era, as here
     shares = {r["system"]: r["savingsCaptured"] for r in q["summary"] if r["model"] == "gpt-4o-mini"}
     households = []
     for path in sorted(OUT.glob("house_*.jsonl"), key=lambda p: int(p.stem.split("_")[1])):
@@ -172,7 +172,7 @@ def summary() -> None:
             saving = sum(r["naive"]["cost"] - r[system]["cost"] for r in have if r[system]["feasible"] and r[system]["cost"] is not None)
             totals[system] = {"saving": round(saving, 2), "validDays": sum(r[system]["feasible"] for r in have), "estimated": False}
         optimum = totals["milp"]["saving"]
-        for system in ("multi", "single", "oneshot"):
+        for system in ("multi_rag_opt", "oneshot"):
             if shares.get(system) is not None:
                 totals[system] = {"saving": round(optimum * shares[system], 2), "validDays": None, "estimated": True,
                                   "share": shares[system]}  # fmt: skip

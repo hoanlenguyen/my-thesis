@@ -13,7 +13,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from collections.abc import Sequence
+
+from pydantic import BaseModel, Field, model_serializer, model_validator
 
 SLOT_MINUTES = 15
 SLOTS_PER_DAY = 96
@@ -36,6 +38,11 @@ class FlexibleAppliance(BaseModel):
     earliest_slot: int = Field(ge=0, lt=SLOTS_PER_DAY)
     deadline_slot: int = Field(gt=0, le=SLOTS_PER_DAY, description="Cycle must end at or before this slot boundary")
     default_start_slot: int = Field(ge=0, lt=SLOTS_PER_DAY, description="Start time without scheduling (naive baseline)")
+    # Optional allowed periods [start, end) in slot boundaries, sorted and disjoint, e.g. 06:00-09:00 and
+    # 18:00-22:00; a cycle must start and finish inside one of them. Used only by the demo's "Try it" view:
+    # None (every benchmark scenario) means the single window earliest_slot..deadline_slot, which then spans
+    # the periods. Left out of serialised output when None, so saved scenarios are unchanged.
+    windows: list[tuple[int, int]] | None = None
 
     @property
     def duration_slots(self) -> int:
@@ -53,18 +60,43 @@ class FlexibleAppliance(BaseModel):
     def latest_start_slot(self) -> int:
         return self.deadline_slot - self.duration_slots
 
-    def valid_starts(self) -> range:
-        return range(self.earliest_slot, self.latest_start_slot + 1)
+    def valid_starts(self) -> Sequence[int]:
+        if self.windows is None:
+            return range(self.earliest_slot, self.latest_start_slot + 1)
+        return [s for start, end in self.windows for s in range(start, end - self.duration_slots + 1)]
+
+    def window_periods(self) -> list[tuple[int, int]]:
+        """The allowed periods [start, end): the single window unless several periods are given."""
+        return list(self.windows) if self.windows is not None else [(self.earliest_slot, self.deadline_slot)]
 
     @model_validator(mode="after")
     def _check_window(self) -> FlexibleAppliance:
         if not self.profile_kw:
             raise ValueError(f"{self.id}: empty profile")
-        if self.latest_start_slot < self.earliest_slot:
+        if self.windows is not None:
+            if not self.windows:
+                raise ValueError(f"{self.id}: empty list of periods")
+            for (s0, e0), (s1, _) in zip(self.windows, self.windows[1:], strict=False):
+                if s1 < e0:
+                    raise ValueError(f"{self.id}: periods must be sorted and must not overlap")
+            if any(not (0 <= s < e <= SLOTS_PER_DAY) for s, e in self.windows):
+                raise ValueError(f"{self.id}: period outside the day")
+            if (self.earliest_slot, self.deadline_slot) != (self.windows[0][0], self.windows[-1][1]):
+                raise ValueError(f"{self.id}: earliest_slot and deadline_slot must span the periods")
+            if not self.valid_starts():
+                raise ValueError(f"{self.id}: every period is shorter than the cycle")
+        elif self.latest_start_slot < self.earliest_slot:
             raise ValueError(f"{self.id}: window shorter than cycle")
-        if not (self.earliest_slot <= self.default_start_slot <= self.latest_start_slot):
+        if self.default_start_slot not in self.valid_starts():
             raise ValueError(f"{self.id}: default start outside window")
         return self
+
+    @model_serializer(mode="wrap")
+    def _drop_unset_windows(self, handler):  # type: ignore[no-untyped-def]
+        data = handler(self)
+        if self.windows is None:
+            data.pop("windows", None)
+        return data
 
 
 class FixedAppliance(BaseModel):

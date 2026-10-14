@@ -15,7 +15,7 @@ const showLocal = ref(false)
 const keyOf = (r: RunResult) => `${r.system}|${r.model}`
 const { results, usual, fixed: fixedRows } = useDayComparison(day, households, run, showLocal)
 const hasLocal = computed(() => day.value?.results.some(r => r.model === 'gpt-oss-20b'))
-const selected = ref('multi|gpt-4o-mini')
+const selected = ref('multi_rag_opt|gpt-4o-mini')
 const current = computed(() => results.value.find(r => keyOf(r) === selected.value) ?? results.value[0])
 watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]) selected.value = keyOf(rs[0]) })
 </script>
@@ -29,7 +29,7 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
         </UButton>
         <h1 class="text-2xl font-semibold text-highlighted">{{ day.id }} · {{ day.date }}</h1>
         <p class="text-sm text-muted">
-          Type {{ day.type }}: {{ SCENARIO_TYPES[day.type] }} · {{ day.appliances.length }} appliance cycles to schedule ·
+          {{ scenarioTypeLabel(day.type) }} · {{ day.appliances.length }} appliance cycles to schedule ·
           peak limit {{ day.peakLimitKw }} kW
         </p>
         <p v-if="day.house" class="text-xs text-dimmed mt-0.5">
@@ -59,6 +59,7 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
       <UCard>
         <p class="text-xs text-muted">No scheduling</p>
         <p class="text-xl font-bold tabular-nums text-highlighted">{{ euro(day.naiveCost, 3) }}</p>
+        <p v-if="!day.naiveFeasible" class="text-xs text-warning">breaks the peak limit</p>
       </UCard>
       <UCard>
         <p class="text-xs text-muted">Optimal (MILP)</p>
@@ -69,6 +70,21 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
         <p class="text-xl font-bold tabular-nums text-highlighted">{{ euro(day.naiveCost - day.milpCost, 3) }}</p>
       </UCard>
     </div>
+
+    <UAlert
+      v-if="smallSavingNote(day)"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-info"
+      :title="smallSavingNote(day)!.label"
+      :description="smallSavingNote(day)!.text" />
+    <UAlert
+      v-if="raisedLimitNote(day)"
+      color="warning"
+      variant="subtle"
+      icon="i-lucide-gauge"
+      title="Peak limit raised"
+      :description="raisedLimitNote(day)!" />
 
     <UCard>
       <template #header>

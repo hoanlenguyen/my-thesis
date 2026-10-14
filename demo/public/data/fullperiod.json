@@ -31,23 +31,17 @@
      "validDays": 323,
      "estimated": false
     },
-    "multi": {
-     "saving": 4.98,
+    "multi_rag_opt": {
+     "saving": 5.53,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 5.09,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.34,
+     "saving": 1.26,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -81,23 +75,17 @@
      "validDays": 403,
      "estimated": false
     },
-    "multi": {
-     "saving": 21.07,
+    "multi_rag_opt": {
+     "saving": 23.39,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 21.52,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 5.67,
+     "saving": 5.33,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -131,23 +119,17 @@
      "validDays": 438,
      "estimated": false
     },
-    "multi": {
-     "saving": 39.08,
+    "multi_rag_opt": {
+     "saving": 43.38,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 39.92,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 10.51,
+     "saving": 9.88,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -181,23 +163,17 @@
      "validDays": 213,
      "estimated": false
     },
-    "multi": {
-     "saving": 6.1,
+    "multi_rag_opt": {
+     "saving": 6.77,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 6.23,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.64,
+     "saving": 1.54,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -231,23 +207,17 @@
      "validDays": 419,
      "estimated": false
     },
-    "multi": {
-     "saving": 16.62,
+    "multi_rag_opt": {
+     "saving": 18.45,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 16.98,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 4.47,
+     "saving": 4.2,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -281,23 +251,17 @@
      "validDays": 173,
      "estimated": false
     },
-    "multi": {
-     "saving": 5.28,
+    "multi_rag_opt": {
+     "saving": 5.86,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 5.39,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.42,
+     "saving": 1.33,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -331,23 +295,17 @@
      "validDays": 511,
      "estimated": false
     },
-    "multi": {
-     "saving": 46.0,
+    "multi_rag_opt": {
+     "saving": 51.07,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 46.99,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 12.37,
+     "saving": 11.63,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -381,23 +339,17 @@
      "validDays": 286,
      "estimated": false
     },
-    "multi": {
-     "saving": 7.02,
+    "multi_rag_opt": {
+     "saving": 7.79,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 7.17,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.89,
+     "saving": 1.77,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -431,23 +383,17 @@
      "validDays": 327,
      "estimated": false
     },
-    "multi": {
-     "saving": 14.93,
+    "multi_rag_opt": {
+     "saving": 16.57,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 15.25,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 4.01,
+     "saving": 3.77,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -481,23 +427,17 @@
      "validDays": 442,
      "estimated": false
     },
-    "multi": {
-     "saving": 20.19,
+    "multi_rag_opt": {
+     "saving": 22.41,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 20.62,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 5.43,
+     "saving": 5.1,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -531,23 +471,17 @@
      "validDays": 81,
      "estimated": false
     },
-    "multi": {
-     "saving": 1.55,
+    "multi_rag_opt": {
+     "saving": 1.72,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 1.58,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 0.42,
+     "saving": 0.39,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -581,23 +515,17 @@
      "validDays": 272,
      "estimated": false
     },
-    "multi": {
-     "saving": 9.99,
+    "multi_rag_opt": {
+     "saving": 11.09,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 10.21,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 2.69,
+     "saving": 2.53,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -631,23 +559,17 @@
      "validDays": 202,
      "estimated": false
     },
-    "multi": {
-     "saving": 7.0,
+    "multi_rag_opt": {
+     "saving": 7.77,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 7.15,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.88,
+     "saving": 1.77,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -681,23 +603,17 @@
      "validDays": 384,
      "estimated": false
     },
-    "multi": {
-     "saving": 12.95,
+    "multi_rag_opt": {
+     "saving": 14.38,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 13.23,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 3.48,
+     "saving": 3.28,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -731,23 +647,17 @@
      "validDays": 200,
      "estimated": false
     },
-    "multi": {
-     "saving": 5.24,
+    "multi_rag_opt": {
+     "saving": 5.82,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 5.36,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.41,
+     "saving": 1.33,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -781,23 +691,17 @@
      "validDays": 213,
      "estimated": false
     },
-    "multi": {
-     "saving": 7.14,
+    "multi_rag_opt": {
+     "saving": 7.93,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 7.3,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 1.92,
+     "saving": 1.81,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -831,23 +735,17 @@
      "validDays": 224,
      "estimated": false
     },
-    "multi": {
-     "saving": 14.09,
+    "multi_rag_opt": {
+     "saving": 15.64,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 14.39,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 3.79,
+     "saving": 3.56,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   },
@@ -881,23 +779,17 @@
      "validDays": 310,
      "estimated": false
     },
-    "multi": {
-     "saving": 11.4,
+    "multi_rag_opt": {
+     "saving": 12.65,
      "validDays": null,
      "estimated": true,
-     "share": 0.9008
-    },
-    "single": {
-     "saving": 11.64,
-     "validDays": null,
-     "estimated": true,
-     "share": 0.9202
+     "share": 1.0
     },
     "oneshot": {
-     "saving": 3.06,
+     "saving": 2.88,
      "validDays": null,
      "estimated": true,
-     "share": 0.2422
+     "share": 0.2278
     }
    }
   }

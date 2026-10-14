@@ -7,6 +7,7 @@ export interface SystemSummary {
   runs: number
   feasible: number
   gapMean: number | null
+  savingPct: number | null // saving vs no scheduling, pooled over runs (thesis primary outcome)
   savingsCaptured: number | null
   latencyMean: number | null
   usdPerRun: number | null
@@ -16,18 +17,33 @@ export interface SystemSummary {
 export interface ScenarioIndex {
   id: string
   type: string
+  pattern: string
+  load: string
+  limit: string
+  peakLimitKw: number
   date: string
   appliances: number
   house: number | null
   naiveCost: number
   milpCost: number
+  naiveFeasible: boolean
   achievableSaving: number
+}
+
+/** Saving of every system on the scenarios with one factor level (SQ2), pooled over runs. */
+export interface ConditionRow {
+  factor: FactorKey
+  level: string
+  scenarios: number
+  optimumPct: number | null
+  systems: Record<string, { savingPct: number | null, validShare: number | null }> // key "system|model"
 }
 
 export interface Benchmark {
   id: string
   label: string
   summary: SystemSummary[]
+  byCondition: ConditionRow[]
   scenarios: ScenarioIndex[]
 }
 
@@ -37,6 +53,7 @@ export interface Appliance {
   profileKw: number[]
   earliest: number
   deadline: number
+  periods?: [number, number][] // allowed periods [start, end) in slots; "Try it" only, else earliest..deadline
   energyKwh: number
 }
 
@@ -101,6 +118,9 @@ export interface Household {
 export interface DayDetail {
   id: string
   type: string
+  pattern: string
+  load: string
+  limit: string
   date: string
   peakLimitKw: number
   house: number | null
@@ -112,6 +132,7 @@ export interface DayDetail {
   plan: string
   naiveCost: number
   milpCost: number
+  naiveFeasible: boolean
   results: RunResult[]
 }
 

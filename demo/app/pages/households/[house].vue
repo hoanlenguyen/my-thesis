@@ -20,7 +20,7 @@ const totalKwh = computed(() => appliances.value.reduce((s, a) => s + a.kwhPerDa
 // "When each system runs the appliances" for one of the household's benchmark days.
 const pickedKey = ref('')
 const picked = computed(() => days.value.find(d => `${d.bench}/${d.id}` === pickedKey.value) ?? days.value[0])
-const { data: day } = await useDay(() => picked.value?.bench ?? 'main', () => picked.value?.id ?? '')
+const { data: day } = await useDay(() => picked.value?.bench ?? benchmarks.value?.[0]?.id ?? 'q2', () => picked.value?.id ?? '')
 const run = ref(1)
 const showLocal = ref(false)
 const { results, usual, fixed } = useDayComparison(day, households, run, showLocal)
@@ -138,7 +138,7 @@ const hasLocal = computed(() => day.value?.results.some(r => r.model === 'gpt-os
           :class="picked && `${picked.bench}/${picked.id}` === `${d.bench}/${d.id}` ? 'border-primary bg-primary/10' : 'border-default hover:border-primary/50'"
           @click="pickedKey = `${d.bench}/${d.id}`">
           <p class="text-xs font-medium text-highlighted">{{ d.id }} · {{ d.date }}</p>
-          <p class="text-[10px] text-muted">{{ SCENARIO_TYPES[d.type] }} · save up to {{ euro(d.achievableSaving) }}</p>
+          <p class="text-[10px] text-muted">{{ d.benchLabel }} · {{ scenarioTypeLabel(d.type) }}</p>
         </button>
       </div>
 

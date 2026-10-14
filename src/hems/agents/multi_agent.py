@@ -38,7 +38,7 @@ from hems.agents.schemas import (
 )
 from hems.agents.types import AgentRun
 from hems.core.evaluate import PEAK_TOLERANCE_KW, appliance_cost, evaluate, total_load
-from hems.core.models import Scenario
+from hems.core.models import FlexibleAppliance, Scenario, Schedule
 from hems.tools import OPTIMIZER_TOOLS, PROFILER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select
 
 # Step budget split by workload; the total equals the single agent's RECURSION_LIMIT (75).
@@ -113,14 +113,22 @@ def _run_agent(
 def build_pipeline(
     scenario: Scenario, models: ModelFactory, *, human_review: bool = False, summarize: bool = True, cost_check: bool = False,
     retriever: Callable[[Scenario], str] | None = None, optimizer: bool = False, complete_missing: bool = False,
-    lean: bool = False, parallel_start: bool = False,
+    lean: bool = False, parallel_start: bool = False, summary_costs: Callable[[Schedule], str] | None = None,
 ):  # fmt: skip
     """``parallel_start`` (demo only, with ``lean``; not evaluated): the Profiler starts at the same time as the
-    Orchestrator's planning step instead of waiting for its brief, since it already receives the household data."""
+    Orchestrator's planning step instead of waiting for its brief, since it already receives the household data.
+
+    ``summary_costs`` (demo only, with ``lean``; not evaluated): replaces the cost lines given to the summary, so
+    that it states the cost the demo page shows (energy plus a fee for exceeding the limit) instead of the energy
+    cost alone."""
     if parallel_start and not lean:
         raise ValueError("parallel_start requires lean")
     tools = build_tools(scenario)
     plan_ids = [a.id for a in scenario.appliances]  # every cycle in the day's appliance plan
+
+    def periods_text(appliance: FlexibleAppliance) -> str:
+        """Allowed periods of an appliance with several of them (demo only), e.g. "06:00-09:00 or 18:00-22:00"."""
+        return " or ".join(f"{scenario.slot_to_time(s)}-{scenario.boundary_to_time(e)}" for s, e in appliance.window_periods())
 
     def place_missing(final: dict[str, str]) -> tuple[dict[str, str], list[str]]:
         """Give each appliance of the plan without a valid start its cheapest start that keeps the load within the
@@ -231,7 +239,12 @@ def build_pipeline(
             except (ValueError, AttributeError):
                 problems.append(f"{appliance_id} at {clock!r} is not a valid appliance and start time")
                 continue
-            if start not in appliance.valid_starts():
+            if start not in appliance.valid_starts() and appliance.windows is not None:  # several periods (demo)
+                problems.append(
+                    f"{appliance_id} starts {scenario.slot_to_time(start)} but must start and finish inside one of "
+                    f"{periods_text(appliance)}"
+                )
+            elif start not in appliance.valid_starts():
                 problems.append(
                     f"{appliance_id} starts {scenario.slot_to_time(start)} but must start between "
                     f"{scenario.slot_to_time(appliance.earliest_slot)} and "
@@ -277,6 +290,9 @@ def build_pipeline(
                 "conflict_feedback": "",
             }  # fmt: skip
         windows = {p.appliance_id: f"{p.earliest_time}-{p.deadline_time}" for p in state["profile"].appliances}
+        for a in scenario.appliances:  # several allowed periods (demo only): the true periods, not the span
+            if a.windows is not None and a.id in windows:
+                windows[a.id] = periods_text(a)
         message = (
             f"Proposed schedule: {json.dumps(assignments_to_dict(proposal.assignments))}\n"
             f"User windows (earliest start - finish by): {json.dumps(windows)}{examples}"
@@ -337,6 +353,8 @@ def build_pipeline(
             schedule = {k: scenario.time_to_slot(v) for k, v in final.items()}
         except (ValueError, AttributeError):
             return ""
+        if summary_costs is not None:
+            return summary_costs({k: s for k, s in schedule.items() if k in plan_ids})
         cost = sum(appliance_cost(scenario, scenario.appliance(k), s) for k, s in schedule.items() if k in plan_ids)
         ready = sum(appliance_cost(scenario, a, a.earliest_slot) for a in scenario.appliances if a.id in schedule)
         saving = ready - cost

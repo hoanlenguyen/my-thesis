@@ -40,7 +40,7 @@ from fastapi.responses import StreamingResponse
 from langchain_core.callbacks import BaseCallbackHandler
 from pydantic import BaseModel, Field
 
-from hems.core.evaluate import evaluate
+from hems.core.evaluate import appliance_cost, evaluate
 from hems.core.models import SLOTS_PER_DAY, FlexibleAppliance, Scenario, load_scenarios
 from hems.data import prices as price_data
 from hems.data.tariff import Tariff
@@ -66,8 +66,9 @@ CATALOG = {
     "electric_oven": {"label": "Electric oven", "measured": False, "power_kw": 2.5, "duration_min": 60},
 }
 SYSTEM_LABELS = {
-    "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)", "multi_lean": "Multi-Agent Pipeline",
-    "timer": "Smart timer (own heuristic)", "cheapest_hours": "Cheapest hours", "cheapest_window": "Cheapest window",
+    "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)", "multi_lean": "Multi-Agent Pipeline (lean variant)",
+    "timer": "Smart timer (own heuristic)", "cheapest_hours": "Cheapest hours (HA blueprint)",
+    "cheapest_window": "Cheapest window (HA Nordpool Planner)",
     "emhass_rest": "EMHASS",
 }  # fmt: skip
 TOOL_SYSTEMS = ("naive", "timer", "cheapest_hours", "cheapest_window")  # the optimum is computed with the fee
@@ -209,10 +210,18 @@ def optimum_with_fee(scenario: Scenario, fee_eur_per_kw: float) -> dict[str, int
 # ── Scenario from the profile ────────────────────────────────────────────────
 
 
+class PeriodIn(BaseModel):
+    start: str = Field(description='"HH:MM"')
+    end: str = Field(description='"HH:MM" or "24:00"')
+
+
 class ApplianceIn(BaseModel):
     kind: str
     ready: str = Field("07:00", description='"HH:MM"')
     finish_by: str = Field("22:00", description='"HH:MM" or "24:00"')
+    # Allowed periods, e.g. 06:00-09:00 and 18:00-22:00; the cycle must start and finish inside one of them.
+    # When given, they replace ready/finish_by.
+    periods: list[PeriodIn] | None = None
     power_kw: float | None = Field(None, gt=0, le=50, description="peak power; default from the catalog")
     duration_min: int | None = Field(None, ge=15, le=1440, description="runtime; default from the catalog")
 
@@ -236,6 +245,28 @@ def _slot(clock: str, end: bool = False) -> int:
     return int(np.ceil(minutes / 15)) if end else minutes // 15
 
 
+def _periods(item: ApplianceIn, name: str, cycle_slots: int) -> list[tuple[int, int]]:
+    """The appliance's allowed periods as sorted, disjoint slot ranges; overlapping or touching periods are merged.
+    Every period must be long enough for one whole cycle."""
+    raw = item.periods or [PeriodIn(start=item.ready, end=item.finish_by)]
+    spans = []
+    for p in raw:
+        start, end = _slot(p.start), _slot(p.end, end=True)
+        if end <= start:
+            raise HTTPException(422, f"{name}: the period {p.start}-{p.end} ends before it starts")
+        if end - start < cycle_slots:
+            raise HTTPException(422, f"{name}: the period {p.start}-{p.end} is shorter than its "
+                                     f"{cycle_slots * 15}-minute cycle")  # fmt: skip
+        spans.append((start, end))
+    merged: list[tuple[int, int]] = []
+    for start, end in sorted(spans):
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
 def build_scenario(body: PlanIn) -> tuple[Scenario, dict[str, Any]]:
     day = date.fromisoformat(body.date) if body.date else date.today()
     if body.housing not in HOUSING_BASE_KW:
@@ -253,13 +284,12 @@ def build_scenario(body: PlanIn) -> tuple[Scenario, dict[str, Any]]:
             raise HTTPException(422, f"unknown appliance {item.kind!r}")
         counts[item.kind] = counts.get(item.kind, 0) + 1
         profile = cycle_for(item.kind, item.power_kw, item.duration_min)
-        earliest, deadline = _slot(item.ready), _slot(item.finish_by, end=True)
         name = f"{CATALOG[item.kind]['label']}{'' if counts[item.kind] == 1 else ' ' + str(counts[item.kind])}"
-        if deadline - earliest < len(profile):
-            raise HTTPException(422, f"{name}: the window {item.ready}-{item.finish_by} is shorter than its "
-                                     f"{len(profile) * 15}-minute cycle")  # fmt: skip
+        periods = _periods(item, name, len(profile))
+        earliest, deadline = periods[0][0], periods[-1][1]
         appliances.append(FlexibleAppliance(id=f"{item.kind}_{counts[item.kind]}", kind=item.kind, profile_kw=profile,
-                                            earliest_slot=earliest, deadline_slot=deadline, default_start_slot=earliest))  # fmt: skip
+                                            earliest_slot=earliest, deadline_slot=deadline, default_start_slot=earliest,
+                                            windows=periods if len(periods) > 1 else None))  # fmt: skip
     tariff = Tariff()
     scenario = Scenario(
         id=f"demo-{day.isoformat()}", type="demo", date=day.isoformat(),
@@ -269,13 +299,76 @@ def build_scenario(body: PlanIn) -> tuple[Scenario, dict[str, Any]]:
         base_load_kw=[round(float(b), 3) for b in base], peak_limit_kw=body.peak_limit_kw, appliances=appliances,
         user_request="", notes="demo: profile entered in the browser",
     )  # fmt: skip
-    lines = [f"- {a.kind.replace('_', ' ')} ({a.id}): ready from {scenario.slot_to_time(a.earliest_slot)}, "
-             f"must finish by {scenario.boundary_to_time(a.deadline_slot)}" for a in appliances]  # fmt: skip
+    def when(a: FlexibleAppliance) -> str:
+        if a.windows is None:
+            return f"ready from {scenario.slot_to_time(a.earliest_slot)}, must finish by {scenario.boundary_to_time(a.deadline_slot)}"
+        periods = " or ".join(f"{scenario.slot_to_time(s)}-{scenario.boundary_to_time(e)}" for s, e in a.windows)
+        return f"may run only within {periods} (start and finish inside one period)"
+
+    lines = [f"- {a.kind.replace('_', ' ')} ({a.id}): {when(a)}" for a in appliances]
     scenario.user_request = (
         f"I'm on a spot-price electricity contract. Please schedule these appliance cycles for {scenario.date} so that my "
         "electricity cost is as low as possible, without exceeding my household peak load limit:\n" + "\n".join(lines)
     )
     return scenario, source
+
+
+class ScheduleItem(BaseModel):
+    """One appliance cycle of the recommendation."""
+
+    applianceId: str  # noqa: N815 - JSON field names as the page uses them
+    appliance: str
+    start: str = Field(description='"HH:MM"')
+    end: str = Field(description='"HH:MM", or "24:00" at midnight')
+    period: str = Field(description='the allowed period the cycle runs in, e.g. "18:00-22:00"')
+    energyKwh: float  # noqa: N815
+    cost: float = Field(description="energy cost of this cycle, in `currency`")
+
+
+class Recommendation(BaseModel):
+    """The pipeline's daily recommendation in a fixed form. Only ``message`` is written by the language model;
+    ``schedules`` and the figures come from the verified schedule as scored on the page."""
+
+    message: str
+    schedules: list[ScheduleItem]
+    cost: float = Field(description="what the household pays: energy plus the fee above the peak limit")
+    saving: float = Field(description="against starting every appliance as soon as it is ready")
+    savingPct: float  # noqa: N815
+    currency: str = "EUR"
+    currencySymbol: str = "€"  # noqa: N815
+    peakKw: float  # noqa: N815
+    peakLimitKw: float  # noqa: N815
+    valid: bool = Field(description="every appliance scheduled, every start inside its allowed period")
+    date: str
+
+
+class AgentOut(BaseModel):
+    result: dict[str, Any]
+    recommendation: Recommendation
+
+
+def _recommendation(scenario: Scenario, result: dict[str, Any]) -> dict[str, Any]:
+    """The fixed-form recommendation built around the pipeline's message from its scored result."""
+    items = []
+    for appliance_id, start in sorted(result["starts"].items(), key=lambda kv: (kv[1], kv[0])):
+        a = _find(scenario, appliance_id)
+        if a is None:
+            continue
+        end = start + a.duration_slots
+        period = next(((p0, p1) for p0, p1 in a.window_periods() if p0 <= start and end <= p1), None)
+        n = appliance_id.rsplit("_", 1)[-1]
+        name = CATALOG.get(a.kind, {}).get("label", a.kind) + ("" if n == "1" else f" {n}")
+        items.append(ScheduleItem(
+            applianceId=appliance_id, appliance=name, start=scenario.slot_to_time(start),
+            end=scenario.boundary_to_time(end),
+            period=f"{scenario.slot_to_time(period[0])}-{scenario.boundary_to_time(period[1])}" if period else "outside",
+            energyKwh=round(a.energy_kwh, 3), cost=round(appliance_cost(scenario, a, start), 4),
+        ))  # fmt: skip
+    return Recommendation(
+        message=result["message"], schedules=items, cost=result["costEur"], saving=result["savingEur"],
+        savingPct=result["savingPct"], peakKw=result["peakKw"], peakLimitKw=scenario.peak_limit_kw,
+        valid=result["feasible"], date=scenario.date,
+    ).model_dump()  # fmt: skip
 
 
 def _result(scenario: Scenario, system: str, record: dict[str, Any], naive: dict[str, Any], fee: float) -> dict[str, Any]:
@@ -337,7 +430,8 @@ def _scenario_payload(scenario: Scenario, source: dict[str, str]) -> dict[str, A
         "spotEurPerKwh": scenario.spot_eur_per_kwh, "priceEurPerKwh": scenario.price_eur_per_kwh,
         "baseLoadKw": scenario.base_load_kw,
         "appliances": [{"id": a.id, "kind": a.kind, "profileKw": a.profile_kw, "earliest": a.earliest_slot,
-                        "deadline": a.deadline_slot, "energyKwh": round(a.energy_kwh, 3)} for a in scenario.appliances],
+                        "deadline": a.deadline_slot, "periods": [list(p) for p in a.window_periods()],
+                        "energyKwh": round(a.energy_kwh, 3)} for a in scenario.appliances],
     }  # fmt: skip
 
 
@@ -374,6 +468,28 @@ def _naive(scenario: Scenario, fee: float) -> dict[str, Any]:
     return score(scenario, {a.id: a.default_start_slot for a in scenario.appliances}, fee)
 
 
+def _summary_costs(scenario: Scenario, fee: float):  # type: ignore[no-untyped-def]
+    """Cost lines for the pipeline's summary, scored as on the page: energy plus the fee for the day's highest load
+    above the limit, against starting every appliance as soon as it is ready (the "Saving" column)."""
+    naive = _naive(scenario, fee)
+
+    def cost(s: dict[str, Any]) -> str:
+        text = f"EUR {s['total']:.3f}"
+        if s["fee"] > 0.0005:
+            text += (f" (energy EUR {s['energy']:.3f} plus a fee of EUR {s['fee']:.3f} for {s['over']:.2f} kW above "
+                     f"the {scenario.peak_limit_kw:.2f} kW limit)")  # fmt: skip
+        return text
+
+    def facts(schedule: dict[str, int]) -> str:
+        s = score(scenario, schedule, fee)
+        saving = naive["total"] - s["total"]
+        share = f" ({saving / naive['total'] * 100:.0f} %)" if naive["total"] > 0 else ""
+        return (f"\nCost of the scheduled cycles: {cost(s)}. Cost if every appliance started as soon as it is ready: "
+                f"{cost(naive)}. Saving: EUR {saving:.3f}{share}.")  # fmt: skip
+
+    return facts
+
+
 @app.post("/api/plan/tools")
 def plan_tools(body: PlanIn) -> dict[str, Any]:
     """The deterministic systems, the optimum with the fee and EMHASS: fast."""
@@ -382,21 +498,33 @@ def plan_tools(body: PlanIn) -> dict[str, Any]:
     records = {s: execute(scenario, s) for s in TOOL_SYSTEMS}
     best = optimum_with_fee(scenario, fee)
     records["milp"] = {"schedule_slots": best, "latency_s": None}
-    if (emhass := _emhass(scenario)) is not None:
+    # EMHASS gives each deferrable load one start-end window, so it is not run when an appliance has several periods.
+    several_periods = any(a.windows is not None for a in scenario.appliances)
+    if not several_periods and (emhass := _emhass(scenario)) is not None:
         records["emhass_rest"] = emhass
     naive = _naive(scenario, fee)
     results = [_result(scenario, s, r, naive, fee) for s, r in records.items()]
     return {**_scenario_payload(scenario, source), "feeEurPerKw": fee, "naiveCost": naive["total"],
-            "milpCost": score(scenario, best, fee)["total"], "results": results, "emhass": "emhass_rest" in records}  # fmt: skip
+            "milpCost": score(scenario, best, fee)["total"], "results": results, "emhass": "emhass_rest" in records,
+            "emhassSkipped": "periods" if several_periods else None}  # fmt: skip
 
 
-@app.post("/api/plan/agent")
+@app.post("/api/plan/agent", response_model=AgentOut)
 def plan_agent(body: PlanIn) -> dict[str, Any]:
     """The Multi-Agent Pipeline with GPT-4o-mini, live, with its message to the household. Its tools and checks
-    treat the limit as a target; exceeding it is charged the fee like every other system."""
+    treat the limit as a target; exceeding it is charged the fee like every other system.
+
+    Runs exactly the pipeline of /api/plan/agent/stream (same setup, and a summary that states the page's cost
+    and saving including the fee) and returns only its final result: the scored ``result`` as on the page, and the
+    ``recommendation`` in a fixed form ({message, schedules, cost, saving, currency, ...})."""
     scenario, _ = build_scenario(body)
-    record = execute(scenario, "multi_lean", "gpt-4o-mini", summarize=True)
-    return {"result": _result(scenario, "multi_lean", record, _naive(scenario, body.fee_eur_per_kw), body.fee_eur_per_kw)}
+    for chunk in _pipeline_events(scenario, body.fee_eur_per_kw):
+        event = json.loads(chunk.removeprefix("data: "))
+        if event.get("type") == "result":
+            return {"result": event["result"], "recommendation": event["recommendation"]}
+        if event.get("type") == "error":
+            raise HTTPException(502, event.get("message") or "the pipeline stopped with an error")
+    raise HTTPException(502, "the pipeline returned no result")
 
 
 # ── The pipeline, agent by agent (streamed) ─────────────────────────────────
@@ -447,6 +575,10 @@ class _AgentWatch(BaseCallbackHandler):
                    "ms": round((time.perf_counter() - started) * 1000)})  # fmt: skip
 
 
+def _find(scenario: Scenario, appliance_id: Any) -> FlexibleAppliance | None:
+    return next((a for a in scenario.appliances if a.id == appliance_id), None)
+
+
 def _agent_output(node: str, update: dict[str, Any]) -> dict[str, Any]:
     """What an agent handed on, in a form the page can show."""
 
@@ -494,7 +626,8 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
             watch = _AgentWatch(emit)
             model = make_model("gpt-4o-mini")
             pipeline = build_pipeline(scenario, lambda _role: model, retriever=default_retriever(), optimizer=True,
-                                      complete_missing=True, lean=True, parallel_start=True)  # fmt: skip
+                                      complete_missing=True, lean=True, parallel_start=True,
+                                      summary_costs=_summary_costs(scenario, fee))  # fmt: skip
             state: dict[str, Any] = {key: kind() for key, kind in REDUCED.items()}
             emit({"type": "start"})
             with get_usage_metadata_callback() as usage_cb:
@@ -511,7 +644,13 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
                         for key, value in update.items():
                             state[key] = state[key] + value if key in REDUCED else value
                         if node in AGENT_OF_NODE:
-                            emit({"type": "done", "node": node, "output": _agent_output(node, update),
+                            output = _agent_output(node, update)
+                            for row in output.get("appliances", []) if node == "profiler" else []:
+                                # show the true periods; the Profiler's profile has room for one window only
+                                if isinstance(row, dict) and (a := _find(scenario, row.get("id"))) and a.windows:
+                                    row["window"] = " or ".join(f"{scenario.slot_to_time(s)}-{scenario.boundary_to_time(e)}"
+                                                                for s, e in a.windows)  # fmt: skip
+                            emit({"type": "done", "node": node, "output": output,
                                   "tokens": watch.tokens.get(node, 0), "errors": update.get("errors", [])})  # fmt: skip
                 usage = dict(usage_cb.usage_metadata)
             run = AgentRun(assignments=state.get("final"), explanation=state.get("summary", ""), errors=state["errors"],
@@ -520,7 +659,8 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
             tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
             record = _record(scenario, "multi_lean", "gpt-4o-mini", 0, run, schedule, problems,
                              time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
-            emit({"type": "result", "result": _result(scenario, "multi_lean", record, _naive(scenario, fee), fee)})
+            result = _result(scenario, "multi_lean", record, _naive(scenario, fee), fee)
+            emit({"type": "result", "result": result, "recommendation": _recommendation(scenario, result)})
         except Exception as exc:  # noqa: BLE001 - shown on the page instead of a broken stream
             emit({"type": "error", "message": f"{type(exc).__name__}: {exc}"})
         finally:

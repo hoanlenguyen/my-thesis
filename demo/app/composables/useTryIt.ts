@@ -12,11 +12,17 @@ export interface CatalogItem {
   energyKwh: number
 }
 
+/** One allowed period, "HH:MM" to "HH:MM" (or "24:00"). */
+export interface PeriodInput {
+  start: string
+  end: string
+}
+
 export interface ApplianceInput {
   uid: number
   kind: string
-  ready: string
-  finishBy: string
+  // When the cycle may run; with several periods it must start and finish inside one of them
+  periods: PeriodInput[]
   powerKw?: number
   durationMin?: number
 }
@@ -55,6 +61,7 @@ export interface ToolsResponse {
   milpCost: number
   results: PlanResult[]
   emhass: boolean
+  emhassSkipped?: 'periods' | null // not run: EMHASS takes one window per appliance
 }
 
 export interface PlanRequest {
@@ -63,7 +70,7 @@ export interface PlanRequest {
   base_kw?: number
   peak_limit_kw: number
   fee_eur_per_kw: number
-  appliances: { kind: string, ready: string, finish_by: string, power_kw?: number, duration_min?: number }[]
+  appliances: { kind: string, periods: PeriodInput[], power_kw?: number, duration_min?: number }[]
 }
 
 /** One event of the pipeline's live run (POST /api/plan/agent/stream, server-sent events). */
@@ -80,7 +87,35 @@ export interface AgentEvent {
   errors?: string[]
   text?: string // summary_delta
   result?: PlanResult
+  recommendation?: Recommendation // with the result
   message?: string // error
+}
+
+/** One appliance cycle of the recommendation. */
+export interface ScheduleItem {
+  applianceId: string
+  appliance: string
+  start: string // "HH:MM"
+  end: string // "HH:MM", "24:00" at midnight
+  period: string // allowed period it runs in, e.g. "18:00-22:00"
+  energyKwh: number
+  cost: number // energy cost of this cycle, in `currency`
+}
+
+/** The pipeline's recommendation in a fixed form (src/hems/demo_api.py Recommendation). Only `message` is written
+ *  by the language model; `schedules` and the figures come from the verified, scored schedule. */
+export interface Recommendation {
+  message: string
+  schedules: ScheduleItem[]
+  cost: number // energy plus the fee above the peak limit
+  saving: number // against starting every appliance as soon as it is ready
+  savingPct: number
+  currency: string // ISO code, "EUR"
+  currencySymbol: string // "€"
+  peakKw: number
+  peakLimitKw: number
+  valid: boolean
+  date: string
 }
 
 /** Map an API result to the shape of the recorded results, so the existing components can show it. */
@@ -116,7 +151,7 @@ export function useTryItApi() {
   return {
     catalog: () => $fetch<{ appliances: CatalogItem[], housing: Record<Housing, number>, entsoe: boolean }>(`${base}/api/catalog`),
     tools: (body: PlanRequest) => $fetch<ToolsResponse>(`${base}/api/plan/tools`, { method: 'POST', body }),
-    agent: (body: PlanRequest) => $fetch<{ result: PlanResult }>(`${base}/api/plan/agent`, { method: 'POST', body, timeout: 180_000 }),
+    agent: (body: PlanRequest) => $fetch<{ result: PlanResult, recommendation: Recommendation }>(`${base}/api/plan/agent`, { method: 'POST', body, timeout: 180_000 }),
     /** Run the pipeline and call onEvent for each agent event as it arrives. */
     async agentStream(body: PlanRequest, onEvent: (e: AgentEvent) => void) {
       const res = await fetch(`${base}/api/plan/agent/stream`, {
