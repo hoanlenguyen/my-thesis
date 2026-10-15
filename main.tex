@@ -1874,7 +1874,8 @@ p = (s + m + d + \tau)(1 + v),
 \]
 with a retail margin $m = 0.5$\,c/kWh, a distribution fee $d =
 5.0$\,c/kWh, the electricity tax $\tau = 2.253$\,c/kWh and VAT $v =
-25.5\,\%$. These are representative values for a Finnish household on a
+25.5\,\%$, the general rate since 1 September 2024 (Finnish Tax
+Administration, 2026). These are representative values for a Finnish household on a
 spot-price contract. The tax is that of tax class I including the
 security-of-supply fee, valid until 31 March 2026; on 1 April 2026 the
 fee rose from 0.013 to 0.085\,c/kWh, raising the tax to 2.325\,c/kWh
@@ -1923,16 +1924,22 @@ base load plus the highest power of its largest cycle plus 0.2\,kW where
 that sum exceeds 3.5\,kW, and in further steps of 0.5\,kW if the optimal
 schedule is still infeasible. In the factorial sets this applies to 6
 (exploratory main set) and 8 (Q2) of the 48 scenarios under the strict
-limit, with limits of up to 5.75\,kW. The main fuse (typically
-3\,$\times$\,25\,A, about 17\,kW) would never bind for these appliances.
-Power-based distribution tariffs exist, but they price the peak rather
-than forbid it. Helen Sähköverkko's time-based distribution product, for
-example, charges \EUR{1.57} per kW and month, excluding VAT, for the
+limit, with limits of up to 5.75\,kW. The smallest standard main fuse,
+3\,$\times$\,25\,A (Elenia, 2026), allows about 17\,kW and would never
+bind for these appliances. Power-based distribution tariffs exist, but
+they price the peak rather than forbid it, and not every network offers
+one to households. Helen Sähköverkko's time-based distribution product,
+for example, charges \EUR{1.57} per kW and month, excluding VAT, for the
 third-highest hourly average power of the month, with 80\,\% of
-night-time power counted (Helen Sähköverkko, 2026a). Under the Energy
-Authority's guidance, which network companies must follow by 1 January
-2029 at the latest, a household power charge is based on the highest
-60-minute average power of the month, starts only above 8\,kW, and
+night-time power counted (Helen Sähköverkko, 2026a). Oulun Energia
+Sähköverkko, in contrast, charges for power only in its tariffs for
+larger low-, medium- and high-voltage connections; its general,
+time-of-use and seasonal products for households have no power charge
+(Oulun Energia Sähköverkko, 2026). From 1 January 2029, a regulation of
+the Energy Authority sets the rule for every network company: for a
+main fuse of up to 3\,$\times$\,63\,A, the power charge is based on the
+highest 60-minute average power of the month minus a threshold of
+8\,kW, so it applies only above 8\,kW (Energy Authority, 2026). It
 remains optional, since a product without a power charge must still be
 offered (Helen Sähköverkko, 2026b). Compared with these tariffs, the
 benchmark's cap is stricter in level (3.5 instead of 8\,kW), in time
@@ -2013,7 +2020,8 @@ light, a dishwasher and a washing machine with separate daytime windows,
 and heavy, two washing loads, two drying loads and a dishwasher that
 share one window. The \emph{peak limit} has two levels: strict, the
 3.5\,kW cap described above, and realistic, 8\,kW, the threshold above
-which the Energy Authority's guidance allows a power charge. Six price
+which the Energy Authority's regulation allows a power charge (Energy
+Authority, 2026). Six price
 days are drawn for each combination of price pattern and load, and each
 day is scheduled under both limits with the same appliances, so the
 effect of the limit is measured on identical days. A benchmark therefore
@@ -2887,7 +2895,8 @@ into a correct schedule. Sixth, the hard peak cap of the benchmark could
 be replaced by the power charge of a real distribution tariff, so that
 a system weighs the energy saving of a cheap hour against the cost of
 raising the household's monthly peak, as under the Energy Authority's
-guidance for power-based distribution pricing. The demonstration
+regulation on power-based distribution pricing (Energy Authority, 2026).
+The demonstration
 application of this thesis already prices the peak in this way, with an
 optimum that includes the fee, which could serve as a starting point.
 Seventh, a user study should test the explanations: whether households
@@ -3074,6 +3083,10 @@ El Makroum, R., Zwickl-Bernhard, S., Kranzl, L., \& Auer, H. (2026).
 aggregator-prosumer coordination through agentic AI} [Preprint].
 arXiv:2603.06217. \url{https://arxiv.org/abs/2603.06217}
 
+Elenia. (2026). \textit{Connection price list for places of electricity
+use, 1 January 2026}. Retrieved 15 October 2026, from
+\url{https://www.elenia.fi/files/8ced42591a7e0ca3b6f608cea8d548451c9fb041/elenia-liittymishinnasto-2026-en.pdf}
+
 Elering AS. (2026). \textit{Nord Pool day-ahead prices, bidding zone FI}
 [Data service; data owner Nord Pool]. Retrieved 26 September 2026, from
 \url{https://dashboard.elering.ee/api/nps/price}
@@ -3088,6 +3101,13 @@ households: Fixed-term contracts still the most common type in 2024}
 [Press release].
 \url{https://energiavirasto.fi/en/-/dynamic-price-contracts-held-by-more-than-one-third-of-households-fixed-term-contracts-still-the-most-common-type-in-2024}
 
+Energy Authority (Energiavirasto). (2026). \textit{Määräys
+sähkönjakelupalvelutuotteiden maksukomponenttien
+määräytymisperusteista} [Regulation on the determination criteria for
+the payment components of electricity distribution service products]
+(Dnro 2340/000002/2025). Finlex.
+\url{https://www.finlex.fi/api/media/authority-regulation/911686/mainPdf/main.pdf}
+
 ENTSO-E. (2026). \textit{Transparency Platform: Day-ahead prices,
 bidding zones FI and GB} [Data set]. European Network of Transmission System
 Operators for Electricity. Retrieved 6 October 2026, from
@@ -3098,6 +3118,10 @@ electricity consumption and small-scale electricity production from
 accounting points in Finland} [News release]. Retrieved 5 October 2026,
 from
 \url{https://www.fingrid.fi/en/news/news/2024/fingrids-open-data-service-now-provides-data-on-electricity-consumption-and-small-scale-electricity-production-from-accounting-points-in-finland/}
+
+Finnish Tax Administration. (2026). \textit{Rates of VAT}. Retrieved
+15 October 2026, from
+\url{https://vero.fi/en/businesses-and-corporations/taxes-and-charges/vat/rates-of-vat/}
 
 Ghafari, M., Sami, A., Rezapour, H., Saravani Ghayour, S., Lin, F.,
 Basaran, K., Lazaroiu, G. C., \& Siano, P. (2025). A comprehensive review
@@ -3284,6 +3308,10 @@ system based on Home Assistant} [Computer software]. GitHub. Retrieved
 Oprea, S.-V., \& Bâra, A. (2024). A recommendation system for prosumers
 based on large language models. \textit{Sensors, 24}(11), 3530.
 \url{https://doi.org/10.3390/s24113530}
+
+Oulun Energia Sähköverkko. (2026). \textit{Network service price list
+from January 1, 2026}. Retrieved 15 October 2026, from
+\url{https://www.oulunenergia.fi/globalassets/tiedostot/sahkoverkot/oes_network_service_pricelist_for_january_1_2026.pdf}
 
 Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann,
 T. C., Mulrow, C. D., Shamseer, L., Tetzlaff, J. M., Akl, E. A.,
