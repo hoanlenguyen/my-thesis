@@ -25,6 +25,27 @@ Compile the thesis with XeLaTeX (`latexmk`; VS Code LaTeX Workshop is preconfigu
 All systems are scored by one function, `core/evaluate.py`. The eight tools (`tools/__init__.py`)
 are shared: specialists get their subset, the baseline gets all of them.
 
+### Watching the pipeline in LangGraph Studio
+
+`langgraph.json` registers the pipeline as the graph `multi_agent_pipeline` (`src/hems/studio.py`),
+built exactly as the system registry builds it. Not used by the evaluation.
+
+```bash
+PYTHONIOENCODING=utf-8 uv run --extra studio langgraph dev --port 2024
+```
+
+This opens LangGraph Studio (EU region: `https://eu.smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024`;
+a LangSmith login is needed). Start a run with an empty `request` to use the scenario's own request. The
+assistant's configuration chooses what runs:
+
+| Field | Default | Choices |
+|---|---|---|
+| `scenario` | `data/scenarios_q2/Q2-PH03-35.json` | any scenario JSON, relative to the thesis root |
+| `variant` | `multi_rag_opt` (final pipeline) | `multi_lean` (iteration 9, the demo), `multi`, `multi_rag` |
+| `model` | `gpt-4o-mini` | any name in `agents/llm.py` (e.g. `gpt-oss-20b` with Ollama running) |
+
+Each run calls the language model (GPT-4o-mini: about USD 0.003 per run).
+
 ## Workflow
 
 ```bash

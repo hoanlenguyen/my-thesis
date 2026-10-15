@@ -26,3 +26,6 @@ __pycache__/
 # Raw datasets (large; see data/README.md)
 data/raw/*
 !data/raw/.gitkeep
+
+# LangGraph Studio dev server state (langgraph dev)
+.langgraph_api/
