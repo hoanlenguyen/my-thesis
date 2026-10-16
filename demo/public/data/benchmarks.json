@@ -3836,5 +3836,1924 @@
     "achievableSaving": 0.5532
    }
   ]
+ },
+ {
+  "id": "iter10",
+  "label": "Design iterations: 4 vs 2 agents (exploratory)",
+  "summary": [
+   {
+    "system": "multi_rag_opt",
+    "label": "Multi-Agent Pipeline",
+    "model": "gpt-4o-mini",
+    "runs": 288,
+    "feasible": 288,
+    "gapMean": 0.006,
+    "savingPct": 27.582,
+    "savingsCaptured": 0.9998,
+    "latencyMean": 15.37,
+    "usdPerRun": 0.002491,
+    "tokensIn": 12930.0
+   },
+   {
+    "system": "multi_duo",
+    "label": "Design iteration 10: two agents",
+    "model": "gpt-4o-mini",
+    "runs": 288,
+    "feasible": 288,
+    "gapMean": 0.0,
+    "savingPct": 27.588,
+    "savingsCaptured": 1.0,
+    "latencyMean": 6.49,
+    "usdPerRun": 0.000981,
+    "tokensIn": 4897.0
+   },
+   {
+    "system": "multi_lean",
+    "label": "Design iteration 9: lean, four agents",
+    "model": "gpt-4o-mini",
+    "runs": 288,
+    "feasible": 288,
+    "gapMean": 0.0,
+    "savingPct": 27.588,
+    "savingsCaptured": 1.0,
+    "latencyMean": 8.02,
+    "usdPerRun": 0.001076,
+    "tokensIn": 4948.0
+   },
+   {
+    "system": "emhass_rest",
+    "label": "EMHASS, profiles",
+    "model": "-",
+    "runs": 96,
+    "feasible": 96,
+    "gapMean": 0.243,
+    "savingPct": 27.364,
+    "savingsCaptured": 0.9919,
+    "latencyMean": 1.01,
+    "usdPerRun": 0.0,
+    "tokensIn": 0.0
+   },
+   {
+    "system": "emhass_rest_nominal",
+    "label": "EMHASS, nominal power",
+    "model": "-",
+    "runs": 96,
+    "feasible": 96,
+    "gapMean": 1.478,
+    "savingPct": 25.923,
+    "savingsCaptured": 0.9396,
+    "latencyMean": 0.72,
+    "usdPerRun": 0.0,
+    "tokensIn": 0.0
+   },
+   {
+    "system": "cheapest_window",
+    "label": "Cheapest window (HA Nordpool Planner)",
+    "model": "-",
+    "runs": 96,
+    "feasible": 65,
+    "gapMean": 15.753,
+    "savingPct": 12.428,
+    "savingsCaptured": 0.4505,
+    "latencyMean": 0.0,
+    "usdPerRun": 0.0,
+    "tokensIn": 0.0
+   },
+   {
+    "system": "cheapest_hours",
+    "label": "Cheapest hours (HA blueprint, 15 min)",
+    "model": "-",
+    "runs": 96,
+    "feasible": 68,
+    "gapMean": 14.57,
+    "savingPct": 13.795,
+    "savingsCaptured": 0.5,
+    "latencyMean": 0.0,
+    "usdPerRun": 0.0,
+    "tokensIn": 0.0
+   },
+   {
+    "system": "cheapest_hours_hourly",
+    "label": "Cheapest hours (HA blueprint, hourly)",
+    "model": "-",
+    "runs": 96,
+    "feasible": 67,
+    "gapMean": 15.306,
+    "savingPct": 13.372,
+    "savingsCaptured": 0.4847,
+    "latencyMean": 0.0,
+    "usdPerRun": 0.0,
+    "tokensIn": 0.0
+   },
+   {
+    "system": "timer",
+    "label": "Smart timer (own heuristic)",
+    "model": "-",
+    "runs": 96,
+    "feasible": 96,
+    "gapMean": 0.056,
+    "savingPct": 27.5,
+    "savingsCaptured": 0.9968,
+    "latencyMean": 0.0,
+    "usdPerRun": 0.0,
+    "tokensIn": 0.0
+   }
+  ],
+  "byCondition": [
+   {
+    "factor": "pattern",
+    "level": "negative",
+    "scenarios": 24,
+    "optimumPct": 30.955,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 12.215,
+      "validShare": 0.708
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 11.814,
+      "validShare": 0.708
+     },
+     "cheapest_window|-": {
+      "savingPct": 14.594,
+      "validShare": 0.667
+     },
+     "emhass_rest|-": {
+      "savingPct": 30.755,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 30.243,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 30.953,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 30.955,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 30.955,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 30.955,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "pattern",
+    "level": "spike",
+    "scenarios": 24,
+    "optimumPct": 32.643,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 15.711,
+      "validShare": 0.75
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 15.113,
+      "validShare": 0.708
+     },
+     "cheapest_window|-": {
+      "savingPct": 13.546,
+      "validShare": 0.667
+     },
+     "emhass_rest|-": {
+      "savingPct": 32.458,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 31.219,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 32.546,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 32.643,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 32.643,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 32.632,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "pattern",
+    "level": "stable",
+    "scenarios": 24,
+    "optimumPct": 7.466,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 2.212,
+      "validShare": 0.708
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 2.254,
+      "validShare": 0.708
+     },
+     "cheapest_window|-": {
+      "savingPct": 3.78,
+      "validShare": 0.708
+     },
+     "emhass_rest|-": {
+      "savingPct": 7.183,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 6.801,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 7.391,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 7.466,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 7.466,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 7.466,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "pattern",
+    "level": "volatile",
+    "scenarios": 24,
+    "optimumPct": 23.633,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 14.72,
+      "validShare": 0.667
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 14.466,
+      "validShare": 0.667
+     },
+     "cheapest_window|-": {
+      "savingPct": 12.53,
+      "validShare": 0.667
+     },
+     "emhass_rest|-": {
+      "savingPct": 23.346,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 20.802,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 23.527,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 23.633,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 23.633,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 23.633,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "load",
+    "level": "heavy",
+    "scenarios": 48,
+    "optimumPct": 28.101,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 11.68,
+      "validShare": 0.438
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 11.649,
+      "validShare": 0.438
+     },
+     "cheapest_window|-": {
+      "savingPct": 9.152,
+      "validShare": 0.375
+     },
+     "emhass_rest|-": {
+      "savingPct": 27.802,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 26.209,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 27.985,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 28.101,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 28.101,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 28.101,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "load",
+    "level": "light",
+    "scenarios": 48,
+    "optimumPct": 26.066,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 20.064,
+      "validShare": 0.979
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 18.482,
+      "validShare": 0.958
+     },
+     "cheapest_window|-": {
+      "savingPct": 22.141,
+      "validShare": 0.979
+     },
+     "emhass_rest|-": {
+      "savingPct": 26.065,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 25.074,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 26.062,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 26.066,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 26.066,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 26.043,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "limit",
+    "level": "realistic",
+    "scenarios": 48,
+    "optimumPct": 28.256,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 22.627,
+      "validShare": 0.938
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 22.279,
+      "validShare": 0.938
+     },
+     "cheapest_window|-": {
+      "savingPct": 19.371,
+      "validShare": 0.875
+     },
+     "emhass_rest|-": {
+      "savingPct": 28.164,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 27.537,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 28.253,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 28.256,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 28.256,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 28.244,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "limit",
+    "level": "strict",
+    "scenarios": 48,
+    "optimumPct": 26.92,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 4.963,
+      "validShare": 0.479
+     },
+     "cheapest_hours_hourly|-": {
+      "savingPct": 4.465,
+      "validShare": 0.458
+     },
+     "cheapest_window|-": {
+      "savingPct": 5.486,
+      "validShare": 0.479
+     },
+     "emhass_rest|-": {
+      "savingPct": 26.565,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 24.308,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 26.747,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-4o-mini": {
+      "savingPct": 26.92,
+      "validShare": 1.0
+     },
+     "multi_lean|gpt-4o-mini": {
+      "savingPct": 26.92,
+      "validShare": 1.0
+     },
+     "multi_rag_opt|gpt-4o-mini": {
+      "savingPct": 26.92,
+      "validShare": 1.0
+     }
+    }
+   }
+  ],
+  "scenarios": [
+   {
+    "id": "NH01-35",
+    "type": "negative-heavy-strict",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-10-10",
+    "appliances": 5,
+    "house": 21,
+    "naiveCost": 2.1643,
+    "milpCost": 0.6498,
+    "naiveFeasible": false,
+    "achievableSaving": 1.5144
+   },
+   {
+    "id": "NH01-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-10-10",
+    "appliances": 5,
+    "house": 21,
+    "naiveCost": 2.1643,
+    "milpCost": 0.6487,
+    "naiveFeasible": true,
+    "achievableSaving": 1.5156
+   },
+   {
+    "id": "NH02-35",
+    "type": "negative-heavy-strict",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.88,
+    "date": "2024-04-10",
+    "appliances": 5,
+    "house": 10,
+    "naiveCost": 0.7285,
+    "milpCost": 0.6006,
+    "naiveFeasible": false,
+    "achievableSaving": 0.1279
+   },
+   {
+    "id": "NH02-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-04-10",
+    "appliances": 5,
+    "house": 10,
+    "naiveCost": 0.7285,
+    "milpCost": 0.6006,
+    "naiveFeasible": false,
+    "achievableSaving": 0.1279
+   },
+   {
+    "id": "NH03-35",
+    "type": "negative-heavy-strict",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-04-14",
+    "appliances": 5,
+    "house": 18,
+    "naiveCost": 0.5393,
+    "milpCost": 0.4649,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0744
+   },
+   {
+    "id": "NH03-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-04-14",
+    "appliances": 5,
+    "house": 18,
+    "naiveCost": 0.5393,
+    "milpCost": 0.4571,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0822
+   },
+   {
+    "id": "NH04-35",
+    "type": "negative-heavy-strict",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2025-03-05",
+    "appliances": 5,
+    "house": 1,
+    "naiveCost": 0.4347,
+    "milpCost": 0.4187,
+    "naiveFeasible": false,
+    "achievableSaving": 0.016
+   },
+   {
+    "id": "NH04-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-03-05",
+    "appliances": 5,
+    "house": 1,
+    "naiveCost": 0.4347,
+    "milpCost": 0.4185,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0162
+   },
+   {
+    "id": "NH05-35",
+    "type": "negative-heavy-strict",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2025-05-20",
+    "appliances": 5,
+    "house": 20,
+    "naiveCost": 0.7412,
+    "milpCost": 0.7194,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0217
+   },
+   {
+    "id": "NH05-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-05-20",
+    "appliances": 5,
+    "house": 20,
+    "naiveCost": 0.7412,
+    "milpCost": 0.7192,
+    "naiveFeasible": true,
+    "achievableSaving": 0.022
+   },
+   {
+    "id": "NH06-35",
+    "type": "negative-heavy-strict",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2025-08-07",
+    "appliances": 5,
+    "house": 2,
+    "naiveCost": 0.4183,
+    "milpCost": 0.4021,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0162
+   },
+   {
+    "id": "NH06-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-08-07",
+    "appliances": 5,
+    "house": 2,
+    "naiveCost": 0.4183,
+    "milpCost": 0.4016,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0167
+   },
+   {
+    "id": "NL01-35",
+    "type": "negative-light-strict",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-02-23",
+    "appliances": 2,
+    "house": 9,
+    "naiveCost": 0.2023,
+    "milpCost": 0.1903,
+    "naiveFeasible": true,
+    "achievableSaving": 0.012
+   },
+   {
+    "id": "NL01-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-02-23",
+    "appliances": 2,
+    "house": 9,
+    "naiveCost": 0.2023,
+    "milpCost": 0.1903,
+    "naiveFeasible": true,
+    "achievableSaving": 0.012
+   },
+   {
+    "id": "NL02-35",
+    "type": "negative-light-strict",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-05-17",
+    "appliances": 2,
+    "house": 3,
+    "naiveCost": 0.1423,
+    "milpCost": 0.1337,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0086
+   },
+   {
+    "id": "NL02-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-05-17",
+    "appliances": 2,
+    "house": 3,
+    "naiveCost": 0.1423,
+    "milpCost": 0.1337,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0086
+   },
+   {
+    "id": "NL03-35",
+    "type": "negative-light-strict",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 5.36,
+    "date": "2024-05-27",
+    "appliances": 2,
+    "house": 8,
+    "naiveCost": 0.1288,
+    "milpCost": 0.1254,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0034
+   },
+   {
+    "id": "NL03-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-05-27",
+    "appliances": 2,
+    "house": 8,
+    "naiveCost": 0.1288,
+    "milpCost": 0.1254,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0034
+   },
+   {
+    "id": "NL04-35",
+    "type": "negative-light-strict",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-08-23",
+    "appliances": 2,
+    "house": 7,
+    "naiveCost": 0.2055,
+    "milpCost": 0.1643,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0412
+   },
+   {
+    "id": "NL04-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-08-23",
+    "appliances": 2,
+    "house": 7,
+    "naiveCost": 0.2055,
+    "milpCost": 0.1643,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0412
+   },
+   {
+    "id": "NL05-35",
+    "type": "negative-light-strict",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-08-31",
+    "appliances": 2,
+    "house": 5,
+    "naiveCost": 0.2606,
+    "milpCost": 0.1966,
+    "naiveFeasible": true,
+    "achievableSaving": 0.064
+   },
+   {
+    "id": "NL05-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-08-31",
+    "appliances": 2,
+    "house": 5,
+    "naiveCost": 0.2606,
+    "milpCost": 0.1966,
+    "naiveFeasible": true,
+    "achievableSaving": 0.064
+   },
+   {
+    "id": "NL06-35",
+    "type": "negative-light-strict",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2025-07-01",
+    "appliances": 2,
+    "house": 17,
+    "naiveCost": 0.195,
+    "milpCost": 0.1927,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0023
+   },
+   {
+    "id": "NL06-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-07-01",
+    "appliances": 2,
+    "house": 17,
+    "naiveCost": 0.195,
+    "milpCost": 0.1927,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0023
+   },
+   {
+    "id": "PH01-35",
+    "type": "spike-heavy-strict",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-03-09",
+    "appliances": 5,
+    "house": 9,
+    "naiveCost": 3.9621,
+    "milpCost": 1.0099,
+    "naiveFeasible": false,
+    "achievableSaving": 2.9521
+   },
+   {
+    "id": "PH01-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-03-09",
+    "appliances": 5,
+    "house": 9,
+    "naiveCost": 3.9621,
+    "milpCost": 0.9457,
+    "naiveFeasible": false,
+    "achievableSaving": 3.0164
+   },
+   {
+    "id": "PH02-35",
+    "type": "spike-heavy-strict",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.76,
+    "date": "2022-09-01",
+    "appliances": 5,
+    "house": 3,
+    "naiveCost": 2.9922,
+    "milpCost": 1.7618,
+    "naiveFeasible": false,
+    "achievableSaving": 1.2304
+   },
+   {
+    "id": "PH02-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-01",
+    "appliances": 5,
+    "house": 3,
+    "naiveCost": 2.9922,
+    "milpCost": 1.7385,
+    "naiveFeasible": false,
+    "achievableSaving": 1.2537
+   },
+   {
+    "id": "PH03-35",
+    "type": "spike-heavy-strict",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 5.01,
+    "date": "2022-09-30",
+    "appliances": 5,
+    "house": 8,
+    "naiveCost": 3.1006,
+    "milpCost": 2.0792,
+    "naiveFeasible": false,
+    "achievableSaving": 1.0214
+   },
+   {
+    "id": "PH03-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-30",
+    "appliances": 5,
+    "house": 8,
+    "naiveCost": 3.1006,
+    "milpCost": 2.0772,
+    "naiveFeasible": true,
+    "achievableSaving": 1.0234
+   },
+   {
+    "id": "PH04-35",
+    "type": "spike-heavy-strict",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-11-16",
+    "appliances": 5,
+    "house": 7,
+    "naiveCost": 2.4348,
+    "milpCost": 2.4304,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0045
+   },
+   {
+    "id": "PH04-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-11-16",
+    "appliances": 5,
+    "house": 7,
+    "naiveCost": 2.4348,
+    "milpCost": 2.4268,
+    "naiveFeasible": true,
+    "achievableSaving": 0.008
+   },
+   {
+    "id": "PH05-35",
+    "type": "spike-heavy-strict",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-12-16",
+    "appliances": 5,
+    "house": 5,
+    "naiveCost": 5.4429,
+    "milpCost": 3.6036,
+    "naiveFeasible": false,
+    "achievableSaving": 1.8393
+   },
+   {
+    "id": "PH05-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-12-16",
+    "appliances": 5,
+    "house": 5,
+    "naiveCost": 5.4429,
+    "milpCost": 3.3442,
+    "naiveFeasible": true,
+    "achievableSaving": 2.0987
+   },
+   {
+    "id": "PH06-35",
+    "type": "spike-heavy-strict",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-01-05",
+    "appliances": 5,
+    "house": 17,
+    "naiveCost": 6.3365,
+    "milpCost": 5.1255,
+    "naiveFeasible": false,
+    "achievableSaving": 1.2111
+   },
+   {
+    "id": "PH06-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-01-05",
+    "appliances": 5,
+    "house": 17,
+    "naiveCost": 6.3365,
+    "milpCost": 5.0348,
+    "naiveFeasible": true,
+    "achievableSaving": 1.3017
+   },
+   {
+    "id": "PL01-35",
+    "type": "spike-light-strict",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-08-08",
+    "appliances": 2,
+    "house": 13,
+    "naiveCost": 1.5163,
+    "milpCost": 1.1869,
+    "naiveFeasible": true,
+    "achievableSaving": 0.3294
+   },
+   {
+    "id": "PL01-80",
+    "type": "spike-light-realistic",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-08",
+    "appliances": 2,
+    "house": 13,
+    "naiveCost": 1.5163,
+    "milpCost": 1.1869,
+    "naiveFeasible": true,
+    "achievableSaving": 0.3294
+   },
+   {
+    "id": "PL02-35",
+    "type": "spike-light-strict",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-08-16",
+    "appliances": 2,
+    "house": 11,
+    "naiveCost": 1.4846,
+    "milpCost": 1.0834,
+    "naiveFeasible": true,
+    "achievableSaving": 0.4011
+   },
+   {
+    "id": "PL02-80",
+    "type": "spike-light-realistic",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-16",
+    "appliances": 2,
+    "house": 11,
+    "naiveCost": 1.4846,
+    "milpCost": 1.0834,
+    "naiveFeasible": true,
+    "achievableSaving": 0.4011
+   },
+   {
+    "id": "PL03-35",
+    "type": "spike-light-strict",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-08-18",
+    "appliances": 2,
+    "house": 15,
+    "naiveCost": 1.7566,
+    "milpCost": 1.5282,
+    "naiveFeasible": true,
+    "achievableSaving": 0.2285
+   },
+   {
+    "id": "PL03-80",
+    "type": "spike-light-realistic",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-18",
+    "appliances": 2,
+    "house": 15,
+    "naiveCost": 1.7566,
+    "milpCost": 1.5282,
+    "naiveFeasible": true,
+    "achievableSaving": 0.2285
+   },
+   {
+    "id": "PL04-35",
+    "type": "spike-light-strict",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-08-24",
+    "appliances": 2,
+    "house": 4,
+    "naiveCost": 1.0961,
+    "milpCost": 0.9411,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1551
+   },
+   {
+    "id": "PL04-80",
+    "type": "spike-light-realistic",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-24",
+    "appliances": 2,
+    "house": 4,
+    "naiveCost": 1.0961,
+    "milpCost": 0.9411,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1551
+   },
+   {
+    "id": "PL05-35",
+    "type": "spike-light-strict",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-08-25",
+    "appliances": 2,
+    "house": 6,
+    "naiveCost": 1.2662,
+    "milpCost": 1.1416,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1246
+   },
+   {
+    "id": "PL05-80",
+    "type": "spike-light-realistic",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-25",
+    "appliances": 2,
+    "house": 6,
+    "naiveCost": 1.2662,
+    "milpCost": 1.1416,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1246
+   },
+   {
+    "id": "PL06-35",
+    "type": "spike-light-strict",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-11-21",
+    "appliances": 2,
+    "house": 16,
+    "naiveCost": 2.1455,
+    "milpCost": 0.9179,
+    "naiveFeasible": false,
+    "achievableSaving": 1.2275
+   },
+   {
+    "id": "PL06-80",
+    "type": "spike-light-realistic",
+    "pattern": "spike",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-11-21",
+    "appliances": 2,
+    "house": 16,
+    "naiveCost": 2.1455,
+    "milpCost": 0.9179,
+    "naiveFeasible": true,
+    "achievableSaving": 1.2275
+   },
+   {
+    "id": "SH01-35",
+    "type": "stable-heavy-strict",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.95,
+    "date": "2022-03-28",
+    "appliances": 5,
+    "house": 21,
+    "naiveCost": 0.8263,
+    "milpCost": 0.7066,
+    "naiveFeasible": false,
+    "achievableSaving": 0.1197
+   },
+   {
+    "id": "SH01-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-03-28",
+    "appliances": 5,
+    "house": 21,
+    "naiveCost": 0.8263,
+    "milpCost": 0.7059,
+    "naiveFeasible": false,
+    "achievableSaving": 0.1205
+   },
+   {
+    "id": "SH02-35",
+    "type": "stable-heavy-strict",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-07-13",
+    "appliances": 5,
+    "house": 10,
+    "naiveCost": 0.631,
+    "milpCost": 0.6191,
+    "naiveFeasible": false,
+    "achievableSaving": 0.012
+   },
+   {
+    "id": "SH02-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-07-13",
+    "appliances": 5,
+    "house": 10,
+    "naiveCost": 0.631,
+    "milpCost": 0.6165,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0145
+   },
+   {
+    "id": "SH03-35",
+    "type": "stable-heavy-strict",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-08-06",
+    "appliances": 5,
+    "house": 18,
+    "naiveCost": 0.7416,
+    "milpCost": 0.6799,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0617
+   },
+   {
+    "id": "SH03-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-08-06",
+    "appliances": 5,
+    "house": 18,
+    "naiveCost": 0.7416,
+    "milpCost": 0.6676,
+    "naiveFeasible": false,
+    "achievableSaving": 0.074
+   },
+   {
+    "id": "SH04-35",
+    "type": "stable-heavy-strict",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-02-15",
+    "appliances": 5,
+    "house": 1,
+    "naiveCost": 1.149,
+    "milpCost": 1.093,
+    "naiveFeasible": false,
+    "achievableSaving": 0.056
+   },
+   {
+    "id": "SH04-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-02-15",
+    "appliances": 5,
+    "house": 1,
+    "naiveCost": 1.149,
+    "milpCost": 1.0863,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0627
+   },
+   {
+    "id": "SH05-35",
+    "type": "stable-heavy-strict",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-08-02",
+    "appliances": 5,
+    "house": 20,
+    "naiveCost": 0.6943,
+    "milpCost": 0.6891,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0052
+   },
+   {
+    "id": "SH05-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-08-02",
+    "appliances": 5,
+    "house": 20,
+    "naiveCost": 0.6943,
+    "milpCost": 0.6886,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0057
+   },
+   {
+    "id": "SH06-35",
+    "type": "stable-heavy-strict",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2025-01-18",
+    "appliances": 5,
+    "house": 2,
+    "naiveCost": 0.5168,
+    "milpCost": 0.5182,
+    "naiveFeasible": false,
+    "achievableSaving": -0.0014
+   },
+   {
+    "id": "SH06-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-01-18",
+    "appliances": 5,
+    "house": 2,
+    "naiveCost": 0.5168,
+    "milpCost": 0.5168,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "SL01-35",
+    "type": "stable-light-strict",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-01-13",
+    "appliances": 2,
+    "house": 9,
+    "naiveCost": 0.153,
+    "milpCost": 0.1502,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0029
+   },
+   {
+    "id": "SL01-80",
+    "type": "stable-light-realistic",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-01-13",
+    "appliances": 2,
+    "house": 9,
+    "naiveCost": 0.153,
+    "milpCost": 0.1502,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0029
+   },
+   {
+    "id": "SL02-35",
+    "type": "stable-light-strict",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-01-22",
+    "appliances": 2,
+    "house": 3,
+    "naiveCost": 0.3467,
+    "milpCost": 0.3126,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0341
+   },
+   {
+    "id": "SL02-80",
+    "type": "stable-light-realistic",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-01-22",
+    "appliances": 2,
+    "house": 3,
+    "naiveCost": 0.3467,
+    "milpCost": 0.3126,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0341
+   },
+   {
+    "id": "SL03-35",
+    "type": "stable-light-strict",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 4.97,
+    "date": "2023-02-13",
+    "appliances": 2,
+    "house": 8,
+    "naiveCost": 0.1875,
+    "milpCost": 0.1871,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0004
+   },
+   {
+    "id": "SL03-80",
+    "type": "stable-light-realistic",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-02-13",
+    "appliances": 2,
+    "house": 8,
+    "naiveCost": 0.1875,
+    "milpCost": 0.1871,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0004
+   },
+   {
+    "id": "SL04-35",
+    "type": "stable-light-strict",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-03-17",
+    "appliances": 2,
+    "house": 7,
+    "naiveCost": 0.267,
+    "milpCost": 0.2242,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0428
+   },
+   {
+    "id": "SL04-80",
+    "type": "stable-light-realistic",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-03-17",
+    "appliances": 2,
+    "house": 7,
+    "naiveCost": 0.267,
+    "milpCost": 0.2242,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0428
+   },
+   {
+    "id": "SL05-35",
+    "type": "stable-light-strict",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-04-22",
+    "appliances": 2,
+    "house": 5,
+    "naiveCost": 0.2482,
+    "milpCost": 0.1772,
+    "naiveFeasible": true,
+    "achievableSaving": 0.071
+   },
+   {
+    "id": "SL05-80",
+    "type": "stable-light-realistic",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-04-22",
+    "appliances": 2,
+    "house": 5,
+    "naiveCost": 0.2482,
+    "milpCost": 0.1772,
+    "naiveFeasible": true,
+    "achievableSaving": 0.071
+   },
+   {
+    "id": "SL06-35",
+    "type": "stable-light-strict",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-07-15",
+    "appliances": 2,
+    "house": 17,
+    "naiveCost": 0.3176,
+    "milpCost": 0.2801,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0375
+   },
+   {
+    "id": "SL06-80",
+    "type": "stable-light-realistic",
+    "pattern": "stable",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-07-15",
+    "appliances": 2,
+    "house": 17,
+    "naiveCost": 0.3176,
+    "milpCost": 0.2801,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0375
+   },
+   {
+    "id": "VH01-35",
+    "type": "volatile-heavy-strict",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-04-30",
+    "appliances": 5,
+    "house": 13,
+    "naiveCost": 0.8284,
+    "milpCost": 0.7557,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0727
+   },
+   {
+    "id": "VH01-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-04-30",
+    "appliances": 5,
+    "house": 13,
+    "naiveCost": 0.8284,
+    "milpCost": 0.7554,
+    "naiveFeasible": true,
+    "achievableSaving": 0.073
+   },
+   {
+    "id": "VH02-35",
+    "type": "volatile-heavy-strict",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-06-17",
+    "appliances": 5,
+    "house": 11,
+    "naiveCost": 2.736,
+    "milpCost": 1.7515,
+    "naiveFeasible": false,
+    "achievableSaving": 0.9846
+   },
+   {
+    "id": "VH02-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-06-17",
+    "appliances": 5,
+    "house": 11,
+    "naiveCost": 2.736,
+    "milpCost": 1.7432,
+    "naiveFeasible": false,
+    "achievableSaving": 0.9928
+   },
+   {
+    "id": "VH03-35",
+    "type": "volatile-heavy-strict",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-07-24",
+    "appliances": 5,
+    "house": 15,
+    "naiveCost": 2.6412,
+    "milpCost": 2.5258,
+    "naiveFeasible": false,
+    "achievableSaving": 0.1153
+   },
+   {
+    "id": "VH03-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-07-24",
+    "appliances": 5,
+    "house": 15,
+    "naiveCost": 2.6412,
+    "milpCost": 2.4953,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1458
+   },
+   {
+    "id": "VH04-35",
+    "type": "volatile-heavy-strict",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-08-27",
+    "appliances": 5,
+    "house": 4,
+    "naiveCost": 1.055,
+    "milpCost": 1.0596,
+    "naiveFeasible": false,
+    "achievableSaving": -0.0046
+   },
+   {
+    "id": "VH04-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-27",
+    "appliances": 5,
+    "house": 4,
+    "naiveCost": 1.055,
+    "milpCost": 1.055,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "VH05-35",
+    "type": "volatile-heavy-strict",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-09-05",
+    "appliances": 5,
+    "house": 6,
+    "naiveCost": 5.1121,
+    "milpCost": 3.6181,
+    "naiveFeasible": false,
+    "achievableSaving": 1.494
+   },
+   {
+    "id": "VH05-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-05",
+    "appliances": 5,
+    "house": 6,
+    "naiveCost": 5.1121,
+    "milpCost": 3.4341,
+    "naiveFeasible": true,
+    "achievableSaving": 1.678
+   },
+   {
+    "id": "VH06-35",
+    "type": "volatile-heavy-strict",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-10-12",
+    "appliances": 5,
+    "house": 16,
+    "naiveCost": 0.8488,
+    "milpCost": 0.9851,
+    "naiveFeasible": false,
+    "achievableSaving": -0.1363
+   },
+   {
+    "id": "VH06-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-10-12",
+    "appliances": 5,
+    "house": 16,
+    "naiveCost": 0.8488,
+    "milpCost": 0.8488,
+    "naiveFeasible": false,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "VL01-35",
+    "type": "volatile-light-strict",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-05-18",
+    "appliances": 2,
+    "house": 21,
+    "naiveCost": 0.625,
+    "milpCost": 0.498,
+    "naiveFeasible": true,
+    "achievableSaving": 0.127
+   },
+   {
+    "id": "VL01-80",
+    "type": "volatile-light-realistic",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-05-18",
+    "appliances": 2,
+    "house": 21,
+    "naiveCost": 0.625,
+    "milpCost": 0.498,
+    "naiveFeasible": true,
+    "achievableSaving": 0.127
+   },
+   {
+    "id": "VL02-35",
+    "type": "volatile-light-strict",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-07-06",
+    "appliances": 2,
+    "house": 10,
+    "naiveCost": 0.6181,
+    "milpCost": 0.6181,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "VL02-80",
+    "type": "volatile-light-realistic",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-07-06",
+    "appliances": 2,
+    "house": 10,
+    "naiveCost": 0.6181,
+    "milpCost": 0.6181,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "VL03-35",
+    "type": "volatile-light-strict",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2022-09-02",
+    "appliances": 2,
+    "house": 18,
+    "naiveCost": 1.0876,
+    "milpCost": 0.723,
+    "naiveFeasible": true,
+    "achievableSaving": 0.3646
+   },
+   {
+    "id": "VL03-80",
+    "type": "volatile-light-realistic",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-02",
+    "appliances": 2,
+    "house": 18,
+    "naiveCost": 1.0876,
+    "milpCost": 0.723,
+    "naiveFeasible": true,
+    "achievableSaving": 0.3646
+   },
+   {
+    "id": "VL04-35",
+    "type": "volatile-light-strict",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2023-10-02",
+    "appliances": 2,
+    "house": 1,
+    "naiveCost": 0.3909,
+    "milpCost": 0.2668,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1241
+   },
+   {
+    "id": "VL04-80",
+    "type": "volatile-light-realistic",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-10-02",
+    "appliances": 2,
+    "house": 1,
+    "naiveCost": 0.3909,
+    "milpCost": 0.2668,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1241
+   },
+   {
+    "id": "VL05-35",
+    "type": "volatile-light-strict",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2024-05-08",
+    "appliances": 2,
+    "house": 20,
+    "naiveCost": 0.5116,
+    "milpCost": 0.3279,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1837
+   },
+   {
+    "id": "VL05-80",
+    "type": "volatile-light-realistic",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-05-08",
+    "appliances": 2,
+    "house": 20,
+    "naiveCost": 0.5116,
+    "milpCost": 0.3279,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1837
+   },
+   {
+    "id": "VL06-35",
+    "type": "volatile-light-strict",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "strict",
+    "peakLimitKw": 3.5,
+    "date": "2025-01-15",
+    "appliances": 2,
+    "house": 2,
+    "naiveCost": 0.7255,
+    "milpCost": 0.1722,
+    "naiveFeasible": true,
+    "achievableSaving": 0.5532
+   },
+   {
+    "id": "VL06-80",
+    "type": "volatile-light-realistic",
+    "pattern": "volatile",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-01-15",
+    "appliances": 2,
+    "house": 2,
+    "naiveCost": 0.7255,
+    "milpCost": 0.1722,
+    "naiveFeasible": true,
+    "achievableSaving": 0.5532
+   }
+  ]
  }
 ]

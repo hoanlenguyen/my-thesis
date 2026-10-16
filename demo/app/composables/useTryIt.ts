@@ -74,13 +74,15 @@ export interface PlanRequest {
 }
 
 /** One event of the pipeline's live run (POST /api/plan/agent/stream, server-sent events). */
-export type AgentName = 'orchestrator' | 'profiler' | 'scheduler' | 'resolver' | 'summary'
+// the two agents and the two functions of the pipeline (graph nodes, see src/hems/agents/multi_agent.py)
+export type AgentName = 'orchestrator' | 'profile_data' | 'scheduler' | 'verify_schedule' | 'summary'
 export interface AgentEvent {
   type: 'start' | 'working' | 'tool' | 'done' | 'summary_delta' | 'result' | 'error'
   agent: AgentName | null
   t: number // seconds since the run started
   name?: string // tool
-  input?: string
+  thought?: string // the agent's Thought before this tool call (explicit Thoughts, design iteration 11)
+  input?: string // tool events: the call's arguments as JSON, without the Thought
   output?: string | Record<string, unknown>
   ms?: number
   tokens?: number
@@ -123,7 +125,7 @@ export function toRunResult(r: PlanResult): RunResult {
   return {
     system: r.system,
     label: r.label,
-    model: r.system === 'multi_lean' ? 'gpt-4o-mini' : '-',
+    model: r.system.startsWith('multi_') ? 'gpt-4o-mini' : '-',
     run: 0,
     starts: r.starts,
     costEur: r.costEur,

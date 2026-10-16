@@ -91,7 +91,7 @@ def cmd_demo(args: argparse.Namespace) -> None:
 
     scenario = Scenario.load(args.scenario)
     print(scenario.user_request, "\n")
-    if args.system != "multi" or not args.review:
+    if args.system != "multi_duo" or not args.review:
         record = execute(scenario, args.system, args.model if args.system in LLM_SYSTEMS else "-")
         print(json.dumps({k: record[k] for k in ("assignments", "cost_eur", "feasible", "violations", "latency_s", "tokens_in", "tokens_out", "explanation", "agent_errors")}, indent=1))  # fmt: skip
         return
@@ -102,9 +102,9 @@ def cmd_demo(args: argparse.Namespace) -> None:
     for update in pipeline.stream({"request": scenario.user_request}, config=config, stream_mode="updates"):
         for node in update:
             print(f"-- {node} done")
-    proposal = pipeline.get_state(config).values["resolution"]
-    schedule, _ = parse_assignments(scenario, {a.appliance_id: a.start_time for a in proposal.assignments})
-    print("Proposed:", {a.appliance_id: a.start_time for a in proposal.assignments}, evaluate(scenario, schedule))
+    checked = pipeline.get_state(config).values["checked"]  # the schedule after the verification step
+    schedule, _ = parse_assignments(scenario, checked)
+    print("Proposed:", checked, evaluate(scenario, schedule))
     if input("Approve schedule? [y/N] ").strip().lower() != "y":
         print("Rejected; schedule not applied.")
         return
@@ -262,7 +262,7 @@ def main() -> None:
 
     p = sub.add_parser("run", help="run systems over scenarios, appending to a JSONL file")
     p.add_argument("--scenarios", default="data/scenarios")
-    p.add_argument("--systems", nargs="+", default=["milp", "naive", "single", "multi"], choices=list(ALL_SYSTEMS))
+    p.add_argument("--systems", nargs="+", default=["milp", "naive", "multi_duo"], choices=list(ALL_SYSTEMS))
     p.add_argument("--models", nargs="+", default=["gpt-4o-mini"], choices=list(MODELS))
     p.add_argument("--runs", type=int, default=3)
     p.add_argument("--ids", nargs="*", help="only these scenario ids")
@@ -273,9 +273,9 @@ def main() -> None:
 
     p = sub.add_parser("demo", help="run one scenario and print the result")
     p.add_argument("scenario")
-    p.add_argument("--system", default="multi", choices=list(ALL_SYSTEMS))
+    p.add_argument("--system", default="multi_duo", choices=list(ALL_SYSTEMS))
     p.add_argument("--model", default="gpt-4o-mini", choices=list(MODELS))
-    p.add_argument("--review", action="store_true", help="human-in-the-loop approval before finalising (multi only)")
+    p.add_argument("--review", action="store_true", help="human-in-the-loop approval before finalising (multi_duo only)")
     p.set_defaults(func=cmd_demo)
 
     p = sub.add_parser("campaign", help="resumable evaluation from a plan file (configs/*.json)")

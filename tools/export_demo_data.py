@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from hems.analysis import metrics
 from hems.core.models import load_scenarios
@@ -30,9 +31,22 @@ BENCHMARKS = {  # first = default view in the demo
         "scenarios": "data/scenarios_v2",
         "runs": ["results/main_v2.jsonl", "results/tools/scenarios_v2.jsonl"],
     },
+    # Design iterations 9 and 10: the three pipelines interleaved in one campaign (same API conditions), with the
+    # deterministic systems and EMHASS of the exploratory set as references. A dict entry keeps only the listed
+    # systems of that file.
+    "iter10": {
+        "label": "Design iterations: 4 vs 2 agents (exploratory)",
+        "scenarios": "data/scenarios_v2",
+        "runs": ["results/iteration10.jsonl",
+                 {"path": "results/main_v2.jsonl", "systems": ["milp", "naive", "timer", "cheapest_window",
+                                                               "cheapest_hours", "cheapest_hours_hourly"]},
+                 "results/tools/scenarios_v2.jsonl"],
+    },
 }
 SYSTEMS = {  # order = display order; multi_rag and multi are design iterations (v2 only)
     "multi_rag_opt": "Multi-Agent Pipeline",
+    "multi_duo": "Design iteration 10: two agents",
+    "multi_lean": "Design iteration 9: lean, four agents",
     "multi_rag": "Design iteration: retrieval, no optimiser",
     "multi": "Design iteration: no retrieval, no optimiser",
     "oneshot": "LLM without tools",
@@ -60,7 +74,12 @@ def _num(x, nd=4):
 
 def export(key: str, spec: dict) -> dict:
     scenarios = {s.id: s for s in load_scenarios(ROOT / spec["scenarios"])}
-    runs = metrics.load_runs([ROOT / p for p in spec["runs"]])
+    parts = []
+    for entry in spec["runs"]:  # a file, or {"path": file, "systems": [...]} to keep only some of its systems
+        path, keep = (entry["path"], entry["systems"]) if isinstance(entry, dict) else (entry, None)
+        part = metrics.load_runs([ROOT / path])
+        parts.append(part[part.system.isin(keep)] if keep else part)
+    runs = pd.concat(parts).drop_duplicates("key").reset_index(drop=True)  # first file wins, as in load_runs
     runs = runs[runs.system.isin(SYSTEMS) & runs.model.isin(MODELS)]
     scored = metrics.scored_runs(runs)
     ref = runs[runs.system.isin(["milp", "naive"])].pivot_table(index="scenario_id", columns="system", values="cost_eur")

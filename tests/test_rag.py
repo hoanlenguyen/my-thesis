@@ -61,22 +61,15 @@ class Recording(ScriptedModel):
 def test_pipeline_passes_examples_and_gives_the_scheduler_the_optimiser(scenario: Scenario) -> None:
     ids = [a.id for a in scenario.appliances]
     optimal = [{"appliance_id": k, "start_time": scenario.slot_to_time(v)} for k, v in solve_milp(scenario).schedule.items()]
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": a.duration_slots * 15,
-         "earliest_time": scenario.slot_to_time(a.earliest_slot), "deadline_time": scenario.boundary_to_time(a.deadline_slot)}
-        for a in scenario.appliances
-    ]  # fmt: skip
     scheduler = Recording(messages=iter([
         call("optimize_schedule", appliance_ids=ids),
         call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="solver"),
     ]))  # fmt: skip
     models = {
         "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "Done."),
-        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
         "scheduler": scheduler,
-        "resolver": scripted(call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none")),
     }
-    run = run_multi_agent(scenario, lambda role: models[role], retriever=lambda _sc: "EXAMPLES-MARKER", optimizer=True)
+    run = run_multi_agent(scenario, lambda role: models[role], retriever=lambda _sc: "EXAMPLES-MARKER")
     assert run.errors == [] and run.tool_calls >= 1
     assert "EXAMPLES-MARKER" in scheduler.seen[0] and "optimize_schedule" in scheduler.seen[0]
     assert "Optimal schedule" in scheduler.seen[1]  # the tool ran and its result reached the agent

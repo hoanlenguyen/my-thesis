@@ -1,8 +1,9 @@
 """System prompts.
 
-The single-agent prompt is assembled from the same role instructions the
-specialists receive, so the only controlled difference between baseline and
-pipeline is role specialisation, not domain knowledge.
+The pipeline has two language model agents: the Orchestrator (plan and summary) and the Price-Aware Scheduler.
+Their texts are unchanged since design iteration 10 (system "multi_duo"). The role texts below are kept because the
+single-agent baseline's prompt is assembled from them; the prompts of the former Appliance Profiler and Conflict
+Resolver agents were removed with those agents on 16 October 2026.
 """
 
 REACT_STYLE = (
@@ -17,6 +18,7 @@ GOAL = (
     "(2) the total household load never exceeds the household peak load limit."
 )
 
+# Role texts of the single-agent baseline (SINGLE_AGENT)
 PROFILER_ROLE = (
     "Profiling: read the household data and classify each appliance as flexible or fixed. "
     "Only flexible appliances the user asked for are scheduled; record each one's peak power, "
@@ -38,58 +40,33 @@ RESOLVER_ROLE = (
     "detect_conflicts that no conflict remains."
 )
 
+# ── The pipeline's agents ───────────────────────────────────────────────────
 ORCHESTRATOR_PLAN = (
     "You are the Orchestrator of a home energy management system. Read the household's scheduling request "
     "and extract the ids of ALL appliances to schedule (every id listed in the request; do not omit any) "
     "and any constraints the user states. Do not schedule anything yourself; the specialist agents will do that."
 )
 
-ORCHESTRATOR_SUMMARY = (
-    "You are the Orchestrator of a home energy management system. Write a short, friendly summary (max 4 "
-    "sentences) of the final schedule for the household: when each appliance runs and the estimated cost. "
-    "You are given the result of an automatic peak-load check; if it reports a conflict, say plainly that the "
-    "schedule still exceeds the household limit. Never claim constraints are met unless the check confirms it."
-)
-
-PROFILER = f"You are the Appliance Profiler agent. {GOAL}\nYour task: {PROFILER_ROLE}\n{REACT_STYLE}"
-
+# The Scheduler starts with the optimiser and fixes any problem the verification step reports, with the conflict tools.
 SCHEDULER = (
-    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: {SCHEDULER_ROLE} "
-    "The Conflict Resolver checks the peak limit after you, but if you receive conflict feedback, propose "
-    f"start times that avoid the reported overlaps at minimal extra cost.\n{REACT_STYLE}"
-)
-
-RESOLVER = f"You are the Conflict Resolver agent. {GOAL}\nYour task: {RESOLVER_ROLE}\n{REACT_STYLE}"
-
-# Design iteration 7, optimiser arm: the Scheduler formulates the solver call and checks its result.
-SCHEDULER_OPT = (
-    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: call optimize_schedule once with the ids of ALL "
-    "flexible appliances to schedule; it solves the whole problem exactly (windows, peak limit, cost). Then check "
-    "the result with calculate_schedule_cost for any appliance whose time looks unusual, and return the solver's "
-    "start time for every appliance. If the solver reports no schedule, fall back to find_cheapest_window per "
-    "appliance. If you receive conflict feedback, call optimize_schedule again with the complete list of appliances.\n"
-    f"{REACT_STYLE}"
-)
-
-# Design iteration 9 ("multi_lean"): fewer sequential model calls. The Profiler receives the household data
-# and classifications in its message, and the Scheduler returns the solver's result without re-costing it,
-# because the Orchestrator's verification step checks the schedule anyway.
-PROFILER_LEAN = (
-    f"You are the Appliance Profiler agent. {GOAL}\nYour task: {PROFILER_ROLE} The household data and the "
-    "classification of every appliance are given in the message, so answer directly with the profiles."
-)
-
-SCHEDULER_LEAN = (
     f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: start by calling optimize_schedule once with the ids "
     "of ALL flexible appliances to schedule; it reads the prices itself and solves the whole problem exactly "
     "(windows, peak limit, cost), so you do not need to fetch the prices first. Return the "
     "solver's start time for every appliance; do not re-check its costs, because the Orchestrator verifies the "
-    "schedule after you. If the solver reports no schedule, fall back to find_cheapest_window per appliance. If you "
-    "receive conflict feedback, call optimize_schedule again with the complete list of appliances.\n"
+    "schedule after you. If the solver reports no schedule, fall back to find_cheapest_window per appliance and "
+    "check the result with detect_conflicts. If you receive verification feedback, fix every problem it reports "
+    "yourself: call optimize_schedule again with the complete list of appliances, or move the conflicting "
+    "appliances with adjust_schedule and confirm with detect_conflicts that no conflict remains.\n"
     f"{REACT_STYLE}"
 )
 
-ORCHESTRATOR_SUMMARY_LEAN = (
+# Design iteration 11 (explicit Thoughts): every tool takes a required "thought" argument; added to the Scheduler's prompt.
+THOUGHT_NOTE = (
+    "\nWrite your Thought in the `thought` argument of every tool call: one short sentence on what you are checking "
+    "with this call and why."
+)
+
+ORCHESTRATOR_SUMMARY = (
     "You are the Orchestrator of a home energy management system. Write a short, friendly summary (max 4 "
     "sentences) of the final schedule for the household: when each appliance runs, its cost and how much it saves "
     "compared with starting every appliance as soon as it is ready. Use only the figures you are given. You are "
@@ -97,6 +74,7 @@ ORCHESTRATOR_SUMMARY_LEAN = (
     "still exceeds the household limit. Never claim constraints are met unless the check confirms it."
 )
 
+# ── Baselines ───────────────────────────────────────────────────────────────
 ONESHOT = (
     f"You are a home energy management assistant. {GOAL}\n"
     "You have no tools. All household data, the price of every 15-minute slot and the measured base load "

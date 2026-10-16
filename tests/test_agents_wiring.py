@@ -20,6 +20,7 @@ def _optimal_assignments(scenario: Scenario) -> list[dict[str, str]]:
     return [{"appliance_id": k, "start_time": scenario.slot_to_time(v)} for k, v in schedule.items()]
 
 
+# ── Baselines ────────────────────────────────────────────────────────────────
 def test_single_agent_returns_schedule(scenario: Scenario) -> None:
     first = scenario.appliances[0].id
     model = scripted(
@@ -30,68 +31,6 @@ def test_single_agent_returns_schedule(scenario: Scenario) -> None:
     run = run_single_agent(scenario, model)
     assert run.errors == []
     assert run.tool_calls == 3
-    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
-    assert evaluate(scenario, parsed).feasible
-
-
-def test_multi_agent_pipeline_end_to_end(scenario: Scenario) -> None:
-    ids = [a.id for a in scenario.appliances]
-    optimal = _optimal_assignments(scenario)
-    profiles = [
-        {
-            "appliance_id": a.id,
-            "kind": a.kind,
-            "flexible": True,
-            "peak_kw": a.peak_kw,
-            "duration_minutes": a.duration_slots * 15,
-            "earliest_time": scenario.slot_to_time(a.earliest_slot),
-            "deadline_time": scenario.boundary_to_time(a.deadline_slot),
-        }
-        for a in scenario.appliances
-    ]
-    models = {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "All set: cheapest conflict-free times."),
-        "profiler": scripted(call("read_household_data"), call("ProfileOutput", appliances=profiles)),
-        "scheduler": scripted(
-            call("find_cheapest_window", appliance_id=ids[0]),
-            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="cheapest"),
-        ),
-        "resolver": scripted(
-            call("detect_conflicts", schedule={o["appliance_id"]: o["start_time"] for o in optimal}),
-            call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none"),
-        ),
-    }
-    run = run_multi_agent(scenario, lambda role: models[role])
-    assert run.errors == []
-    assert run.iterations == 1  # MILP schedule is conflict-free: no loop back
-    assert run.explanation.startswith("All set")
-    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
-    assert evaluate(scenario, parsed).cost_eur == evaluate(scenario, solve_milp(scenario).schedule).cost_eur
-
-
-def test_multi_agent_loops_back_on_conflict(scenario: Scenario) -> None:
-    ids = [a.id for a in scenario.appliances]
-    clash = [{"appliance_id": i, "start_time": scenario.slot_to_time(scenario.appliances[0].earliest_slot + 8)} for i in ids]
-    optimal = _optimal_assignments(scenario)
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
-         "earliest_time": "00:00", "deadline_time": "24:00"}
-        for a in scenario.appliances
-    ]  # fmt: skip
-    models = {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
-        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
-        "scheduler": scripted(
-            call("ScheduleOutput", assignments=clash, total_cost_eur=1.0, explanation="first try"),
-            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="revised"),
-        ),
-        "resolver": scripted(
-            call("ResolverOutput", assignments=clash, conflicts_remaining=True, changes="could not fix"),
-            call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none"),
-        ),
-    }
-    run = run_multi_agent(scenario, lambda role: models[role])
-    assert run.iterations == 2
     parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
     assert evaluate(scenario, parsed).feasible
 
@@ -119,27 +58,6 @@ def test_single_agent_gives_up_after_max_recoveries(scenario: Scenario) -> None:
     assert run.assignments is None and "rejected" in run.errors[0]
 
 
-def test_pipeline_counts_specialist_recoveries(scenario: Scenario) -> None:
-    from .fakes import ProviderRejection
-
-    ids = [a.id for a in scenario.appliances]
-    optimal = _optimal_assignments(scenario)
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
-         "earliest_time": "00:00", "deadline_time": "24:00"}
-        for a in scenario.appliances
-    ]  # fmt: skip
-    models = {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
-        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
-        "scheduler": scripted(ProviderRejection(), call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="x")),
-        "resolver": scripted(call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none")),
-    }
-    run = run_multi_agent(scenario, lambda role: models[role])
-    assert run.recoveries == 1 and run.errors == []
-    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
-
-
 def test_daily_quota_detection() -> None:
     from hems.agents.errors import daily_quota_exhausted
 
@@ -158,102 +76,118 @@ def test_single_agent_recovers_when_prose_ends_the_loop(scenario: Scenario) -> N
     assert run.recoveries == 1 and run.errors == [] and run.assignments
 
 
-def test_pipeline_sends_missing_appliances_back_to_scheduler(scenario: Scenario) -> None:
-    ids = [a.id for a in scenario.appliances]
-    optimal = _optimal_assignments(scenario)
-    partial = optimal[:-1]  # the Scheduler forgets one appliance
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
-         "earliest_time": "00:00", "deadline_time": "24:00"}
-        for a in scenario.appliances
-    ]  # fmt: skip
-    models = {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
-        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
-        "scheduler": scripted(
-            call("ScheduleOutput", assignments=partial, total_cost_eur=1.0, explanation="partial"),
-            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="complete"),
-        ),
-        "resolver": scripted(
-            call("ResolverOutput", assignments=partial, conflicts_remaining=False, changes="none"),
-            call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none"),
-        ),
-    }
-    run = run_multi_agent(scenario, lambda role: models[role])
-    assert run.iterations == 2
-    assert set(run.assignments) == set(ids)
-
-
-def _always_partial_models(scenario: Scenario) -> tuple[dict, list[dict]]:
-    """Scheduler and Resolver leave out the last appliance in both rounds."""
-    ids = [a.id for a in scenario.appliances]
-    partial = _optimal_assignments(scenario)[:-1]
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
-         "earliest_time": "00:00", "deadline_time": "24:00"}
-        for a in scenario.appliances
-    ]  # fmt: skip
-    return {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
-        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
-        "scheduler": scripted(*[call("ScheduleOutput", assignments=partial, total_cost_eur=1.0, explanation="p")] * 2),
-        "resolver": scripted(*[call("ResolverOutput", assignments=partial, conflicts_remaining=False, changes="n")] * 2),
-    }, partial
-
-
-def test_verification_places_an_appliance_still_missing_after_the_last_round(scenario: Scenario) -> None:
-    models, partial = _always_partial_models(scenario)
-    run = run_multi_agent(scenario, lambda role: models[role], complete_missing=True)
-    assert set(run.assignments) == {a.id for a in scenario.appliances}
-    kept = {p["appliance_id"]: p["start_time"] for p in partial}
-    assert all(run.assignments[k] == v for k, v in kept.items())  # the agents' other start times are unchanged
-    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
-    assert evaluate(scenario, parsed).feasible
-    assert any("placed missing" in e for e in run.errors)
-
-
-def test_without_completion_a_missing_appliance_stays_missing(scenario: Scenario) -> None:
-    models, partial = _always_partial_models(scenario)
-    run = run_multi_agent(scenario, lambda role: models[role])
-    assert set(run.assignments) == {p["appliance_id"] for p in partial}
-
-
-def test_pipeline_sends_out_of_window_starts_back_to_scheduler(scenario: Scenario) -> None:
-    # Reproduces pilot/evaluation failure E03: the Resolver moved an appliance past its deadline.
-    ids = [a.id for a in scenario.appliances]
-    optimal = _optimal_assignments(scenario)
-    late = scenario.appliances[0]
-    outside = [dict(o) for o in optimal]
-    outside[0]["start_time"] = scenario.slot_to_time(late.latest_start_slot + 1)
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
-         "earliest_time": "00:00", "deadline_time": "24:00"}
-        for a in scenario.appliances
-    ]  # fmt: skip
-    models = {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "done"),
-        "profiler": scripted(call("ProfileOutput", appliances=profiles)),
-        "scheduler": scripted(
-            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="first"),
-            call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="revised"),
-        ),
-        "resolver": scripted(
-            call("ResolverOutput", assignments=outside, conflicts_remaining=False, changes="moved one"),
-            call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="none"),
-        ),
-    }
-    run = run_multi_agent(scenario, lambda role: models[role])
-    assert run.iterations == 2  # the out-of-window start triggered the feedback round
-    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
-    assert evaluate(scenario, parsed).feasible
-
-
 def test_oneshot_answers_without_tools_from_full_data(scenario: Scenario) -> None:
     message = scenario_message(scenario)
     assert len(message.splitlines()) > 96 and "base_kW" in message  # every slot's price and base load
     model = scripted(call("ScheduleOutput", assignments=_optimal_assignments(scenario), total_cost_eur=1.0, explanation="x"))
     run = run_oneshot(scenario, model)
     assert run.errors == [] and run.tool_calls == 0
+    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
+    assert evaluate(scenario, parsed).feasible
+
+
+# ── The pipeline: Orchestrator agent, profile_data, Scheduler agent, verify_schedule ──
+SEEN: list[str] = []
+
+
+class _Recording(ScriptedModel):
+    """Scripted model that also records the text of the last message it receives."""
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):  # type: ignore[no-untyped-def]
+        SEEN.append(str(messages[-1].content))
+        return super()._generate(messages, stop, run_manager, **kwargs)
+
+
+def _models(scenario: Scenario, *turns, summary: str = "done") -> dict:  # type: ignore[no-untyped-def]
+    """The two agents: the Orchestrator plans and summarises; the Scheduler replays ``turns`` (a schedule list
+    becomes a ScheduleOutput; anything else is passed on as a scripted turn)."""
+    ids = [a.id for a in scenario.appliances]
+    scheduler_turns = [
+        call("ScheduleOutput", assignments=t, total_cost_eur=1.0, explanation="") if isinstance(t, list) else t
+        for t in turns
+    ]  # fmt: skip
+    return {
+        "orchestrator": _Recording(messages=iter([call("TaskBrief", appliance_ids=ids, notes=""), AIMessage(content=summary)])),
+        "scheduler": _Recording(messages=iter(scheduler_turns)),
+    }
+
+
+def _clash(scenario: Scenario) -> list[dict[str, str]]:
+    clash = [{"appliance_id": a.id, "start_time": scenario.slot_to_time(scenario.appliances[0].earliest_slot + 8)}
+             for a in scenario.appliances]  # fmt: skip
+    assert not evaluate(scenario, {c["appliance_id"]: scenario.time_to_slot(c["start_time"]) for c in clash}).feasible
+    return clash
+
+
+def test_pipeline_has_two_agents_and_two_functions(scenario: Scenario) -> None:
+    nodes = set(build_pipeline(scenario, lambda _role: scripted()).get_graph().nodes)
+    assert {"orchestrator_plan", "profile_data", "scheduler", "verify_schedule", "orchestrator_finalize"} <= nodes
+    assert not {"profiler", "resolver"} & nodes
+
+
+def test_pipeline_end_to_end_with_a_verified_schedule(scenario: Scenario) -> None:
+    SEEN.clear()
+    optimal = _optimal_assignments(scenario)
+    models = _models(scenario, call("find_cheapest_window", appliance_id=scenario.appliances[0].id), optimal,
+                     summary="All set: cheapest conflict-free times.")  # fmt: skip
+    run = run_multi_agent(scenario, lambda role: models[role])  # only the two agents are ever asked for a model
+    assert run.errors == [] and run.iterations == 1  # the schedule passed the verification step: no loop back
+    assert run.explanation.startswith("All set")
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+    scheduler_message = SEEN[1]  # the Orchestrator's brief, then the Scheduler's first message
+    for a in scenario.appliances:  # profile_data built the profiles from the household data
+        assert a.id in scheduler_message and f'"duration_minutes": {a.duration_slots * 15}' in scheduler_message
+    assert "Saving: EUR" in SEEN[-1]  # the summary is given the cost and the saving
+
+
+def test_a_conflicting_schedule_goes_back_to_the_scheduler(scenario: Scenario) -> None:
+    SEEN.clear()
+    optimal = _optimal_assignments(scenario)
+    models = _models(scenario, _clash(scenario), optimal)
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 2
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+    assert any("Verification feedback" in m and "CONFLICT" in m for m in SEEN)  # the Scheduler got the problem
+
+
+def test_pipeline_counts_recoveries(scenario: Scenario) -> None:
+    from .fakes import ProviderRejection
+
+    optimal = _optimal_assignments(scenario)
+    models = _models(scenario, ProviderRejection(), optimal)
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.recoveries == 1 and run.errors == []
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+
+
+def test_a_missing_appliance_goes_back_to_the_scheduler(scenario: Scenario) -> None:
+    SEEN.clear()
+    optimal = _optimal_assignments(scenario)
+    models = _models(scenario, optimal[:-1], optimal)  # the Scheduler forgets one appliance, then corrects it
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 2 and set(run.assignments) == {a.id for a in scenario.appliances}
+    assert any("MISSING" in m and "schedule all of them" in m for m in SEEN)
+
+
+def test_an_appliance_still_missing_after_the_last_round_is_placed(scenario: Scenario) -> None:
+    partial = _optimal_assignments(scenario)[:-1]
+    models = _models(scenario, partial, partial)
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert set(run.assignments) == {a.id for a in scenario.appliances}
+    kept = {p["appliance_id"]: p["start_time"] for p in partial}
+    assert all(run.assignments[k] == v for k, v in kept.items())  # the Scheduler's other start times are unchanged
+    parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
+    assert evaluate(scenario, parsed).feasible
+    assert any("placed missing" in e for e in run.errors)
+
+
+def test_an_out_of_window_start_goes_back_to_the_scheduler(scenario: Scenario) -> None:
+    optimal = _optimal_assignments(scenario)
+    outside = [dict(o) for o in optimal]
+    outside[0]["start_time"] = scenario.slot_to_time(scenario.appliances[0].latest_start_slot + 1)
+    models = _models(scenario, outside, optimal)
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 2  # the out-of-window start triggered the feedback round
     parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
     assert evaluate(scenario, parsed).feasible
 
@@ -274,102 +208,51 @@ def _one_cheap_hour_scenario() -> Scenario:
     )  # fmt: skip
 
 
-def _cost_models(*starts: str) -> dict:
-    a = [{"appliance_id": "dishwasher_1", "start_time": s} for s in starts]
-    profile = [{"appliance_id": "dishwasher_1", "kind": "dishwasher", "flexible": True, "peak_kw": 1.0,
-                "duration_minutes": 60, "earliest_time": "00:00", "deadline_time": "24:00"}]  # fmt: skip
-    return {
-        "orchestrator": scripted(call("TaskBrief", appliance_ids=["dishwasher_1"], notes=""), "done"),
-        "profiler": scripted(call("ProfileOutput", appliances=profile)),
-        "scheduler": scripted(*[call("ScheduleOutput", assignments=[x], total_cost_eur=1.0, explanation="") for x in a]),
-        "resolver": scripted(*[call("ResolverOutput", assignments=[x], conflicts_remaining=False, changes="none") for x in a]),
-    }
-
-
-def test_cost_check_sends_a_costly_valid_schedule_back_once() -> None:
+def test_a_valid_schedule_is_final_even_if_costly() -> None:
     scenario = _one_cheap_hour_scenario()
-    models = _cost_models("12:00", "01:00")  # valid but 200 % above the bound, then the cheap hour
-    run = run_multi_agent(scenario, lambda role: models[role], cost_check=True)
-    assert run.iterations == 2 and run.assignments == {"dishwasher_1": "01:00"}
+    costly = [{"appliance_id": "dishwasher_1", "start_time": "12:00"}]
+    models = _models(scenario, costly)
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 1 and run.assignments == {"dishwasher_1": "12:00"}  # the check is validity, not cost
 
 
-def test_cost_check_keeps_the_cheapest_valid_schedule() -> None:
-    scenario = _one_cheap_hour_scenario()
-    models = _cost_models("05:00", "12:00")  # the revision is no cheaper: the first schedule stays
-    run = run_multi_agent(scenario, lambda role: models[role], cost_check=True)
-    assert run.iterations == 2 and run.assignments == {"dishwasher_1": "05:00"}
-
-
-def test_without_cost_check_a_valid_schedule_is_final() -> None:
-    scenario = _one_cheap_hour_scenario()
-    models = _cost_models("12:00", "01:00")
-    run = run_multi_agent(scenario, lambda role: models[role])  # the evaluated pipeline ("multi")
-    assert run.iterations == 1 and run.assignments == {"dishwasher_1": "12:00"}
-
-
-# ── Design iteration 9: lean pipeline ────────────────────────────────────────
-SEEN: list[str] = []
-
-
-class _Recording(ScriptedModel):
-    """Scripted model that also records the text of the last message it receives."""
-
-    def _generate(self, messages, stop=None, run_manager=None, **kwargs):  # type: ignore[no-untyped-def]
-        SEEN.append(str(messages[-1].content))
-        return super()._generate(messages, stop, run_manager, **kwargs)
-
-
-def _lean_models(scenario: Scenario, first: list[dict[str, str]], second: list[dict[str, str]] | None = None) -> dict:
-    ids = [a.id for a in scenario.appliances]
-    profiles = [
-        {"appliance_id": a.id, "kind": a.kind, "flexible": True, "peak_kw": a.peak_kw, "duration_minutes": 60,
-         "earliest_time": "00:00", "deadline_time": "24:00"}
-        for a in scenario.appliances
-    ]  # fmt: skip
-    proposals = [first] + ([second] if second else [])
-    return {
-        "orchestrator": _Recording(messages=iter([call("TaskBrief", appliance_ids=ids, notes=""), AIMessage(content="done")])),
-        "profiler": _Recording(messages=iter([call("ProfileOutput", appliances=profiles)])),
-        "scheduler": scripted(*[call("ScheduleOutput", assignments=p, total_cost_eur=1.0, explanation="") for p in proposals]),
-        "resolver": scripted(call("ResolverOutput", assignments=second or first, conflicts_remaining=False, changes="moved")),
-    }
-
-
-def test_lean_pipeline_skips_the_resolver_for_a_verified_proposal(scenario: Scenario) -> None:
-    SEEN.clear()
+def test_parallel_start_profiles_while_the_orchestrator_plans_and_gives_the_same_schedule(scenario: Scenario) -> None:
     optimal = _optimal_assignments(scenario)
-    models = _lean_models(scenario, optimal)
-    run = run_multi_agent(scenario, lambda role: models[role], lean=True, complete_missing=True)
-    assert run.iterations == 1 and run.errors == []
-    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
-    assert next(models["resolver"].messages, None) is not None  # the Resolver's scripted turn was never used
-    profiler_message = SEEN[1]
-    assert "Household data" in profiler_message and "FLEXIBLE" in profiler_message  # data handed over, no tool turns
-    assert "Saving: EUR" in SEEN[-1]  # the summary is given the cost and the saving
-
-
-def test_lean_pipeline_still_resolves_a_conflicting_proposal(scenario: Scenario) -> None:
-    clash = [{"appliance_id": a.id, "start_time": scenario.slot_to_time(scenario.appliances[0].earliest_slot + 8)}
-             for a in scenario.appliances]  # fmt: skip
-    assert not evaluate(scenario, {c["appliance_id"]: scenario.time_to_slot(c["start_time"]) for c in clash}).feasible
-    optimal = _optimal_assignments(scenario)
-    models = _lean_models(scenario, clash)
-    models["resolver"] = scripted(call("ResolverOutput", assignments=optimal, conflicts_remaining=False, changes="moved"))
-    run = run_multi_agent(scenario, lambda role: models[role], lean=True, complete_missing=True)
-    assert run.iterations == 1
-    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
-
-
-def test_parallel_start_runs_profiler_and_orchestrator_together_and_returns_the_same_schedule(scenario: Scenario) -> None:
-    optimal = _optimal_assignments(scenario)
-    models = _lean_models(scenario, optimal)
-    pipeline = build_pipeline(scenario, lambda role: models[role], lean=True, complete_missing=True, parallel_start=True)
-    assert {"orchestrator_plan", "profiler"} <= {e.target for e in pipeline.get_graph().edges if e.source == "__start__"}
+    models = _models(scenario, optimal)
+    pipeline = build_pipeline(scenario, lambda role: models[role], parallel_start=True)
+    assert {"orchestrator_plan", "profile_data"} <= {e.target for e in pipeline.get_graph().edges if e.source == "__start__"}
     state = pipeline.invoke({"request": scenario.user_request})
     assert state["final"] == {o["appliance_id"]: o["start_time"] for o in optimal}
-    assert state["iterations"] == 1 and state["errors"] == []
+    assert state["rounds"] == 1 and state["errors"] == []
 
 
-def test_parallel_start_needs_the_lean_pipeline(scenario: Scenario) -> None:
-    with pytest.raises(ValueError, match="lean"):
-        build_pipeline(scenario, lambda _role: scripted(), parallel_start=True)
+# ── Explicit Thoughts (design iteration 11) ─────────────────────────────────
+def test_with_thought_requires_a_thought_and_leaves_the_tool_unchanged(scenario: Scenario) -> None:
+    from pydantic import ValidationError
+
+    from hems.tools import build_tools, with_thought
+
+    tools, log = build_tools(scenario), []
+    wrapped = with_thought(tools["calculate_schedule_cost"], log)
+    assert list(wrapped.args_schema.model_fields)[0] == "thought"  # written first, before the arguments
+    a = scenario.appliances[0]
+    args = {"appliance_id": a.id, "start_time": scenario.slot_to_time(a.earliest_slot)}
+    assert wrapped.invoke({"thought": "check the cost at the ready time", **args}) == tools["calculate_schedule_cost"].invoke(args)
+    assert log == [{"tool": "calculate_schedule_cost", "thought": "check the cost at the ready time"}]
+    with pytest.raises(ValidationError):
+        wrapped.invoke(args)  # no Thought, no Action
+
+
+def test_the_schedulers_thoughts_are_recorded(scenario: Scenario) -> None:
+    optimal = _optimal_assignments(scenario)
+    ids = [a.id for a in scenario.appliances]
+    models = _models(scenario, call("optimize_schedule", thought="solve the whole day exactly", appliance_ids=ids), optimal)
+    run = run_multi_agent(scenario, lambda role: models[role], thoughts=True)
+    assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
+    assert run.thoughts == [{"agent": "scheduler", "tool": "optimize_schedule", "thought": "solve the whole day exactly"}]
+
+
+def test_without_thoughts_tools_take_no_thought(scenario: Scenario) -> None:
+    optimal = _optimal_assignments(scenario)
+    run = run_multi_agent(scenario, lambda role: _models(scenario, optimal)[role])
+    assert run.thoughts == []

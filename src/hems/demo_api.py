@@ -11,7 +11,7 @@ Low-carbon-alerts appliance catalog.
 
 The systems run exactly as in the evaluation (hems.run.execute): no scheduling, MILP optimum, smart
 timer, cheapest hours, cheapest window, EMHASS (Docker REST, if reachable) and the Multi-Agent Pipeline
-(GPT-4o-mini, live, the lean variant of design iteration 9; about 10 s and USD 0.001 per run). This module is not used by any benchmark.
+(GPT-4o-mini, live, the two-agent pipeline of design iteration 10; under 10 s and about USD 0.001 per run). This module is not used by any benchmark.
 """
 
 from __future__ import annotations
@@ -66,7 +66,8 @@ CATALOG = {
     "electric_oven": {"label": "Electric oven", "measured": False, "power_kw": 2.5, "duration_min": 60},
 }
 SYSTEM_LABELS = {
-    "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)", "multi_lean": "Multi-Agent Pipeline (lean variant)",
+    "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)",
+    "multi_duo": "Multi-Agent Pipeline", "multi_duo_thoughts": "Multi-Agent Pipeline",
     "timer": "Smart timer (own heuristic)", "cheapest_hours": "Cheapest hours (HA blueprint)",
     "cheapest_window": "Cheapest window (HA Nordpool Planner)",
     "emhass_rest": "EMHASS",
@@ -530,8 +531,11 @@ def plan_agent(body: PlanIn) -> dict[str, Any]:
 # ── The pipeline, agent by agent (streamed) ─────────────────────────────────
 
 # Pipeline node -> the agent the page shows. The Resolver node also holds the Orchestrator's verification step.
-AGENT_OF_NODE = {"orchestrator_plan": "orchestrator", "profiler": "profiler", "scheduler": "scheduler",
-                 "resolver": "resolver", "orchestrator_finalize": "summary"}  # fmt: skip
+# The two agents (Orchestrator, Scheduler) and the two deterministic steps, which the page shows by function name
+AGENT_OF_NODE = {"orchestrator_plan": "orchestrator", "profile_data": "profile_data", "scheduler": "scheduler",
+                 "verify_schedule": "verify_schedule", "orchestrator_finalize": "summary"}  # fmt: skip
+# The pipeline run live: design iteration 10, two language-model agents (Orchestrator and Scheduler)
+LIVE_SYSTEM = "multi_duo_thoughts"
 REDUCED = {"errors": list, "tool_calls": int, "recoveries": int}  # state keys the pipeline adds up across nodes
 
 
@@ -565,14 +569,19 @@ class _AgentWatch(BaseCallbackHandler):
         with self.lock:
             self.tokens[node] = self.tokens.get(node, 0) + usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
 
-    def on_tool_start(self, serialized, input_str, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
-        self.tools[run_id] = (_node(metadata), (serialized or {}).get("name", "tool"), str(input_str), time.perf_counter())
+    def on_tool_start(self, serialized, input_str, *, run_id, metadata=None, inputs=None, **kwargs):  # type: ignore[no-untyped-def]
+        inputs = inputs if isinstance(inputs, dict) else {}
+        thought = str(inputs.get("thought", ""))  # explicit Thought (iteration 11)
+        args = json.dumps({k: v for k, v in inputs.items() if k != "thought"}, default=str) if inputs else str(input_str)
+        self.tools[run_id] = (_node(metadata), (serialized or {}).get("name", "tool"), args, time.perf_counter(), thought)
 
     def on_tool_end(self, output, *, run_id, **kwargs):  # type: ignore[no-untyped-def]
-        node, name, args, started = self.tools.pop(run_id, (None, "tool", "", time.perf_counter()))
+        node, name, args, started, thought = self.tools.pop(run_id, (None, "tool", "", time.perf_counter(), ""))
+        if node != "scheduler":  # the functions call tools internally; only the Scheduler agent's actions are shown
+            return
         text = str(getattr(output, "content", output))
         self.emit({"type": "tool", "node": node, "name": name, "input": args[:300], "output": text[:600],
-                   "ms": round((time.perf_counter() - started) * 1000)})  # fmt: skip
+                   "thought": thought[:300], "ms": round((time.perf_counter() - started) * 1000)})  # fmt: skip
 
 
 def _find(scenario: Scenario, appliance_id: Any) -> FlexibleAppliance | None:
@@ -587,23 +596,23 @@ def _agent_output(node: str, update: dict[str, Any]) -> dict[str, Any]:
 
     if node == "orchestrator_plan" and (brief := update.get("brief")):
         return {"appliances": brief.appliance_ids, "notes": brief.notes}
-    if node == "profiler" and (profile := update.get("profile")):
+    if node == "profile_data" and (profile := update.get("profile")):
         return {"appliances": [{"id": p.appliance_id, "kind": p.kind, "flexible": p.flexible, "peakKw": p.peak_kw,
                                 "durationMin": p.duration_minutes, "window": f"{p.earliest_time}-{p.deadline_time}"}
                                for p in profile.appliances]}  # fmt: skip
     if node == "scheduler" and (proposal := update.get("proposal")):
         return {"starts": starts(proposal.assignments), "costEur": proposal.total_cost_eur, "explanation": proposal.explanation}
-    if node == "resolver" and (resolution := update.get("resolution")):
-        feedback = update.get("conflict_feedback") or ""
-        return {"starts": starts(resolution.assignments), "changes": resolution.changes, "feedback": feedback,
-                "skipped": resolution.changes.startswith("none (the proposal passed"), "verified": not feedback}  # fmt: skip
+    if node == "verify_schedule" and "feedback" in update:
+        feedback = update.get("feedback") or ""
+        return {"starts": update.get("checked") or {}, "feedback": feedback, "passed": not feedback}
     if node == "orchestrator_finalize":
         return {"starts": update.get("final") or {}, "summary": update.get("summary", "")}
     return {}
 
 
 def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
-    """Run the Multi-Agent Pipeline (lean, with the Orchestrator and Profiler starting in parallel) and stream
+    """Run the Multi-Agent Pipeline (two agents, design iteration 10; the household data are profiled while the
+    Orchestrator plans) and stream
     server-sent events: each agent starting, its tool calls, what it handed on, the summary as it is written, and
     finally the scored result, the same record as /api/plan/agent."""
     from langchain_core.callbacks import get_usage_metadata_callback
@@ -625,9 +634,8 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
         try:
             watch = _AgentWatch(emit)
             model = make_model("gpt-4o-mini")
-            pipeline = build_pipeline(scenario, lambda _role: model, retriever=default_retriever(), optimizer=True,
-                                      complete_missing=True, lean=True, parallel_start=True,
-                                      summary_costs=_summary_costs(scenario, fee))  # fmt: skip
+            pipeline = build_pipeline(scenario, lambda _role: model, retriever=default_retriever(), thoughts=True,
+                                      parallel_start=True, summary_costs=_summary_costs(scenario, fee))  # fmt: skip
             state: dict[str, Any] = {key: kind() for key, kind in REDUCED.items()}
             emit({"type": "start"})
             with get_usage_metadata_callback() as usage_cb:
@@ -645,7 +653,7 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
                             state[key] = state[key] + value if key in REDUCED else value
                         if node in AGENT_OF_NODE:
                             output = _agent_output(node, update)
-                            for row in output.get("appliances", []) if node == "profiler" else []:
+                            for row in output.get("appliances", []) if node == "profile_data" else []:
                                 # show the true periods; the Profiler's profile has room for one window only
                                 if isinstance(row, dict) and (a := _find(scenario, row.get("id"))) and a.windows:
                                     row["window"] = " or ".join(f"{scenario.slot_to_time(s)}-{scenario.boundary_to_time(e)}"
@@ -657,9 +665,9 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
                            tool_calls=state["tool_calls"], recoveries=state["recoveries"], iterations=state.get("iterations", 0))  # fmt: skip
             schedule, problems = parse_assignments(scenario, run.assignments)
             tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
-            record = _record(scenario, "multi_lean", "gpt-4o-mini", 0, run, schedule, problems,
+            record = _record(scenario, LIVE_SYSTEM, "gpt-4o-mini", 0, run, schedule, problems,
                              time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
-            result = _result(scenario, "multi_lean", record, _naive(scenario, fee), fee)
+            result = _result(scenario, LIVE_SYSTEM, record, _naive(scenario, fee), fee)
             emit({"type": "result", "result": result, "recommendation": _recommendation(scenario, result)})
         except Exception as exc:  # noqa: BLE001 - shown on the page instead of a broken stream
             emit({"type": "error", "message": f"{type(exc).__name__}: {exc}"})

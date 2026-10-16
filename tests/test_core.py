@@ -127,11 +127,11 @@ def test_household_data_states_measured_base_load(scenario: Scenario) -> None:
     assert "Measured base load" in text and "rated power when on" in text
 
 
-def test_step_budget_parity() -> None:
-    from hems.agents.multi_agent import STEP_LIMITS
+def test_scheduler_budget_within_the_single_agent_budget() -> None:
+    from hems.agents.multi_agent import SCHEDULER_STEP_LIMIT
     from hems.agents.single_agent import RECURSION_LIMIT
 
-    assert sum(STEP_LIMITS.values()) == RECURSION_LIMIT
+    assert SCHEDULER_STEP_LIMIT <= RECURSION_LIMIT
 
 
 @pytest.mark.parametrize("scenario_type", list("ABCDEF"))

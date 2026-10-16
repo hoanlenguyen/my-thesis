@@ -87,18 +87,15 @@ SYSTEMS: dict[str, System] = {
         System("emhass_nominal", "external", "EMHASS with constant nominal power", plan=_emhass("nominal")),
         System("single", "llm", "single ReAct agent, all tools",
                agent=lambda sc, model, config, summarize: run_single_agent(sc, model, config)),  # fmt: skip
-        System("multi", "llm", "hierarchical ReAct multi-agent pipeline",
-               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize)),  # fmt: skip
-        System("multi_v3", "llm", "pipeline with cost-aware verification (design iteration 6)",
-               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, cost_check=True)),  # fmt: skip
-        System("multi_rag", "llm", "pipeline with retrieved worked examples of solved days (design iteration 7)",
+        # The Multi-Agent Pipeline: two agents (Orchestrator, Scheduler) and two deterministic steps. The four-agent
+        # designs evaluated earlier ("multi", "multi_v3", "multi_rag", "multi_rag_opt", "multi_lean") were removed on
+        # 16 October 2026; their recorded runs stay in results/ and are still read by the analysis.
+        System("multi_duo", "llm",
+               "Multi-Agent Pipeline: Orchestrator and Scheduler; profiling and verification without a model (design iteration 10)",
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever())),  # fmt: skip
-        System("multi_rag_opt", "llm",
-               "Multi-Agent Pipeline: retrieved examples, optimiser tool, completion of missing appliances (iterations 7-8)",
-               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True, complete_missing=True)),  # fmt: skip
-        System("multi_lean", "llm",
-               "Multi-Agent Pipeline with fewer sequential model calls (design iteration 9, exploratory)",
-               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), optimizer=True, complete_missing=True, lean=True)),  # fmt: skip
+        System("multi_duo_thoughts", "llm",
+               "Multi-Agent Pipeline with an explicit Thought in every tool call (design iteration 11)",
+               agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), thoughts=True)),  # fmt: skip
         System("oneshot", "llm", "language model without tools",
                agent=lambda sc, model, config, summarize: run_oneshot(sc, model, config)),  # fmt: skip
     )

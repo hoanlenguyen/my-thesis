@@ -1,0 +1,9 @@
+{
+  "name": "Swiss households (RAPT houses A, D, E): same price days, loads and limits as Q2; exploratory, not pre-registered",
+  "scenarios": "data/scenarios_rapt",
+  "systems": ["milp", "naive", "timer", "cheapest_hours", "cheapest_hours_hourly", "cheapest_window", "multi_rag_opt", "oneshot"],
+  "models": ["gpt-4o-mini"],
+  "runs": 3,
+  "out": "results/rapt_ch.jsonl",
+  "order": "model"
+}

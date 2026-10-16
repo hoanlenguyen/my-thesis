@@ -1,0 +1,9 @@
+{
+  "name": "design iteration 11: two-agent pipeline with vs without explicit Thoughts, interleaved (exploratory main set)",
+  "scenarios": "data/scenarios_v2",
+  "systems": ["multi_duo", "multi_duo_thoughts"],
+  "models": ["gpt-4o-mini"],
+  "runs": 3,
+  "out": "results/iteration11.jsonl",
+  "order": "model"
+}

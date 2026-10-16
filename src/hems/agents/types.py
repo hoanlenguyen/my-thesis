@@ -13,3 +13,4 @@ class AgentRun:
     tool_calls: int = 0
     iterations: int = 0
     recoveries: int = 0  # turns re-requested after the provider rejected the model's output
+    thoughts: list[dict[str, str]] = field(default_factory=list)  # explicit Thoughts (design iteration 11) only

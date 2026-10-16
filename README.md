@@ -17,13 +17,19 @@ Compile the thesis with XeLaTeX (`latexmk`; VS Code LaTeX Workshop is preconfigu
 
 | System | Module | Role |
 |---|---|---|
-| `multi` | `agents/multi_agent.py` | Orchestrator → Appliance Profiler → Price-Aware Scheduler → Conflict Resolver (LangGraph), verification loop back to the scheduler if conflicts remain (max 2) |
+| `multi_duo` | `agents/multi_agent.py` | Multi-Agent Pipeline (LangGraph): Orchestrator agent → `profile_data()` → Scheduler agent → `verify_schedule()` → Orchestrator agent (summary); verification loops back to the Scheduler agent if problems remain (max 2 rounds). Two LLM agents; the two functions use no language model |
+| `multi_duo_thoughts` | `agents/multi_agent.py` | the same pipeline with explicit Thoughts (a required `thought` argument on every tool call) |
 | `single` | `agents/single_agent.py` | one ReAct agent with all eight tools and the combined prompt |
 | `milp` | `solvers/milp.py` | PuLP/CBC ground truth |
 | `naive` | `solvers/naive.py` | every appliance starts at its default (earliest) time |
 
 All systems are scored by one function, `core/evaluate.py`. The eight tools (`tools/__init__.py`)
-are shared: specialists get their subset, the baseline gets all of them.
+are shared: the Scheduler agent gets the scheduling and load tools plus `optimize_schedule`, the
+baseline gets all eight.
+
+The four-agent designs evaluated earlier (`multi`, `multi_v3`, `multi_rag`, `multi_rag_opt`, `multi_lean`:
+Orchestrator, Appliance Profiler, Price-Aware Scheduler, Conflict Resolver) were removed from the code on
+16 October 2026; their recorded results stay in `results/` and the analysis still reads them.
 
 ### Watching the pipeline in LangGraph Studio
 
@@ -41,25 +47,25 @@ assistant's configuration chooses what runs:
 | Field | Default | Choices |
 |---|---|---|
 | `scenario` | `data/scenarios_q2/Q2-PH03-35.json` | any scenario JSON, relative to the thesis root |
-| `variant` | `multi_rag_opt` (final pipeline) | `multi_lean` (iteration 9, the demo), `multi`, `multi_rag` |
+| `variant` | `multi_duo` | `multi_duo_thoughts` (explicit Thoughts, the demo) |
 | `model` | `gpt-4o-mini` | any name in `agents/llm.py` (e.g. `gpt-oss-20b` with Ollama running) |
 
-Each run calls the language model (GPT-4o-mini: about USD 0.003 per run).
+Each run calls the language model (GPT-4o-mini: about USD 0.001 per run).
 
 ## Workflow
 
 ```bash
 # 0. development / pilots without real data (flagged synthetic, never thesis results)
 uv run hems synth --out data/pilot
-uv run hems demo data/pilot/SYN-D01.json --system multi --model gpt-4o-mini
-uv run hems demo data/pilot/SYN-D01.json --system multi --review     # human-in-the-loop approval
+uv run hems demo data/pilot/SYN-D01.json --system multi_duo --model gpt-4o-mini
+uv run hems demo data/pilot/SYN-D01.json --system multi_duo --review     # human-in-the-loop approval
 
 # 1. benchmark from real data (see data/README.md)
 uv run hems refit-inspect --refit data/raw/refit
 uv run hems build --refit data/raw/refit --prices data/raw/prices_fi.csv --out data/scenarios
 
 # 2. evaluation (resumable; rerun the same command after an interruption)
-uv run hems run --scenarios data/scenarios --systems milp naive single multi \
+uv run hems run --scenarios data/scenarios --systems milp naive single multi_duo \
                 --models gpt-4o-mini gpt-oss-20b --runs 3 --out results/runs.jsonl
 
 # 3. Chapter 5 tables/figures -> results/tables/*.tex, results/figures/*.pdf

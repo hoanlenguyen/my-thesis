@@ -13,7 +13,7 @@ from hems import studio
 from .fakes import ScriptedModel
 
 ROOT = Path(__file__).resolve().parents[1]
-NODES = {"orchestrator_plan", "profiler", "scheduler", "resolver", "orchestrator_finalize"}
+NODES = {"orchestrator_plan", "profile_data", "scheduler", "verify_schedule", "orchestrator_finalize"}
 
 
 def fake_models(_role: str) -> ScriptedModel:
@@ -34,7 +34,7 @@ def test_unknown_variant_is_rejected() -> None:
 
 def test_studio_graph_fills_in_the_request_of_the_scenario(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("hems.agents.llm.make_model", lambda _name: ScriptedModel(messages=iter([])))
-    graph = asyncio.run(studio.make_graph({"configurable": {"variant": "multi_lean"}}))
+    graph = asyncio.run(studio.make_graph({"configurable": {"variant": "multi_duo"}}))
     assert {"household_request", "pipeline"} <= set(graph.get_graph().nodes)
     scenario, _ = studio.build(models=fake_models)
     step = graph.nodes["household_request"].bound

@@ -26,7 +26,7 @@ from hems.core.models import Scenario, Schedule
 from hems.systems import SYSTEMS, names
 
 REFERENCE_SYSTEMS = names("reference", "external")  # deterministic: one run, no model
-AGENT_SYSTEMS = ("single", "multi")
+AGENT_SYSTEMS = ("single", "multi_duo", "multi_duo_thoughts")
 LLM_SYSTEMS = names("llm")  # the agent designs and oneshot (LLM without tools)
 ALL_SYSTEMS = tuple(SYSTEMS)
 
@@ -155,6 +155,8 @@ def _record(
         "explanation": agent_run.explanation,
         "langsmith_run_id": run_id,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # explicit Thoughts (design iteration 11) only, so the records of every other system are unchanged
+        **({"thoughts": agent_run.thoughts} if agent_run.thoughts else {}),
     }
 
 

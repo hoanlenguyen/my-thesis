@@ -148,3 +148,55 @@ calls without changing the tools, the model or the optimiser:
 It is evaluated as an exploratory comparison on the exploratory main set (`configs/iteration9.json`),
 interleaved per scenario with the registered pipeline `multi_rag_opt` so that both meet the same API
 conditions. It is not a confirmatory test, and Q2 is not used for it.
+
+## Note added after the confirmatory run (16 October 2026): design iteration 10, exploratory
+
+This note does not change the registered plan, the analysis code or the registered results, which stay as
+reported for the registered four-agent pipeline `multi_rag_opt`.
+
+In the registered run the verification step never sent a schedule back to the Scheduler (0 of 289 runs;
+2 of 288 on the exploratory set), and the Profiler's work is deterministic (reading the household data and
+classifying each appliance). Design iteration 10 (system `multi_duo`, flag `duo=True` in
+`hems.agents.multi_agent`) therefore reduces the pipeline to two language-model agents:
+
+1. the Orchestrator plans and summarises, as before;
+2. the Appliance Profiler is replaced by a deterministic step that builds the same appliance profiles from
+   the household data;
+3. the Conflict Resolver is removed: the Scheduler also receives the Resolver's tools (`sum_load`,
+   `detect_conflicts`, `adjust_schedule`) and step budget, and the verification step returns any problem
+   to it;
+4. everything else is as in iteration 9 (retrieved examples, optimiser tool, completion of missing
+   appliances, lean Scheduler and summary).
+
+It is evaluated as an exploratory comparison on the exploratory main set (`configs/iteration10.json`),
+interleaved per scenario with `multi_rag_opt` and `multi_lean`, three runs each, so that all three meet the
+same API conditions. It is not a confirmatory test, and Q2 is not used for it.
+
+## Note added after the confirmatory run (16 October 2026): design iteration 11, exploratory
+
+This note does not change the registered plan, the analysis code or the registered results.
+
+Every agent prompt asks for a ReAct Thought (one sentence before each tool call), but a trace of the
+pipelines showed that GPT-4o-mini, with native tool calling, writes no Thought text before its tool calls:
+the reasoning stays implicit, and the recorded trace holds only Actions and Observations. Design iteration 11
+(system `multi_duo_thoughts`, flag `thoughts=True` in `hems.agents.multi_agent`) makes the Thought part of the
+Action: every tool an agent may call gets a required first argument `thought` (`hems.tools.with_thought`),
+which is recorded per agent in the run record (`thoughts`) and dropped before the tool runs, so the tools
+answer exactly as before. Each agent's prompt gets one sentence telling it to write its Thought there.
+Everything else is the two-agent pipeline of iteration 10.
+
+It is evaluated as an exploratory comparison on the exploratory main set (`configs/iteration11.json`),
+interleaved per scenario with `multi_duo`, three runs each, to measure what explicit Thoughts cost (tokens,
+latency) and whether the schedules change. It is not a confirmatory test, and Q2 is not used for it.
+
+## Note (16 October 2026): four-agent code removed
+
+After iterations 10 and 11, the code keeps only the two-agent pipeline: the Orchestrator agent and the Scheduler
+agent, with the deterministic steps `profile_data` and `verify_schedule` (graph nodes; the
+latter was named `verification` in iterations 10 and 11). The flags `lean`, `duo`, `optimizer`, `cost_check` and
+`complete_missing`, the Appliance Profiler and Conflict Resolver agents, and the systems `multi`, `multi_v3`,
+`multi_rag`, `multi_rag_opt` and `multi_lean` were deleted from `hems.agents.multi_agent`, `hems.agents.prompts`
+and `hems.systems`. `multi_duo` and `multi_duo_thoughts` behave exactly as evaluated (same prompts, tools, step
+budget of 60, feedback and completion rule); only the node name `verification` became `verify_schedule`. The
+recorded results of the removed systems (including `results/confirmation_q2.jsonl`) are kept, and the analysis
+code still reads them, but they can no longer be rerun from this version of the code (use the git history).

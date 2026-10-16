@@ -1,13 +1,15 @@
 """Deterministic scheduling tools, bound to one scenario.
 
-Fairness rule: the single-agent baseline receives exactly the union of the
-tools given to the three specialist agents. No tool solves the whole problem:
+Fairness rule: the single-agent baseline receives the eight tools below; the
+pipeline's Scheduler agent receives the scheduling and load tools
+(SCHEDULER_TOOLS + RESOLVER_TOOLS), while reading the household data runs as
+the deterministic step ``profile_data``. No tool solves the whole problem:
 ``find_cheapest_window`` looks at one appliance and ignores the peak limit, so
 coordinating appliances is left to the agents under test.
 
-Exception (design iteration 7, system "multi_rag_opt" only): ``optimize_schedule``
-solves the whole problem with the MILP. In that arm the agents formulate the call,
-check its result and explain it; the solver does the search.
+Exception (design iteration 7, the pipeline's Scheduler agent only): ``optimize_schedule``
+solves the whole problem with the MILP. The agent formulates the call, checks its
+result and explains it; the solver does the search.
 """
 
 from __future__ import annotations
@@ -225,7 +227,7 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
             f"{appliance_id} {'within' if window_ok else 'OUTSIDE'} its window; {status}.{alternatives}"
         )
 
-    # ── Optimiser (multi_rag_opt only) ───────────────────────────────────────
+    # ── Optimiser (the pipeline's Scheduler agent only) ─────────────────────
     @_guard
     def optimize_schedule(appliance_ids: list[str]) -> str:
         """Solve the scheduling problem exactly for the given appliances with an optimisation solver (MILP).
@@ -263,3 +265,26 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
 
 def select(tools: dict[str, BaseTool], names: tuple[str, ...]) -> list[BaseTool]:
     return [tools[n] for n in names]
+
+
+THOUGHT_DESCRIPTION = "Your Thought: one short sentence on what you are checking with this call and why."
+
+
+def with_thought(base: BaseTool, log: list[dict[str, str]]) -> BaseTool:
+    """Design iteration 11 (explicit Thoughts): the same tool with a required first argument ``thought``.
+
+    With native tool calling a model calls tools without writing the ReAct Thought it is asked for, so the Thought
+    is made part of the Action. It is appended to ``log`` and dropped before the call: the tool runs and answers
+    exactly as without it."""
+    from langchain_core.tools import StructuredTool
+    from pydantic import Field, create_model
+
+    fields = {name: (info.annotation, info) for name, info in base.args_schema.model_fields.items()}
+    schema = create_model(f"{base.name}_with_thought", thought=(str, Field(description=THOUGHT_DESCRIPTION)), **fields)
+
+    def run(thought: str, **kwargs: Any) -> str:
+        log.append({"tool": base.name, "thought": thought})
+        # the tool's own function, so the call is one tool run (not a nested one) in traces and callbacks
+        return base.func(**kwargs) if base.func is not None else base.invoke(kwargs)
+
+    return StructuredTool.from_function(func=run, name=base.name, description=base.description, args_schema=schema)

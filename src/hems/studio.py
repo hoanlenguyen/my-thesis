@@ -7,8 +7,8 @@ household-day and the pipeline variant; the graph is then built exactly as the s
 (src/hems/systems.py), so a Studio run is the same pipeline as an evaluation run of that system.
 
     scenario  path to a scenario JSON, relative to the thesis root (default: a held-out Q2 day)
-    variant   "multi_rag_opt" (final pipeline, the thesis results) or "multi_lean" (design iteration 9, the demo);
-              also "multi" and "multi_rag", the earlier design iterations
+    variant   "multi_duo" (the two-agent pipeline, design iteration 10) or "multi_duo_thoughts" (with an explicit
+              Thought in every tool call, design iteration 11)
     model     a model name from hems.agents.llm.MODELS (default "gpt-4o-mini"; needs OPENAI_API_KEY in .env)
 
 The run's input is the household's request: {"request": "<the scenario's user_request>"}. Leave it empty to use
@@ -31,14 +31,12 @@ DEFAULT_SCENARIO = "data/scenarios_q2/Q2-PH03-35.json"
 
 # Pipeline variants as registered in src/hems/systems.py: keyword arguments of build_pipeline
 VARIANTS: dict[str, dict[str, Any]] = {
-    "multi": {},
-    "multi_rag": {"retriever": True},
-    "multi_rag_opt": {"retriever": True, "optimizer": True, "complete_missing": True},
-    "multi_lean": {"retriever": True, "optimizer": True, "complete_missing": True, "lean": True},
+    "multi_duo": {"retriever": True},
+    "multi_duo_thoughts": {"retriever": True, "thoughts": True},
 }
 
 
-def build(scenario_path: str = DEFAULT_SCENARIO, variant: str = "multi_rag_opt", model: str = "gpt-4o-mini",
+def build(scenario_path: str = DEFAULT_SCENARIO, variant: str = "multi_duo", model: str = "gpt-4o-mini",
           models: Any = None):  # type: ignore[no-untyped-def]
     """The compiled pipeline for one household-day. ``models`` (a role -> chat model function) replaces the
     named model, for tests."""
@@ -65,7 +63,7 @@ async def make_graph(config: RunnableConfig):  # type: ignore[no-untyped-def]
     thread, because the LangGraph server does not allow blocking calls in its event loop."""
     cfg = (config or {}).get("configurable", {}) or {}
     scenario, pipeline = await asyncio.to_thread(
-        build, cfg.get("scenario", DEFAULT_SCENARIO), cfg.get("variant", "multi_rag_opt"), cfg.get("model", "gpt-4o-mini")
+        build, cfg.get("scenario", DEFAULT_SCENARIO), cfg.get("variant", "multi_duo"), cfg.get("model", "gpt-4o-mini")
     )
 
     def household_request(state: dict[str, Any]) -> dict[str, Any]:

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-// The Multi-Agent Pipeline's live run, agent by agent: when each agent worked, which tools it called and what it
-// handed on. Built from the server-sent events of POST /api/plan/agent/stream.
+// The Multi-Agent Pipeline's live run, step by step: two language model agents (the Orchestrator agent and the
+// Scheduler agent) and two functions without a language model (profile_data, verify_schedule). For every action an
+// agent takes, the page shows its Thought and the function it called with the arguments, and the result
+// (Observation). Built from the server-sent events of POST /api/plan/agent/stream.
 import type { AgentEvent, AgentName, PlanResult } from '~/composables/useTryIt'
 
 const props = defineProps<{ events: AgentEvent[], running: boolean, summary: string, result?: PlanResult | null }>()
 
-interface ToolCall { name: string, count: number, ms: number, input: string, output: string }
+interface ToolCall { name: string, count: number, ms: number, args: string, output: string, thoughts: string[] }
 interface Step {
   agent: AgentName
   start: number | null
@@ -16,15 +18,17 @@ interface Step {
   errors: string[]
 }
 
-const AGENTS: { agent: AgentName, label: string, role: string, icon: string }[] = [
-  { agent: 'orchestrator', label: 'Orchestrator', role: 'Reads the request and briefs the specialists', icon: 'i-lucide-network' },
-  { agent: 'profiler', label: 'Appliance Profiler', role: 'Turns the household data into appliance profiles', icon: 'i-lucide-scan-search' },
-  { agent: 'scheduler', label: 'Price-Aware Scheduler', role: 'Plans the start times with the optimiser tool', icon: 'i-lucide-calendar-clock' },
-  { agent: 'resolver', label: 'Verification and Conflict Resolver', role: 'Checks the peak limit, every appliance and every window', icon: 'i-lucide-shield-check' },
-  { agent: 'summary', label: 'Orchestrator', role: 'Explains the schedule to the household', icon: 'i-lucide-message-square-text' }
+// kind "agent": a language model agent; kind "function": a deterministic step, shown by its function name
+interface Lane { agent: AgentName, label: string, role: string, icon: string, kind: 'agent' | 'function' }
+const LANES: Lane[] = [
+  { agent: 'orchestrator', label: 'Orchestrator agent', role: 'Reads the request and briefs the Scheduler agent', icon: 'i-lucide-network', kind: 'agent' },
+  { agent: 'profile_data', label: 'profile_data()', role: 'Builds the appliance profiles from the household data', icon: 'i-lucide-database', kind: 'function' },
+  { agent: 'scheduler', label: 'Scheduler agent', role: 'Plans the start times with its tools and fixes any reported problem', icon: 'i-lucide-calendar-clock', kind: 'agent' },
+  { agent: 'verify_schedule', label: 'verify_schedule()', role: 'Checks the peak limit, every appliance and every window; problems go back to the Scheduler agent', icon: 'i-lucide-shield-check', kind: 'function' },
+  { agent: 'summary', label: 'Orchestrator agent', role: 'Explains the schedule to the household', icon: 'i-lucide-message-square-text', kind: 'agent' }
 ]
 
-/** Fold the events into one step per agent and round (the Scheduler and Resolver repeat after feedback). */
+/** Fold the events into one step per lane and round (the Scheduler agent and the check repeat after feedback). */
 const steps = computed(() => {
   const out: Step[] = []
   const open = (agent: AgentName, t: number) => {
@@ -39,13 +43,8 @@ const steps = computed(() => {
     if (e.type === 'working') open(e.agent, e.t)
     else if (e.type === 'tool') {
       const step = open(e.agent, e.t)
-      const last = step.tools[step.tools.length - 1]
-      if (last && last.name === e.name) {
-        last.count++
-        last.ms += e.ms ?? 0
-      } else {
-        step.tools.push({ name: e.name ?? 'tool', count: 1, ms: e.ms ?? 0, input: e.input ?? '', output: String(e.output ?? '') })
-      }
+      step.tools.push({ name: e.name ?? 'tool', count: 1, ms: e.ms ?? 0, args: e.input ?? '', output: String(e.output ?? ''),
+        thoughts: e.thought ? [e.thought] : [] })
     } else if (e.type === 'done') {
       const step = open(e.agent, e.t)
       step.end = e.t
@@ -76,14 +75,31 @@ onBeforeUnmount(() => clearInterval(timer))
 const lastT = computed(() => props.events.length ? props.events[props.events.length - 1]!.t : 0)
 const clock = computed(() => props.running ? Math.max(now.value, lastT.value) : lastT.value)
 
-function status(step: Step | undefined): 'waiting' | 'working' | 'done' | 'skipped' {
+function status(step: Step | undefined): 'waiting' | 'working' | 'done' | 'passed' {
   if (!step) return 'waiting'
   if (step.end === null) return props.running ? 'working' : 'done'
-  return step.agent === 'resolver' && step.output?.skipped ? 'skipped' : 'done'
+  return step.agent === 'verify_schedule' && step.output?.passed ? 'passed' : 'done'
 }
 const seconds = (step: Step) => {
   const end = step.end ?? clock.value
   return Math.max(0, end - (step.start ?? end))
+}
+
+/** The function call as code: optimize_schedule(appliance_ids=[washing_machine_1, dishwasher_1]) */
+function callText(tool: ToolCall): string {
+  let args: Record<string, unknown> = {}
+  try {
+    args = JSON.parse(tool.args)
+  } catch {
+    return `${tool.name}(${tool.args})`
+  }
+  const value = (v: unknown): string => Array.isArray(v)
+    ? `[${v.map(value).join(', ')}]`
+    : v && typeof v === 'object'
+      ? `{${Object.entries(v as Record<string, unknown>).map(([k, x]) => `${k}: ${value(x)}`).join(', ')}}`
+      : String(v)
+  const text = Object.entries(args).map(([k, v]) => `${k}=${value(v)}`).join(', ')
+  return `${tool.name}(${text.length > 160 ? `${text.slice(0, 157)}…` : text})`
 }
 const kindOf = (id: string) => id.replace(/_\d+$/, '')
 const name = (id: string) => applianceName(id, kindOf(id))
@@ -95,9 +111,11 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
   <UCard>
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <UIcon name="i-lucide-workflow" class="size-4 text-primary" />
           <span class="font-semibold text-sm text-highlighted">How the agents worked</span>
+          <span class="text-xs text-dimmed">· two language model agents; <code class="font-mono">profile_data()</code> and
+            <code class="font-mono">verify_schedule()</code> are functions without a model</span>
         </div>
         <div class="flex items-center gap-3 text-xs text-muted tabular-nums">
           <span class="flex items-center gap-1">
@@ -113,15 +131,15 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
     <UAlert v-if="errorMessage" color="error" variant="subtle" icon="i-lucide-triangle-alert" :description="errorMessage" class="mb-3" />
 
     <ol class="relative space-y-4">
-      <li v-for="(a, i) in AGENTS" :key="a.agent + i" class="relative pl-10">
-        <span v-if="i < AGENTS.length - 1" class="absolute left-[0.95rem] top-8 bottom-[-1rem] w-px bg-(--ui-border)" aria-hidden="true" />
-        <div class="absolute left-0 top-0 flex size-8 items-center justify-center rounded-full border"
-             :class="{
+      <li v-for="(a, i) in LANES" :key="a.agent + i" class="relative pl-10">
+        <span v-if="i < LANES.length - 1" class="absolute left-[0.95rem] top-8 bottom-[-1rem] w-px bg-(--ui-border)" aria-hidden="true" />
+        <div class="absolute left-0 top-0 flex size-8 items-center justify-center border"
+             :class="[a.kind === 'function' ? 'rounded-md' : 'rounded-full', {
                'border-default text-dimmed': status(latest(a.agent)) === 'waiting',
                'border-primary text-primary bg-primary/10': status(latest(a.agent)) === 'working',
                'border-primary/40 text-primary bg-primary/5': status(latest(a.agent)) === 'done',
-               'border-default text-muted bg-elevated': status(latest(a.agent)) === 'skipped'
-             }">
+               'border-success/40 text-success bg-success/5': status(latest(a.agent)) === 'passed'
+             }]">
           <UIcon :name="status(latest(a.agent)) === 'working' ? 'i-lucide-loader-circle' : a.icon" class="size-4"
                  :class="status(latest(a.agent)) === 'working' ? 'animate-spin' : ''" />
         </div>
@@ -129,19 +147,20 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
           <div :class="round > 0 ? 'mt-3 border-t border-default pt-3' : ''">
             <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
               <div class="flex flex-wrap items-baseline gap-x-2">
-                <span class="text-sm font-medium" :class="status(step) === 'waiting' ? 'text-dimmed' : 'text-highlighted'">{{ a.label }}</span>
+                <span class="text-sm font-medium" :class="[status(step) === 'waiting' ? 'text-dimmed' : 'text-highlighted', a.kind === 'function' ? 'font-mono' : '']">{{ a.label }}</span>
                 <span class="text-xs text-muted">{{ a.role }}</span>
                 <UBadge v-if="round > 0" size="xs" variant="subtle" color="warning">round {{ round + 1 }}</UBadge>
-                <UBadge v-if="a.agent === 'profiler' && step" size="xs" variant="subtle" color="neutral">in parallel with the Orchestrator</UBadge>
+                <UBadge v-if="a.kind === 'function'" size="xs" variant="outline" color="neutral">function, no language model</UBadge>
+                <UBadge v-if="a.agent === 'profile_data' && step" size="xs" variant="subtle" color="neutral">in parallel with the Orchestrator agent</UBadge>
               </div>
               <span v-if="step" class="text-xs text-muted tabular-nums">
-                <template v-if="status(step) === 'skipped'">not needed</template>
+                <template v-if="status(step) === 'passed'">passed</template>
                 <template v-else>{{ seconds(step).toFixed(1) }} s<template v-if="step.tokens"> · {{ step.tokens.toLocaleString() }} tokens</template></template>
               </span>
               <span v-else class="text-xs text-dimmed">waiting</span>
             </div>
 
-            <!-- what the agent handed on -->
+            <!-- what the step handed on -->
             <div v-if="step?.output" class="mt-1.5 text-sm">
               <template v-if="a.agent === 'orchestrator'">
                 <div class="flex flex-wrap items-center gap-1.5">
@@ -151,7 +170,7 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
                 <p v-if="step.output.notes" class="mt-1 text-xs text-muted">{{ step.output.notes }}</p>
               </template>
 
-              <div v-else-if="a.agent === 'profiler'" class="overflow-x-auto">
+              <div v-else-if="a.agent === 'profile_data'" class="overflow-x-auto">
                 <table class="text-xs tabular-nums">
                   <thead class="text-muted text-left">
                     <tr><th class="pr-4 font-normal">Appliance</th><th class="pr-4 font-normal">Flexible</th><th class="pr-4 font-normal">Peak</th><th class="pr-4 font-normal">Runtime</th><th class="font-normal">Window</th></tr>
@@ -178,21 +197,15 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
                 <p v-if="step.output.explanation" class="mt-1 text-xs text-muted">{{ step.output.explanation }}</p>
               </template>
 
-              <template v-else-if="a.agent === 'resolver'">
-                <p v-if="step.output.skipped" class="flex items-center gap-1.5 text-xs text-success">
+              <template v-else-if="a.agent === 'verify_schedule'">
+                <p v-if="step.output.passed" class="flex items-center gap-1.5 text-xs text-success">
                   <UIcon name="i-lucide-circle-check" class="size-3.5" />
-                  Verification passed: within the peak limit, every appliance scheduled, every start inside its window. The Resolver was not called.
+                  Passed: within the peak limit, every appliance scheduled, every start inside its window.
                 </p>
-                <template v-else>
-                  <p class="text-xs text-muted">Changes: {{ step.output.changes }}</p>
-                  <p v-if="step.output.feedback" class="mt-1 flex items-start gap-1.5 text-xs text-warning">
-                    <UIcon name="i-lucide-undo-2" class="size-3.5 mt-0.5 shrink-0" />
-                    Sent back to the Scheduler: {{ step.output.feedback }}
-                  </p>
-                  <p v-else class="mt-1 flex items-center gap-1.5 text-xs text-success">
-                    <UIcon name="i-lucide-circle-check" class="size-3.5" /> Verification passed after the changes.
-                  </p>
-                </template>
+                <p v-else class="flex items-start gap-1.5 text-xs text-warning">
+                  <UIcon name="i-lucide-undo-2" class="size-3.5 mt-0.5 shrink-0" />
+                  Sent back to the Scheduler agent: {{ step.output.feedback }}
+                </p>
               </template>
             </div>
 
@@ -203,18 +216,25 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
 
             <p v-for="err in step?.errors ?? []" :key="err" class="mt-1 text-xs text-error">{{ err }}</p>
 
-            <!-- tool calls -->
-            <div v-if="step?.tools.length" class="mt-1.5 flex flex-col gap-1">
-              <details v-for="(tool, k) in step.tools" :key="k" class="group text-xs">
-                <summary class="flex cursor-pointer list-none items-center gap-1.5 text-muted hover:text-default">
-                  <UIcon name="i-lucide-chevron-right" class="size-3 transition-transform group-open:rotate-90" />
-                  <UIcon name="i-lucide-wrench" class="size-3" />
-                  <code class="font-mono">{{ tool.name }}</code>
-                  <span v-if="tool.count > 1">× {{ tool.count }}</span>
-                  <span class="tabular-nums text-dimmed">{{ tool.ms }} ms</span>
-                </summary>
-                <pre class="mt-1 ml-6 max-h-48 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 p-2 font-mono text-[11px] text-muted">{{ tool.count > 1 ? `${tool.count} calls; last result:\n` : '' }}{{ tool.output }}</pre>
-              </details>
+            <!-- the Scheduler agent's actions: Thought, then the function it called; the result (Observation) when
+                 expanded. The Orchestrator agent has no tools; checks made by code are not agent actions. -->
+            <div v-if="a.agent === 'scheduler' && step?.tools.length" class="mt-1.5 flex flex-col gap-1.5">
+              <div v-for="(tool, k) in step.tools" :key="k" class="text-xs">
+                <p v-for="(t, j) in tool.thoughts" :key="j" class="mb-0.5 flex items-start gap-1.5 text-default">
+                  <UIcon name="i-lucide-lightbulb" class="size-3 mt-0.5 shrink-0 text-warning" />
+                  <span><span class="text-muted">Thought:</span> {{ t }}</span>
+                </p>
+                <details class="group">
+                  <summary class="flex cursor-pointer list-none items-start gap-1.5 text-muted hover:text-default">
+                    <UIcon name="i-lucide-chevron-right" class="size-3 mt-0.5 shrink-0 transition-transform group-open:rotate-90" />
+                    <span class="shrink-0">Action:</span>
+                    <code class="font-mono text-highlighted break-all">{{ callText(tool) }}</code>
+                    <span class="shrink-0 tabular-nums text-dimmed">{{ tool.ms }} ms</span>
+                  </summary>
+                  <p class="mt-1 ml-6 text-muted">Observation:</p>
+                  <pre class="ml-6 max-h-48 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 p-2 font-mono text-[11px] text-muted">{{ tool.output }}</pre>
+                </details>
+              </div>
             </div>
           </div>
         </template>

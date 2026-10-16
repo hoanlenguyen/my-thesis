@@ -9,7 +9,16 @@ Nothing is run live; the data comes from `results/` via the exporter.
 Benchmarks: the held-out set Q2 (confirmatory, default view; `results/confirmation_q2.jsonl`) and the
 factorial set v2 (exploratory; `results/main_v2.jsonl`, which also holds the two earlier design
 iterations, hidden unless switched on). Both are 96 household-days: price pattern (stable, volatile,
-spike, negative) × household load (light, heavy) × peak limit (strict 3.5 kW, realistic 8 kW).
+spike, negative) × household load (light, heavy) × peak limit (strict 3.5 kW, realistic 8 kW). A third
+tab, "Design iterations: 4 vs 2 agents", replays `results/iteration10.jsonl`: the final four-agent
+pipeline, the lean variant (iteration 9) and the two-agent pipeline (iteration 10), interleaved on the
+same days, with the rules, EMHASS and the optimum of the factorial set as references. The four-agent
+code was removed on 16 October 2026; these tabs replay its recorded runs.
+
+The Try-it page runs the two-agent pipeline live (`multi_duo_thoughts`) and shows each step under its
+name: "Orchestrator agent", `profile_data()`, "Scheduler agent" and `verify_schedule()`. For the
+Scheduler agent it shows every Thought, the Action as a function call with its arguments (for example
+`optimize_schedule(appliance_ids=[...])`) and the Observation.
 
 Theme, layout and components are adapted from the Low-carbon-alerts (Hiilivahti) app:
 Nuxt 4, Nuxt UI 4, Tailwind 4 and Unovis charts.
@@ -57,7 +66,8 @@ then left out, since it takes one window per appliance. It needs the local Pytho
 
 1. `scripts\demo-api.cmd` (or `uv run --extra demo uvicorn hems.demo_api:app --port 8001`) in the thesis root.
    Uses `ENTSOE_API_KEY` (day-ahead prices; the base load is the typical REFIT household shape) and
-   `OPENAI_API_KEY` (Multi-Agent Pipeline, about USD 0.003 per run) from `.env`. EMHASS is included when the
+   `OPENAI_API_KEY` (the two-agent Multi-Agent Pipeline of design iteration 10, about USD 0.001 per run) from
+   `.env`. EMHASS is included when the
    `emhass-thesis` Docker container answers on localhost:5000.
 2. `scripts\demo-dev.cmd` (or `pnpm dev --port 3001` here). The dev server proxies `/api` to port 8001
    (`nitro.devProxy` in `nuxt.config.ts`). A static build calls `NUXT_PUBLIC_API_BASE` instead.

@@ -18,7 +18,7 @@ const baseKw = ref<number | undefined>(undefined)
 const peakLimit = ref(8)
 const fee = ref(1.97) // EUR per kW of the day's highest load above the limit
 // Active hours: one or more periods, e.g. 06:00-09:00 and 18:00-22:00; "Apply to all" copies them to every appliance
-const activePeriods = ref<PeriodInput[]>([{ start: '07:00', end: '22:00' }])
+const activePeriods = ref<PeriodInput[]>([{ start: '08:00', end: '10:00' }, { start: '18:00', end: '22:00' }])
 const copyPeriods = (ps: PeriodInput[]) => ps.map(p => ({ ...p }))
 const MAX_PERIODS = 4
 
@@ -191,15 +191,15 @@ async function run() {
 // ── results ──
 // The systems compared on the page. The optimum (MILP with the fee) is not one of them: its cost only sets the
 // "% of the possible saving" in the timeline (tools.milpCost).
-const ORDER = ['multi_lean', 'emhass_rest', 'timer', 'cheapest_window', 'cheapest_hours', 'naive']
+const ORDER = ['multi_duo_thoughts', 'emhass_rest', 'timer', 'cheapest_window', 'cheapest_hours', 'naive']
 const allResults = computed<PlanResult[]>(() => {
   const rs = [...(tools.value?.results ?? []), ...(agent.value ? [agent.value] : [])].filter(r => r.system !== 'milp')
   return rs.sort((a, b) => ORDER.indexOf(a.system) - ORDER.indexOf(b.system))
 })
 const runResults = computed(() => allResults.value.map(toRunResult))
-const selected = ref('multi_lean|gpt-4o-mini')
+const selected = ref('multi_duo_thoughts|gpt-4o-mini')
 const current = computed(() => runResults.value.find(r => `${r.system}|${r.model}` === selected.value) ?? runResults.value[0])
-const pipelineRun = computed(() => runResults.value.find(r => r.system === 'multi_lean'))
+const pipelineRun = computed(() => runResults.value.find(r => r.system === 'multi_duo_thoughts'))
 const priceCents = computed(() => (tools.value?.priceEurPerKwh ?? []).map(p => p * 100))
 const hourlyPrices = computed(() => hourly(priceCents.value))
 const priceSpread = computed(() => (hourlyPrices.value.length ? Math.max(...hourlyPrices.value) - Math.min(...hourlyPrices.value) : 0))
@@ -215,12 +215,13 @@ const comparison = allResults
         prices from ENTSO-E, adds a typical household base load, and asks the Multi-Agent Pipeline for a
         recommendation. It is compared with the home energy management tools households can install. Going over the
         peak limit is allowed but costs a fee per kW, as under a power-based tariff. The pipeline runs live with
-        GPT-4o-mini (about 10 seconds).
+        GPT-4o-mini (usually under 10 seconds).
       </p>
       <p class="mt-1 max-w-3xl text-xs text-dimmed">
-        This page runs the lean variant of the pipeline (design iteration 9 in the thesis): the same agents, tools and
-        optimiser, but fewer language model calls one after the other, which halved the response time in the
-        exploratory test. The other pages replay the final pipeline exactly as it was evaluated.
+        The pipeline has two language model agents, the Orchestrator agent and the Scheduler agent. Reading the
+        household data (profile_data) and checking the schedule (verify_schedule) are functions without a language
+        model. Before every action, the Scheduler agent writes a Thought; the page shows it with the function it
+        called and the result. The other pages replay the recorded evaluation runs.
       </p>
     </div>
 
@@ -431,7 +432,7 @@ const comparison = allResults
               </tr>
             </thead>
             <tbody>
-              <tr v-for="r in comparison" :key="r.system" class="border-t border-default" :class="r.system === 'multi_lean' ? 'bg-primary/5' : ''">
+              <tr v-for="r in comparison" :key="r.system" class="border-t border-default" :class="r.system === 'multi_duo_thoughts' ? 'bg-primary/5' : ''">
                 <td class="py-1.5 pr-3">
                   <span class="text-highlighted">{{ r.label }}</span>
                   <UBadge :color="groupBadge(r.system).color" variant="subtle" size="xs" class="ml-2">{{ groupBadge(r.system).label }}</UBadge>

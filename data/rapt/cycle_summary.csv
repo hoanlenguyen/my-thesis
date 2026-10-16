@@ -1,0 +1,8 @@
+house,appliance,days,nan_%,active_%,cycles,cycles/week,median_min,median_kwh,median_peak_kw
+A,dishwasher,577,0.0,1.85,222,2.7,75.0,1.16,1.82
+A,washing_machine,577,0.0,4.95,417,5.1,90.0,0.7,1.74
+D,dishwasher,1194,13.7,4.87,690,4.0,120.0,0.83,1.48
+D,washing_machine,1194,20.6,2.35,417,2.4,105.0,0.77,1.72
+E,dishwasher,972,2.2,2.95,331,2.4,150.0,0.94,1.51
+E,washing_machine,972,2.2,3.58,549,4.0,75.0,0.65,1.44
+E,tumble_dryer,972,2.2,1.23,162,1.2,105.0,2.0,1.89
