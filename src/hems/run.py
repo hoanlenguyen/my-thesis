@@ -26,7 +26,7 @@ from hems.core.models import Scenario, Schedule
 from hems.systems import SYSTEMS, names
 
 REFERENCE_SYSTEMS = names("reference", "external")  # deterministic: one run, no model
-AGENT_SYSTEMS = ("single", "multi_duo", "multi_duo_thoughts")
+AGENT_SYSTEMS = ("single", "multi_duo", "multi_duo_thoughts", "single_harness", "single_harness_thoughts")
 LLM_SYSTEMS = names("llm")  # the agent designs and oneshot (LLM without tools)
 ALL_SYSTEMS = tuple(SYSTEMS)
 

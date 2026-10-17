@@ -148,6 +148,8 @@ export const SYSTEM_GROUPS: Record<string, 'agent' | 'iteration' | 'llm' | 'rule
   multi_lean: 'agent', // lean variant (iteration 9)
   multi_duo: 'agent', // two agents (iteration 10)
   multi_duo_thoughts: 'agent', // two agents with explicit Thoughts (iteration 11), run live on the "Try it" page
+  single_harness: 'agent', // one agent in the same harness
+  single_harness_thoughts: 'agent', // one agent in the harness with explicit Thoughts, run live on the "Try it" page
   multi_rag: 'iteration',
   multi: 'iteration',
   oneshot: 'llm',

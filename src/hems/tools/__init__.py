@@ -116,17 +116,22 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
         return f"{appliance_id}: FIXED - {a.kind} is not a shiftable cycle load."
 
     # ── Price-Aware Scheduler ────────────────────────────────────────────────
+    price_cache: dict[tuple[int, int], str] = {}  # one run: a repeated call (e.g. in a feedback round) is answered from here
+
     @_guard
     def get_spot_prices(from_time: str = "", to_time: str = "") -> str:
         """Get the electricity price for every 15-min slot (consumer price in c/kWh, incl. taxes and transfer).
 
-        Optionally restrict to from_time..to_time ("HH:MM", end exclusive)."""
+        Optionally restrict to from_time..to_time ("HH:MM", end exclusive). Cached: calling again is free."""
         first = sc.time_to_slot(from_time) if from_time else 0
         last = sc.time_to_slot(to_time) if to_time else len(sc.price_eur_per_kwh)
         if last <= first:
             last = len(sc.price_eur_per_kwh)
+        if (first, last) in price_cache:
+            return "(cached) " + price_cache[first, last]
         rows = [f"{sc.slot_to_time(t)} {sc.price_eur_per_kwh[t] * 100:.2f}" for t in range(first, last)]
-        return "time c/kWh\n" + "\n".join(rows)
+        price_cache[first, last] = "time c/kWh\n" + "\n".join(rows)
+        return price_cache[first, last]
 
     @_guard
     def calculate_schedule_cost(appliance_id: str, start_time: str) -> str:
@@ -277,14 +282,25 @@ def with_thought(base: BaseTool, log: list[dict[str, str]]) -> BaseTool:
     is made part of the Action. It is appended to ``log`` and dropped before the call: the tool runs and answers
     exactly as without it."""
     from langchain_core.tools import StructuredTool
-    from pydantic import Field, create_model
+    from pydantic import BaseModel, Field, create_model
 
-    fields = {name: (info.annotation, info) for name, info in base.args_schema.model_fields.items()}
-    schema = create_model(f"{base.name}_with_thought", thought=(str, Field(description=THOUGHT_DESCRIPTION)), **fields)
+    args_schema = base.args_schema
+    if args_schema is None or not isinstance(args_schema, type) or not issubclass(args_schema, BaseModel):
+        raise TypeError(f"Tool {base.name!r} must have a Pydantic args schema")
+
+    fields: dict[str, tuple[Any, Any]] = {
+        name: (info.annotation, info) for name, info in args_schema.model_fields.items()
+    }
+    field_definitions: dict[str, Any] = {
+        "thought": (str, Field(description=THOUGHT_DESCRIPTION)),
+        **fields,
+    }
+    schema = create_model(f"{base.name}_with_thought", **field_definitions)
 
     def run(thought: str, **kwargs: Any) -> str:
         log.append({"tool": base.name, "thought": thought})
         # the tool's own function, so the call is one tool run (not a nested one) in traces and callbacks
-        return base.func(**kwargs) if base.func is not None else base.invoke(kwargs)
+        func = getattr(base, "func", None)
+        return func(**kwargs) if func is not None else base.invoke(kwargs)
 
     return StructuredTool.from_function(func=run, name=base.name, description=base.description, args_schema=schema)

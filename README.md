@@ -19,6 +19,7 @@ Compile the thesis with XeLaTeX (`latexmk`; VS Code LaTeX Workshop is preconfigu
 |---|---|---|
 | `multi_duo` | `agents/multi_agent.py` | Multi-Agent Pipeline (LangGraph): Orchestrator agent → `profile_data()` → Scheduler agent → `verify_schedule()` → Orchestrator agent (summary); verification loops back to the Scheduler agent if problems remain (max 2 rounds). Two LLM agents; the two functions use no language model |
 | `multi_duo_thoughts` | `agents/multi_agent.py` | the same pipeline with explicit Thoughts (a required `thought` argument on every tool call) |
+| `single_harness`, `single_harness_thoughts` | `agents/harness_agent.py` | one agent in the same harness (`agents/harness.py`): `profile_data()` → agent → `verify_schedule()` (feedback in the same conversation, max 2 rounds) → the agent writes the household message. Same tools as the Scheduler agent; exploratory, for comparing one agent with two |
 | `single` | `agents/single_agent.py` | one ReAct agent with all eight tools and the combined prompt |
 | `milp` | `solvers/milp.py` | PuLP/CBC ground truth |
 | `naive` | `solvers/naive.py` | every appliance starts at its default (earliest) time |

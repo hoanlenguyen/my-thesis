@@ -18,7 +18,10 @@ code was removed on 16 October 2026; these tabs replay its recorded runs.
 The Try-it page runs the two-agent pipeline live (`multi_duo_thoughts`) and shows each step under its
 name: "Orchestrator agent", `profile_data()`, "Scheduler agent" and `verify_schedule()`. For the
 Scheduler agent it shows every Thought, the Action as a function call with its arguments (for example
-`optimize_schedule(appliance_ids=[...])`) and the Observation.
+`optimize_schedule(appliance_ids=[...])`) and the Observation. "Get recommendations" also runs one agent in
+the same harness (`single_harness_thoughts`) at the same time: the same functions, tools and checks, with one agent
+that reads the request, plans, fixes and explains in one conversation. Both appear side by side (recommendation,
+step-by-step activity, JSON) and in the comparison table.
 
 Theme, layout and components are adapted from the Low-carbon-alerts (Hiilivahti) app:
 Nuxt 4, Nuxt UI 4, Tailwind 4 and Unovis charts.

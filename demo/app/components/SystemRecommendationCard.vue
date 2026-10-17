@@ -2,7 +2,9 @@
 // A system's daily recommendation, styled after Low-carbon-alerts' RecommendationCard.
 import type { Appliance, RunResult } from '~/composables/useDemoData'
 
-const props = defineProps<{ result: RunResult, appliances: Appliance[], naiveCost: number, milpCost: number }>()
+// naiveCost: the cost savings are measured against (no scheduling, or on the Try page the highest-cost system)
+const props = withDefaults(defineProps<{ result: RunResult, appliances: Appliance[], naiveCost: number, milpCost: number, referenceLabel?: string }>(),
+  { referenceLabel: 'no scheduling' })
 
 const group = computed(() => groupBadge(props.result.system))
 const saving = computed(() => props.naiveCost - (props.result.feasible ? (props.result.costEur ?? props.naiveCost) : props.naiveCost))
@@ -54,7 +56,7 @@ const gap = computed(() => props.result.costEur == null ? null : ((props.result.
           <p class="text-lg font-bold tabular-nums text-highlighted">{{ euro(result.costEur, 3) }}</p>
         </div>
         <div class="rounded-lg px-3 py-2" :class="saving > 0.0005 ? 'bg-success/10' : 'bg-elevated/40'">
-          <p class="text-[11px] text-muted">Saving vs. no scheduling</p>
+          <p class="text-[11px] text-muted">Saving vs. {{ referenceLabel }}</p>
           <p class="text-lg font-bold tabular-nums" :class="saving > 0.0005 ? 'text-success' : 'text-muted'">{{ euro(saving, 3) }}</p>
         </div>
         <div class="rounded-lg bg-elevated/40 px-3 py-2">

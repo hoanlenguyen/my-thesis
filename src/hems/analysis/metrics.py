@@ -20,7 +20,8 @@ import pandas as pd
 from hems.core.models import Scenario
 from hems.solvers.naive import has_coordination_conflict
 
-AGENT_SYSTEMS = ("single", "multi", "multi_v3", "multi_rag", "multi_rag_opt", "multi_lean", "multi_duo", "multi_duo_thoughts")
+AGENT_SYSTEMS = ("single", "multi", "multi_v3", "multi_rag", "multi_rag_opt", "multi_lean", "multi_duo", "multi_duo_thoughts", "single_harness",
+                 "single_harness_thoughts")
 BASELINE_SYSTEMS = ("timer", "oneshot", "emhass", "emhass_nominal", "cheapest_hours", "cheapest_hours_hourly", "cheapest_window", "emhass_rest", "emhass_rest_nominal")  # incl. real HEMS tools
 SCORED_SYSTEMS = (*AGENT_SYSTEMS, *BASELINE_SYSTEMS)
 

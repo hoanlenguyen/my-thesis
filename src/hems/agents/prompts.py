@@ -49,10 +49,11 @@ ORCHESTRATOR_PLAN = (
 
 # The Scheduler starts with the optimiser and fixes any problem the verification step reports, with the conflict tools.
 SCHEDULER = (
-    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: start by calling optimize_schedule once with the ids "
-    "of ALL flexible appliances to schedule; it reads the prices itself and solves the whole problem exactly "
-    "(windows, peak limit, cost), so you do not need to fetch the prices first. Return the "
-    "solver's start time for every appliance; do not re-check its costs, because the Orchestrator verifies the "
+    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: first call get_spot_prices once, without "
+    "arguments, to read today's prices (they are cached, so a later call costs nothing). Then call optimize_schedule "
+    "once with the ids of ALL flexible appliances to schedule; it solves the whole problem exactly with the same "
+    "prices (windows, peak limit, cost). An appliance with \"periods\" must start and finish inside one of them. "
+    "Return the solver's start time for every appliance; do not re-check its costs, because the Orchestrator verifies the "
     "schedule after you. If the solver reports no schedule, fall back to find_cheapest_window per appliance and "
     "check the result with detect_conflicts. If you receive verification feedback, fix every problem it reports "
     "yourself: call optimize_schedule again with the complete list of appliances, or move the conflicting "
@@ -64,6 +65,30 @@ SCHEDULER = (
 THOUGHT_NOTE = (
     "\nWrite your Thought in the `thought` argument of every tool call: one short sentence on what you are checking "
     "with this call and why."
+)
+
+# The single agent in the harness (hems.agents.harness_agent): the Scheduler agent's task, plus reading the request
+# itself and explaining the result. Its message is written in the same conversation (HARNESS_MESSAGE).
+HARNESS_AGENT = (
+    f"You are the home energy management agent. {GOAL}\nYou receive the household's request and the profile of "
+    "every appliance. Your task: first call get_spot_prices once, without arguments, to read today's prices (they "
+    "are cached, so a later call costs nothing). Then call optimize_schedule once with the ids of ALL flexible "
+    "appliances in the request; it solves the whole problem exactly with the same prices (windows, peak limit, "
+    "cost). An appliance with \"periods\" must start and finish inside one of them. Return the solver's start time "
+    "for every appliance; do not re-check its costs, because your schedule is verified automatically after you "
+    "answer. If the solver reports no schedule, fall back to find_cheapest_window per appliance and check the "
+    "result with detect_conflicts. If you receive verification feedback, fix every problem it reports yourself: "
+    "call optimize_schedule again with the complete list of appliances, or move the conflicting appliances with "
+    "adjust_schedule and confirm with detect_conflicts that no conflict remains. After the check you will be asked "
+    "to explain the schedule to the household.\n"
+    f"{REACT_STYLE}"
+)
+
+HARNESS_MESSAGE = (
+    "Now write your message to the household: short and friendly (max 4 sentences), saying when each appliance "
+    "runs, its cost and how much it saves compared with starting every appliance as soon as it is ready. Use only "
+    "the figures given here. If the peak-load check reports a conflict, say plainly that the schedule still exceeds "
+    "the household limit; never claim constraints are met unless the check confirms it. Reply with the message only."
 )
 
 ORCHESTRATOR_SUMMARY = (

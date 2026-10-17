@@ -57,7 +57,7 @@
    },
    {
     "system": "cheapest_window",
-    "label": "Cheapest window (HA Nordpool Planner)",
+    "label": "HA Nordpool Planner",
     "model": "-",
     "runs": 96,
     "feasible": 63,
@@ -70,7 +70,7 @@
    },
    {
     "system": "cheapest_hours",
-    "label": "Cheapest hours (HA blueprint, 15 min)",
+    "label": "HA cheapest-hours blueprint (15 min)",
     "model": "-",
     "runs": 96,
     "feasible": 66,
@@ -83,7 +83,7 @@
    },
    {
     "system": "cheapest_hours_hourly",
-    "label": "Cheapest hours (HA blueprint, hourly)",
+    "label": "HA cheapest-hours blueprint (hourly)",
     "model": "-",
     "runs": 96,
     "feasible": 64,
@@ -1957,7 +1957,7 @@
    },
    {
     "system": "cheapest_window",
-    "label": "Cheapest window (HA Nordpool Planner)",
+    "label": "HA Nordpool Planner",
     "model": "-",
     "runs": 96,
     "feasible": 65,
@@ -1970,7 +1970,7 @@
    },
    {
     "system": "cheapest_hours",
-    "label": "Cheapest hours (HA blueprint, 15 min)",
+    "label": "HA cheapest-hours blueprint (15 min)",
     "model": "-",
     "runs": 96,
     "feasible": 68,
@@ -1983,7 +1983,7 @@
    },
    {
     "system": "cheapest_hours_hourly",
-    "label": "Cheapest hours (HA blueprint, hourly)",
+    "label": "HA cheapest-hours blueprint (hourly)",
     "model": "-",
     "runs": 96,
     "feasible": 67,
@@ -3908,7 +3908,7 @@
    },
    {
     "system": "cheapest_window",
-    "label": "Cheapest window (HA Nordpool Planner)",
+    "label": "HA Nordpool Planner",
     "model": "-",
     "runs": 96,
     "feasible": 65,
@@ -3921,7 +3921,7 @@
    },
    {
     "system": "cheapest_hours",
-    "label": "Cheapest hours (HA blueprint, 15 min)",
+    "label": "HA cheapest-hours blueprint (15 min)",
     "model": "-",
     "runs": 96,
     "feasible": 68,
@@ -3934,7 +3934,7 @@
    },
    {
     "system": "cheapest_hours_hourly",
-    "label": "Cheapest hours (HA blueprint, hourly)",
+    "label": "HA cheapest-hours blueprint (hourly)",
     "model": "-",
     "runs": 96,
     "feasible": 67,

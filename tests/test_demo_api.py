@@ -15,7 +15,7 @@ from hems import demo_api  # noqa: E402
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     prices = 0.05 + 0.04 * np.sin(np.linspace(0, 2 * np.pi, 96))  # synthetic day, no network
     monkeypatch.setattr(demo_api, "day_prices", lambda _day: prices)
-    monkeypatch.setattr(demo_api, "_emhass", lambda _scenario: None)
+    monkeypatch.setattr(demo_api, "_emhass", lambda _scenario, _fee: None)
     return TestClient(demo_api.app)
 
 
@@ -98,7 +98,7 @@ def test_several_periods_keep_every_cycle_inside_one(client: TestClient) -> None
                                       {"kind": "washing_machine", "periods": TWO_PERIODS}]}  # fmt: skip
     out = client.post("/api/plan/tools", json=body).json()
     assert [a["periods"] for a in out["appliances"]] == [[[24, 36], [72, 88]]] * 2
-    assert out["emhassSkipped"] == "periods" and not out["emhass"]
+    assert out["emhassSkipped"] is None  # two combinations of periods: EMHASS runs (stubbed out in these tests)
     durations = {a["id"]: len(a["profileKw"]) for a in out["appliances"]}
     for r in out["results"]:
         for appliance_id, start in r["starts"].items():
@@ -130,8 +130,9 @@ def test_overlapping_periods_are_merged_and_short_ones_rejected(client: TestClie
     assert response.status_code == 422 and "06:00-06:30 is shorter than" in response.json()["detail"]
 
 
-def test_the_summary_states_the_saving_shown_on_the_page(client: TestClient) -> None:
-    """The pipeline's summary gets the page's figures: energy plus the fee above the limit, against no scheduling."""
+def test_the_message_states_the_page_cost_and_no_saving(client: TestClient) -> None:
+    """The household message gets the page's cost (energy plus the fee above the limit) and no saving: the page
+    measures savings against the highest-cost system shown, which the agents cannot know."""
     body = {**PROFILE, "appliances": [{"kind": "ev_charger", "ready": "18:00", "finish_by": "24:00"},
                                       {"kind": "dishwasher", "ready": "18:00", "finish_by": "24:00"}]}  # fmt: skip
     plan = demo_api.PlanIn.model_validate(body)
@@ -140,9 +141,15 @@ def test_the_summary_states_the_saving_shown_on_the_page(client: TestClient) -> 
     best = next(r for r in out["results"] if r["system"] == "milp")
     facts = demo_api._summary_costs(scenario, plan.fee_eur_per_kw)
     best_slots = demo_api.optimum_with_fee(scenario, plan.fee_eur_per_kw)
-    assert f"Saving: EUR {best['savingEur']:.3f}" in facts(best_slots)
+    text = facts(best_slots)
+    assert f"Cost of the scheduled cycles: EUR {best['costEur']:.3f}" in text
+    assert "Saving:" not in text and "Do not mention any saving" in text
+    for appliance_id, start in best_slots.items():  # every cycle with its end time, as the page shows it
+        a = scenario.appliance(appliance_id)
+        end = scenario.boundary_to_time(start + a.duration_slots)
+        assert f"- {appliance_id}: {scenario.slot_to_time(start)} to {end}" in text
     naive_text = facts({a.id: a.default_start_slot for a in scenario.appliances})
-    assert "Saving: EUR 0.000" in naive_text and "plus a fee of EUR" in naive_text  # no scheduling exceeds 3.5 kW
+    assert "plus a fee of EUR" in naive_text  # no scheduling exceeds 3.5 kW
 
 
 def test_the_recommendation_has_a_fixed_form_built_from_the_scored_schedule(client: TestClient) -> None:
@@ -152,11 +159,11 @@ def test_the_recommendation_has_a_fixed_form_built_from_the_scored_schedule(clie
     out = client.post("/api/plan/tools", json=body).json()
     result = next(r for r in out["results"] if r["system"] == "milp") | {"message": "Your appliances are set."}
     rec = demo_api._recommendation(scenario, result)
-    assert set(rec) == {"message", "schedules", "cost", "saving", "savingPct", "currency", "currencySymbol", "peakKw",
+    assert set(rec) == {"message", "schedules", "cost", "currency", "currencySymbol", "peakKw",
                         "peakLimitKw", "valid", "date"}  # fmt: skip
     assert rec["message"] == "Your appliances are set." and rec["valid"]
     assert rec["currency"] == "EUR" and rec["currencySymbol"] == "€"
-    assert rec["cost"] == result["costEur"] and rec["saving"] == result["savingEur"]
+    assert rec["cost"] == result["costEur"]
     items = rec["schedules"]
     assert [i["applianceId"] for i in items] == sorted(result["starts"], key=lambda k: (result["starts"][k], k))
     assert sum(i["cost"] for i in items) == pytest.approx(result["energyEur"], abs=1e-3)
@@ -164,3 +171,21 @@ def test_the_recommendation_has_a_fixed_form_built_from_the_scored_schedule(clie
     assert dish["appliance"] == "Dishwasher" and dish["period"] in {"06:00-09:00", "18:00-22:00"}
     assert dish["period"].split("-")[0] <= dish["start"] and dish["end"] <= dish["period"].split("-")[1]
     assert "Recommendation" in client.get("/openapi.json").json()["components"]["schemas"]
+
+
+def test_emhass_is_configured_once_per_combination_of_periods() -> None:
+    from hems.core.models import FlexibleAppliance
+
+    from .conftest import make_scenario
+
+    base = make_scenario("A", seed=5)
+    washer = FlexibleAppliance(id="washing_machine_1", kind="washing_machine", profile_kw=[1.5] * 4, earliest_slot=24,
+                               deadline_slot=88, default_start_slot=24, windows=[(24, 36), (72, 88)])  # fmt: skip
+    dryer = FlexibleAppliance(id="tumble_dryer_1", kind="tumble_dryer", profile_kw=[2.0] * 8, earliest_slot=40,
+                              deadline_slot=80, default_start_slot=60, windows=[(40, 44), (60, 80)])  # fmt: skip
+    scenario = base.model_copy(update={"appliances": [washer, dryer]})
+    choices = demo_api._period_choices(scenario)
+    assert choices == [((24, 36), (60, 80)), ((72, 88), (60, 80))]  # the dryer's first period is shorter than its cycle
+    one = demo_api._one_window_each(scenario, choices[1])
+    assert [(a.earliest_slot, a.deadline_slot, a.windows) for a in one.appliances] == [(72, 88, None), (60, 80, None)]
+    assert len(demo_api._period_choices(base)) == 1  # one window each: EMHASS runs once, as before

@@ -6,7 +6,7 @@ import type { FullPeriod } from '~/composables/useDemoData'
 const props = defineProps<{ house: number, data: FullPeriod | null | undefined }>()
 const LABELS: Record<string, string> = {
   milp: 'MILP optimum', multi_rag_opt: 'Multi-Agent Pipeline', timer: 'Smart timer (own heuristic)',
-  emhass_rest: 'EMHASS, profiles', cheapest_hours: 'Cheapest hours (HA blueprint)', oneshot: 'LLM without tools'
+  emhass_rest: 'EMHASS, profiles', cheapest_hours: 'HA cheapest-hours blueprint', oneshot: 'LLM without tools'
 }
 const h = computed(() => props.data?.households.find(x => x.house === props.house))
 const perYear = (v: number) => (h.value ? (v / h.value.recordedDays) * 365 : 0)

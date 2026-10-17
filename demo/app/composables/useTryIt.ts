@@ -61,7 +61,8 @@ export interface ToolsResponse {
   milpCost: number
   results: PlanResult[]
   emhass: boolean
-  emhassSkipped?: 'periods' | null // not run: EMHASS takes one window per appliance
+  emhassSkipped?: 'periods' | null // not run: too many combinations of periods (EMHASS takes one window each)
+  emhassRuns?: number // EMHASS runs: one per combination of periods when appliances have several
 }
 
 export interface PlanRequest {
@@ -71,13 +72,20 @@ export interface PlanRequest {
   peak_limit_kw: number
   fee_eur_per_kw: number
   appliances: { kind: string, periods: PeriodInput[], power_kw?: number, duration_min?: number }[]
+  design?: Design
 }
 
 /** One event of the pipeline's live run (POST /api/plan/agent/stream, server-sent events). */
 // the two agents and the two functions of the pipeline (graph nodes, see src/hems/agents/multi_agent.py)
 export type AgentName = 'orchestrator' | 'profile_data' | 'scheduler' | 'verify_schedule' | 'summary'
+  | 'agent' | 'explain' // the single agent in the harness: plans and fixes, then explains
+  | 'retrieve_examples' // RAG: the most similar solved days, given to the acting agent as worked examples
+  | 'retrieve_examples' // RAG: the most similar solved days, given to the acting agent as worked examples
+/** The agent design run live: the two-agent pipeline, or one agent in the same harness. */
+export type Design = 'two_agents' | 'one_agent'
+export const LIVE_SYSTEMS: Record<Design, string> = { two_agents: 'multi_duo_thoughts', one_agent: 'single_harness_thoughts' }
 export interface AgentEvent {
-  type: 'start' | 'working' | 'tool' | 'done' | 'summary_delta' | 'result' | 'error'
+  type: 'start' | 'working' | 'input' | 'tool' | 'done' | 'summary_delta' | 'result' | 'error'
   agent: AgentName | null
   t: number // seconds since the run started
   name?: string // tool
@@ -88,9 +96,17 @@ export interface AgentEvent {
   tokens?: number
   errors?: string[]
   text?: string // summary_delta
+  prompt?: AgentInput // input: what an agent was given
   result?: PlanResult
   recommendation?: Recommendation // with the result
   message?: string // error
+}
+
+/** An agent's input on its first model call: system prompt, message and the tools it may call. */
+export interface AgentInput {
+  system: string
+  message: string
+  tools: string[] // includes the structured answer (TaskBrief, ScheduleOutput) the agent returns through a tool
 }
 
 /** One appliance cycle of the recommendation. */
@@ -110,8 +126,6 @@ export interface Recommendation {
   message: string
   schedules: ScheduleItem[]
   cost: number // energy plus the fee above the peak limit
-  saving: number // against starting every appliance as soon as it is ready
-  savingPct: number
   currency: string // ISO code, "EUR"
   currencySymbol: string // "€"
   peakKw: number
@@ -125,7 +139,7 @@ export function toRunResult(r: PlanResult): RunResult {
   return {
     system: r.system,
     label: r.label,
-    model: r.system.startsWith('multi_') ? 'gpt-4o-mini' : '-',
+    model: /^(multi_|single_|oneshot)/.test(r.system) ? 'gpt-4o-mini' : '-',
     run: 0,
     starts: r.starts,
     costEur: r.costEur,
@@ -153,6 +167,8 @@ export function useTryItApi() {
   return {
     catalog: () => $fetch<{ appliances: CatalogItem[], housing: Record<Housing, number>, entsoe: boolean }>(`${base}/api/catalog`),
     tools: (body: PlanRequest) => $fetch<ToolsResponse>(`${base}/api/plan/tools`, { method: 'POST', body }),
+    /** The language model without tools, live (one prompt, one answer). */
+    oneshot: (body: PlanRequest) => $fetch<{ result: PlanResult }>(`${base}/api/plan/oneshot`, { method: 'POST', body, timeout: 120_000 }),
     agent: (body: PlanRequest) => $fetch<{ result: PlanResult, recommendation: Recommendation }>(`${base}/api/plan/agent`, { method: 'POST', body, timeout: 180_000 }),
     /** Run the pipeline and call onEvent for each agent event as it arrives. */
     async agentStream(body: PlanRequest, onEvent: (e: AgentEvent) => void) {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // Total household load (base load + scheduled cycles) of one recommendation, with the peak limit.
-import { Line } from '@unovis/ts'
-import { VisXYContainer, VisLine, VisArea, VisAxis, VisTooltip, VisPlotline } from '@unovis/vue'
+import { VisXYContainer, VisLine, VisArea, VisAxis, VisTooltip, VisPlotline, VisCrosshair } from '@unovis/vue'
 import type { Appliance } from '~/composables/useDemoData'
 
 const props = defineProps<{ baseLoadKw: number[], appliances: Appliance[], starts: Record<string, number>, peakLimitKw: number }>()
@@ -20,9 +19,10 @@ const overload = computed(() => data.value.some(d => d.total > props.peakLimitKw
 const x = (d: P) => d.slot
 const ticks = Array.from({ length: 13 }, (_, i) => i * 8)
 const yMax = computed(() => Math.max(props.peakLimitKw * 1.15, ...data.value.map(d => d.total)))
-const triggers = {
-  [Line.selectors.line]: (d: P) => `<span style="white-space:nowrap">${slotTime(d.slot)} · total <b>${d.total.toFixed(2)}</b> kW (base ${d.base.toFixed(2)})</span>`
-}
+// Tooltip of the slot nearest the pointer (a trigger on the line itself would get the whole series, not one point)
+const tip = (d?: P) => d
+  ? `<span style="white-space:nowrap">${slotTime(d.slot)} · total <b>${d.total.toFixed(2)}</b> kW (base ${d.base.toFixed(2)})</span>`
+  : ''
 </script>
 
 <template>
@@ -33,7 +33,8 @@ const triggers = {
       <VisPlotline :value="peakLimitKw" axis="y" color="var(--ui-error)" :line-width="1" line-style="longDash" :label-text="`Peak limit ${peakLimitKw} kW`" />
       <VisAxis type="x" :tick-values="ticks" :tick-format="(s: number) => slotTime(s)" />
       <VisAxis type="y" :num-ticks="4" :tick-format="(v: number) => `${v}`" />
-      <VisTooltip :triggers="triggers" />
+      <VisCrosshair :x="x" :y="[(d: P) => d.total]" :template="tip" :color="overload ? 'var(--ui-error)' : 'var(--ui-primary)'" />
+      <VisTooltip />
     </VisXYContainer>
     <p class="mt-1 text-xs" :class="overload ? 'text-error' : 'text-dimmed'">
       <span class="inline-block w-3 h-2 align-middle mr-1 rounded-sm bg-[var(--ui-text-dimmed)] opacity-30" />base load

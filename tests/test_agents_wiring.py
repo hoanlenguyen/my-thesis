@@ -256,3 +256,28 @@ def test_without_thoughts_tools_take_no_thought(scenario: Scenario) -> None:
     optimal = _optimal_assignments(scenario)
     run = run_multi_agent(scenario, lambda role: _models(scenario, optimal)[role])
     assert run.thoughts == []
+
+
+# ── Inputs of the Scheduler agent ───────────────────────────────────────────
+def test_several_allowed_periods_reach_the_scheduler_and_one_window_stays_as_before(scenario: Scenario) -> None:
+    from hems.core.models import FlexibleAppliance
+
+    SEEN.clear()
+    washer = FlexibleAppliance(id="washing_machine_1", kind="washing_machine", profile_kw=[1.5] * 4, earliest_slot=24,
+                               deadline_slot=88, default_start_slot=24, windows=[(24, 36), (72, 88)])  # fmt: skip
+    two = _one_cheap_hour_scenario().model_copy(update={"appliances": [washer], "user_request": "washing_machine_1"})
+    run_multi_agent(two, lambda role: _models(two, [{"appliance_id": "washing_machine_1", "start_time": "18:00"}])[role])
+    assert '"periods"' in SEEN[1] and '"06:00-09:00"' in SEEN[1] and '"18:00-22:00"' in SEEN[1]
+    SEEN.clear()
+    run_multi_agent(scenario, lambda role: _models(scenario, _optimal_assignments(scenario))[role])
+    assert "periods" not in SEEN[1]  # one window per appliance (the benchmarks): the message is unchanged
+
+
+def test_spot_prices_are_cached_within_a_run(scenario: Scenario) -> None:
+    from hems.tools import build_tools
+
+    prices = build_tools(scenario)["get_spot_prices"]
+    first = prices.invoke({})
+    assert first.startswith("time c/kWh") and len(first.splitlines()) == 97
+    assert prices.invoke({}) == "(cached) " + first
+    assert not build_tools(scenario)["get_spot_prices"].invoke({}).startswith("(cached)")  # a new run starts empty

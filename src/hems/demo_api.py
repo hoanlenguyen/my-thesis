@@ -17,6 +17,7 @@ timer, cheapest hours, cheapest window, EMHASS (Docker REST, if reachable) and t
 from __future__ import annotations
 
 import importlib.util
+import itertools
 import json
 import os
 import time
@@ -29,7 +30,7 @@ from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -68,8 +69,9 @@ CATALOG = {
 SYSTEM_LABELS = {
     "naive": "No scheduling", "milp": "Optimum with the fee (upper bound)",
     "multi_duo": "Multi-Agent Pipeline", "multi_duo_thoughts": "Multi-Agent Pipeline",
-    "timer": "Smart timer (own heuristic)", "cheapest_hours": "Cheapest hours (HA blueprint)",
-    "cheapest_window": "Cheapest window (HA Nordpool Planner)",
+    "single_harness": "Single agent with harness", "single_harness_thoughts": "Single agent with harness",
+    "timer": "Smart timer (own heuristic)", "cheapest_hours": "HA cheapest-hours blueprint",
+    "cheapest_window": "HA Nordpool Planner", "oneshot": "LLM without tools",
     "emhass_rest": "EMHASS",
 }  # fmt: skip
 TOOL_SYSTEMS = ("naive", "timer", "cheapest_hours", "cheapest_window")  # the optimum is computed with the fee
@@ -236,6 +238,8 @@ class PlanIn(BaseModel):
     # EUR 1.57 per kW and month excluding VAT, with 25.5 % VAT, counted as if this day set the month's peak.
     fee_eur_per_kw: float = 1.97
     appliances: list[ApplianceIn]
+    # The agent design run live: the two-agent pipeline, or one agent in the same harness
+    design: Literal["two_agents", "one_agent"] = "two_agents"
 
 
 def _slot(clock: str, end: bool = False) -> int:
@@ -333,8 +337,6 @@ class Recommendation(BaseModel):
     message: str
     schedules: list[ScheduleItem]
     cost: float = Field(description="what the household pays: energy plus the fee above the peak limit")
-    saving: float = Field(description="against starting every appliance as soon as it is ready")
-    savingPct: float  # noqa: N815
     currency: str = "EUR"
     currencySymbol: str = "€"  # noqa: N815
     peakKw: float  # noqa: N815
@@ -366,8 +368,8 @@ def _recommendation(scenario: Scenario, result: dict[str, Any]) -> dict[str, Any
             energyKwh=round(a.energy_kwh, 3), cost=round(appliance_cost(scenario, a, start), 4),
         ))  # fmt: skip
     return Recommendation(
-        message=result["message"], schedules=items, cost=result["costEur"], saving=result["savingEur"],
-        savingPct=result["savingPct"], peakKw=result["peakKw"], peakLimitKw=scenario.peak_limit_kw,
+        message=result["message"], schedules=items, cost=result["costEur"],
+        peakKw=result["peakKw"], peakLimitKw=scenario.peak_limit_kw,
         valid=result["feasible"], date=scenario.date,
     ).model_dump()  # fmt: skip
 
@@ -390,21 +392,16 @@ def _result(scenario: Scenario, system: str, record: dict[str, Any], naive: dict
     }  # fmt: skip
 
 
-def _emhass(scenario: Scenario) -> dict[str, Any] | None:
-    """EMHASS with the household limit as its maximum grid power. EMHASS has no peak fee, so if no schedule fits
-    under the limit it is asked again with the main fuse (17 kW) as the only limit, and pays the fee."""
-    spec = importlib.util.spec_from_file_location("emhass_rest", ROOT / "tools" / "emhass_rest.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)  # type: ignore[union-attr]
-    try:  # a stuck Docker engine can keep the port open without answering: give up quickly instead of after 60 s
-        urllib.request.urlopen(EMHASS_URL, timeout=3).close()
-    except urllib.error.HTTPError:
-        pass  # it answered, so it is running
-    except (urllib.error.URLError, TimeoutError, OSError):
-        return None
+EMHASS_MAX_RUNS = 16  # EMHASS runs once per combination of periods; more combinations would take too long
+
+
+def _emhass_plan(module: Any, scenario: Scenario) -> tuple[dict[str, int | None], str] | None:
+    """One EMHASS day-ahead plan with the household limit as its maximum grid power. EMHASS has no peak fee, so if
+    no schedule fits under the limit it is asked again with the main fuse (17 kW) as the only limit, and pays the
+    fee. None if the service is not running."""
     raw = json.loads(scenario.model_dump_json())
-    started = time.perf_counter()
-    starts, status = {a.id: None for a in scenario.appliances}, "no plan"
+    starts: dict[str, int | None] = {a.id: None for a in scenario.appliances}
+    status = "no plan"
     for limit in (scenario.peak_limit_kw, max(17.0, scenario.peak_limit_kw)):
         params = module.runtime_params(raw, "profile")
         params["maximum_power_from_grid"] = limit * 1000
@@ -419,10 +416,56 @@ def _emhass(scenario: Scenario) -> dict[str, Any] | None:
         starts, status = module.starts_from_plan(plan, raw)
         if status == "Optimal" and all(v is not None for v in starts.values()):
             break
+    return starts, status
+
+
+def _period_choices(scenario: Scenario) -> list[tuple[tuple[int, int], ...]]:
+    """Every way to give each appliance one of its periods (only periods long enough for its cycle)."""
+    options = [[(s, e) for s, e in a.window_periods() if e - s >= a.duration_slots] for a in scenario.appliances]
+    return list(itertools.product(*options))
+
+
+def _one_window_each(scenario: Scenario, choice: tuple[tuple[int, int], ...]) -> Scenario:
+    """The scenario as EMHASS is configured for one combination: each appliance gets one period as its window."""
+    apps = [a.model_copy(update={"windows": None, "earliest_slot": s, "deadline_slot": e, "default_start_slot": s})
+            for a, (s, e) in zip(scenario.appliances, choice, strict=True)]  # fmt: skip
+    return scenario.model_copy(update={"appliances": apps})
+
+
+def _emhass(scenario: Scenario, fee: float) -> dict[str, Any] | None:
+    """EMHASS as deployed (REST, Docker). EMHASS gives each deferrable load one start-to-end window, so with
+    several periods it is run once for each combination of periods (as a user would have to configure it), and the
+    cheapest valid plan, scored like every other system, is kept. None if EMHASS is not running."""
+    spec = importlib.util.spec_from_file_location("emhass_rest", ROOT / "tools" / "emhass_rest.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)  # type: ignore[union-attr]
+    try:  # a stuck Docker engine can keep the port open without answering: give up quickly instead of after 60 s
+        urllib.request.urlopen(EMHASS_URL, timeout=3).close()
+    except urllib.error.HTTPError:
+        pass  # it answered, so it is running
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None
+    several = any(a.windows is not None for a in scenario.appliances)
+    choices = _period_choices(scenario) if several else [()]
+    started = time.perf_counter()
+    best: tuple[tuple[bool, float], dict[str, int | None], str] | None = None
+    for choice in choices:
+        plan = _emhass_plan(module, _one_window_each(scenario, choice) if several else scenario)
+        if plan is None:
+            return None
+        starts, status = plan
+        scheduled = {k: v for k, v in starts.items() if v is not None}
+        s = score(scenario, scheduled, fee)
+        rank = (not (status == "Optimal" and s["valid"] and len(scheduled) == len(starts)), s["total"])
+        if best is None or rank < best[0]:
+            best = (rank, starts, status)
     from hems.run import external_record
 
-    return external_record(scenario, "emhass_rest", starts, time.perf_counter() - started,
-                           [] if status == "Optimal" else [f"EMHASS status {status}"])  # fmt: skip
+    _, starts, status = best  # type: ignore[misc]
+    record = external_record(scenario, "emhass_rest", starts, time.perf_counter() - started,
+                             [] if status == "Optimal" else [f"EMHASS status {status}"])  # fmt: skip
+    record["emhass_runs"] = len(choices)
+    return record
 
 
 def _scenario_payload(scenario: Scenario, source: dict[str, str]) -> dict[str, Any]:
@@ -469,10 +512,20 @@ def _naive(scenario: Scenario, fee: float) -> dict[str, Any]:
     return score(scenario, {a.id: a.default_start_slot for a in scenario.appliances}, fee)
 
 
+# The single agent's request for the household message on the demo page: as prompts.HARNESS_MESSAGE, without a saving
+DEMO_MESSAGE = (
+    "Now write your message to the household: short and friendly (max 4 sentences), saying when each appliance "
+    "runs and the cost of the day. Use only the figures given here, and do not mention any saving or comparison. If "
+    "the peak-load check reports a conflict, say plainly that the schedule still exceeds the household limit; never "
+    "claim constraints are met unless the check confirms it. Reply with the message only."
+)
+
+
 def _summary_costs(scenario: Scenario, fee: float):  # type: ignore[no-untyped-def]
-    """Cost lines for the pipeline's summary, scored as on the page: energy plus the fee for the day's highest load
-    above the limit, against starting every appliance as soon as it is ready (the "Saving" column)."""
-    naive = _naive(scenario, fee)
+    """The figures for the household message on the demo page: the cost as scored on the page (energy plus the fee
+    for the day's highest load above the limit) and no saving. The page measures savings against the highest-cost
+    system shown, which is not known when an agent writes its message, so the message leaves savings to the page.
+    The evaluated prompts ask for a saving; this line overrides that request in the demo only."""
 
     def cost(s: dict[str, Any]) -> str:
         text = f"EUR {s['total']:.3f}"
@@ -481,12 +534,18 @@ def _summary_costs(scenario: Scenario, fee: float):  # type: ignore[no-untyped-d
                      f"the {scenario.peak_limit_kw:.2f} kW limit)")  # fmt: skip
         return text
 
+    def times(schedule: dict[str, int]) -> str:
+        """Start and end of every cycle, so the message never has to work out an end time."""
+        rows = []
+        for appliance_id, start in sorted(schedule.items(), key=lambda kv: (kv[1], kv[0])):
+            a = scenario.appliance(appliance_id)
+            rows.append(f"- {appliance_id}: {scenario.slot_to_time(start)} to "
+                        f"{scenario.boundary_to_time(start + a.duration_slots)} ({a.duration_slots * 15} min)")  # fmt: skip
+        return "\nRun times (start to end):\n" + "\n".join(rows) if rows else ""
+
     def facts(schedule: dict[str, int]) -> str:
-        s = score(scenario, schedule, fee)
-        saving = naive["total"] - s["total"]
-        share = f" ({saving / naive['total'] * 100:.0f} %)" if naive["total"] > 0 else ""
-        return (f"\nCost of the scheduled cycles: {cost(s)}. Cost if every appliance started as soon as it is ready: "
-                f"{cost(naive)}. Saving: EUR {saving:.3f}{share}.")  # fmt: skip
+        return (f"{times(schedule)}\nCost of the scheduled cycles: {cost(score(scenario, schedule, fee))}.\n"
+                "Do not mention any saving or comparison: the page shows the savings next to other systems.")  # fmt: skip
 
     return facts
 
@@ -499,15 +558,17 @@ def plan_tools(body: PlanIn) -> dict[str, Any]:
     records = {s: execute(scenario, s) for s in TOOL_SYSTEMS}
     best = optimum_with_fee(scenario, fee)
     records["milp"] = {"schedule_slots": best, "latency_s": None}
-    # EMHASS gives each deferrable load one start-end window, so it is not run when an appliance has several periods.
-    several_periods = any(a.windows is not None for a in scenario.appliances)
-    if not several_periods and (emhass := _emhass(scenario)) is not None:
+    # EMHASS gives each deferrable load one start-end window: with several periods it runs once per combination
+    runs = len(_period_choices(scenario))
+    too_many = runs > EMHASS_MAX_RUNS
+    if not too_many and (emhass := _emhass(scenario, fee)) is not None:
         records["emhass_rest"] = emhass
     naive = _naive(scenario, fee)
     results = [_result(scenario, s, r, naive, fee) for s, r in records.items()]
     return {**_scenario_payload(scenario, source), "feeEurPerKw": fee, "naiveCost": naive["total"],
             "milpCost": score(scenario, best, fee)["total"], "results": results, "emhass": "emhass_rest" in records,
-            "emhassSkipped": "periods" if several_periods else None}  # fmt: skip
+            "emhassSkipped": "periods" if too_many else None,
+            "emhassRuns": records["emhass_rest"].get("emhass_runs", 1) if "emhass_rest" in records else 0}  # fmt: skip
 
 
 @app.post("/api/plan/agent", response_model=AgentOut)
@@ -519,7 +580,7 @@ def plan_agent(body: PlanIn) -> dict[str, Any]:
     and saving including the fee) and returns only its final result: the scored ``result`` as on the page, and the
     ``recommendation`` in a fixed form ({message, schedules, cost, saving, currency, ...})."""
     scenario, _ = build_scenario(body)
-    for chunk in _pipeline_events(scenario, body.fee_eur_per_kw):
+    for chunk in _pipeline_events(scenario, body.fee_eur_per_kw, body.design):
         event = json.loads(chunk.removeprefix("data: "))
         if event.get("type") == "result":
             return {"result": event["result"], "recommendation": event["recommendation"]}
@@ -528,15 +589,46 @@ def plan_agent(body: PlanIn) -> dict[str, Any]:
     raise HTTPException(502, "the pipeline returned no result")
 
 
+@app.post("/api/plan/oneshot")
+def plan_oneshot(body: PlanIn) -> dict[str, Any]:
+    """The same language model (GPT-4o-mini) without tools: every price and base load in one prompt, one answer.
+    Scored like every other system."""
+    from langchain_core.callbacks import get_usage_metadata_callback
+
+    from hems.agents.llm import make_model, usage_cost_usd
+    from hems.agents.oneshot import run_oneshot
+    from hems.run import _record, parse_assignments
+
+    scenario, _ = build_scenario(body)
+    fee = body.fee_eur_per_kw
+    started = time.perf_counter()
+    try:
+        with get_usage_metadata_callback() as usage_cb:
+            run = run_oneshot(scenario, make_model("gpt-4o-mini"))
+            usage = dict(usage_cb.usage_metadata)
+    except Exception as exc:  # noqa: BLE001 - the page shows the reason
+        raise HTTPException(502, f"{type(exc).__name__}: {exc}") from exc
+    schedule, problems = parse_assignments(scenario, run.assignments)
+    tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
+    record = _record(scenario, "oneshot", "gpt-4o-mini", 0, run, schedule, problems,
+                     time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
+    return {"result": _result(scenario, "oneshot", record, _naive(scenario, fee), fee)}
+
+
 # ── The pipeline, agent by agent (streamed) ─────────────────────────────────
 
-# Pipeline node -> the agent the page shows. The Resolver node also holds the Orchestrator's verification step.
-# The two agents (Orchestrator, Scheduler) and the two deterministic steps, which the page shows by function name
+# Graph node -> the step the page shows. Two agents: Orchestrator (plan, summary) and Scheduler. One agent: the agent
+# plans and fixes, then explains. Both designs share the deterministic steps, which the page shows by function name.
 AGENT_OF_NODE = {"orchestrator_plan": "orchestrator", "profile_data": "profile_data", "scheduler": "scheduler",
-                 "verify_schedule": "verify_schedule", "orchestrator_finalize": "summary"}  # fmt: skip
-# The pipeline run live: design iteration 10, two language-model agents (Orchestrator and Scheduler)
-LIVE_SYSTEM = "multi_duo_thoughts"
+                 "verify_schedule": "verify_schedule", "orchestrator_finalize": "summary",
+                 "agent": "agent", "explain": "explain",
+                 "retrieve_examples": "retrieve_examples"}  # fmt: skip  # RAG: shown as a step of its own
+ACTING_NODES = ("scheduler", "agent")  # the language model agents that call tools
+MESSAGE_NODES = ("orchestrator_finalize", "explain")  # where the household message is written
+# The systems run live, with explicit Thoughts
+LIVE_SYSTEMS = {"two_agents": "multi_duo_thoughts", "one_agent": "single_harness_thoughts"}
 REDUCED = {"errors": list, "tool_calls": int, "recoveries": int}  # state keys the pipeline adds up across nodes
+INPUT_CHARS = 8000  # cap per part of an agent's input sent to the page
 
 
 def _node(metadata: dict[str, Any] | None) -> str | None:
@@ -559,6 +651,22 @@ class _AgentWatch(BaseCallbackHandler):
     def on_chat_model_start(self, serialized, messages, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
         if node := _node(metadata):
             self.emit({"type": "working", "node": node})
+            self._input(node, messages[0] if messages else [], kwargs.get("invocation_params") or {})
+
+    def _input(self, node: str, messages: list, params: dict[str, Any]) -> None:
+        """The agent's input on its first model call (no answers or tool results yet): the system prompt, the message
+        and the tools it may call. Later calls of the same agent only add its own Actions and Observations."""
+        if node == "explain" and messages:  # the single agent's message: its conversation so far plus the figures
+            self.emit({"type": "input", "node": node, "prompt": {
+                "system": "(the agent's own system prompt and its whole conversation above)",
+                "message": str(messages[-1].content)[:INPUT_CHARS], "tools": []}})  # fmt: skip
+            return
+        if any(m.type in ("ai", "tool") for m in messages):
+            return
+        text = lambda kind: "\n\n".join(str(m.content) for m in messages if m.type == kind)[:INPUT_CHARS]  # noqa: E731
+        tools = [t.get("function", {}).get("name") or t.get("name", "") for t in params.get("tools") or []]
+        self.emit({"type": "input", "node": node, "prompt": {"system": text("system"), "message": text("human"),
+                                                              "tools": [t for t in tools if t]}})  # fmt: skip
 
     def on_llm_end(self, response, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
         try:
@@ -577,10 +685,10 @@ class _AgentWatch(BaseCallbackHandler):
 
     def on_tool_end(self, output, *, run_id, **kwargs):  # type: ignore[no-untyped-def]
         node, name, args, started, thought = self.tools.pop(run_id, (None, "tool", "", time.perf_counter(), ""))
-        if node != "scheduler":  # the functions call tools internally; only the Scheduler agent's actions are shown
+        if node not in ACTING_NODES:  # the functions call tools internally; only the acting agent's actions are shown
             return
         text = str(getattr(output, "content", output))
-        self.emit({"type": "tool", "node": node, "name": name, "input": args[:300], "output": text[:600],
+        self.emit({"type": "tool", "node": node, "name": name, "input": args[:300], "output": text[:4000],
                    "thought": thought[:300], "ms": round((time.perf_counter() - started) * 1000)})  # fmt: skip
 
 
@@ -600,17 +708,17 @@ def _agent_output(node: str, update: dict[str, Any]) -> dict[str, Any]:
         return {"appliances": [{"id": p.appliance_id, "kind": p.kind, "flexible": p.flexible, "peakKw": p.peak_kw,
                                 "durationMin": p.duration_minutes, "window": f"{p.earliest_time}-{p.deadline_time}"}
                                for p in profile.appliances]}  # fmt: skip
-    if node == "scheduler" and (proposal := update.get("proposal")):
+    if node in ACTING_NODES and (proposal := update.get("proposal")):
         return {"starts": starts(proposal.assignments), "costEur": proposal.total_cost_eur, "explanation": proposal.explanation}
     if node == "verify_schedule" and "feedback" in update:
         feedback = update.get("feedback") or ""
         return {"starts": update.get("checked") or {}, "feedback": feedback, "passed": not feedback}
-    if node == "orchestrator_finalize":
+    if node in MESSAGE_NODES:
         return {"starts": update.get("final") or {}, "summary": update.get("summary", "")}
     return {}
 
 
-def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
+def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents") -> Iterator[str]:
     """Run the Multi-Agent Pipeline (two agents, design iteration 10; the household data are profiled while the
     Orchestrator plans) and stream
     server-sent events: each agent starting, its tool calls, what it handed on, the summary as it is written, and
@@ -618,6 +726,7 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
     from langchain_core.callbacks import get_usage_metadata_callback
 
     from hems.agents.llm import make_model, usage_cost_usd
+    from hems.agents.harness_agent import build_harness_agent
     from hems.agents.multi_agent import build_pipeline
     from hems.agents.types import AgentRun
     from hems.rag import default_retriever
@@ -634,18 +743,37 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
         try:
             watch = _AgentWatch(emit)
             model = make_model("gpt-4o-mini")
-            pipeline = build_pipeline(scenario, lambda _role: model, retriever=default_retriever(), thoughts=True,
-                                      parallel_start=True, summary_costs=_summary_costs(scenario, fee))  # fmt: skip
+            retriever = default_retriever()  # RAG: the solved days given to the acting agent as worked examples
+            retriever = default_retriever()  # RAG: the solved days given to the acting agent as worked examples
+            if design == "one_agent":
+                pipeline = build_harness_agent(scenario, model, retriever=retriever, thoughts=True,
+                                               summary_costs=_summary_costs(scenario, fee),
+                                               message_instruction=DEMO_MESSAGE)  # fmt: skip
+            else:
+                pipeline = build_pipeline(scenario, lambda _role: model, retriever=retriever, thoughts=True,
+                                          parallel_start=True, summary_costs=_summary_costs(scenario, fee))  # fmt: skip
             state: dict[str, Any] = {key: kind() for key, kind in REDUCED.items()}
             emit({"type": "start"})
+            emit({"type": "working", "node": "retrieve_examples"})
+            found = retriever.retrieve(scenario)
+            emit({"type": "done", "node": "retrieve_examples", "tokens": 0, "errors": [], "output": {
+                "library": len(retriever.cases),
+                "examples": [{"id": c.id, "type": c.type, "date": c.date, "similarity": round(s, 2), "text": c.text}
+                             for c, s in found]}})  # fmt: skip
+            emit({"type": "working", "node": "retrieve_examples"})
+            found = retriever.retrieve(scenario)
+            emit({"type": "done", "node": "retrieve_examples", "tokens": 0, "errors": [], "output": {
+                "library": len(retriever.cases),
+                "examples": [{"id": c.id, "type": c.type, "date": c.date, "similarity": round(s, 2), "text": c.text}
+                             for c, s in found]}})  # fmt: skip
             with get_usage_metadata_callback() as usage_cb:
                 stream = pipeline.stream({"request": scenario.user_request}, config={"recursion_limit": 50, "callbacks": [watch]},
                                          stream_mode=["updates", "messages"])  # fmt: skip
                 for mode, chunk in stream:
                     if mode == "messages":
                         message, meta = chunk
-                        if meta.get("langgraph_node") == "orchestrator_finalize" and getattr(message, "content", ""):
-                            emit({"type": "summary_delta", "node": "orchestrator_finalize", "text": message.content})
+                        if (node := meta.get("langgraph_node")) in MESSAGE_NODES and getattr(message, "content", ""):
+                            emit({"type": "summary_delta", "node": node, "text": message.content})
                         continue
                     for node, update in chunk.items():
                         update = update or {}
@@ -662,12 +790,12 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
                                   "tokens": watch.tokens.get(node, 0), "errors": update.get("errors", [])})  # fmt: skip
                 usage = dict(usage_cb.usage_metadata)
             run = AgentRun(assignments=state.get("final"), explanation=state.get("summary", ""), errors=state["errors"],
-                           tool_calls=state["tool_calls"], recoveries=state["recoveries"], iterations=state.get("iterations", 0))  # fmt: skip
+                           tool_calls=state["tool_calls"], recoveries=state["recoveries"], iterations=state.get("rounds", 0))  # fmt: skip
             schedule, problems = parse_assignments(scenario, run.assignments)
             tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
-            record = _record(scenario, LIVE_SYSTEM, "gpt-4o-mini", 0, run, schedule, problems,
+            record = _record(scenario, LIVE_SYSTEMS[design], "gpt-4o-mini", 0, run, schedule, problems,
                              time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
-            result = _result(scenario, LIVE_SYSTEM, record, _naive(scenario, fee), fee)
+            result = _result(scenario, LIVE_SYSTEMS[design], record, _naive(scenario, fee), fee)
             emit({"type": "result", "result": result, "recommendation": _recommendation(scenario, result)})
         except Exception as exc:  # noqa: BLE001 - shown on the page instead of a broken stream
             emit({"type": "error", "message": f"{type(exc).__name__}: {exc}"})
@@ -683,5 +811,5 @@ def _pipeline_events(scenario: Scenario, fee: float) -> Iterator[str]:
 def plan_agent_stream(body: PlanIn) -> StreamingResponse:
     """The Multi-Agent Pipeline agent by agent, as server-sent events (see _pipeline_events)."""
     scenario, _ = build_scenario(body)  # input errors are answered as JSON before the stream starts
-    return StreamingResponse(_pipeline_events(scenario, body.fee_eur_per_kw), media_type="text/event-stream",
+    return StreamingResponse(_pipeline_events(scenario, body.fee_eur_per_kw, body.design), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})  # fmt: skip

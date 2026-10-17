@@ -1,11 +1,12 @@
 <script setup lang="ts">
-// The Multi-Agent Pipeline's live run, step by step: two language model agents (the Orchestrator agent and the
+// The live run, step by step, of either agent design. Two agents: the Orchestrator agent and the
 // Scheduler agent) and two functions without a language model (profile_data, verify_schedule). For every action an
 // agent takes, the page shows its Thought and the function it called with the arguments, and the result
 // (Observation). Built from the server-sent events of POST /api/plan/agent/stream.
-import type { AgentEvent, AgentName, PlanResult } from '~/composables/useTryIt'
+import type { AgentEvent, AgentInput, AgentName, Design, PlanResult } from '~/composables/useTryIt'
 
-const props = defineProps<{ events: AgentEvent[], running: boolean, summary: string, result?: PlanResult | null }>()
+const props = withDefaults(defineProps<{ events: AgentEvent[], running: boolean, summary: string, result?: PlanResult | null, design?: Design, title?: string }>(),
+  { result: null, design: 'two_agents', title: '' })
 
 interface ToolCall { name: string, count: number, ms: number, args: string, output: string, thoughts: string[] }
 interface Step {
@@ -16,17 +17,30 @@ interface Step {
   tools: ToolCall[]
   output: Record<string, unknown> | null
   errors: string[]
+  input: AgentInput | null
 }
 
 // kind "agent": a language model agent; kind "function": a deterministic step, shown by its function name
 interface Lane { agent: AgentName, label: string, role: string, icon: string, kind: 'agent' | 'function' }
-const LANES: Lane[] = [
+const TWO_AGENTS: Lane[] = [
   { agent: 'orchestrator', label: 'Orchestrator agent', role: 'Reads the request and briefs the Scheduler agent', icon: 'i-lucide-network', kind: 'agent' },
   { agent: 'profile_data', label: 'profile_data()', role: 'Builds the appliance profiles from the household data', icon: 'i-lucide-database', kind: 'function' },
+  { agent: 'retrieve_examples', label: 'retrieve_examples()', role: 'RAG: finds the most similar solved days in the case library and adds them as worked examples to the message of the Scheduler agent', icon: 'i-lucide-library', kind: 'function' },
   { agent: 'scheduler', label: 'Scheduler agent', role: 'Plans the start times with its tools and fixes any reported problem', icon: 'i-lucide-calendar-clock', kind: 'agent' },
   { agent: 'verify_schedule', label: 'verify_schedule()', role: 'Checks the peak limit, every appliance and every window; problems go back to the Scheduler agent', icon: 'i-lucide-shield-check', kind: 'function' },
   { agent: 'summary', label: 'Orchestrator agent', role: 'Explains the schedule to the household', icon: 'i-lucide-message-square-text', kind: 'agent' }
 ]
+// one agent in the same harness: the same functions; the agent reads the request, plans, fixes and explains
+const ONE_AGENT: Lane[] = [
+  { agent: 'profile_data', label: 'profile_data()', role: 'Builds the appliance profiles from the household data', icon: 'i-lucide-database', kind: 'function' },
+  { agent: 'retrieve_examples', label: 'retrieve_examples()', role: 'RAG: finds the most similar solved days in the case library and adds them as worked examples to the message of the agent', icon: 'i-lucide-library', kind: 'function' },
+  { agent: 'agent', label: 'Agent', role: 'Reads the request, plans the start times with its tools and fixes any reported problem', icon: 'i-lucide-bot', kind: 'agent' },
+  { agent: 'verify_schedule', label: 'verify_schedule()', role: 'Checks the peak limit, every appliance and every window; problems go back to the agent in the same conversation', icon: 'i-lucide-shield-check', kind: 'function' },
+  { agent: 'explain', label: 'Agent', role: 'Explains the schedule to the household, with its whole conversation in view', icon: 'i-lucide-message-square-text', kind: 'agent' }
+]
+const LANES = computed(() => props.design === 'one_agent' ? ONE_AGENT : TWO_AGENTS)
+const ACTING = new Set<AgentName>(['scheduler', 'agent']) // agents that call tools
+const WRITING = new Set<AgentName>(['summary', 'explain']) // where the household message is written
 
 /** Fold the events into one step per lane and round (the Scheduler agent and the check repeat after feedback). */
 const steps = computed(() => {
@@ -34,13 +48,17 @@ const steps = computed(() => {
   const open = (agent: AgentName, t: number) => {
     const last = [...out].reverse().find(s => s.agent === agent)
     if (last && last.end === null) return last
-    const step: Step = { agent, start: t, end: null, tokens: 0, tools: [], output: null, errors: [] }
+    const step: Step = { agent, start: t, end: null, tokens: 0, tools: [], output: null, errors: [], input: null }
     out.push(step)
     return step
   }
   for (const e of props.events) {
     if (!e.agent) continue
     if (e.type === 'working') open(e.agent, e.t)
+    else if (e.type === 'input' && e.prompt) {
+      const step = open(e.agent, e.t)
+      step.input ??= e.prompt
+    }
     else if (e.type === 'tool') {
       const step = open(e.agent, e.t)
       step.tools.push({ name: e.name ?? 'tool', count: 1, ms: e.ms ?? 0, args: e.input ?? '', output: String(e.output ?? ''),
@@ -80,6 +98,13 @@ function status(step: Step | undefined): 'waiting' | 'working' | 'done' | 'passe
   if (step.end === null) return props.running ? 'working' : 'done'
   return step.agent === 'verify_schedule' && step.output?.passed ? 'passed' : 'done'
 }
+// the flow diagram: each node's status; verify_schedule is 'failed' while its latest check sent the schedule back
+const flowStatus = computed(() => Object.fromEntries(LANES.value.map(({ agent }) => {
+  const step = latest(agent)
+  const s = status(step)
+  return [agent, agent === 'verify_schedule' && s === 'done' && step?.output && !step.output.passed ? 'failed' : s]
+})) as Record<AgentName, 'waiting' | 'working' | 'done' | 'passed' | 'failed'>)
+const looped = computed(() => stepsOf(props.design === 'one_agent' ? 'agent' : 'scheduler').length > 1)
 const seconds = (step: Step) => {
   const end = step.end ?? clock.value
   return Math.max(0, end - (step.start ?? end))
@@ -101,6 +126,8 @@ function callText(tool: ToolCall): string {
   const text = Object.entries(args).map(([k, v]) => `${k}=${value(v)}`).join(', ')
   return `${tool.name}(${text.length > 160 ? `${text.slice(0, 157)}…` : text})`
 }
+// tools an agent returns its structured answer through; not actions
+const ANSWER_TOOLS = new Set(['TaskBrief', 'ScheduleOutput'])
 const kindOf = (id: string) => id.replace(/_\d+$/, '')
 const name = (id: string) => applianceName(id, kindOf(id))
 const totalTokens = computed(() => props.result?.tokens ?? steps.value.reduce((n, s) => n + s.tokens, 0))
@@ -113,8 +140,8 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap items-center gap-2">
           <UIcon name="i-lucide-workflow" class="size-4 text-primary" />
-          <span class="font-semibold text-sm text-highlighted">How the agents worked</span>
-          <span class="text-xs text-dimmed">· two language model agents; <code class="font-mono">profile_data()</code> and
+          <span class="font-semibold text-sm text-highlighted">{{ title ? `How it worked: ${title}` : 'How the agents worked' }}</span>
+          <span class="text-xs text-dimmed">· {{ design === 'one_agent' ? 'one language model agent' : 'two language model agents' }}; <code class="font-mono">profile_data()</code> and
             <code class="font-mono">verify_schedule()</code> are functions without a model</span>
         </div>
         <div class="flex items-center gap-3 text-xs text-muted tabular-nums">
@@ -127,6 +154,8 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
         </div>
       </div>
     </template>
+
+    <PipelineFlow :status="flowStatus" :looped="looped" :design="design" class="mb-4" />
 
     <UAlert v-if="errorMessage" color="error" variant="subtle" icon="i-lucide-triangle-alert" :description="errorMessage" class="mb-3" />
 
@@ -151,7 +180,7 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
                 <span class="text-xs text-muted">{{ a.role }}</span>
                 <UBadge v-if="round > 0" size="xs" variant="subtle" color="warning">round {{ round + 1 }}</UBadge>
                 <UBadge v-if="a.kind === 'function'" size="xs" variant="outline" color="neutral">function, no language model</UBadge>
-                <UBadge v-if="a.agent === 'profile_data' && step" size="xs" variant="subtle" color="neutral">in parallel with the Orchestrator agent</UBadge>
+                <UBadge v-if="a.agent === 'profile_data' && step && design === 'two_agents'" size="xs" variant="subtle" color="neutral">in parallel with the Orchestrator agent</UBadge>
               </div>
               <span v-if="step" class="text-xs text-muted tabular-nums">
                 <template v-if="status(step) === 'passed'">passed</template>
@@ -159,6 +188,30 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
               </span>
               <span v-else class="text-xs text-dimmed">waiting</span>
             </div>
+
+            <!-- what the agent was given: system prompt, message, tools -->
+            <details v-if="step?.input" class="group/input mt-1.5 text-xs">
+              <summary class="flex cursor-pointer list-none items-center gap-1.5 text-muted hover:text-default">
+                <UIcon name="i-lucide-chevron-right" class="size-3 shrink-0 transition-transform group-open/input:rotate-90" />
+                <span>Input</span>
+                <span class="text-dimmed">· system prompt, message<template v-if="step.input.tools.some(t => !ANSWER_TOOLS.has(t))">, {{ step.input.tools.filter(t => !ANSWER_TOOLS.has(t)).length }} tools</template></span>
+              </summary>
+              <div class="ml-4 mt-1 flex flex-col gap-2">
+                <div v-if="step.input.tools.length" class="flex flex-wrap items-center gap-1">
+                  <span class="text-muted">Tools:</span>
+                  <UBadge v-for="t in step.input.tools.filter(t => !ANSWER_TOOLS.has(t))" :key="t" size="xs" variant="outline" color="neutral" class="font-mono">{{ t }}()</UBadge>
+                  <span v-for="t in step.input.tools.filter(t => ANSWER_TOOLS.has(t))" :key="t" class="text-dimmed">answers with <code class="font-mono">{{ t }}</code></span>
+                </div>
+                <div>
+                  <p class="text-muted">System prompt</p>
+                  <pre class="max-h-48 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 p-2 font-mono text-[11px] text-muted">{{ step.input.system }}</pre>
+                </div>
+                <div>
+                  <p class="text-muted">Message</p>
+                  <pre class="max-h-64 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 p-2 font-mono text-[11px] text-muted">{{ step.input.message }}</pre>
+                </div>
+              </div>
+            </details>
 
             <!-- what the step handed on -->
             <div v-if="step?.output" class="mt-1.5 text-sm">
@@ -187,7 +240,25 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
                 </table>
               </div>
 
-              <template v-else-if="a.agent === 'scheduler'">
+              <div v-else-if="a.agent === 'retrieve_examples'" class="flex flex-col gap-1.5">
+                <p class="text-xs text-muted">
+                  {{ (step.output.examples as unknown[]).length }} of {{ step.output.library }} solved days, by similarity of
+                  the price shape and the appliances (no language model, no embeddings):
+                </p>
+                <details v-for="ex in (step.output.examples as { id: string, type: string, date: string, similarity: number, text: string }[])"
+                         :key="ex.id" class="group/rag text-xs">
+                  <summary class="flex cursor-pointer list-none flex-wrap items-center gap-1.5 text-muted hover:text-default">
+                    <UIcon name="i-lucide-chevron-right" class="size-3 shrink-0 transition-transform group-open/rag:rotate-90" />
+                    <code class="font-mono text-highlighted">{{ ex.id }}</code>
+                    <span>{{ ex.type.replaceAll('-', ' · ') }}</span>
+                    <span class="text-dimmed">{{ ex.date }}</span>
+                    <UBadge size="xs" variant="subtle" color="neutral">similarity {{ ex.similarity.toFixed(2) }}</UBadge>
+                  </summary>
+                  <pre class="ml-4 mt-1 max-h-48 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 p-2 font-mono text-[11px] text-muted">{{ ex.text }}</pre>
+                </details>
+              </div>
+
+              <template v-else-if="ACTING.has(a.agent)">
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="text-xs text-muted">Proposal:</span>
                   <UBadge v-for="(time, id) in (step.output.starts as Record<string, string>)" :key="id" variant="soft" size="sm" :icon="applianceIcon(kindOf(String(id)))">
@@ -210,30 +281,31 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
             </div>
 
             <!-- the summary is shown as it is written -->
-            <p v-if="a.agent === 'summary' && (summary || status(step) === 'working')" class="mt-1.5 text-sm text-default">
+            <p v-if="WRITING.has(a.agent) && (summary || status(step) === 'working')" class="mt-1.5 text-sm text-default">
               {{ summary }}<span v-if="status(step) === 'working'" class="inline-block w-1.5 h-4 align-text-bottom bg-primary/70 animate-pulse ml-0.5" />
             </p>
 
             <p v-for="err in step?.errors ?? []" :key="err" class="mt-1 text-xs text-error">{{ err }}</p>
 
-            <!-- the Scheduler agent's actions: Thought, then the function it called; the result (Observation) when
-                 expanded. The Orchestrator agent has no tools; checks made by code are not agent actions. -->
-            <div v-if="a.agent === 'scheduler' && step?.tools.length" class="mt-1.5 flex flex-col gap-1.5">
+            <!-- the Scheduler agent's ReAct steps: Thought, Action (the function it called) and Observation (what the
+                 function returned). The Orchestrator agent has no tools; checks made by code are not agent actions. -->
+            <div v-if="ACTING.has(a.agent) && step?.tools.length" class="mt-1.5 flex flex-col gap-1.5">
               <div v-for="(tool, k) in step.tools" :key="k" class="text-xs">
                 <p v-for="(t, j) in tool.thoughts" :key="j" class="mb-0.5 flex items-start gap-1.5 text-default">
                   <UIcon name="i-lucide-lightbulb" class="size-3 mt-0.5 shrink-0 text-warning" />
                   <span><span class="text-muted">Thought:</span> {{ t }}</span>
                 </p>
-                <details class="group">
-                  <summary class="flex cursor-pointer list-none items-start gap-1.5 text-muted hover:text-default">
-                    <UIcon name="i-lucide-chevron-right" class="size-3 mt-0.5 shrink-0 transition-transform group-open:rotate-90" />
-                    <span class="shrink-0">Action:</span>
-                    <code class="font-mono text-highlighted break-all">{{ callText(tool) }}</code>
-                    <span class="shrink-0 tabular-nums text-dimmed">{{ tool.ms }} ms</span>
-                  </summary>
-                  <p class="mt-1 ml-6 text-muted">Observation:</p>
-                  <pre class="ml-6 max-h-48 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 p-2 font-mono text-[11px] text-muted">{{ tool.output }}</pre>
-                </details>
+                <p class="flex items-start gap-1.5 text-muted">
+                  <UIcon name="i-lucide-play" class="size-3 mt-0.5 shrink-0 text-primary" />
+                  <span class="shrink-0">Action:</span>
+                  <code class="font-mono text-highlighted break-all">{{ callText(tool) }}</code>
+                  <span class="shrink-0 tabular-nums text-dimmed">{{ tool.ms }} ms</span>
+                </p>
+                <div class="mt-0.5 flex items-start gap-1.5 text-muted">
+                  <UIcon name="i-lucide-eye" class="size-3 mt-0.5 shrink-0 text-info" />
+                  <span class="shrink-0">Observation:</span>
+                  <pre class="min-w-0 flex-1 max-h-32 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 px-2 py-1 font-mono text-[11px] text-muted">{{ tool.output }}</pre>
+                </div>
               </div>
             </div>
           </div>

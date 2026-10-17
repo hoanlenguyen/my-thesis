@@ -200,3 +200,31 @@ and `hems.systems`. `multi_duo` and `multi_duo_thoughts` behave exactly as evalu
 budget of 60, feedback and completion rule); only the node name `verification` became `verify_schedule`. The
 recorded results of the removed systems (including `results/confirmation_q2.jsonl`) are kept, and the analysis
 code still reads them, but they can no longer be rerun from this version of the code (use the git history).
+
+## Note (16 October 2026): design iteration 12, the Scheduler agent reads the prices
+
+Two changes to the two-agent pipeline (`multi_duo`, `multi_duo_thoughts`), made after testing the demo:
+
+1. The Scheduler agent's prompt now asks it to call `get_spot_prices` once, without arguments, before
+   `optimize_schedule`, so that the trace shows the prices the schedule is based on. The tool keeps the
+   prices of a run in a cache: a repeated call (for example in a feedback round) returns the same table,
+   marked "(cached)". The solver reads the same prices as before.
+2. `profile_data` adds a `periods` list to an appliance that has several allowed periods (demo input
+   only; every benchmark appliance has one window, so its profile message is unchanged).
+
+Change 1 alters the evaluated pipeline: it adds one tool call and about 500 input tokens per run. The
+recorded results of iterations 10 and 11 (`results/iteration10.jsonl`, `results/iteration11.jsonl`) were
+produced with the previous prompt and are not comparable with new runs; a rerun is needed before any
+result of the two-agent pipeline is reported.
+
+## Note (17 October 2026): one agent in the harness, for comparison (exploratory, not yet run)
+
+The deterministic parts of the two-agent pipeline were moved into a shared module, `hems.agents.harness`
+(appliance profiles, the verification check, placing a missing appliance, the cost figures for the message,
+running a ReAct agent with recovery). The pipeline's behaviour is unchanged (same prompts, messages and checks;
+all tests pass unchanged). A new design, `hems.agents.harness_agent` (systems `single_harness` and
+`single_harness_thoughts`), runs one agent inside the same harness: it receives the request and the appliance
+profiles, has the Scheduler agent's tools and a step budget of 66 per round (Scheduler 60 + Orchestrator 6),
+receives verification feedback in the same conversation (at most 2 rounds) and finally writes the household
+message itself, with its conversation in view. It serves the comparison of one agent with two; no campaign has
+been run yet. The research questions are to be revised before that comparison is reported.

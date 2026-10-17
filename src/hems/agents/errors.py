@@ -14,7 +14,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 MODEL_OUTPUT_FAILURE_CODES = ("tool_use_failed", "output_parse_failed")
 DAILY_QUOTA_MARKERS = ("tokens per day", "requests per day", "(TPD)", "(RPD)")
@@ -43,15 +43,16 @@ def daily_quota_exhausted(exc: BaseException) -> bool:
 
 
 def invoke_with_recovery(
-    agent: Any, message: str, schema_name: str, config: dict[str, Any], limit: int
+    agent: Any, message: str | list[BaseMessage], schema_name: str, config: dict[str, Any], limit: int
 ) -> tuple[dict[str, Any], int]:
     """Invoke a create_agent graph (compiled with a checkpointer); returns (final state, recoveries).
 
+    ``message`` is the user message, or a whole conversation to continue (the single agent's feedback round).
     Raises the last model-output failure if it persists after MAX_RECOVERIES nudges.
     """
     run_config = {**config, "recursion_limit": limit}
     run_config["configurable"] = {**config.get("configurable", {}), "thread_id": str(uuid.uuid4())}
-    payload: dict[str, Any] = {"messages": [HumanMessage(message)]}
+    payload: dict[str, Any] = {"messages": [HumanMessage(message)] if isinstance(message, str) else list(message)}
     nudge = HumanMessage(
         f"Your last reply could not be used because it did not call a tool. "
         f"Call the {schema_name} tool now with your final answer."

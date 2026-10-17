@@ -8,8 +8,9 @@ const props = defineProps<{
   appliances: Appliance[]
   results: RunResult[]
   selected?: string
-  naiveCost: number
+  naiveCost: number // the cost savings are measured against
   milpCost: number
+  referenceLabel?: string
   usual?: UsualRow[]
   fixed?: FixedRow[]
 }>()
@@ -47,7 +48,7 @@ const rowHeight = computed(() => `${Math.max(24, props.appliances.length * laneH
       <div class="relative h-4">
         <span v-for="h in hours" :key="h" class="absolute -translate-x-1/2" :style="{ left: left(h * 4) }">{{ String(h).padStart(2, '0') }}</span>
       </div>
-      <span class="text-right leading-tight">Saving vs. no scheduling</span>
+      <span class="text-right leading-tight">Saving vs. {{ referenceLabel ?? 'no scheduling' }}</span>
     </div>
 
     <!-- when the household usually runs these appliances -->

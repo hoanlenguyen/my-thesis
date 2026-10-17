@@ -33,6 +33,11 @@ class ApplianceProfile(BaseModel):
     duration_minutes: int
     earliest_time: str = Field(description='"HH:MM" the cycle may start')
     deadline_time: str = Field(description='"HH:MM" the cycle must be finished by')
+    periods: list[str] | None = Field(
+        default=None,
+        description='Only with several allowed periods, e.g. ["06:00-09:00", "18:00-22:00"]: the cycle must start and '
+        "finish inside one of them; earliest_time and deadline_time then span all of them",
+    )
 
 
 class ProfileOutput(BaseModel):

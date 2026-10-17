@@ -21,7 +21,7 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 | `attachments/` | Word draft, research plan, Oulu template, figures |
 | `src/hems/core/` | `Scenario` model (96 × 15-min slots), `evaluate()` — the only scoring function |
 | `src/hems/tools/` | 8 shared tools (the Scheduler agent gets the scheduling and load tools, the single agent gets all) + `optimize_schedule` (MILP call, Scheduler agent only) + `with_thought` (explicit Thoughts) |
-| `src/hems/agents/` | `single_agent.py`, `multi_agent.py` (two agents: Orchestrator → `profile_data()` → Scheduler → `verify_schedule()` loop → Orchestrator summary), `prompts.py`, `llm.py` (model registry), `errors.py` (recovery nudge) |
+| `src/hems/agents/` | `single_agent.py`, `multi_agent.py` (two agents: Orchestrator → `profile_data()` → Scheduler → `verify_schedule()` loop → Orchestrator summary), `harness.py` (shared deterministic harness: profiles, `Checker`, `run_react`, cost facts), `harness_agent.py` (one agent in the same harness: `single_harness`, `single_harness_thoughts`), `prompts.py`, `llm.py` (model registry), `errors.py` (recovery nudge) |
 | `src/hems/solvers/` | `milp.py` (PuLP/CBC ground truth), `naive.py` |
 | `src/hems/data/` | REFIT loader, price fetch/load, day selection, scenario composition, benchmark build |
 | `src/hems/analysis/` | metrics, Wilcoxon/Spearman, LaTeX tables, `resolution.py` (hourly vs 15-min) |

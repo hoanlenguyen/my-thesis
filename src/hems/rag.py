@@ -4,8 +4,8 @@ The library holds days that are in no benchmark: hourly prices up to 30 Sep 2025
 benchmark (the 15-minute sets Q and Q2 start on 1 Oct 2025). Each case is composed exactly like a
 factorial benchmark scenario (same REFIT cycle pool, price regimes, loads and both peak limits) and solved
 with the MILP. At
-run time the k most similar cases are retrieved and their optimal staggering is given to the Scheduler
-and the Resolver as worked examples. Retrieval uses a fixed numeric description of the day (price shape
+run time the k most similar cases are retrieved and their optimal staggering is given to the acting agent
+(the Scheduler agent, or the single agent in the harness) as worked examples. Retrieval uses a fixed numeric description of the day (price shape
 and appliance structure), not text embeddings, so it is deterministic and free.
 """
 

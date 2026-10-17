@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from functools import partial
 from typing import Any, Literal
 
+from hems.agents.harness_agent import run_harness_agent
 from hems.agents.multi_agent import run_multi_agent
 from hems.agents.oneshot import run_oneshot
 from hems.agents.single_agent import run_single_agent
@@ -96,6 +97,13 @@ SYSTEMS: dict[str, System] = {
         System("multi_duo_thoughts", "llm",
                "Multi-Agent Pipeline with an explicit Thought in every tool call (design iteration 11)",
                agent=lambda sc, model, config, summarize: run_multi_agent(sc, lambda _role: model, config, summarize=summarize, retriever=_retriever(), thoughts=True)),  # fmt: skip
+        # One agent inside the same harness (same tools, context, checks; exploratory, October 2026)
+        System("single_harness", "llm",
+               "One agent in the harness: the Scheduler agent's tools, the same profiling and verification, writes its own message",
+               agent=lambda sc, model, config, summarize: run_harness_agent(sc, model, config, summarize=summarize, retriever=_retriever())),  # fmt: skip
+        System("single_harness_thoughts", "llm",
+               "One agent in the harness with an explicit Thought in every tool call",
+               agent=lambda sc, model, config, summarize: run_harness_agent(sc, model, config, summarize=summarize, retriever=_retriever(), thoughts=True)),  # fmt: skip
         System("oneshot", "llm", "language model without tools",
                agent=lambda sc, model, config, summarize: run_oneshot(sc, model, config)),  # fmt: skip
     )
