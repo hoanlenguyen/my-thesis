@@ -1,0 +1,11 @@
+# Only what the Dockerfile copies is needed; keep the build context small (data/rapt alone is about 1 GB)
+*
+!pyproject.toml
+!uv.lock
+!src/**
+!tools/emhass_rest.py
+!data/scenarios_v2/**
+!data/rag/**
+!results/demo_cache/*.json
+**/__pycache__
+.env

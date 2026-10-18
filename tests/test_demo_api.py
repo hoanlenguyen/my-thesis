@@ -189,3 +189,33 @@ def test_emhass_is_configured_once_per_combination_of_periods() -> None:
     one = demo_api._one_window_each(scenario, choices[1])
     assert [(a.earliest_slot, a.deadline_slot, a.windows) for a in one.appliances] == [(72, 88, None), (60, 80, None)]
     assert len(demo_api._period_choices(base)) == 1  # one window each: EMHASS runs once, as before
+
+
+def test_the_spending_guard_limits_live_runs_per_visitor_and_per_day(monkeypatch: pytest.MonkeyPatch) -> None:
+    from types import SimpleNamespace
+
+    def visitor(ip: str) -> SimpleNamespace:  # as the cloud ingress forwards it
+        return SimpleNamespace(headers={"x-forwarded-for": f"{ip}, 10.0.0.1"}, client=SimpleNamespace(host="10.0.0.1"))
+
+    monkeypatch.setattr(demo_api, "_runs_per_day", {})
+    monkeypatch.setattr(demo_api, "_runs_per_ip", {})
+    monkeypatch.setattr(demo_api, "LLM_HOURLY_PER_IP", 2)
+    monkeypatch.setattr(demo_api, "LLM_DAILY_LIMIT", 3)
+    demo_api._allow_llm_run(visitor("1.1.1.1"))
+    demo_api._allow_llm_run(visitor("1.1.1.1"))
+    with pytest.raises(demo_api.HTTPException) as per_visitor:
+        demo_api._allow_llm_run(visitor("1.1.1.1"))
+    assert per_visitor.value.status_code == 429 and "your address" in per_visitor.value.detail
+    demo_api._allow_llm_run(visitor("2.2.2.2"))  # another visitor: the third run of the day
+    with pytest.raises(demo_api.HTTPException) as per_day:
+        demo_api._allow_llm_run(visitor("3.3.3.3"))
+    assert per_day.value.status_code == 429 and "daily limit" in per_day.value.detail
+
+
+def test_without_limits_the_guard_never_refuses(monkeypatch: pytest.MonkeyPatch) -> None:
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(demo_api, "LLM_HOURLY_PER_IP", 0)
+    monkeypatch.setattr(demo_api, "LLM_DAILY_LIMIT", 0)
+    for _ in range(50):  # locally there is no limit
+        demo_api._allow_llm_run(SimpleNamespace(headers={}, client=SimpleNamespace(host="127.0.0.1")))

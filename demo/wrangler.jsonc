@@ -1,0 +1,11 @@
+// Cloudflare Workers static assets: the generated demo site (pnpm build -> .output/public), no server code.
+// Deploy with `pnpm dlx wrangler deploy` after building with NUXT_PUBLIC_API_BASE set (deploy/README.md).
+{
+  "name": "hems-demo",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./.output/public",
+    // a single-page app: every path that is not a file gets index.html, so /try and /days/... load directly
+    "not_found_handling": "single-page-application"
+  }
+}

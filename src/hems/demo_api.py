@@ -35,7 +35,7 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langchain_core.callbacks import BaseCallbackHandler
@@ -92,7 +92,45 @@ async def _warm_up(_app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="HEMS demo API", lifespan=_warm_up)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+# CORS_ORIGINS: the sites allowed to call the API, comma-separated (the deployed demo's address); "*" locally
+CORS_ORIGINS = [o.strip() for o in os.environ.get("CORS_ORIGINS", "*").split(",") if o.strip()]
+app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS, allow_methods=["*"], allow_headers=["*"])
+
+# ── Spending guard for a public deployment ──────────────────────────────────
+# Every language-model run costs API money. LLM_DAILY_LIMIT caps the runs per UTC day for all visitors together,
+# LLM_HOURLY_PER_IP the runs per visitor and hour (one click = 3 runs: both agent designs and the LLM without
+# tools). 0 or unset = no limit, as when the demo runs locally. Counts are kept in memory, so the deployment runs
+# one replica.
+LLM_DAILY_LIMIT = int(os.environ.get("LLM_DAILY_LIMIT", "0"))
+LLM_HOURLY_PER_IP = int(os.environ.get("LLM_HOURLY_PER_IP", "0"))
+_usage_lock = threading.Lock()
+_runs_per_day: dict[str, int] = {}
+_runs_per_ip: dict[str, list[float]] = {}
+
+
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")  # set by the cloud ingress in front of the API
+    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "?")
+
+
+def _allow_llm_run(request: Request) -> None:
+    """Count one language-model run, or answer 429 when a limit is reached."""
+    if not LLM_DAILY_LIMIT and not LLM_HOURLY_PER_IP:
+        return
+    now = time.time()
+    day = time.strftime("%Y-%m-%d", time.gmtime(now))
+    ip = _client_ip(request)
+    with _usage_lock:
+        if LLM_DAILY_LIMIT and _runs_per_day.get(day, 0) >= LLM_DAILY_LIMIT:
+            raise HTTPException(429, "The live demo has reached its daily limit of language-model runs. "
+                                     "Please try again tomorrow, or see the recorded results on the other pages.")  # fmt: skip
+        recent = [t for t in _runs_per_ip.get(ip, []) if now - t < 3600]
+        if LLM_HOURLY_PER_IP and len(recent) >= LLM_HOURLY_PER_IP:
+            raise HTTPException(429, "Too many live runs from your address in the last hour. Please try again later.")
+        _runs_per_ip[ip] = [*recent, now]
+        if day not in _runs_per_day:  # a new day: keep only today's count
+            _runs_per_day.clear()
+        _runs_per_day[day] = _runs_per_day.get(day, 0) + 1
 
 
 # ── Appliance cycles ─────────────────────────────────────────────────────────
@@ -572,14 +610,15 @@ def plan_tools(body: PlanIn) -> dict[str, Any]:
 
 
 @app.post("/api/plan/agent", response_model=AgentOut)
-def plan_agent(body: PlanIn) -> dict[str, Any]:
+def plan_agent(body: PlanIn, request: Request) -> dict[str, Any]:
     """The Multi-Agent Pipeline with GPT-4o-mini, live, with its message to the household. Its tools and checks
     treat the limit as a target; exceeding it is charged the fee like every other system.
 
     Runs exactly the pipeline of /api/plan/agent/stream (same setup, and a summary that states the page's cost
     and saving including the fee) and returns only its final result: the scored ``result`` as on the page, and the
-    ``recommendation`` in a fixed form ({message, schedules, cost, saving, currency, ...})."""
+    ``recommendation`` in a fixed form ({message, schedules, cost, currency, ...})."""
     scenario, _ = build_scenario(body)
+    _allow_llm_run(request)
     for chunk in _pipeline_events(scenario, body.fee_eur_per_kw, body.design):
         event = json.loads(chunk.removeprefix("data: "))
         if event.get("type") == "result":
@@ -590,7 +629,7 @@ def plan_agent(body: PlanIn) -> dict[str, Any]:
 
 
 @app.post("/api/plan/oneshot")
-def plan_oneshot(body: PlanIn) -> dict[str, Any]:
+def plan_oneshot(body: PlanIn, request: Request) -> dict[str, Any]:
     """The same language model (GPT-4o-mini) without tools: every price and base load in one prompt, one answer.
     Scored like every other system."""
     from langchain_core.callbacks import get_usage_metadata_callback
@@ -600,6 +639,7 @@ def plan_oneshot(body: PlanIn) -> dict[str, Any]:
     from hems.run import _record, parse_assignments
 
     scenario, _ = build_scenario(body)
+    _allow_llm_run(request)
     fee = body.fee_eur_per_kw
     started = time.perf_counter()
     try:
@@ -808,8 +848,9 @@ def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents")
 
 
 @app.post("/api/plan/agent/stream")
-def plan_agent_stream(body: PlanIn) -> StreamingResponse:
+def plan_agent_stream(body: PlanIn, request: Request) -> StreamingResponse:
     """The Multi-Agent Pipeline agent by agent, as server-sent events (see _pipeline_events)."""
     scenario, _ = build_scenario(body)  # input errors are answered as JSON before the stream starts
+    _allow_llm_run(request)
     return StreamingResponse(_pipeline_events(scenario, body.fee_eur_per_kw, body.design), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})  # fmt: skip

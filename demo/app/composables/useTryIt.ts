@@ -160,9 +160,11 @@ export function useTryItApi() {
     const detail = err?.data?.detail
     if (typeof detail === 'string') return detail
     if (Array.isArray(detail)) return detail.map(d => (d as { msg?: string }).msg ?? '').join('; ')
-    return err?.message?.includes('fetch')
-      ? 'The local API is not running. Start it with: uv run --extra demo uvicorn hems.demo_api:app --port 8001'
-      : err?.message ?? 'Request failed'
+    if (!err?.message?.includes('fetch')) return err?.message ?? 'Request failed'
+    // deployed (apiBase set): the cloud API scales to zero, so the first request after a quiet period may fail
+    return base
+      ? 'The live API did not answer. After a quiet period it needs up to a minute to start; please try again.'
+      : 'The local API is not running. Start it with: uv run --extra demo uvicorn hems.demo_api:app --port 8001'
   }
   return {
     catalog: () => $fetch<{ appliances: CatalogItem[], housing: Record<Housing, number>, entsoe: boolean }>(`${base}/api/catalog`),
