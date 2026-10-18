@@ -39,15 +39,17 @@ if [[ -n "${GHCR_USER:-}" && -n "${GHCR_TOKEN:-}" ]]; then
   registry=(--registry-server ghcr.io --registry-username "$GHCR_USER" --registry-password "$GHCR_TOKEN")
 fi
 
-# EMHASS: internal ingress only, configured as on localhost:5000 ("-e SUPERVISOR_TOKEN= -e EMHASS_URL=empty"; an
-# unset SUPERVISOR_TOKEN is the same as an empty one), so it never contacts Home Assistant
+# EMHASS: internal ingress only, configured exactly as the local container on localhost:5000. SUPERVISOR_TOKEN must
+# be set and EMPTY: unset, EMHASS assumes it runs as a Home Assistant add-on, asks http://supervisor/ for its
+# configuration and returns no plan. Time zone and location as locally (the time zone sets how the day is read).
 emhass_args=(--image "$EMHASS_IMAGE" --cpu 1.0 --memory 2.0Gi --min-replicas 0 --max-replicas 1)
+emhass_env=("SUPERVISOR_TOKEN=" EMHASS_URL=empty TIME_ZONE=Europe/Helsinki LAT=65.01 LON=25.47 ALT=15)
 if az containerapp show --name emhass --resource-group "$RG" --output none 2>/dev/null; then
   az containerapp update --name emhass --resource-group "$RG" "${emhass_args[@]}" \
-    --set-env-vars EMHASS_URL=empty --output none
+    --set-env-vars "${emhass_env[@]}" --output none
 else
   az containerapp create --name emhass --resource-group "$RG" --environment "$ENV_NAME" \
-    --ingress internal --target-port 5000 "${emhass_args[@]}" --env-vars EMHASS_URL=empty --output none
+    --ingress internal --target-port 5000 "${emhass_args[@]}" --env-vars "${emhass_env[@]}" --output none
 fi
 
 # The API: one replica at most, so the spending guard's in-memory counts hold
