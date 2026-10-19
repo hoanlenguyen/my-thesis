@@ -95,6 +95,7 @@ export interface AgentEvent {
   input?: string // tool events: the call's arguments as JSON, without the Thought
   output?: string | Record<string, unknown>
   ms?: number
+  turn?: number // tool events: which of the agent's model calls requested it; equal turns ran together
   tokens?: number
   errors?: string[]
   text?: string // summary_delta

@@ -700,12 +700,15 @@ class _AgentWatch(BaseCallbackHandler):
 
     def __init__(self, emit: Any) -> None:
         self.emit = emit
-        self.tools: dict[Any, tuple[str | None, str, str, float]] = {}
+        self.tools: dict[Any, tuple[str | None, str, str, float, str, int]] = {}
         self.tokens: dict[str, int] = {}
+        self.calls: dict[str, int] = {}  # model calls per node so far: tools requested by the same call share a turn
         self.lock = threading.Lock()
 
     def on_chat_model_start(self, serialized, messages, *, run_id, metadata=None, **kwargs):  # type: ignore[no-untyped-def]
         if node := _node(metadata):
+            with self.lock:
+                self.calls[node] = self.calls.get(node, 0) + 1
             self.emit({"type": "working", "node": node})
             self._input(node, messages[0] if messages else [], kwargs.get("invocation_params") or {})
 
@@ -737,15 +740,17 @@ class _AgentWatch(BaseCallbackHandler):
         inputs = inputs if isinstance(inputs, dict) else {}
         thought = str(inputs.get("thought", ""))  # explicit Thought (iteration 11)
         args = json.dumps({k: v for k, v in inputs.items() if k != "thought"}, default=str) if inputs else str(input_str)
-        self.tools[run_id] = (_node(metadata), (serialized or {}).get("name", "tool"), args, time.perf_counter(), thought)
+        node = _node(metadata)
+        turn = self.calls.get(node or "", 0)  # the model call that requested this tool
+        self.tools[run_id] = (node, (serialized or {}).get("name", "tool"), args, time.perf_counter(), thought, turn)
 
     def on_tool_end(self, output, *, run_id, **kwargs):  # type: ignore[no-untyped-def]
-        node, name, args, started, thought = self.tools.pop(run_id, (None, "tool", "", time.perf_counter(), ""))
+        node, name, args, started, thought, turn = self.tools.pop(run_id, (None, "tool", "", time.perf_counter(), "", 0))
         if node not in ACTING_NODES:  # the functions call tools internally; only the acting agent's actions are shown
             return
         text = str(getattr(output, "content", output))
         self.emit({"type": "tool", "node": node, "name": name, "input": args[:300], "output": text[:4000],
-                   "thought": thought[:300], "ms": round((time.perf_counter() - started) * 1000)})  # fmt: skip
+                   "thought": thought[:300], "ms": round((time.perf_counter() - started) * 1000), "turn": turn})  # fmt: skip
 
 
 def _find(scenario: Scenario, appliance_id: Any) -> FlexibleAppliance | None:

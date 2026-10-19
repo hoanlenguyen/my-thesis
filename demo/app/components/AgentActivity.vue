@@ -8,12 +8,13 @@ import type { AgentEvent, AgentInput, AgentName, Design, PlanResult } from '~/co
 const props = withDefaults(defineProps<{ events: AgentEvent[], running: boolean, summary: string, result?: PlanResult | null, design?: Design, title?: string }>(),
   { result: null, design: 'two_agents', title: '' })
 
-interface ToolCall { name: string, count: number, ms: number, args: string, output: string, thoughts: string[] }
+interface ToolCall { name: string, count: number, ms: number, args: string, output: string, thoughts: string[], turn: number }
 interface Step {
   agent: AgentName
   start: number | null
   end: number | null
   tokens: number
+  calls: number // model calls of this step
   tools: ToolCall[]
   output: Record<string, unknown> | null
   errors: string[]
@@ -48,13 +49,13 @@ const steps = computed(() => {
   const open = (agent: AgentName, t: number) => {
     const last = [...out].reverse().find(s => s.agent === agent)
     if (last && last.end === null) return last
-    const step: Step = { agent, start: t, end: null, tokens: 0, tools: [], output: null, errors: [], input: null }
+    const step: Step = { agent, start: t, end: null, tokens: 0, calls: 0, tools: [], output: null, errors: [], input: null }
     out.push(step)
     return step
   }
   for (const e of props.events) {
     if (!e.agent) continue
-    if (e.type === 'working') open(e.agent, e.t)
+    if (e.type === 'working') open(e.agent, e.t).calls++
     else if (e.type === 'input' && e.prompt) {
       const step = open(e.agent, e.t)
       step.input ??= e.prompt
@@ -62,7 +63,7 @@ const steps = computed(() => {
     else if (e.type === 'tool') {
       const step = open(e.agent, e.t)
       step.tools.push({ name: e.name ?? 'tool', count: 1, ms: e.ms ?? 0, args: e.input ?? '', output: String(e.output ?? ''),
-        thoughts: e.thought ? [e.thought] : [] })
+        thoughts: e.thought ? [e.thought] : [], turn: e.turn ?? step.tools.length })
     } else if (e.type === 'done') {
       const step = open(e.agent, e.t)
       step.end = e.t
@@ -128,6 +129,16 @@ function callText(tool: ToolCall): string {
 }
 // tools an agent returns its structured answer through; not actions
 const ANSWER_TOOLS = new Set(['TaskBrief', 'ScheduleOutput'])
+/** Consecutive actions requested by the same model call (made together in one response). */
+function byTurn(tools: ToolCall[]): ToolCall[][] {
+  const out: ToolCall[][] = []
+  for (const tool of tools) {
+    const last = out.at(-1)
+    if (last && last[0]!.turn === tool.turn) last.push(tool)
+    else out.push([tool])
+  }
+  return out
+}
 const kindOf = (id: string) => id.replace(/_\d+$/, '')
 const name = (id: string) => applianceName(id, kindOf(id))
 const totalTokens = computed(() => props.result?.tokens ?? steps.value.reduce((n, s) => n + s.tokens, 0))
@@ -184,7 +195,7 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
               </div>
               <span v-if="step" class="text-xs text-muted tabular-nums">
                 <template v-if="status(step) === 'passed'">passed</template>
-                <template v-else>{{ seconds(step).toFixed(1) }} s<template v-if="step.tokens"> · {{ step.tokens.toLocaleString() }} tokens</template></template>
+                <template v-else>{{ seconds(step).toFixed(1) }} s<template v-if="a.kind === 'agent' && step.calls"> · {{ step.calls }} model call{{ step.calls === 1 ? '' : 's' }}</template><template v-if="step.tokens"> · {{ step.tokens.toLocaleString() }} tokens</template></template>
               </span>
               <span v-else class="text-xs text-dimmed">waiting</span>
             </div>
@@ -290,7 +301,13 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
             <!-- the Scheduler agent's ReAct steps: Thought, Action (the function it called) and Observation (what the
                  function returned). The Orchestrator agent has no tools; checks made by code are not agent actions. -->
             <div v-if="ACTING.has(a.agent) && step?.tools.length" class="mt-1.5 flex flex-col gap-1.5">
-              <div v-for="(tool, k) in step.tools" :key="k" class="text-xs">
+              <div v-for="(group, g) in byTurn(step.tools)" :key="g"
+                   :class="group.length > 1 ? 'rounded-md border border-dashed border-default px-2 py-1.5 flex flex-col gap-1.5' : ''">
+                <p v-if="group.length > 1" class="flex items-center gap-1.5 text-[11px] text-dimmed">
+                  <UIcon name="i-lucide-layers" class="size-3 shrink-0" />
+                  {{ group.length }} actions in one response (run together)
+                </p>
+              <div v-for="(tool, k) in group" :key="k" class="text-xs">
                 <p v-for="(t, j) in tool.thoughts" :key="j" class="mb-0.5 flex items-start gap-1.5 text-default">
                   <UIcon name="i-lucide-lightbulb" class="size-3 mt-0.5 shrink-0 text-warning" />
                   <span><span class="text-muted">Thought:</span> {{ t }}</span>
@@ -306,6 +323,7 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
                   <span class="shrink-0">Observation:</span>
                   <pre class="min-w-0 flex-1 max-h-32 overflow-auto whitespace-pre-wrap rounded bg-elevated/60 px-2 py-1 font-mono text-[11px] text-muted">{{ tool.output }}</pre>
                 </div>
+              </div>
               </div>
             </div>
           </div>

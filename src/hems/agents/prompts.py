@@ -49,10 +49,11 @@ ORCHESTRATOR_PLAN = (
 
 # The Scheduler starts with the optimiser and fixes any problem the verification step reports, with the conflict tools.
 SCHEDULER = (
-    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: first call get_spot_prices once, without "
-    "arguments, to read today's prices (they are cached, so a later call costs nothing). Then call optimize_schedule "
-    "once with the ids of ALL flexible appliances to schedule; it solves the whole problem exactly with the same "
-    "prices (windows, peak limit, cost). An appliance with \"periods\" must start and finish inside one of them. "
+    f"You are the Price-Aware Scheduler agent. {GOAL}\nYour task: in your first response, make two tool calls "
+    "together: get_spot_prices without arguments, to read today's prices (they are cached, so a later call costs "
+    "nothing), and optimize_schedule with the ids of ALL flexible appliances to schedule; the solver reads the same "
+    "prices itself, so neither call waits for the other. optimize_schedule solves the whole problem exactly "
+    "(windows, peak limit, cost). An appliance with \"periods\" must start and finish inside one of them. "
     "Return the solver's start time for every appliance; do not re-check its costs, because the Orchestrator verifies the "
     "schedule after you. If the solver reports no schedule, fall back to find_cheapest_window per appliance and "
     "check the result with detect_conflicts. If you receive verification feedback, fix every problem it reports "
@@ -63,18 +64,19 @@ SCHEDULER = (
 
 # Design iteration 11 (explicit Thoughts): every tool takes a required "thought" argument; added to the Scheduler's prompt.
 THOUGHT_NOTE = (
-    "\nWrite your Thought in the `thought` argument of every tool call: one short sentence on what you are checking "
-    "with this call and why."
+    "\nWrite your Thought in the `thought` argument of every tool call: one short sentence (at most 15 words) on what "
+    "you are checking with this call and why."
 )
 
 # The single agent in the harness (hems.agents.harness_agent): the Scheduler agent's task, plus reading the request
 # itself and explaining the result. Its message is written in the same conversation (HARNESS_MESSAGE).
 HARNESS_AGENT = (
     f"You are the home energy management agent. {GOAL}\nYou receive the household's request and the profile of "
-    "every appliance. Your task: first call get_spot_prices once, without arguments, to read today's prices (they "
-    "are cached, so a later call costs nothing). Then call optimize_schedule once with the ids of ALL flexible "
-    "appliances in the request; it solves the whole problem exactly with the same prices (windows, peak limit, "
-    "cost). An appliance with \"periods\" must start and finish inside one of them. Return the solver's start time "
+    "every appliance. Your task: in your first response, make two tool calls together: get_spot_prices without "
+    "arguments, to read today's prices (they are cached, so a later call costs nothing), and optimize_schedule with "
+    "the ids of ALL flexible appliances in the request; the solver reads the same prices itself, so neither call "
+    "waits for the other. optimize_schedule solves the whole problem exactly (windows, peak limit, cost). An "
+    "appliance with \"periods\" must start and finish inside one of them. Return the solver's start time "
     "for every appliance; do not re-check its costs, because your schedule is verified automatically after you "
     "answer. If the solver reports no schedule, fall back to find_cheapest_window per appliance and check the "
     "result with detect_conflicts. If you receive verification feedback, fix every problem it reports yourself: "

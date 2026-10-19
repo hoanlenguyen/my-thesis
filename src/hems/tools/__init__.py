@@ -118,11 +118,32 @@ def build_tools(scenario: Scenario) -> dict[str, BaseTool]:
     # ── Price-Aware Scheduler ────────────────────────────────────────────────
     price_cache: dict[tuple[int, int], str] = {}  # one run: a repeated call (e.g. in a feedback round) is answered from here
 
+    def day_summary() -> str:
+        """The whole day in brief (design iteration 13): hourly means, the cheapest and dearest quarter-hours and the
+        day's range, instead of 96 rows that every later model call would carry again."""
+        cents = np.asarray(sc.price_eur_per_kwh) * 100
+        hours = cents[: len(cents) // 4 * 4].reshape(-1, 4).mean(axis=1)
+        hourly = " | ".join(f"{h:02d} {p:.2f}" for h, p in enumerate(hours))
+        order = np.argsort(cents, kind="stable")
+        cheap = ", ".join(f"{sc.slot_to_time(int(t))} {cents[t]:.2f}" for t in order[:4])
+        dear = ", ".join(f"{sc.slot_to_time(int(t))} {cents[t]:.2f}" for t in order[::-1][:4])
+        return (
+            "Whole day, hourly mean in c/kWh (for 15-min prices give from_time and to_time):\n"
+            f"{hourly}\nCheapest 15-min slots: {cheap}. Dearest: {dear}.\n"
+            f"Day minimum {cents.min():.2f}, mean {cents.mean():.2f}, maximum {cents.max():.2f} c/kWh."
+        )
+
     @_guard
     def get_spot_prices(from_time: str = "", to_time: str = "") -> str:
-        """Get the electricity price for every 15-min slot (consumer price in c/kWh, incl. taxes and transfer).
-
-        Optionally restrict to from_time..to_time ("HH:MM", end exclusive). Cached: calling again is free."""
+        """Today's electricity prices (consumer price in c/kWh, incl. taxes and transfer). Without arguments: the
+        whole day in brief (hourly means, cheapest and dearest 15-min slots). With from_time..to_time ("HH:MM", end
+        exclusive): the price of every 15-min slot in that range. Cached: calling again is free."""
+        if not from_time and not to_time:
+            key = (-1, -1)  # the whole-day summary
+            if key in price_cache:
+                return "(cached) " + price_cache[key]
+            price_cache[key] = day_summary()
+            return price_cache[key]
         first = sc.time_to_slot(from_time) if from_time else 0
         last = sc.time_to_slot(to_time) if to_time else len(sc.price_eur_per_kwh)
         if last <= first:
@@ -272,7 +293,7 @@ def select(tools: dict[str, BaseTool], names: tuple[str, ...]) -> list[BaseTool]
     return [tools[n] for n in names]
 
 
-THOUGHT_DESCRIPTION = "Your Thought: one short sentence on what you are checking with this call and why."
+THOUGHT_DESCRIPTION = "Your Thought: one short sentence (at most 15 words) on what you are checking with this call and why."
 
 
 def with_thought(base: BaseTool, log: list[dict[str, str]]) -> BaseTool:

@@ -15,7 +15,7 @@ class ScheduleOutput(BaseModel):
 
     assignments: list[Assignment]
     total_cost_eur: float = Field(description="Estimated total cost of the scheduled cycles in EUR")
-    explanation: str = Field(description="One or two sentences on why these times were chosen")
+    explanation: str = Field(description="One short sentence (at most 20 words) on why these times were chosen")
 
 
 class TaskBrief(BaseModel):

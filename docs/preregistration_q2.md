@@ -228,3 +228,26 @@ profiles, has the Scheduler agent's tools and a step budget of 66 per round (Sch
 receives verification feedback in the same conversation (at most 2 rounds) and finally writes the household
 message itself, with its conversation in view. It serves the comparison of one agent with two; no campaign has
 been run yet. The research questions are to be revised before that comparison is reported.
+
+## Note (19 October 2026): GPT-6 Luna for new runs; design iteration 13, response time
+
+From 19 October 2026 new runs use GPT-6 Luna (`gpt-6-luna`, reasoning effort none, temperature 0;
+`hems.agents.llm.DEFAULT_MODEL`). All results recorded before, including the registered Q2 run, used GPT-4o-mini and
+stay attributed to it.
+
+Design iteration 13 shortens the response time of both agent designs (two-agent pipeline and single agent in the
+harness) without changing what they do:
+
+1. The acting agent makes its first two tool calls in one response: `get_spot_prices` and `optimize_schedule`
+   (the solver reads the same prices itself). This removes one model round trip.
+2. `get_spot_prices` without arguments returns the whole day in brief (24 hourly means, the four cheapest and
+   dearest 15-minute slots, minimum, mean and maximum) instead of 96 rows, which every later model call carried again;
+   15-minute prices remain available for a time range.
+3. Shorter outputs: the schedule's explanation is limited to one sentence of at most 20 words, each explicit Thought
+   to at most 15 words.
+
+A check on three exploratory scenarios (PH03-35, VL02-80, SH05-35; one run each, GPT-6 Luna) gave the same valid,
+optimal schedules as before. Two-agent pipeline: 5 to 4 model calls, mean time 12.0 to 8.4 s, input tokens 8,590 to
+5,430, cost USD 0.0011 to 0.00075 per run. Single agent: 4 to 3 model calls, mean time 8.3 to 8.3 s (no change on
+this small sample), input tokens 11,410 to 7,610, cost USD 0.0013 to 0.0009. Three scenarios with one run each are
+too few to estimate the time effect; the campaigns will measure it.

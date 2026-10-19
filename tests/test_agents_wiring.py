@@ -278,6 +278,21 @@ def test_spot_prices_are_cached_within_a_run(scenario: Scenario) -> None:
 
     prices = build_tools(scenario)["get_spot_prices"]
     first = prices.invoke({})
-    assert first.startswith("time c/kWh") and len(first.splitlines()) == 97
+    assert first.startswith("Whole day, hourly mean") and len(first.splitlines()) == 4  # brief, not 96 rows
     assert prices.invoke({}) == "(cached) " + first
     assert not build_tools(scenario)["get_spot_prices"].invoke({}).startswith("(cached)")  # a new run starts empty
+
+
+def test_the_day_summary_is_brief_and_the_15_min_detail_stays_available(scenario: Scenario) -> None:
+    import numpy as np
+
+    from hems.tools import build_tools
+
+    prices = build_tools(scenario)["get_spot_prices"]
+    summary = prices.invoke({})
+    cents = np.asarray(scenario.price_eur_per_kwh) * 100
+    cheapest = scenario.slot_to_time(int(np.argmin(cents)))
+    assert f"Cheapest 15-min slots: {cheapest} {cents.min():.2f}" in summary
+    assert summary.count("|") == 23  # 24 hourly means
+    detail = prices.invoke({"from_time": "18:00", "to_time": "19:00"})
+    assert detail.startswith("time c/kWh") and len(detail.splitlines()) == 5  # four 15-min slots
