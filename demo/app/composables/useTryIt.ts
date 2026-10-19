@@ -84,6 +84,8 @@ export type AgentName = 'orchestrator' | 'profile_data' | 'scheduler' | 'verify_
 /** The agent design run live: the two-agent pipeline, or one agent in the same harness. */
 export type Design = 'two_agents' | 'one_agent'
 export const LIVE_SYSTEMS: Record<Design, string> = { two_agents: 'multi_duo_thoughts', one_agent: 'single_harness_thoughts' }
+/** The language model the live systems use (src/hems/demo_api.py LIVE_MODEL). */
+export const LIVE_MODEL = 'gpt-6-luna'
 export interface AgentEvent {
   type: 'start' | 'working' | 'input' | 'tool' | 'done' | 'summary_delta' | 'result' | 'error'
   agent: AgentName | null
@@ -139,7 +141,7 @@ export function toRunResult(r: PlanResult): RunResult {
   return {
     system: r.system,
     label: r.label,
-    model: /^(multi_|single_|oneshot)/.test(r.system) ? 'gpt-4o-mini' : '-',
+    model: /^(multi_|single_|oneshot)/.test(r.system) ? LIVE_MODEL : '-',
     run: 0,
     starts: r.starts,
     costEur: r.costEur,

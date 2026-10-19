@@ -59,7 +59,7 @@ SYSTEMS = {  # order = display order; multi_rag and multi are design iterations 
     "milp": "MILP optimum",
     "naive": "No scheduling",
 }
-MODELS = ("-", "gpt-4o-mini")
+MODELS = ("-", "gpt-4o-mini", "gpt-6-luna")  # recorded runs; GPT-6 Luna from the redesigned evaluation
 
 
 def _factors(scenario_type: str) -> dict:

@@ -36,10 +36,10 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 
 ```bash
 uv run pytest                                   # offline tests with scripted fake models (must pass)
-uv run hems run --scenarios data/scenarios --systems milp naive single multi_duo --models gpt-4o-mini --runs 3 --out results/runs.jsonl
+uv run hems run --scenarios data/scenarios --systems milp naive single multi_duo --models gpt-6-luna --runs 3 --out results/runs.jsonl
 uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out results
 uv run hems resolution --scenarios data/scenarios_15min   # regenerates tab:resolution
-uv run hems demo data/scenarios/D01.json --system multi_duo --model gpt-4o-mini
+uv run hems demo data/scenarios/D01.json --system multi_duo --model gpt-6-luna
 latexmk -xelatex main                           # TeX Live at C:\texlive\2026\bin\windows
 ```
 
@@ -109,10 +109,18 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 ## Models (`agents/llm.py`)
 
+**Since 19 Oct 2026 new runs use `gpt-6-luna`** (`llm.DEFAULT_MODEL`; CLI, Studio and the live demo):
+OpenAI's current small model, USD 0.10/0.50 per 1M tokens (third-party figures, verify), called with
+`reasoning_effort="none"` (the API rejects `temperature` otherwise) and temperature 0. No dated snapshot exists,
+so only the id `gpt-6-luna` can be pinned. Every result recorded before that date, the design iterations and the
+registered Q2 confirmation used `gpt-4o-mini` and stay attributed to it (`confirm.py` / `confirm_q2.py` keep
+`MODEL = "gpt-4o-mini"`). `main.tex` describes the change in `sec:stack`; its results still need the new campaign.
+
 The registered Q2 confirmation uses `gpt-4o-mini` only. The earlier-design campaign
 (`configs/full_evaluation.json`) used two models: commercial cloud vs small open-weight model run locally.
 
-- `gpt-4o-mini` (OpenAI API) — primary; 3 runs per scenario.
+- `gpt-6-luna` (OpenAI API) — primary for new runs; 3 runs per scenario.
+- `gpt-4o-mini` (OpenAI API) — primary until 19 Oct 2026 (all recorded results); 3 runs per scenario.
 - `gpt-oss-20b` — local via Ollama (`gpt-oss:20b`, 32k context, CPU/GPU split on the RTX 4070 laptop),
   no API cost or rate limit. The Ollama server must be running:
   `"/c/Users/Admin/AppData/Local/Programs/Ollama/ollama.exe" serve`.

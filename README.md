@@ -49,16 +49,16 @@ assistant's configuration chooses what runs:
 |---|---|---|
 | `scenario` | `data/scenarios_q2/Q2-PH03-35.json` | any scenario JSON, relative to the thesis root |
 | `variant` | `multi_duo` | `multi_duo_thoughts` (explicit Thoughts, the demo) |
-| `model` | `gpt-4o-mini` | any name in `agents/llm.py` (e.g. `gpt-oss-20b` with Ollama running) |
+| `model` | `gpt-6-luna` | any name in `agents/llm.py` (e.g. `gpt-4o-mini`, or `gpt-oss-20b` with Ollama running) |
 
-Each run calls the language model (GPT-4o-mini: about USD 0.001 per run).
+Each run calls the language model (GPT-6 Luna: about USD 0.001 per run).
 
 ## Workflow
 
 ```bash
 # 0. development / pilots without real data (flagged synthetic, never thesis results)
 uv run hems synth --out data/pilot
-uv run hems demo data/pilot/SYN-D01.json --system multi_duo --model gpt-4o-mini
+uv run hems demo data/pilot/SYN-D01.json --system multi_duo --model gpt-6-luna
 uv run hems demo data/pilot/SYN-D01.json --system multi_duo --review     # human-in-the-loop approval
 
 # 1. benchmark from real data (see data/README.md)
@@ -67,7 +67,7 @@ uv run hems build --refit data/raw/refit --prices data/raw/prices_fi.csv --out d
 
 # 2. evaluation (resumable; rerun the same command after an interruption)
 uv run hems run --scenarios data/scenarios --systems milp naive single multi_duo \
-                --models gpt-4o-mini gpt-oss-20b --runs 3 --out results/runs.jsonl
+                --models gpt-6-luna --runs 3 --out results/runs.jsonl
 
 # 3. Chapter 5 tables/figures -> results/tables/*.tex, results/figures/*.pdf
 uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out results

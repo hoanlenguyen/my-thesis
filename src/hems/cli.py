@@ -10,7 +10,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.runnables import RunnableConfig
 
-from hems.agents.llm import MODELS
+from hems.agents.llm import DEFAULT_MODEL, MODELS
 from hems.core.models import Scenario, load_scenarios
 from hems.run import ALL_SYSTEMS
 
@@ -263,7 +263,7 @@ def main() -> None:
     p = sub.add_parser("run", help="run systems over scenarios, appending to a JSONL file")
     p.add_argument("--scenarios", default="data/scenarios")
     p.add_argument("--systems", nargs="+", default=["milp", "naive", "multi_duo"], choices=list(ALL_SYSTEMS))
-    p.add_argument("--models", nargs="+", default=["gpt-4o-mini"], choices=list(MODELS))
+    p.add_argument("--models", nargs="+", default=[DEFAULT_MODEL], choices=list(MODELS))
     p.add_argument("--runs", type=int, default=3)
     p.add_argument("--ids", nargs="*", help="only these scenario ids")
     p.add_argument("--limit", type=int, help="only the first N scenarios")
@@ -274,7 +274,7 @@ def main() -> None:
     p = sub.add_parser("demo", help="run one scenario and print the result")
     p.add_argument("scenario")
     p.add_argument("--system", default="multi_duo", choices=list(ALL_SYSTEMS))
-    p.add_argument("--model", default="gpt-4o-mini", choices=list(MODELS))
+    p.add_argument("--model", default=DEFAULT_MODEL, choices=list(MODELS))
     p.add_argument("--review", action="store_true", help="human-in-the-loop approval before finalising (multi_duo only)")
     p.set_defaults(func=cmd_demo)
 

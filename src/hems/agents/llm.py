@@ -13,11 +13,17 @@ class ModelSpec:
     model_id: str
     usd_per_m_input: float  # check current provider pricing before the final evaluation
     usd_per_m_output: float
+    reasoning_effort: str | None = None  # OpenAI reasoning models: "none" = answer without a reasoning phase
 
 
 MODELS: dict[str, ModelSpec] = {
+    # Model of the redesigned evaluation (since 19 Oct 2026). OpenAI publishes no dated snapshot of gpt-6-luna, so
+    # the model id is all that can be pinned. It accepts temperature 0 only with reasoning effort "none", which also
+    # keeps every call fast; the solver tool does the search, so the agents need no reasoning phase.
+    "gpt-6-luna": ModelSpec("openai", "gpt-6-luna", 0.10, 0.50, reasoning_effort="none"),
+    # Model of design iterations 1-11, the registered Q2 confirmation and every result recorded before 19 Oct 2026.
     "gpt-4o-mini": ModelSpec("openai", "gpt-4o-mini-2024-07-18", 0.15, 0.60),
-    # Evaluation models: gpt-4o-mini (commercial API) and gpt-oss-20b (open weights, local).
+    # Earlier evaluation models: gpt-4o-mini (commercial API) and gpt-oss-20b (open weights, local).
     # Llama-3.3-70B was planned but Groq moved Llama to enterprise-only access on 26 Aug 2026.
     # gpt-oss-120b (Groq, evaluated by El Makroum et al. 2026) is pilot-only: the free tier's ~200k
     # tokens/day cannot cover the full evaluation and the paid tier was unavailable.
@@ -27,6 +33,9 @@ MODELS: dict[str, ModelSpec] = {
     "gpt-oss-20b": ModelSpec("ollama", "gpt-oss:20b", 0.0, 0.0),
     "gpt-oss-20b-groq": ModelSpec("groq", "openai/gpt-oss-20b", 0.075, 0.30),
 }
+
+# The model new runs use unless another is named (CLI, LangGraph Studio, demo)
+DEFAULT_MODEL = "gpt-6-luna"
 
 # Local inference settings: the agents' conversations exceed Ollama's default context window, and
 # "medium" reasoning effort matches the gpt-oss default on hosted providers.
@@ -39,7 +48,8 @@ def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> 
     if spec.provider == "openai":
         from langchain_openai import ChatOpenAI
 
-        return ChatOpenAI(model=spec.model_id, temperature=temperature, seed=seed, max_retries=6)
+        extra = {"reasoning_effort": spec.reasoning_effort} if spec.reasoning_effort else {}
+        return ChatOpenAI(model=spec.model_id, temperature=temperature, seed=seed, max_retries=6, **extra)
     if spec.provider == "groq":
         from langchain_groq import ChatGroq
 

@@ -277,9 +277,9 @@ Hoan Le
 I used the generative AI tool Claude (Anthropic) in this thesis work: to
 help write and test the software of the evaluated system, and to help
 search and screen the literature reported in
-Section~\ref{sec:litsearch}. The language models GPT-4o-mini and
-gpt-oss-20b are objects of study in this thesis and were not used to
-write it. All content produced with the tool was reviewed and edited by
+Section~\ref{sec:litsearch}. The language models GPT-6 Luna,
+GPT-4o-mini and gpt-oss-20b are objects of study in this thesis and were
+not used to write it. All content produced with the tool was reviewed and edited by
 me, and I take full responsibility for the accuracy and integrity of the
 final work.
 
@@ -1425,7 +1425,9 @@ completion deadlines and household load limits. Fourth,
 interpretability: the full reasoning trace of every scheduling decision
 must be captured through LangSmith. Fifth, computational efficiency: the
 pipeline must complete scheduling within 60 seconds and under \$0.10
-API cost per scenario using GPT-4o-mini.
+API cost per scenario using a small commercial language model
+(GPT-4o-mini in the registered evaluation, GPT-6 Luna in the redesigned
+one; Section~\ref{sec:stack}).
 
 \section{Architecture overview}
 \label{sec:architecture}
@@ -1746,12 +1748,26 @@ verified against exhaustive enumeration of all start combinations on
 small scenarios.
 
 \section{Technology stack}
+\label{sec:stack}
 
 Table~\ref{tab:stack} lists the software used to build and evaluate the
 artifact, with the versions used for the reported results. All components
 except the commercial language model are open source. The API cost of
 the commercial model is an outcome of the evaluation and is reported with
 the results in Chapter~5.
+
+% Prices from third-party trackers (Oct 2026); verify on https://openai.com/api/pricing/ and cite before submission.
+The design iterations and the registered evaluation used GPT-4o-mini
+(snapshot 2024-07-18). The redesigned evaluation uses GPT-6 Luna, the
+small model of OpenAI's current generation, which costs USD~0.10 per
+million input tokens and USD~0.50 per million output tokens, against
+USD~0.15 and USD~0.60 for GPT-4o-mini. OpenAI publishes no dated
+snapshot of GPT-6 Luna, so the model name returned with every response
+is recorded with the run. The model is called without a reasoning phase
+(reasoning effort \emph{none}): with its default setting the API rejects
+a temperature parameter, whereas without a reasoning phase it accepts a
+temperature of zero, as GPT-4o-mini was called. The agents need no
+reasoning phase because the optimiser tool performs the search.
 
 \begin{table}[h!]
 \caption{Technology stack.}
@@ -1763,7 +1779,8 @@ Component & Tool and version & Purpose \\
 \midrule
 Programming language & Python 3.12 & implementation of the artifact, baselines and analysis \\[2pt]
 Agent orchestration & LangGraph 1.2, LangChain 1.4 & state graph of the pipeline, ReAct agents, tool calling and schema-validated outputs \\[2pt]
-Commercial LLM & GPT-4o-mini (snapshot 2024-07-18), OpenAI API & model of the Multi-Agent Pipeline, its design iterations and the LLM without tools \\[2pt]
+Commercial LLM & GPT-6 Luna (reasoning effort none), OpenAI API & model of the redesigned evaluation: the two-agent pipeline, the single agent with harness and the LLM without tools \\[2pt]
+Commercial LLM (earlier) & GPT-4o-mini (snapshot 2024-07-18), OpenAI API & model of the design iterations, the registered evaluation on Q2 and the LLM without tools in those runs \\[2pt]
 Open-weight LLM & gpt-oss-20b, Ollama 0.34 and 0.35 & open-weight model hosted on local hardware, used in an exploratory run of the earlier design only; Ollama updated itself from 0.34.4 to 0.35.0 during that run \\[2pt]
 MILP solver & PuLP 3.3 with CBC & benchmark feasibility check, case library and the optimiser tool \\[2pt]
 HEMS optimizer & EMHASS 0.18.4, Docker & open-source home energy management optimizer compared in SQ2, called through its REST interface \\[2pt]
@@ -1775,6 +1792,9 @@ Statistics & SciPy 1.18 & Wilcoxon signed-rank test, TOST equivalence test, effe
 \end{table}
 
 % ════════════════════════════════════════════════════════════════════════════
+% REDESIGN NOTE (19 Oct 2026): every result in this chapter, the Discussion and the Abstract was produced with
+% GPT-4o-mini and stays attributed to it. Replace them after the GPT-6 Luna campaigns (two-agent pipeline, single
+% agent with harness), and then also update the model mentions in sec:limitations and sec:future.
 \chapter{Evaluation and Results}
 
 This chapter presents the evaluation of the artifact, corresponding to

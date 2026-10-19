@@ -179,5 +179,6 @@ export function groupBadge(system: string) {
 
 export const MODEL_LABELS: Record<string, string> = {
   '-': '',
-  'gpt-4o-mini': 'GPT-4o-mini'
+  'gpt-4o-mini': 'GPT-4o-mini',
+  'gpt-6-luna': 'GPT-6 Luna'
 }

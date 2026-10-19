@@ -15,7 +15,7 @@ import type {
   Recommendation,
   ToolsResponse,
 } from '~/composables/useTryIt'
-import { LIVE_SYSTEMS, toRunResult, useTryItApi } from '~/composables/useTryIt'
+import { LIVE_MODEL, LIVE_SYSTEMS, toRunResult, useTryItApi } from '~/composables/useTryIt'
 
 const api = useTryItApi()
 const catalog = ref<CatalogItem[]>([])
@@ -264,7 +264,7 @@ async function run() {
   tools.value = null
   oneshot.value = null
   oneshotError.value = ''
-  selected.value = `${LIVE_SYSTEMS.two_agents}|gpt-4o-mini`
+  selected.value = `${LIVE_SYSTEMS.two_agents}|${LIVE_MODEL}`
   loadingTools.value = true
   const body = request()
   // The comparison systems and both agent designs start together, so the agents do not wait for prices and EMHASS.
@@ -319,7 +319,7 @@ const reference = computed(() => {
 const refCost = computed(() => reference.value?.costEur ?? tools.value?.naiveCost ?? 0)
 const REFERENCE_LABEL = 'highest-cost system'
 const savingOf = (r: PlanResult) => (r.feasible && r.costEur != null ? refCost.value - r.costEur : null)
-const selected = ref('multi_duo_thoughts|gpt-4o-mini')
+const selected = ref(`multi_duo_thoughts|${LIVE_MODEL}`)
 const current = computed(
   () =>
     runResults.value.find((r) => `${r.system}|${r.model}` === selected.value) ??
@@ -351,7 +351,7 @@ const comparison = allResults
         recommendation. It is compared with the home energy management tools
         households can install. Going over the peak limit is allowed but costs a
         fee per kW, as under a power-based tariff. The pipeline runs live with
-        GPT-4o-mini (usually under 10 seconds).
+        GPT-6 Luna (usually under 10 seconds).
       </p>
       <p class="mt-1 max-w-3xl text-xs text-dimmed">
         The pipeline has two language model agents, the Orchestrator agent and

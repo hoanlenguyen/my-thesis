@@ -9,7 +9,7 @@ household-day and the pipeline variant; the graph is then built exactly as the s
     scenario  path to a scenario JSON, relative to the thesis root (default: a held-out Q2 day)
     variant   "multi_duo" (the two-agent pipeline, design iteration 10) or "multi_duo_thoughts" (with an explicit
               Thought in every tool call, design iteration 11)
-    model     a model name from hems.agents.llm.MODELS (default "gpt-4o-mini"; needs OPENAI_API_KEY in .env)
+    model     a model name from hems.agents.llm.MODELS (default "gpt-6-luna"; needs OPENAI_API_KEY in .env)
 
 The run's input is the household's request: {"request": "<the scenario's user_request>"}. Leave it empty to use
 the request stored in the scenario file.
@@ -36,7 +36,7 @@ VARIANTS: dict[str, dict[str, Any]] = {
 }
 
 
-def build(scenario_path: str = DEFAULT_SCENARIO, variant: str = "multi_duo", model: str = "gpt-4o-mini",
+def build(scenario_path: str = DEFAULT_SCENARIO, variant: str = "multi_duo", model: str = "gpt-6-luna",
           models: Any = None):  # type: ignore[no-untyped-def]
     """The compiled pipeline for one household-day. ``models`` (a role -> chat model function) replaces the
     named model, for tests."""
@@ -63,7 +63,7 @@ async def make_graph(config: RunnableConfig):  # type: ignore[no-untyped-def]
     thread, because the LangGraph server does not allow blocking calls in its event loop."""
     cfg = (config or {}).get("configurable", {}) or {}
     scenario, pipeline = await asyncio.to_thread(
-        build, cfg.get("scenario", DEFAULT_SCENARIO), cfg.get("variant", "multi_duo"), cfg.get("model", "gpt-4o-mini")
+        build, cfg.get("scenario", DEFAULT_SCENARIO), cfg.get("variant", "multi_duo"), cfg.get("model", "gpt-6-luna")
     )
 
     def household_request(state: dict[str, Any]) -> dict[str, Any]:

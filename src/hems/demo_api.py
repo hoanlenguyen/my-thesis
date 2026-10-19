@@ -11,7 +11,7 @@ Low-carbon-alerts appliance catalog.
 
 The systems run exactly as in the evaluation (hems.run.execute): no scheduling, MILP optimum, smart
 timer, cheapest hours, cheapest window, EMHASS (Docker REST, if reachable) and the Multi-Agent Pipeline
-(GPT-4o-mini, live, the two-agent pipeline of design iteration 10; under 10 s and about USD 0.001 per run). This module is not used by any benchmark.
+(GPT-6 Luna, live, the two-agent pipeline of design iteration 10; under 10 s and about USD 0.001 per run). This module is not used by any benchmark.
 """
 
 from __future__ import annotations
@@ -611,7 +611,7 @@ def plan_tools(body: PlanIn) -> dict[str, Any]:
 
 @app.post("/api/plan/agent", response_model=AgentOut)
 def plan_agent(body: PlanIn, request: Request) -> dict[str, Any]:
-    """The Multi-Agent Pipeline with GPT-4o-mini, live, with its message to the household. Its tools and checks
+    """The Multi-Agent Pipeline with the live model (GPT-6 Luna), live, with its message to the household. Its tools and checks
     treat the limit as a target; exceeding it is charged the fee like every other system.
 
     Runs exactly the pipeline of /api/plan/agent/stream (same setup, and a summary that states the page's cost
@@ -630,7 +630,7 @@ def plan_agent(body: PlanIn, request: Request) -> dict[str, Any]:
 
 @app.post("/api/plan/oneshot")
 def plan_oneshot(body: PlanIn, request: Request) -> dict[str, Any]:
-    """The same language model (GPT-4o-mini) without tools: every price and base load in one prompt, one answer.
+    """The same language model (GPT-6 Luna) without tools: every price and base load in one prompt, one answer.
     Scored like every other system."""
     from langchain_core.callbacks import get_usage_metadata_callback
 
@@ -644,13 +644,13 @@ def plan_oneshot(body: PlanIn, request: Request) -> dict[str, Any]:
     started = time.perf_counter()
     try:
         with get_usage_metadata_callback() as usage_cb:
-            run = run_oneshot(scenario, make_model("gpt-4o-mini"))
+            run = run_oneshot(scenario, make_model(LIVE_MODEL))
             usage = dict(usage_cb.usage_metadata)
     except Exception as exc:  # noqa: BLE001 - the page shows the reason
         raise HTTPException(502, f"{type(exc).__name__}: {exc}") from exc
     schedule, problems = parse_assignments(scenario, run.assignments)
-    tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
-    record = _record(scenario, "oneshot", "gpt-4o-mini", 0, run, schedule, problems,
+    tokens_in, tokens_out, usd = usage_cost_usd(usage, LIVE_MODEL)
+    record = _record(scenario, "oneshot", LIVE_MODEL, 0, run, schedule, problems,
                      time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
     return {"result": _result(scenario, "oneshot", record, _naive(scenario, fee), fee)}
 
@@ -667,6 +667,7 @@ ACTING_NODES = ("scheduler", "agent")  # the language model agents that call too
 MESSAGE_NODES = ("orchestrator_finalize", "explain")  # where the household message is written
 # The systems run live, with explicit Thoughts
 LIVE_SYSTEMS = {"two_agents": "multi_duo_thoughts", "one_agent": "single_harness_thoughts"}
+LIVE_MODEL = "gpt-6-luna"  # the model of the redesigned evaluation (hems.agents.llm.DEFAULT_MODEL)
 REDUCED = {"errors": list, "tool_calls": int, "recoveries": int}  # state keys the pipeline adds up across nodes
 INPUT_CHARS = 8000  # cap per part of an agent's input sent to the page
 
@@ -782,7 +783,7 @@ def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents")
     def work() -> None:
         try:
             watch = _AgentWatch(emit)
-            model = make_model("gpt-4o-mini")
+            model = make_model(LIVE_MODEL)
             retriever = default_retriever()  # RAG: the solved days given to the acting agent as worked examples
             retriever = default_retriever()  # RAG: the solved days given to the acting agent as worked examples
             if design == "one_agent":
@@ -832,8 +833,8 @@ def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents")
             run = AgentRun(assignments=state.get("final"), explanation=state.get("summary", ""), errors=state["errors"],
                            tool_calls=state["tool_calls"], recoveries=state["recoveries"], iterations=state.get("rounds", 0))  # fmt: skip
             schedule, problems = parse_assignments(scenario, run.assignments)
-            tokens_in, tokens_out, usd = usage_cost_usd(usage, "gpt-4o-mini")
-            record = _record(scenario, LIVE_SYSTEMS[design], "gpt-4o-mini", 0, run, schedule, problems,
+            tokens_in, tokens_out, usd = usage_cost_usd(usage, LIVE_MODEL)
+            record = _record(scenario, LIVE_SYSTEMS[design], LIVE_MODEL, 0, run, schedule, problems,
                              time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
             result = _result(scenario, LIVE_SYSTEMS[design], record, _naive(scenario, fee), fee)
             emit({"type": "result", "result": result, "recommendation": _recommendation(scenario, result)})
