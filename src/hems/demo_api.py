@@ -51,6 +51,8 @@ ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
 TZ = "Europe/Helsinki"
 EMHASS_URL = os.environ.get("EMHASS_URL_DEMO", "http://localhost:5000")
+# How long to wait for EMHASS to answer: a few seconds locally, longer in the cloud where it starts from zero
+EMHASS_WAIT_S = float(os.environ.get("EMHASS_WAIT_S", "3"))
 CACHE = ROOT / "results" / "demo_cache"
 # Default average base load per home type (kW); the user can override it.
 HOUSING_BASE_KW = {"apartment": 0.25, "house": 0.45, "house_electric": 1.2}
@@ -470,6 +472,23 @@ def _one_window_each(scenario: Scenario, choice: tuple[tuple[int, int], ...]) ->
     return scenario.model_copy(update={"appliances": apps})
 
 
+def _emhass_answers() -> bool:
+    """Whether EMHASS is up. Locally it runs all the time, and a stuck Docker engine can keep the port open without
+    answering, so the check gives up after a few seconds. In the cloud EMHASS scales to zero and needs about half a
+    minute to start after a quiet period, so the check keeps trying for EMHASS_WAIT_S seconds."""
+    deadline = time.monotonic() + EMHASS_WAIT_S
+    while True:
+        try:
+            urllib.request.urlopen(EMHASS_URL, timeout=min(5.0, EMHASS_WAIT_S)).close()
+            return True
+        except urllib.error.HTTPError:
+            return True  # it answered, so it is running
+        except (urllib.error.URLError, TimeoutError, OSError):
+            if time.monotonic() + 2 >= deadline:
+                return False
+            time.sleep(2)
+
+
 def _emhass(scenario: Scenario, fee: float) -> dict[str, Any] | None:
     """EMHASS as deployed (REST, Docker). EMHASS gives each deferrable load one start-to-end window, so with
     several periods it is run once for each combination of periods (as a user would have to configure it), and the
@@ -477,11 +496,7 @@ def _emhass(scenario: Scenario, fee: float) -> dict[str, Any] | None:
     spec = importlib.util.spec_from_file_location("emhass_rest", ROOT / "tools" / "emhass_rest.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore[union-attr]
-    try:  # a stuck Docker engine can keep the port open without answering: give up quickly instead of after 60 s
-        urllib.request.urlopen(EMHASS_URL, timeout=3).close()
-    except urllib.error.HTTPError:
-        pass  # it answered, so it is running
-    except (urllib.error.URLError, TimeoutError, OSError):
+    if not _emhass_answers():
         return None
     several = any(a.windows is not None for a in scenario.appliances)
     choices = _period_choices(scenario) if several else [()]

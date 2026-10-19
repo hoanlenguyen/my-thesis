@@ -875,8 +875,8 @@ const comparison = allResults
             runs.
           </template>
           <template v-else-if="!tools.emhass">
-            EMHASS was not reachable (Docker container on localhost:5000), so it
-            is not shown.</template
+            EMHASS did not answer in time, so it is not shown (when the demo
+            runs locally: is its Docker container on localhost:5000 running?).</template
           >
         </p>
       </UCard>

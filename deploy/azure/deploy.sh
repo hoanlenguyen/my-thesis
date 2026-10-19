@@ -53,8 +53,9 @@ else
 fi
 
 # The API: one replica at most, so the spending guard's in-memory counts hold
+# EMHASS_WAIT_S: EMHASS scales to zero and needs about half a minute to start, so the API waits for it
 api_env=(OPENAI_API_KEY=secretref:openai-key ENTSOE_API_KEY=secretref:entsoe-key EMHASS_URL_DEMO=http://emhass
-         "CORS_ORIGINS=$CORS_ORIGINS" "LLM_DAILY_LIMIT=$LLM_DAILY_LIMIT" "LLM_HOURLY_PER_IP=$LLM_HOURLY_PER_IP"
+         EMHASS_WAIT_S=90 "CORS_ORIGINS=$CORS_ORIGINS" "LLM_DAILY_LIMIT=$LLM_DAILY_LIMIT" "LLM_HOURLY_PER_IP=$LLM_HOURLY_PER_IP"
          LANGSMITH_TRACING=false)
 if az containerapp show --name hems-api --resource-group "$RG" --output none 2>/dev/null; then
   az containerapp secret set --name hems-api --resource-group "$RG" \

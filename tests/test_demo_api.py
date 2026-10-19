@@ -219,3 +219,31 @@ def test_without_limits_the_guard_never_refuses(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setattr(demo_api, "LLM_DAILY_LIMIT", 0)
     for _ in range(50):  # locally there is no limit
         demo_api._allow_llm_run(SimpleNamespace(headers={}, client=SimpleNamespace(host="127.0.0.1")))
+
+
+def test_emhass_is_waited_for_while_it_starts(monkeypatch: pytest.MonkeyPatch) -> None:
+    import urllib.error
+
+    calls = []
+
+    def starting(url: str, timeout: float):  # type: ignore[no-untyped-def]
+        calls.append(url)
+        if len(calls) < 3:  # a container starting from zero: refused twice, then up
+            raise urllib.error.URLError("connection refused")
+        return type("Response", (), {"close": lambda self: None})()
+
+    monkeypatch.setattr(demo_api.urllib.request, "urlopen", starting)
+    monkeypatch.setattr(demo_api.time, "sleep", lambda _s: None)
+    monkeypatch.setattr(demo_api, "EMHASS_WAIT_S", 90.0)
+    assert demo_api._emhass_answers() and len(calls) == 3
+
+
+def test_emhass_that_never_answers_is_given_up(monkeypatch: pytest.MonkeyPatch) -> None:
+    import urllib.error
+
+    def refused(url: str, timeout: float):  # type: ignore[no-untyped-def]
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr(demo_api.urllib.request, "urlopen", refused)
+    monkeypatch.setattr(demo_api, "EMHASS_WAIT_S", 1.0)  # less than one retry interval: one try only
+    assert not demo_api._emhass_answers()
