@@ -22,7 +22,8 @@ SLOTS_PER_DAY = 96
 SLOT_HOURS = SLOT_MINUTES / 60
 
 # "A".."F": the six types of the first benchmarks (data/scenarios, data/scenarios_15min).
-# "<regime>-<load>-<limit>", e.g. "volatile-heavy-strict": the factorial design (hems.data.factorial).
+# "<regime>-<load>-<limit>", e.g. "volatile-heavy-realistic": the factorial design (hems.data.factorial); since
+# 20 Oct 2026 the limit is always "realistic" (8 kW), the earlier sets also hold "strict" (3.5 kW).
 ScenarioType = str
 # The benchmarks use the three REFIT kinds; the demo's "Try it" view also offers constant-power loads
 # from the Low-carbon-alerts appliance catalog (EV charger, sauna, hot tub, electric oven).

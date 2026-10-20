@@ -1,14 +1,17 @@
-"""Factorial benchmark design: price regime x household load x peak limit.
+"""Factorial benchmark design: price regime x household load, under the 8 kW peak limit.
 
 Each factor varies on its own, so an effect can be attributed to it:
   regime (4)  stable, volatile, spike, negative: how the day's prices behave
   load   (2)  light: dishwasher + washing machine with separate daytime windows;
               heavy: two washes, two dryings and a dishwasher sharing one window
-  limit  (2)  strict 3.5 kW (stylised) and realistic 8 kW, after the Energy Authority's guidance on
-              power-based distribution tariffs (an hourly limit of 8 kW; applied here per 15-min slot,
-              which is slightly stricter)
-Every regime x load cell gets its own price days. The limit is crossed within the day: the same
-appliances are scheduled under both limits, so the effect of the limit is measured on identical days.
+The peak limit is 8 kW, the threshold of the Energy Authority's regulation on distribution fees (2 Feb 2026):
+a household's power charge starts when its 60-minute average power exceeds 8 kW. The benchmark treats it as a
+hard limit in every 15-minute slot, which is stricter than the charge.
+Every regime x load cell gets its own price days.
+
+Until 20 Oct 2026 the limit was a third factor with a second, stylised level of 3.5 kW (ids ending in -35, type
+"<regime>-<load>-strict"); it had no source and was dropped. The sets built before then (data/scenarios_v2, the
+registered data/scenarios_q2) still hold both levels and stay as recorded (git a01bb6a builds them).
 """
 
 from __future__ import annotations
@@ -32,7 +35,7 @@ LOADS: dict[str, TypeSpec] = {
     "light": TypeSpec(("dishwasher", "washing_machine"), "normal"),
     "heavy": TypeSpec(("washing_machine", "washing_machine", "tumble_dryer", "tumble_dryer", "dishwasher"), "overlap"),
 }
-LIMITS = {"strict": 3.5, "realistic": 8.0}
+LIMIT_KW = 8.0  # Energy Authority power-charge threshold; ids end in -80, types in -realistic as before
 CODES = {"stable": "S", "volatile": "V", "spike": "P", "negative": "N", "light": "L", "heavy": "H"}
 MIN_NEGATIVE_SLOTS = 4  # at least one hour below zero
 
@@ -77,18 +80,14 @@ def compose_cell(
     scenario_id: str, regime: str, load: str, day: date, spot: np.ndarray, base_load: np.ndarray,
     pool: dict, fixed: list, rng: np.random.Generator, tariff: Tariff, house: int,
 ) -> list[Scenario]:  # fmt: skip
-    """The same day and appliances under every peak limit (ids end in -35 and -80)."""
-    first = compose_scenario(
-        scenario_id=f"{scenario_id}-35", scenario_type=f"{regime}-{load}-strict", day=day, spot_eur_per_kwh=spot,
+    """The day's scenario under the 8 kW limit (id ends in -80; the same draws as the earlier two-level design)."""
+    scenario = compose_scenario(
+        scenario_id=f"{scenario_id}-80", scenario_type=f"{regime}-{load}-realistic", day=day, spot_eur_per_kwh=spot,
         base_load_kw=base_load, profile_pool=pool, fixed_appliances=fixed, rng=rng, tariff=tariff,
-        peak_limit_kw=LIMITS["strict"], spec=LOADS[load],
+        peak_limit_kw=LIMIT_KW, spec=LOADS[load],
     )  # fmt: skip
-    first.notes = f"REFIT house {house}. {first.notes}".strip()
-    realistic = first.model_copy(
-        update={"id": f"{scenario_id}-80", "type": f"{regime}-{load}-realistic",
-                "peak_limit_kw": max(LIMITS["realistic"], first.peak_limit_kw), "notes": f"REFIT house {house}."}
-    )  # fmt: skip
-    return [first, realistic]
+    scenario.notes = f"REFIT house {house}. {scenario.notes}".strip()
+    return [scenario]
 
 
 def build_factorial(
@@ -133,8 +132,8 @@ def build_factorial(
                 scenario.save(out / f"{scenario.id}.json")
                 written.append(scenario.id)
     manifest = {
-        "design": "factorial: regime x load x limit (hems.data.factorial)",
-        "seed": seed, "per_cell": per_cell, "limits_kw": LIMITS, "tariff": tariff.__dict__,
+        "design": "factorial: regime x load, 8 kW limit (hems.data.factorial)",
+        "seed": seed, "per_cell": per_cell, "limit_kw": LIMIT_KW, "tariff": tariff.__dict__,
         "houses": list(houses), "price_csv": str(price_csv), "price_days_available": len(days),
         "price_period": [days.index.min().isoformat(), days.index.max().isoformat()],
         "price_resolution_min": price_data.native_resolution_minutes(price_csv, date_from),

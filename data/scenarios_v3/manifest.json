@@ -9,6 +9,7 @@
   "min_slack_slots": 8,
   "fallback": "median over households owning the kind"
  },
- "scenarios": 96,
+ "peak_limit_kw": 8.0,
+ "scenarios": 48,
  "peak_limit_raised": []
 }

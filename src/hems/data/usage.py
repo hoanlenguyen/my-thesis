@@ -27,6 +27,7 @@ import numpy as np
 
 from hems.core.models import SLOT_MINUTES, SLOTS_PER_DAY, Scenario, load_scenarios
 from hems.data import refit
+from hems.data.factorial import LIMIT_KW
 from hems.data.scenarios import build_request
 from hems.solvers.milp import solve_milp
 
@@ -115,6 +116,8 @@ def build_usage_benchmark(source_dir: str | Path, out_dir: str | Path, usage_pat
     out.mkdir(parents=True, exist_ok=True)
     written, raised = [], []
     for scenario in load_scenarios(source_dir):
+        if scenario.peak_limit_kw < LIMIT_KW:
+            continue  # the source set's stylised 3.5 kW level, dropped on 20 Oct 2026 (hems.data.factorial)
         new = with_usage_windows(scenario, usage, id_prefix)
         new.save(out / f"{new.id}.json")
         written.append(new.id)
@@ -125,7 +128,7 @@ def build_usage_benchmark(source_dir: str | Path, out_dir: str | Path, usage_pat
         "source_set": str(source_dir), "usage_times": str(usage_path), "id_prefix": id_prefix,
         "window_rule": {"ready": "p25 of start times", "finish_by": "p75 of start times + cycle length",
                         "min_slack_slots": MIN_SLACK_SLOTS, "fallback": "median over households owning the kind"},
-        "scenarios": len(written), "peak_limit_raised": raised,
+        "peak_limit_kw": LIMIT_KW, "scenarios": len(written), "peak_limit_raised": raised,
     }  # fmt: skip
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return manifest

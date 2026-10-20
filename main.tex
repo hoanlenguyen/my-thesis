@@ -1795,6 +1795,13 @@ Statistics & SciPy 1.18 & Wilcoxon signed-rank test, TOST equivalence test, effe
 % REDESIGN NOTE (19 Oct 2026): every result in this chapter, the Discussion and the Abstract was produced with
 % GPT-4o-mini and stays attributed to it. Replace them after the GPT-6 Luna campaigns (two-agent pipeline, single
 % agent with harness), and then also update the model mentions in sec:limitations and sec:future.
+% PEAK LIMIT (20 Oct 2026): the 3.5 kW level had no source and was dropped; the final benchmark (data/scenarios_v3,
+% 48 scenarios) uses only the Energy Authority's 8 kW threshold (sec:dataset says so). The passages below that report
+% the strict level describe recorded runs and go when the results are replaced: the abstract ("two peak limits"),
+% SQ2 and its restatements ("peak limits"), the requirements table and contributions in the literature review,
+% sec:factorial (two levels), the case library (both limits), tab:hypotheses (H2 over limits), the Q2 example
+% (Q2-PH01-35, 3.58 kW), the strict-limit rows and sentences in the exploratory and Q2 results, SQ2 interpretation,
+% and the limitations. Under 8 kW only 2 of 48 v3 days need coordination: say so when SQ2 is rewritten.
 \chapter{Evaluation and Results}
 
 This chapter presents the evaluation of the artifact, corresponding to
@@ -1935,37 +1942,48 @@ possible. This reflects that price spikes coincide with evening demand
 peaks, when households tend to start appliances. Type F windows open
 between 00:00 and 04:00 and last until midnight.
 
-The household peak load limit, including the base load, is 3.5\,kW in
-every fifteen-minute slot. It is a deliberately strict, stylized cap
-that makes the appliances compete for capacity, rather than a limit
-that Finnish households face today. So that every appliance can at least
-run on its own, the limit of a scenario is raised to the day's highest
-base load plus the highest power of its largest cycle plus 0.2\,kW where
-that sum exceeds 3.5\,kW, and in further steps of 0.5\,kW if the optimal
-schedule is still infeasible. In the factorial sets this applies to 6
-(exploratory main set) and 8 (Q2) of the 48 scenarios under the strict
-limit, with limits of up to 5.75\,kW. The smallest standard main fuse,
-3\,$\times$\,25\,A (Elenia, 2026), allows about 17\,kW and would never
-bind for these appliances. Power-based distribution tariffs exist, but
-they price the peak rather than forbid it, and not every network offers
-one to households. Helen Sähköverkko's time-based distribution product,
-for example, charges \EUR{1.57} per kW and month, excluding VAT, for the
+The household peak load limit, including the base load, applies in
+every fifteen-minute slot. No Finnish rule caps the power a household
+may draw below the capacity of its connection, and that capacity does
+not bind: the smallest standard main fuse, 3\,$\times$\,25\,A (Elenia,
+2026), allows about 17\,kW, far above these appliances. The only limit
+with a regulatory source is a price threshold. The Energy Authority's
+regulation on distribution fees, published on 2 February 2026, makes
+every network company harmonise its pricing by the start of 2029 at the
+latest: where a distribution product for households has a power charge,
+the charge is based on the highest 60-minute average power of the month
+above a threshold of 8\,kW (Energy Authority, 2026). The power charge
+remains optional, since a product without one must still be offered
+(Helen Sähköverkko, 2026b). Until then the network companies set their
+own products. Helen Sähköverkko's time-based distribution product, for
+example, charges \EUR{1.57} per kW and month, excluding VAT, for the
 third-highest hourly average power of the month, with 80\,\% of
 night-time power counted (Helen Sähköverkko, 2026a). Oulun Energia
 Sähköverkko, in contrast, charges for power only in its tariffs for
 larger low-, medium- and high-voltage connections; its general,
 time-of-use and seasonal products for households have no power charge
-(Oulun Energia Sähköverkko, 2026). From 1 January 2029, a regulation of
-the Energy Authority sets the rule for every network company: for a
-main fuse of up to 3\,$\times$\,63\,A, the power charge is based on the
-highest 60-minute average power of the month minus a threshold of
-8\,kW, so it applies only above 8\,kW (Energy Authority, 2026). It
-remains optional, since a product without a power charge must still be
-offered (Helen Sähköverkko, 2026b). Compared with these tariffs, the
-benchmark's cap is stricter in level (3.5 instead of 8\,kW), in time
-resolution (15 instead of 60 minutes) and in kind (a hard limit instead
-of a price). It therefore tests coordination under demanding conditions;
-replacing it with a priced peak is left for future work. The build procedure verifies with the MILP solver that every
+(Oulun Energia Sähköverkko, 2026).
+
+The final benchmark therefore takes its peak limit from the regulation,
+8\,kW, and treats it as a hard limit in every fifteen-minute slot. This
+is stricter than the regulation in time resolution (15 instead of 60
+minutes) and in kind (a hard limit instead of a price); replacing it
+with a priced peak is left for future work. So that every appliance can
+at least run on its own, the limit of a scenario is raised to the day's
+highest base load plus the highest power of its largest cycle plus
+0.2\,kW where that sum exceeds the limit, and in further steps of
+0.5\,kW if the optimal schedule is still infeasible.
+
+The benchmarks of the earlier stages used a stricter limit of 3.5\,kW:
+alone in the first benchmark described here and in the Q set, and as a
+second level next to 8\,kW in the factorial sets of
+Section~\ref{sec:factorial}. It had no regulatory or technical source.
+It was a stylized cap chosen so that the appliances compete for
+capacity, and it was dropped from the final design for that reason.
+Under it the raised limits above applied to 6 (exploratory main set)
+and 8 (Q2) of the 48 factorial scenarios, with limits of up to
+5.75\,kW. Results at that level are reported as they were recorded, as
+part of the design history. The build procedure verifies with the MILP solver that every
 scenario has a feasible schedule; this held for all 48 scenarios
 without relaxing the limit. Table~\ref{tab:benchmark} reports the
 resulting characteristics per type. A scenario requires coordination

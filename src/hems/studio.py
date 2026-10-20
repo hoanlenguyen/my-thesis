@@ -27,7 +27,7 @@ from langgraph.graph import END, START, StateGraph
 from hems.core.models import Scenario
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_SCENARIO = "data/scenarios_q2/Q2-PH03-35.json"
+DEFAULT_SCENARIO = "data/scenarios_q2/Q2-PH03-80.json"
 
 # Pipeline variants as registered in src/hems/systems.py: keyword arguments of build_pipeline
 VARIANTS: dict[str, dict[str, Any]] = {

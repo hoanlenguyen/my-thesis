@@ -1,4 +1,4 @@
-"""Factorial benchmark design: regime selection and the within-day crossing of the peak limit."""
+"""Factorial benchmark design: regime selection and one scenario per day under the 8 kW limit."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from datetime import date, timedelta
 import numpy as np
 import pandas as pd
 
-from hems.data.factorial import LIMITS, LOADS, REGIMES, compose_cell, select_regime_days
+from hems.data.factorial import LIMIT_KW, LOADS, REGIMES, compose_cell, select_regime_days
 from hems.data.synthetic import FIXED, PROFILE_POOL, synthetic_base_load
 from hems.data.tariff import Tariff
 from hems.solvers.milp import solve_milp
@@ -41,17 +41,14 @@ def test_regime_days_are_disjoint_and_match_their_regime() -> None:
     assert std("stable") < std("volatile")
 
 
-def test_cell_crosses_the_limit_on_the_same_day_and_appliances() -> None:
+def test_a_cell_day_is_one_scenario_under_the_8_kw_limit() -> None:
     rng = np.random.default_rng(3)
     spot = 0.05 + 0.04 * np.sin(np.linspace(0, 2 * np.pi, 96))
-    strict, realistic = compose_cell(
+    (scenario,) = compose_cell(
         "VH01", "volatile", "heavy", date(2024, 1, 15), spot, synthetic_base_load(rng), PROFILE_POOL, FIXED, rng,
         Tariff(), 1,
     )  # fmt: skip
-    assert (strict.id, realistic.id) == ("VH01-35", "VH01-80")
-    assert strict.type == "volatile-heavy-strict" and realistic.type == "volatile-heavy-realistic"
-    assert strict.appliances == realistic.appliances and strict.price_eur_per_kwh == realistic.price_eur_per_kwh
-    assert strict.peak_limit_kw >= LIMITS["strict"] and realistic.peak_limit_kw == max(LIMITS["realistic"], strict.peak_limit_kw)
-    assert len(strict.appliances) == 5
-    for s in (strict, realistic):
-        assert solve_milp(s).status == "Optimal"
+    assert (scenario.id, scenario.type) == ("VH01-80", "volatile-heavy-realistic")
+    assert scenario.peak_limit_kw == LIMIT_KW == 8.0 and scenario.notes == "REFIT house 1."
+    assert len(scenario.appliances) == 5
+    assert solve_milp(scenario).status == "Optimal"

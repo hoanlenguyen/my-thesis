@@ -208,7 +208,7 @@ def _one_cheap_hour_scenario() -> Scenario:
     price[4:8] = [0.10] * 4
     return Scenario(
         id="COST", type="C", date="2026-01-01", start_time=datetime(2026, 1, 1), spot_eur_per_kwh=price,
-        price_eur_per_kwh=price, base_load_kw=[0.0] * 96, peak_limit_kw=3.5, user_request="dishwasher_1",
+        price_eur_per_kwh=price, base_load_kw=[0.0] * 96, peak_limit_kw=8.0, user_request="dishwasher_1",
         appliances=[FlexibleAppliance(id="dishwasher_1", kind="dishwasher", profile_kw=[1.0] * 4,
                                       earliest_slot=0, deadline_slot=96, default_start_slot=0)],
     )  # fmt: skip

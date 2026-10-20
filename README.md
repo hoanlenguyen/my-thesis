@@ -84,7 +84,9 @@ uv run hems analyze --runs results/runs.jsonl --scenarios data/scenarios --out r
   vs naive, latency, tokens, USD.
 - **Statistics**: Wilcoxon signed-rank on per-scenario means over 3 runs, `zero_method="pratt"`,
   effect size r = |Z|/√N; Spearman for appliance characteristics (SQ2).
-- **Peak limit** default 3.5 kW for the benchmark (raised per scenario only if infeasible; recorded in `notes`).
+- **Peak limit** 8 kW, the Energy Authority's power-charge threshold, as a hard limit per 15-min slot (raised per
+  scenario only if infeasible; recorded in `notes`). The benchmarks built before 20 Oct 2026 also used a stylised
+  3.5 kW level (the only level of the first benchmarks); it had no source and is not used for new runs.
 - **REFIT houses**: all except 12 (no flexible appliances) and 19 (washing machine shows no heating phase);
   see `EXCLUDED_HOUSES` in `data/refit.py`.
 - **Types C–F** use repeated cycles of the three REFIT appliance kinds to reach 4–5 loads.

@@ -45,7 +45,7 @@ def test_window_rule() -> None:
 
 
 def test_a_factorial_scenario_gets_the_household_windows_and_stays_solvable() -> None:
-    scenario = next(s for s in load_scenarios("data/scenarios_v2") if "REFIT house 1." in s.notes)
+    scenario = next(s for s in load_scenarios("data/scenarios_v2") if "REFIT house 1." in s.notes and s.id.endswith("-80"))
     new = with_usage_windows(scenario, USAGE)
     assert new.id == f"U-{scenario.id}" and new.date == scenario.date and new.price_eur_per_kwh == scenario.price_eur_per_kwh
     assert [a.profile_kw for a in new.appliances] == [a.profile_kw for a in scenario.appliances]  # same cycles

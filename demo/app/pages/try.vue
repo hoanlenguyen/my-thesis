@@ -102,7 +102,6 @@ const housingItems = [
   { label: 'House with electric heating', value: 'house_electric' },
 ]
 const limitItems = [
-  { label: '3.5 kW (strict)', value: 3.5 },
   { label: '8 kW (power-tariff threshold)', value: 8 },
   { label: '11 kW', value: 11 },
   { label: '17 kW (3 × 25 A main fuse)', value: 17 },

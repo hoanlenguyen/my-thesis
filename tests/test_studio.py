@@ -23,7 +23,7 @@ def fake_models(_role: str) -> ScriptedModel:
 @pytest.mark.parametrize("variant", sorted(studio.VARIANTS))
 def test_every_variant_builds_the_pipeline_graph(variant: str) -> None:
     scenario, graph = studio.build(variant=variant, models=fake_models)
-    assert scenario.id == "Q2-PH03-35"
+    assert scenario.id == "Q2-PH03-80"
     assert NODES <= set(graph.get_graph().nodes)
 
 

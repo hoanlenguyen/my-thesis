@@ -333,3 +333,30 @@ answer needs one step, and a model that writes its schedule as text and then sen
 after fewer wasted calls. On U-NH04-35, GPT-6 Luna was unchanged (6 s, valid, no nudge); gpt-oss-20b stayed valid
 after one nudge with 30,412 instead of 49,950 input tokens, but took 402 s instead of 250 s because it produced more
 reasoning output (11,075 against 7,591 tokens) in that single run.
+
+## Note (20 October 2026): benchmark v3 and the peak limit, 8 kW only (exploratory)
+
+Benchmark v3 (`data/scenarios_v3`, built by `hems build-usage` from `data/scenarios_v2`) keeps the days, prices,
+cycles and base loads of v2 and replaces every appliance window with one from the household's usual run times in
+REFIT (`data/usage/usage_times.json`): ready at the 25th percentile of the cycle start times, finished by the 75th
+percentile plus the cycle length, at least two hours of slack, and the median over households for a kind the
+household does not own. It is exploratory; Q2 stays the only confirmatory set.
+
+The same day, the 3.5 kW peak limit was dropped. A search of the official sources found no rule that caps a
+household's power: the smallest standard main fuse (3 x 25 A, about 17 kW) does not bind, and the only regulatory
+figure is the Energy Authority's power-charge threshold (regulation of 2 February 2026, in force; harmonised
+pricing by the start of 2029 at the latest): a charge on the month's highest 60-minute average power above 8 kW,
+which network companies may but need not offer. The 3.5 kW level was a stylised cap without a source. From now on
+the benchmark uses only 8 kW, as a hard limit per 15-minute slot (`hems.data.factorial.LIMIT_KW`): v3 has 48
+scenarios (the `-80` scenarios; rebuilt with the new code, byte-identical to the earlier files), and the factorial
+builder composes one scenario per day (same draws as before). The 3.5 kW rows of the v3 results were moved to
+`results/luna_v3_strict35.jsonl`, `results/oss_v3_strict35.jsonl` and `results/tools/scenarios_v3_strict35.jsonl`.
+The earlier sets (`data/scenarios`, `data/scenarios_15min`, `data/scenarios_v2` and the registered
+`data/scenarios_q2`) and their results stay as recorded, 3.5 kW included; H2a-c were registered and tested over both
+limits and are not re-analysed.
+
+Consequence, observed before any new run: under 8 kW, 2 of the 48 v3 days need coordination (individually cheapest
+starts exceed the limit). On v3 at 8 kW, with GPT-6 Luna, the two-agent pipeline and the single agent are valid in
+all 144 runs each and capture 100 % of the achievable saving (18.7 %); so do EMHASS (REST, profiles) and the smart
+timer (48 days each); the Home Assistant rules are valid on 47 of 48 days and capture 73.5 % (cheapest hours) and
+88.9 % (cheapest window); the LLM without tools is valid in 81.2 % of runs and captures 39.7 %.

@@ -107,7 +107,12 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   (`agents/oneshot.py`, all data incl. per-slot base load in one prompt). Analyse together with
   `hems analyze --runs results/runs.jsonl results/baselines.jsonl`.
 - Benchmark settings: 18 REFIT houses (12 and 19 excluded — reasons in `refit.EXCLUDED_HOUSES`),
-  peak limit 3.5 kW, type E windows anchored at the daily price peak, seed 2026.
+  type E windows anchored at the daily price peak, seed 2026.
+- **Peak limit = 8 kW only** (since 20 Oct 2026): the Energy Authority's power-charge threshold (60-min average,
+  optional charge), applied as a hard limit per 15-min slot (`factorial.LIMIT_KW`). The stylised 3.5 kW level had
+  no source and was dropped: `data/scenarios_v3` has 48 scenarios (`-80`), its 3.5 kW result rows are archived in
+  `results/*_v3_strict35.jsonl`. The older sets (`scenarios`, `scenarios_15min`, `scenarios_v2`, `scenarios_q2`)
+  keep their 3.5 kW scenarios as recorded; never quote 3.5 kW results as current findings.
 
 ## Open design issues (fixing either changes results: version, archive, rerun)
 

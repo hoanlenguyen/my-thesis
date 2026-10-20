@@ -20,7 +20,7 @@ def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
 
 
 PROFILE = {
-    "date": "2026-01-15", "housing": "house", "peak_limit_kw": 3.5,
+    "date": "2026-01-15", "housing": "house", "peak_limit_kw": 8.0,
     "appliances": [
         {"kind": "washing_machine", "ready": "08:00", "finish_by": "22:00"},
         {"kind": "tumble_dryer", "ready": "08:00", "finish_by": "24:00"},
@@ -50,7 +50,9 @@ def test_tools_schedule_the_profile_and_report_savings(client: TestClient) -> No
 
 
 def test_exceeding_the_limit_is_allowed_and_charged(client: TestClient) -> None:
-    ev = {**PROFILE, "appliances": [{"kind": "ev_charger", "ready": "18:00", "finish_by": "24:00"}]}
+    # the 7 kW EV and the 7 kW sauna cannot avoid each other: over 8 kW in every schedule
+    ev = {**PROFILE, "appliances": [{"kind": "ev_charger", "ready": "18:00", "finish_by": "22:00"},
+                                    {"kind": "sauna", "ready": "19:00", "finish_by": "20:00"}]}  # fmt: skip
     out = client.post("/api/plan/tools", json=ev).json()
     best = next(r for r in out["results"] if r["system"] == "milp")
     assert best["feasible"] and best["overKw"] > 3 and best["feeEur"] == pytest.approx(1.97 * best["overKw"], abs=0.01)
@@ -149,7 +151,7 @@ def test_the_message_states_the_page_cost_and_no_saving(client: TestClient) -> N
         end = scenario.boundary_to_time(start + a.duration_slots)
         assert f"- {appliance_id}: {scenario.slot_to_time(start)} to {end}" in text
     naive_text = facts({a.id: a.default_start_slot for a in scenario.appliances})
-    assert "plus a fee of EUR" in naive_text  # no scheduling exceeds 3.5 kW
+    assert "plus a fee of EUR" in naive_text  # no scheduling (EV and dishwasher at 18:00) exceeds 8 kW
 
 
 def test_the_recommendation_has_a_fixed_form_built_from_the_scored_schedule(client: TestClient) -> None:
@@ -288,7 +290,7 @@ def test_the_live_stream_runs_with_and_without_the_message(monkeypatch: pytest.M
 def test_the_agent_endpoint_leaves_out_an_empty_message(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     import json
 
-    rec = {"schedules": [], "cost": 0.1, "currency": "EUR", "currencySymbol": "€", "peakKw": 1.0, "peakLimitKw": 3.5,
+    rec = {"schedules": [], "cost": 0.1, "currency": "EUR", "currencySymbol": "€", "peakKw": 1.0, "peakLimitKw": 8.0,
            "valid": True, "date": "2026-01-15"}  # fmt: skip
     event = {"type": "result", "result": {"system": "multi_duo_thoughts"}, "recommendation": rec}
     monkeypatch.setattr(demo_api, "_pipeline_events", lambda *_args: iter([f"data: {json.dumps(event)}\n\n"]))
