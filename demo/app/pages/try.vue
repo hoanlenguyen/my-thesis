@@ -198,13 +198,24 @@ const LIVE_SET = new Set(Object.values(LIVE_SYSTEMS))
 // scheduling stays the reference every saving is measured against)
 const oneshot = ref<PlanResult | null>(null)
 const oneshotError = ref('')
-const recommendationJson = (d: Design) =>
-  live[d].recommendation ? JSON.stringify(live[d].recommendation, null, 2) : ''
-const copied = ref<Design | null>(null)
-async function copyRecommendation(d: Design) {
+// The recommendation JSON of every system on the page: the agents' own (with their message) and, built in the same
+// form from their scored start times, the comparison systems' (no message)
+interface JsonSystem { id: string, label: string, rec: Recommendation | null, loading: boolean, agent: boolean }
+const jsonSystems = computed<JsonSystem[]>(() => [
+  ...DESIGNS.map((d) => ({ id: LIVE_SYSTEMS[d], label: DESIGN_NAMES[d], rec: live[d].recommendation,
+                         loading: live[d].loading, agent: true })),
+  ...allResults.value
+    .filter((r) => !LIVE_SET.has(r.system))
+    .map((r) => ({ id: r.system, label: r.label, rec: r.recommendation ?? null, loading: false, agent: false })),
+])
+const jsonSystem = ref<string>(LIVE_SYSTEMS.two_agents)
+const shownJson = computed(() => jsonSystems.value.find((x) => x.id === jsonSystem.value) ?? jsonSystems.value[0])
+const jsonText = (rec: Recommendation) => JSON.stringify(rec, null, 2)
+const copied = ref<string | null>(null)
+async function copyJson(id: string, text: string) {
   try {
-    await navigator.clipboard.writeText(recommendationJson(d))
-    copied.value = d
+    await navigator.clipboard.writeText(text)
+    copied.value = id
     setTimeout(() => {
       copied.value = null
     }, 1500)
@@ -319,6 +330,8 @@ const reference = computed(() => {
 const refCost = computed(() => reference.value?.costEur ?? tools.value?.naiveCost ?? 0)
 const REFERENCE_LABEL = 'highest-cost system'
 const savingOf = (r: PlanResult) => (r.feasible && r.costEur != null ? refCost.value - r.costEur : null)
+// what an invalid schedule would save if it were followed (shown in red; it is not a saving the household reaches)
+const planSaving = (r: PlanResult) => (r.costEur != null ? refCost.value - r.costEur : null)
 const selected = ref(`multi_duo_thoughts|${LIVE_MODEL}`)
 const current = computed(
   () =>
@@ -693,42 +706,62 @@ const comparison = allResults
         :running="live[d].loading"
         :summary="live[d].summary"
         :result="live[d].result"
+        :recommendation="live[d].recommendation"
         :design="d"
       />
     </template>
-    <UCard v-if="!runError && DESIGNS.some((d) => live[d].recommendation)" :ui="{ body: 'p-0 sm:p-0' }">
+    <UCard v-if="!runError && jsonSystems.some((x) => x.rec || x.loading)" :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <UIcon name="i-lucide-braces" class="size-4 text-primary" />
           <span class="font-semibold text-sm text-highlighted">Recommendation as JSON</span>
-          <span class="text-xs text-dimmed">· what an app would receive from POST /api/plan/agent</span>
+          <span class="text-xs text-dimmed">· the same form for every system, as an app would receive it</span>
         </div>
       </template>
-      <div class="grid lg:grid-cols-2 lg:divide-x divide-default">
-        <div v-for="d in DESIGNS" :key="d" class="min-w-0">
-          <div class="flex items-center justify-between gap-2 px-4 pt-3">
-            <span class="text-xs font-medium text-muted">{{ DESIGN_NAMES[d] }}</span>
-            <UButton
-              v-if="live[d].recommendation"
-              size="xs"
-              variant="soft"
-              color="neutral"
-              :icon="copied === d ? 'i-lucide-check' : 'i-lucide-copy'"
-              @click="copyRecommendation(d)"
-            >
-              {{ copied === d ? 'Copied' : 'Copy' }}
-            </UButton>
-          </div>
-          <pre
-            class="max-h-96 overflow-auto px-4 py-3 text-xs leading-relaxed font-mono text-default"
-            >{{ recommendationJson(d) || (live[d].loading ? 'running…' : 'no recommendation') }}</pre
+      <div class="flex flex-wrap items-center gap-1.5 px-4 pt-3" role="radiogroup" aria-label="System">
+        <UButton
+          v-for="x in jsonSystems"
+          :key="x.id"
+          size="xs"
+          :variant="shownJson?.id === x.id ? 'soft' : 'ghost'"
+          :color="shownJson?.id === x.id ? 'primary' : 'neutral'"
+          role="radio"
+          :aria-checked="shownJson?.id === x.id"
+          :disabled="!x.rec && !x.loading"
+          @click="jsonSystem = x.id"
+        >
+          {{ x.label }}
+        </UButton>
+      </div>
+      <div v-if="shownJson" class="min-w-0">
+        <div class="flex items-center justify-between gap-2 px-4 pt-3">
+          <span class="text-xs text-muted">
+            {{ shownJson.label }}<template v-if="shownJson.agent"> · POST /api/plan/agent</template><template v-else> · built from its scored start times</template>
+          </span>
+          <UButton
+            v-if="shownJson.rec"
+            size="xs"
+            variant="soft"
+            color="neutral"
+            :icon="copied === shownJson.id ? 'i-lucide-check' : 'i-lucide-copy'"
+            @click="copyJson(shownJson.id, jsonText(shownJson.rec))"
           >
+            {{ copied === shownJson.id ? 'Copied' : 'Copy' }}
+          </UButton>
         </div>
+        <pre
+          class="max-h-96 overflow-auto px-4 py-3 text-xs leading-relaxed font-mono text-default"
+          >{{ shownJson.rec ? jsonText(shownJson.rec) : (shownJson.loading ? 'running…' : 'no recommendation') }}</pre
+        >
       </div>
       <p class="px-4 py-2 text-xs text-dimmed border-t border-default">
-        Only <code>message</code> is written by the language model.
-        <code>schedules</code> and every figure come from the verified schedule,
-        scored as in the table below (energy plus the fee above the limit).
+        For the two agent systems, only <code>message</code> is written by the
+        language model; <code>schedules</code> and every figure come from the
+        verified schedule, scored as in the table below (energy plus the fee
+        above the limit). The other systems write no message: their JSON is
+        built here in the same form from their start times. In a real home,
+        EMHASS returns a power plan and the Home Assistant tools switch
+        devices; neither returns this JSON.
       </p>
     </UCard>
     <div
@@ -780,14 +813,16 @@ const comparison = allResults
                 <td class="py-1.5 pr-3 whitespace-nowrap">
                   <UTooltip
                     v-if="!r.feasible"
-                    :text="r.violations[0] ?? 'Not a usable schedule'"
+                    :text="`Invalid: ${r.violations.join('; ') || 'not a usable schedule'}`"
                   >
                     <UBadge
                       color="error"
                       variant="subtle"
                       size="xs"
                       icon="i-lucide-triangle-alert"
-                      >invalid</UBadge
+                      >{{ r.peakKw.toFixed(1) }} kW<template v-if="r.overKw > 0.005">,
+                        {{ r.overKw.toFixed(1) }} over</template
+                      ></UBadge
                     >
                   </UTooltip>
                   <UBadge
@@ -818,19 +853,29 @@ const comparison = allResults
                 <td
                   class="py-1.5 pr-3 text-right"
                   :class="
-                    savingOf(r) == null
-                      ? 'text-warning'
+                    !r.feasible
+                      ? 'text-error'
                       : (savingOf(r) ?? 0) > 0.0005
                         ? 'text-success'
                         : 'text-dimmed'
                   "
                 >
-                  <template v-if="savingOf(r) == null">invalid plan</template>
-                  <template v-else-if="r.system === reference?.system">highest cost</template>
-                  <template v-else
+                  <template v-if="r.feasible && r.system === reference?.system">highest cost</template>
+                  <UTooltip
+                    v-else-if="!r.feasible && planSaving(r) != null"
+                    text="Invalid schedule: the household could not follow it, so this saving is not reached"
+                  >
+                    <span class="inline-flex items-center gap-1">
+                      <UIcon name="i-lucide-triangle-alert" class="size-3" />
+                      {{ euro(planSaving(r)!, 3) }} ·
+                      {{ refCost > 0 ? ((planSaving(r)! / refCost) * 100).toFixed(1) : '0.0' }} %
+                    </span>
+                  </UTooltip>
+                  <template v-else-if="savingOf(r) != null"
                     >{{ euro(savingOf(r)!, 3) }} ·
                     {{ refCost > 0 ? ((savingOf(r)! / refCost) * 100).toFixed(1) : '0.0' }} %</template
                   >
+                  <template v-else>–</template>
                 </td>
                 <td class="py-1.5 text-right text-muted">
                   {{
@@ -856,8 +901,10 @@ const comparison = allResults
           Total = energy cost + {{ euro(tools.feeEurPerKw, 2) }} for each kW of
           the day's highest load above {{ tools.peakLimitKw }} kW. EMHASS is
           given the limit as its maximum grid power and only exceeds it when no
-          schedule fits; the pipeline treats the limit as a target. An invalid
-          schedule (an appliance missing or outside its window) saves nothing.
+          schedule fits; the pipeline treats the limit as a target. Red: an invalid
+          schedule (an appliance missing or outside its allowed period); its peak
+          and the saving it would give are shown, but a household could not follow
+          it (hover for the reason).
           <template v-if="priceSpread < 1">
             Prices on this day are almost flat ({{ priceSpread.toFixed(1) }}
             c/kWh between the cheapest and dearest hour), so there is little to

@@ -78,8 +78,14 @@ def test_single_agent_recovers_when_prose_ends_the_loop(scenario: Scenario) -> N
 
 def test_oneshot_answers_without_tools_from_full_data(scenario: Scenario) -> None:
     message = scenario_message(scenario)
-    assert len(message.splitlines()) > 96 and "base_kW" in message  # every slot's price and base load
-    model = scripted(call("ScheduleOutput", assignments=_optimal_assignments(scenario), total_cost_eur=1.0, explanation="x"))
+    rows = [line for line in message.splitlines() if line[:2].isdigit() and " | " in line]
+    assert len(rows) == 24  # one row per hour with its four 15-minute prices and base loads: every slot's values
+    p, b = scenario.price_eur_per_kwh, scenario.base_load_kw
+    assert rows[13] == f"13 | {' '.join(f'{x * 100:.2f}' for x in p[52:56])} | {' '.join(f'{x:.2f}' for x in b[52:56])}"
+    assert "sum_load" not in message and "detect_conflicts" not in message  # no tools, so no tool names
+    for a in scenario.appliances:
+        assert f"- {a.id}: {a.kind}, cycle {a.duration_slots * 15} min" in message
+    model = scripted(call("FinalSchedule", assignments=_optimal_assignments(scenario)))  # the agents' answer form
     run = run_oneshot(scenario, model)
     assert run.errors == [] and run.tool_calls == 0
     parsed = {k: scenario.time_to_slot(v) for k, v in run.assignments.items()}
@@ -100,10 +106,10 @@ class _Recording(ScriptedModel):
 
 def _models(scenario: Scenario, *turns, summary: str = "done") -> dict:  # type: ignore[no-untyped-def]
     """The two agents: the Orchestrator plans and summarises; the Scheduler replays ``turns`` (a schedule list
-    becomes a ScheduleOutput; anything else is passed on as a scripted turn)."""
+    becomes a FinalSchedule; anything else is passed on as a scripted turn)."""
     ids = [a.id for a in scenario.appliances]
     scheduler_turns = [
-        call("ScheduleOutput", assignments=t, total_cost_eur=1.0, explanation="") if isinstance(t, list) else t
+        call("FinalSchedule", assignments=t) if isinstance(t, list) else t
         for t in turns
     ]  # fmt: skip
     return {
@@ -136,7 +142,7 @@ def test_pipeline_end_to_end_with_a_verified_schedule(scenario: Scenario) -> Non
     assert run.assignments == {o["appliance_id"]: o["start_time"] for o in optimal}
     scheduler_message = SEEN[1]  # the Orchestrator's brief, then the Scheduler's first message
     for a in scenario.appliances:  # profile_data built the profiles from the household data
-        assert a.id in scheduler_message and f'"duration_minutes": {a.duration_slots * 15}' in scheduler_message
+        assert f"- {a.id}: {a.kind}, {a.duration_slots * 15} min" in scheduler_message
     assert "Saving: EUR" in SEEN[-1]  # the summary is given the cost and the saving
 
 
@@ -267,10 +273,10 @@ def test_several_allowed_periods_reach_the_scheduler_and_one_window_stays_as_bef
                                deadline_slot=88, default_start_slot=24, windows=[(24, 36), (72, 88)])  # fmt: skip
     two = _one_cheap_hour_scenario().model_copy(update={"appliances": [washer], "user_request": "washing_machine_1"})
     run_multi_agent(two, lambda role: _models(two, [{"appliance_id": "washing_machine_1", "start_time": "18:00"}])[role])
-    assert '"periods"' in SEEN[1] and '"06:00-09:00"' in SEEN[1] and '"18:00-22:00"' in SEEN[1]
+    assert "inside one of 06:00-09:00 or 18:00-22:00" in SEEN[1]
     SEEN.clear()
     run_multi_agent(scenario, lambda role: _models(scenario, _optimal_assignments(scenario))[role])
-    assert "periods" not in SEEN[1]  # one window per appliance (the benchmarks): the message is unchanged
+    assert "inside one of" not in SEEN[1]  # one window per appliance (the benchmarks): start and finish only
 
 
 def test_spot_prices_are_cached_within_a_run(scenario: Scenario) -> None:
@@ -296,3 +302,61 @@ def test_the_day_summary_is_brief_and_the_15_min_detail_stays_available(scenario
     assert summary.count("|") == 23  # 24 hourly means
     detail = prices.invoke({"from_time": "18:00", "to_time": "19:00"})
     assert detail.startswith("time c/kWh") and len(detail.splitlines()) == 5  # four 15-min slots
+
+
+# ── Design iteration 14: fewer tokens ──────────────────────────────────────
+def test_the_first_round_offers_two_tools_and_a_feedback_round_all(scenario: Scenario) -> None:
+    from hems.agents.multi_agent import FIRST_ROUND_TOOLS, SCHEDULER_AGENT_TOOLS
+
+    offered: list[list[str]] = []
+
+    class Offered(ScriptedModel):
+        def bind_tools(self, tools, **kwargs):  # type: ignore[no-untyped-def]
+            offered.append([getattr(t, "name", None) or t.__name__ for t in tools])
+            return self
+
+    optimal = _optimal_assignments(scenario)
+    turns = [call("FinalSchedule", assignments=_clash(scenario)), call("FinalSchedule", assignments=optimal)]
+    models = {"orchestrator": _Recording(messages=iter([call("TaskBrief", appliance_ids=[a.id for a in scenario.appliances], notes=""),
+                                                        AIMessage(content="ok")])),
+              "scheduler": Offered(messages=iter(turns))}  # fmt: skip
+    run = run_multi_agent(scenario, lambda role: models[role])
+    assert run.iterations == 2
+    first, feedback = offered[0], offered[-1]
+    assert set(first) == {*FIRST_ROUND_TOOLS, "FinalSchedule"}
+    assert set(SCHEDULER_AGENT_TOOLS) <= set(feedback)
+
+
+def test_worked_examples_leave_out_the_pattern_line() -> None:
+    from hems.rag import brief
+
+    text = "Day with 2 appliances.\n- dishwasher_1 (90 min): 17:00-18:30\nPattern: washing_machine_1 overlaps dishwasher_1."
+    assert brief(text) == "Day with 2 appliances.\n- dishwasher_1 (90 min): 17:00-18:30"
+
+
+def test_a_run_that_reaches_the_step_limit_is_nudged_with_its_conversation() -> None:
+    from langchain_core.messages import HumanMessage
+    from langgraph.errors import GraphRecursionError
+
+    from hems.agents.errors import invoke_with_recovery
+
+    class Stub:  # first attempt: steps used up after a schedule written as text and an empty reply
+        def __init__(self) -> None:
+            self.payloads: list = []
+
+        def invoke(self, payload, config):  # type: ignore[no-untyped-def]
+            self.payloads.append(payload)
+            if len(self.payloads) == 1:
+                raise GraphRecursionError("limit")
+            return {"messages": payload["messages"], "structured_response": "ok"}
+
+        def get_state(self, config):  # type: ignore[no-untyped-def]
+            history = [HumanMessage("plan my day"), AIMessage(content='{"assignments": []}'), AIMessage(content="")]
+            return type("State", (), {"values": {"messages": history}})()
+
+    stub = Stub()
+    result, recoveries = invoke_with_recovery(stub, "plan my day", "FinalSchedule", {}, 6)
+    assert result["structured_response"] == "ok" and recoveries == 1
+    sent = stub.payloads[1]["messages"]
+    assert [m.content for m in sent[:2]] == ["plan my day", '{"assignments": []}']  # the conversation, empty reply dropped
+    assert "Call the FinalSchedule tool now" in sent[-1].content

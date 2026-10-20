@@ -14,15 +14,20 @@ class ModelSpec:
     usd_per_m_input: float  # check current provider pricing before the final evaluation
     usd_per_m_output: float
     reasoning_effort: str | None = None  # OpenAI reasoning models: "none" = answer without a reasoning phase
+    # Input tokens the provider read from its prompt cache (a repeated prompt start of at least 1,024 tokens) cost
+    # less; None = no discount known, priced as ordinary input
+    usd_per_m_cached_input: float | None = None
 
 
 MODELS: dict[str, ModelSpec] = {
     # Model of the redesigned evaluation (since 19 Oct 2026). OpenAI publishes no dated snapshot of gpt-6-luna, so
     # the model id is all that can be pinned. It accepts temperature 0 only with reasoning effort "none", which also
     # keeps every call fast; the solver tool does the search, so the agents need no reasoning phase.
-    "gpt-6-luna": ModelSpec("openai", "gpt-6-luna", 0.10, 0.50, reasoning_effort="none"),
+    # Cached input at a 90 % discount, as third-party trackers report for the GPT-6 generation (verify on OpenAI's page).
+    "gpt-6-luna": ModelSpec("openai", "gpt-6-luna", 0.10, 0.50, reasoning_effort="none", usd_per_m_cached_input=0.01),
     # Model of design iterations 1-11, the registered Q2 confirmation and every result recorded before 19 Oct 2026.
-    "gpt-4o-mini": ModelSpec("openai", "gpt-4o-mini-2024-07-18", 0.15, 0.60),
+    # Its recorded costs priced every input token in full; the cached rate applies from 19 Oct 2026.
+    "gpt-4o-mini": ModelSpec("openai", "gpt-4o-mini-2024-07-18", 0.15, 0.60, usd_per_m_cached_input=0.075),
     # Earlier evaluation models: gpt-4o-mini (commercial API) and gpt-oss-20b (open weights, local).
     # Llama-3.3-70B was planned but Groq moved Llama to enterprise-only access on 26 Aug 2026.
     # gpt-oss-120b (Groq, evaluated by El Makroum et al. 2026) is pilot-only: the free tier's ~200k
@@ -65,10 +70,17 @@ def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> 
     raise ValueError(f"unknown provider {spec.provider}")
 
 
+def cached_tokens(usage: dict[str, dict]) -> int:
+    """Input tokens the provider read from its prompt cache (included in input_tokens)."""
+    return sum((u.get("input_token_details") or {}).get("cache_read", 0) or 0 for u in usage.values())
+
+
 def usage_cost_usd(usage: dict[str, dict], name: str) -> tuple[int, int, float]:
-    """Sum token usage from get_usage_metadata_callback() and price it."""
+    """Sum token usage from get_usage_metadata_callback() and price it; cached input tokens at the cached rate."""
     spec = MODELS[name]
     tokens_in = sum(u.get("input_tokens", 0) for u in usage.values())
     tokens_out = sum(u.get("output_tokens", 0) for u in usage.values())
-    cost = tokens_in / 1e6 * spec.usd_per_m_input + tokens_out / 1e6 * spec.usd_per_m_output
+    cached = min(cached_tokens(usage), tokens_in)
+    cached_rate = spec.usd_per_m_cached_input if spec.usd_per_m_cached_input is not None else spec.usd_per_m_input
+    cost = ((tokens_in - cached) * spec.usd_per_m_input + cached * cached_rate + tokens_out * spec.usd_per_m_output) / 1e6
     return tokens_in, tokens_out, cost

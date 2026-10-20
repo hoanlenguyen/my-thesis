@@ -15,6 +15,7 @@ import uuid
 from typing import Any
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langgraph.errors import GraphRecursionError
 
 MODEL_OUTPUT_FAILURE_CODES = ("tool_use_failed", "output_parse_failed")
 DAILY_QUOTA_MARKERS = ("tokens per day", "requests per day", "(TPD)", "(RPD)")
@@ -61,17 +62,38 @@ def invoke_with_recovery(
     for attempt in range(MAX_RECOVERIES + 1):
         try:
             result = agent.invoke(payload, config=run_config)
+        except GraphRecursionError:
+            # The model used up its steps without a valid answer (e.g. a schedule written as text, then empty replies):
+            # nudge with the conversation so far, as for a prose reply (since 19 Oct 2026; before, the run ended here)
+            if attempt == MAX_RECOVERIES:
+                raise
+            so_far = [m for m in (_conversation(agent, run_config) or payload["messages"])
+                      if not (m.type == "ai" and not m.content and not getattr(m, "tool_calls", None))]  # fmt: skip
+            payload = {"messages": [*so_far, nudge]}
         except Exception as exc:
             # Provider-enforced tool choice (e.g. Groq): the prose reply arrives as an HTTP 400.
             if model_output_failure(exc) is None or attempt == MAX_RECOVERIES:
                 raise
             rejected = _error_body(exc).get("failed_generation") or ""
-            payload = {"messages": ([AIMessage(rejected)] if rejected.strip() else []) + [nudge]}
+            so_far = _conversation(agent, run_config) or payload["messages"]
+            payload = {"messages": [*so_far, *([AIMessage(rejected)] if rejected.strip() else []), nudge]}
         else:
             # Providers that do not enforce tool choice (e.g. Ollama): the prose reply ends the loop
-            # without a structured result. It is already in the checkpointed history.
+            # without a structured result.
             if result.get("structured_response") is not None or attempt == MAX_RECOVERIES:
                 return result, attempt
-            payload = {"messages": [nudge]}
+            payload = {"messages": [*result["messages"], nudge]}
+        # The nudge carries the whole conversation on a fresh thread (fixed 19 Oct 2026). Before, it was sent alone,
+        # relying on the checkpointed thread; inside a LangGraph node (every agent of the pipelines) that thread is not
+        # resumed, so the model received the nudge without its conversation and could not answer.
+        run_config["configurable"] = {**run_config["configurable"], "thread_id": str(uuid.uuid4())}
         run_config.pop("run_id", None)  # a trace run id may only be used once
     return result, MAX_RECOVERIES
+
+
+def _conversation(agent: Any, config: dict[str, Any]) -> list[BaseMessage]:
+    """The agent's messages so far on this thread, if its checkpoint can be read (not inside a graph node)."""
+    try:
+        return list(agent.get_state(config).values.get("messages", []))
+    except Exception:  # noqa: BLE001 - nested in a graph or no checkpoint: fall back to the request alone
+        return []

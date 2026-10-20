@@ -19,7 +19,7 @@ from typing import Any
 from langchain_core.callbacks import get_usage_metadata_callback
 
 from hems.agents.errors import daily_quota_exhausted
-from hems.agents.llm import MODELS, make_model, usage_cost_usd
+from hems.agents.llm import MODELS, cached_tokens, make_model, usage_cost_usd
 from hems.agents.types import AgentRun
 from hems.core.evaluate import evaluate
 from hems.core.models import Scenario, Schedule
@@ -113,6 +113,9 @@ def execute(scenario: Scenario, system: str, model_name: str = "-", run: int = 0
     tokens_in, tokens_out, usd = usage_cost_usd(usage, model_name) if model_name in MODELS else (0, 0, 0.0)
     record = _record(scenario, system, model_name, run, agent_run, schedule, parse_problems, latency,
                      tokens_in, tokens_out, usd, run_id if system in LLM_SYSTEMS else None)  # fmt: skip
+    if spec.agent is not None:
+        record["message"] = summarize  # whether the run also wrote the household message (a model call more)
+        record["tokens_cached"] = cached_tokens(usage)  # input tokens read from the provider's cache (cheaper)
     return {**record, **info}
 
 

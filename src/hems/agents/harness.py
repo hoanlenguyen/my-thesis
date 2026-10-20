@@ -9,7 +9,6 @@ language model work is split.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -47,9 +46,16 @@ def profiles(scenario: Scenario) -> ProfileOutput:
 
 
 def profile_text(profile: ProfileOutput) -> str:
-    """The flexible appliances' profiles as the agent reads them (``periods`` only where there are several)."""
-    flexible = [p.model_dump(exclude_none=True) for p in profile.appliances if p.flexible]
-    return f"Appliance profiles:\n{json.dumps(flexible, indent=1)}"
+    """The flexible appliances' profiles as the agent reads them: one line each (design iteration 14; indented JSON
+    before), with the allowed periods where an appliance has several."""
+    lines = []
+    for p in profile.appliances:
+        if not p.flexible:
+            continue
+        when = (f"inside one of {' or '.join(p.periods)}" if p.periods
+                else f"start from {p.earliest_time}, finish by {p.deadline_time}")  # fmt: skip
+        lines.append(f"- {p.appliance_id}: {p.kind}, {p.duration_minutes} min, peak {p.peak_kw:.2f} kW, {when}")
+    return "Appliance profiles (id: kind, cycle length, peak power, when it may run):\n" + "\n".join(lines)
 
 
 # ── Running an agent ─────────────────────────────────────────────────────────

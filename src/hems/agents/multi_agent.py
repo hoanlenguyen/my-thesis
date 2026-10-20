@@ -32,7 +32,7 @@ from langgraph.graph import END, START, StateGraph
 
 from hems.agents import prompts
 from hems.agents.harness import MAX_ROUNDS, Checker, cost_facts, profile_text, profiles, run_react
-from hems.agents.schemas import ProfileOutput, ScheduleOutput, TaskBrief, assignments_to_dict
+from hems.agents.schemas import FinalSchedule, ProfileOutput, TaskBrief, assignments_to_dict
 from hems.agents.types import AgentRun
 from hems.core.models import Scenario, Schedule
 from hems.tools import OPTIMIZER_TOOLS, RESOLVER_TOOLS, SCHEDULER_TOOLS, build_tools, select, with_thought
@@ -42,6 +42,9 @@ SCHEDULER_STEP_LIMIT = 60
 ORCHESTRATOR_RECURSION_LIMIT = 6
 # The Scheduler's tools: price-aware scheduling, the optimiser, and the conflict tools to fix reported problems.
 SCHEDULER_AGENT_TOOLS = SCHEDULER_TOOLS + OPTIMIZER_TOOLS + RESOLVER_TOOLS
+# Design iteration 14: the first round offers only the tools a normal run uses (every tool description is sent with
+# every model call); a feedback round offers all of SCHEDULER_AGENT_TOOLS to fix the reported problems.
+FIRST_ROUND_TOOLS = ("get_spot_prices", "optimize_schedule")
 
 ModelFactory = Callable[[str], BaseChatModel]
 """Role name ("orchestrator" | "scheduler") -> chat model."""
@@ -51,7 +54,7 @@ class PipelineState(TypedDict, total=False):
     request: str
     brief: TaskBrief
     profile: ProfileOutput
-    proposal: ScheduleOutput  # the Scheduler's latest schedule
+    proposal: FinalSchedule  # the Scheduler's latest schedule
     checked: dict[str, str]  # the schedule after the verification step (missing appliances placed in the last round)
     feedback: str  # problems the verification step returns to the Scheduler ("" when the schedule passed)
     rounds: int
@@ -82,8 +85,8 @@ def build_pipeline(
     examples = f"\n\n{retriever(scenario)}" if retriever else ""
     thought_log: list[dict[str, str]] = []  # filled by the wrapped tools; moved into the state after each agent
 
-    def scheduler_tools() -> list:
-        listed = select(tools, SCHEDULER_AGENT_TOOLS)
+    def scheduler_tools(feedback_round: bool) -> list:
+        listed = select(tools, SCHEDULER_AGENT_TOOLS if feedback_round else FIRST_ROUND_TOOLS)
         return [with_thought(t, thought_log) for t in listed] if thoughts else listed
 
     scheduler_prompt = prompts.SCHEDULER + (prompts.THOUGHT_NOTE if thoughts else "")
@@ -122,7 +125,7 @@ def build_pipeline(
                 message += f"\nThe day's plan has these appliances; schedule all of them: {', '.join(plan_ids)}."
         since = len(thought_log)
         run = run_react(
-            models("scheduler"), scheduler_tools(), scheduler_prompt, ScheduleOutput, message,
+            models("scheduler"), scheduler_tools(bool(state.get("feedback"))), scheduler_prompt, FinalSchedule, message,
             "scheduler", SCHEDULER_STEP_LIMIT, config,
         )  # fmt: skip
         update: PipelineState = {"tool_calls": run.tool_calls, "errors": run.errors, "recoveries": run.recoveries,

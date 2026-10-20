@@ -63,7 +63,7 @@ def test_pipeline_passes_examples_and_gives_the_scheduler_the_optimiser(scenario
     optimal = [{"appliance_id": k, "start_time": scenario.slot_to_time(v)} for k, v in solve_milp(scenario).schedule.items()]
     scheduler = Recording(messages=iter([
         call("optimize_schedule", appliance_ids=ids),
-        call("ScheduleOutput", assignments=optimal, total_cost_eur=1.0, explanation="solver"),
+        call("FinalSchedule", assignments=optimal),
     ]))  # fmt: skip
     models = {
         "orchestrator": scripted(call("TaskBrief", appliance_ids=ids, notes=""), "Done."),

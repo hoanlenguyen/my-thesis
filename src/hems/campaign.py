@@ -50,6 +50,9 @@ class Plan:
     out: str
     order: str = "model"
     ids: list[str] | None = None
+    # Whether the agent systems also write the household message (one more model call per run). Off unless a plan
+    # asks for it (since 19 Oct 2026); every plan run before then had it on and says "message": true.
+    message: bool = False
 
     @classmethod
     def load(cls, path: str | Path) -> Plan:
@@ -170,7 +173,7 @@ def status(plan: Plan) -> str:
     return "\n".join(lines)
 
 
-def run(plan: Plan, summarize: bool = True) -> str:
+def run(plan: Plan) -> str:
     out = Path(plan.out)
     with single_instance(out):
         ensure_ollama(plan.models)
@@ -179,7 +182,7 @@ def run(plan: Plan, summarize: bool = True) -> str:
         if plan.ids:
             scenarios = [s for s in scenarios if s.id in plan.ids]
         with keep_awake():
-            outcome = run_batch(scenarios, plan.systems, plan.models, plan.runs, out, summarize=summarize, order=plan.order)
+            outcome = run_batch(scenarios, plan.systems, plan.models, plan.runs, out, summarize=plan.message, order=plan.order)
         print(status(plan), flush=True)
         messages = {
             "done": "campaign complete.",

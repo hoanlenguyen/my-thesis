@@ -69,12 +69,20 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   (`data/tariff.py`); base load counts toward the peak limit only.
 - Tools: the Scheduler agent gets `SCHEDULER_TOOLS + OPTIMIZER_TOOLS + RESOLVER_TOOLS`
   (`multi_agent.SCHEDULER_AGENT_TOOLS`); `PROFILER_TOOLS` work is done by the deterministic `profile_data()`.
+  Since iteration 14 the first round offers only `FIRST_ROUND_TOOLS` (`get_spot_prices`, `optimize_schedule`) and a
+  feedback round all of them; the agents answer with `FinalSchedule` (start times only), the baselines (`oneshot`,
+  `single`) keep `ScheduleOutput`. Costs price cached input tokens at the cached rate (`llm.usage_cost_usd`;
+  records carry `tokens_cached`); results recorded before 19 Oct 2026 priced every input token in full.
   Only `optimize_schedule` (MILP call) solves the whole problem. The single-agent prompt is built from the
   role texts in `prompts.py`.
 - Step budgets: Scheduler agent 60 (`multi_agent.SCHEDULER_STEP_LIMIT`), Orchestrator 6, at most 2 rounds;
   the single agent has 75 (`tests/test_core.py` checks the Scheduler stays within it).
 - Recovery nudge (`agents/errors.py`) applies identically to every model and agent; recoveries are logged.
 - Infeasible agent schedules are scored at the naive cost; feasibility is reported separately.
+- **Household message is opt-in** (since 19 Oct 2026): campaigns skip the agents' message call unless the plan
+  says `"message": true` (`campaign.Plan.message`, default false; `hems run --message`). Every existing config
+  ran with it and says `"message": true`. Records carry `message`. The demo API returns it unless the request
+  says `"message": false`.
 - **Pre-registration** (`docs/preregistration.md`): H1/H2 are confirmed on the held-out Q set
   (`configs/confirmation.json` → `results/confirmation.jsonl`, analysed only by `hems confirm` /
   `analysis/confirm.py`; Q2: `configs/confirmation_q2.json` → `results/confirmation_q2.jsonl`,

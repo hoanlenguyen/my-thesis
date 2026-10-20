@@ -26,8 +26,13 @@ from langgraph.graph import END, START, StateGraph
 
 from hems.agents import prompts
 from hems.agents.harness import MAX_ROUNDS, Checker, cost_facts, profile_text, profiles, run_react
-from hems.agents.multi_agent import ORCHESTRATOR_RECURSION_LIMIT, SCHEDULER_AGENT_TOOLS, SCHEDULER_STEP_LIMIT
-from hems.agents.schemas import ProfileOutput, ScheduleOutput, assignments_to_dict
+from hems.agents.multi_agent import (
+    FIRST_ROUND_TOOLS,
+    ORCHESTRATOR_RECURSION_LIMIT,
+    SCHEDULER_AGENT_TOOLS,
+    SCHEDULER_STEP_LIMIT,
+)
+from hems.agents.schemas import FinalSchedule, ProfileOutput, assignments_to_dict
 from hems.agents.types import AgentRun
 from hems.core.models import Scenario, Schedule
 from hems.tools import build_tools, select, with_thought
@@ -41,7 +46,7 @@ class HarnessState(TypedDict, total=False):
     request: str
     profile: ProfileOutput
     messages: list[BaseMessage]  # the agent's conversation, continued in a feedback round and for the message
-    proposal: ScheduleOutput
+    proposal: FinalSchedule
     checked: dict[str, str]
     feedback: str
     rounds: int
@@ -66,8 +71,8 @@ def build_harness_agent(
     thought_log: list[dict[str, str]] = []
     system_prompt = prompts.HARNESS_AGENT + (prompts.THOUGHT_NOTE if thoughts else "")
 
-    def agent_tools() -> list:
-        listed = select(tools, AGENT_TOOLS)
+    def agent_tools(feedback_round: bool) -> list:  # design iteration 14, as in the two-agent pipeline
+        listed = select(tools, AGENT_TOOLS if feedback_round else FIRST_ROUND_TOOLS)
         return [with_thought(t, thought_log) for t in listed] if thoughts else listed
 
     def required(state: HarnessState) -> list[str]:
@@ -90,7 +95,9 @@ def build_harness_agent(
         else:
             message = f"{state['request']}\n\n{profile_text(state['profile'])}{examples}"
         since = len(thought_log)
-        run = run_react(model, agent_tools(), system_prompt, ScheduleOutput, message, "agent", AGENT_STEP_LIMIT, config)
+        feedback_round = bool(state.get("feedback") and state.get("messages"))
+        run = run_react(model, agent_tools(feedback_round), system_prompt, FinalSchedule, message, "agent",
+                        AGENT_STEP_LIMIT, config)  # fmt: skip
         update: HarnessState = {"tool_calls": run.tool_calls, "errors": run.errors, "recoveries": run.recoveries,
                                 "thoughts": [{"agent": "agent", **t} for t in thought_log[since:]]}  # fmt: skip
         if run.messages:

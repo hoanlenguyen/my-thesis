@@ -125,6 +125,19 @@ def detect_cycles(
 
     Short "off" gaps inside a programme (e.g. soaking) are merged so one wash is one cycle.
     """
+    return [profile for _start, profile in timed_cycles(watts, on_w, max_gap_min, min_duration_min, max_duration_min,
+                                                         min_energy_kwh)]  # fmt: skip
+
+
+def timed_cycles(
+    watts: pd.Series,
+    on_w: float = 20.0,
+    max_gap_min: int = 10,
+    min_duration_min: int = 20,
+    max_duration_min: int = 300,
+    min_energy_kwh: float = 0.1,
+) -> list[tuple[pd.Timestamp, list[float]]]:
+    """The cycles of ``detect_cycles`` with the time each one started (local time of the REFIT recording)."""
     per_min = watts.resample("1min").mean().fillna(0.0)
     on = per_min > on_w
     if not on.any():
@@ -134,7 +147,7 @@ def detect_cycles(
     starts = np.r_[0, breaks + 1]
     ends = np.r_[breaks, len(on_times) - 1]
 
-    cycles: list[list[float]] = []
+    cycles: list[tuple[pd.Timestamp, list[float]]] = []
     for s, e in zip(starts, ends):
         segment = per_min[on_times[s] : on_times[e]]
         duration = len(segment)
@@ -145,7 +158,7 @@ def detect_cycles(
         padded[:duration] = segment.to_numpy()
         profile_kw = padded.reshape(n_slots, SLOT_MINUTES).mean(axis=1) / 1000
         if profile_kw.sum() * SLOT_MINUTES / 60 >= min_energy_kwh:
-            cycles.append([round(float(p), 3) for p in profile_kw])
+            cycles.append((on_times[s], [round(float(p), 3) for p in profile_kw]))
     return cycles
 
 

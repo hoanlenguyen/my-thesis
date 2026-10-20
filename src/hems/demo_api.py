@@ -280,6 +280,9 @@ class PlanIn(BaseModel):
     appliances: list[ApplianceIn]
     # The agent design run live: the two-agent pipeline, or one agent in the same harness
     design: Literal["two_agents", "one_agent"] = "two_agents"
+    # Whether the agents also write the household message (one more model call); without it the recommendation has
+    # no "message" field
+    message: bool = True
 
 
 def _slot(clock: str, end: bool = False) -> int:
@@ -371,10 +374,10 @@ class ScheduleItem(BaseModel):
 
 
 class Recommendation(BaseModel):
-    """The pipeline's daily recommendation in a fixed form. Only ``message`` is written by the language model;
-    ``schedules`` and the figures come from the verified schedule as scored on the page."""
+    """The pipeline's daily recommendation in a fixed form. Only ``message`` is written by the language model, and only
+    when the request asks for it; ``schedules`` and the figures come from the verified schedule as scored on the page."""
 
-    message: str
+    message: str | None = None
     schedules: list[ScheduleItem]
     cost: float = Field(description="what the household pays: energy plus the fee above the peak limit")
     currency: str = "EUR"
@@ -390,7 +393,7 @@ class AgentOut(BaseModel):
     recommendation: Recommendation
 
 
-def _recommendation(scenario: Scenario, result: dict[str, Any]) -> dict[str, Any]:
+def _recommendation(scenario: Scenario, result: dict[str, Any], message: bool = True) -> dict[str, Any]:
     """The fixed-form recommendation built around the pipeline's message from its scored result."""
     items = []
     for appliance_id, start in sorted(result["starts"].items(), key=lambda kv: (kv[1], kv[0])):
@@ -408,10 +411,10 @@ def _recommendation(scenario: Scenario, result: dict[str, Any]) -> dict[str, Any
             energyKwh=round(a.energy_kwh, 3), cost=round(appliance_cost(scenario, a, start), 4),
         ))  # fmt: skip
     return Recommendation(
-        message=result["message"], schedules=items, cost=result["costEur"],
+        message=result["message"] if message else None, schedules=items, cost=result["costEur"],
         peakKw=result["peakKw"], peakLimitKw=scenario.peak_limit_kw,
         valid=result["feasible"], date=scenario.date,
-    ).model_dump()  # fmt: skip
+    ).model_dump(exclude_none=True)  # fmt: skip
 
 
 def _result(scenario: Scenario, system: str, record: dict[str, Any], naive: dict[str, Any], fee: float) -> dict[str, Any]:
@@ -618,13 +621,15 @@ def plan_tools(body: PlanIn) -> dict[str, Any]:
         records["emhass_rest"] = emhass
     naive = _naive(scenario, fee)
     results = [_result(scenario, s, r, naive, fee) for s, r in records.items()]
+    # Demo only: every system's schedule also in the recommendation form of the agents (they write no message)
+    results = [{**r, "recommendation": _recommendation(scenario, r, message=False)} for r in results]
     return {**_scenario_payload(scenario, source), "feeEurPerKw": fee, "naiveCost": naive["total"],
             "milpCost": score(scenario, best, fee)["total"], "results": results, "emhass": "emhass_rest" in records,
             "emhassSkipped": "periods" if too_many else None,
             "emhassRuns": records["emhass_rest"].get("emhass_runs", 1) if "emhass_rest" in records else 0}  # fmt: skip
 
 
-@app.post("/api/plan/agent", response_model=AgentOut)
+@app.post("/api/plan/agent", response_model=AgentOut, response_model_exclude_none=True)  # no "message": null
 def plan_agent(body: PlanIn, request: Request) -> dict[str, Any]:
     """The Multi-Agent Pipeline with the live model (GPT-6 Luna), live, with its message to the household. Its tools and checks
     treat the limit as a target; exceeding it is charged the fee like every other system.
@@ -634,7 +639,7 @@ def plan_agent(body: PlanIn, request: Request) -> dict[str, Any]:
     ``recommendation`` in a fixed form ({message, schedules, cost, currency, ...})."""
     scenario, _ = build_scenario(body)
     _allow_llm_run(request)
-    for chunk in _pipeline_events(scenario, body.fee_eur_per_kw, body.design):
+    for chunk in _pipeline_events(scenario, body.fee_eur_per_kw, body.design, body.message):
         event = json.loads(chunk.removeprefix("data: "))
         if event.get("type") == "result":
             return {"result": event["result"], "recommendation": event["recommendation"]}
@@ -667,7 +672,9 @@ def plan_oneshot(body: PlanIn, request: Request) -> dict[str, Any]:
     tokens_in, tokens_out, usd = usage_cost_usd(usage, LIVE_MODEL)
     record = _record(scenario, "oneshot", LIVE_MODEL, 0, run, schedule, problems,
                      time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
-    return {"result": _result(scenario, "oneshot", record, _naive(scenario, fee), fee)}
+    result = _result(scenario, "oneshot", record, _naive(scenario, fee), fee)
+    # its one-line explanation is not a checked household message: the recommendation has none, as for the rules
+    return {"result": {**result, "recommendation": _recommendation(scenario, result, message=False)}}
 
 
 # ── The pipeline, agent by agent (streamed) ─────────────────────────────────
@@ -770,7 +777,8 @@ def _agent_output(node: str, update: dict[str, Any]) -> dict[str, Any]:
                                 "durationMin": p.duration_minutes, "window": f"{p.earliest_time}-{p.deadline_time}"}
                                for p in profile.appliances]}  # fmt: skip
     if node in ACTING_NODES and (proposal := update.get("proposal")):
-        return {"starts": starts(proposal.assignments), "costEur": proposal.total_cost_eur, "explanation": proposal.explanation}
+        return {"starts": starts(proposal.assignments), "costEur": getattr(proposal, "total_cost_eur", None),
+                "explanation": getattr(proposal, "explanation", "")}  # the agents' FinalSchedule has neither (iteration 14)
     if node == "verify_schedule" and "feedback" in update:
         feedback = update.get("feedback") or ""
         return {"starts": update.get("checked") or {}, "feedback": feedback, "passed": not feedback}
@@ -779,7 +787,7 @@ def _agent_output(node: str, update: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
-def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents") -> Iterator[str]:
+def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents", with_message: bool = True) -> Iterator[str]:
     """Run the Multi-Agent Pipeline (two agents, design iteration 10; the household data are profiled while the
     Orchestrator plans) and stream
     server-sent events: each agent starting, its tool calls, what it handed on, the summary as it is written, and
@@ -805,14 +813,14 @@ def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents")
             watch = _AgentWatch(emit)
             model = make_model(LIVE_MODEL)
             retriever = default_retriever()  # RAG: the solved days given to the acting agent as worked examples
-            retriever = default_retriever()  # RAG: the solved days given to the acting agent as worked examples
             if design == "one_agent":
-                pipeline = build_harness_agent(scenario, model, retriever=retriever, thoughts=True,
+                pipeline = build_harness_agent(scenario, model, retriever=retriever, thoughts=True, summarize=with_message,
                                                summary_costs=_summary_costs(scenario, fee),
                                                message_instruction=DEMO_MESSAGE)  # fmt: skip
             else:
                 pipeline = build_pipeline(scenario, lambda _role: model, retriever=retriever, thoughts=True,
-                                          parallel_start=True, summary_costs=_summary_costs(scenario, fee))  # fmt: skip
+                                          summarize=with_message, parallel_start=True,
+                                          summary_costs=_summary_costs(scenario, fee))  # fmt: skip
             state: dict[str, Any] = {key: kind() for key, kind in REDUCED.items()}
             emit({"type": "start"})
             emit({"type": "working", "node": "retrieve_examples"})
@@ -857,7 +865,7 @@ def _pipeline_events(scenario: Scenario, fee: float, design: str = "two_agents")
             record = _record(scenario, LIVE_SYSTEMS[design], LIVE_MODEL, 0, run, schedule, problems,
                              time.perf_counter() - started, tokens_in, tokens_out, usd, None)  # fmt: skip
             result = _result(scenario, LIVE_SYSTEMS[design], record, _naive(scenario, fee), fee)
-            emit({"type": "result", "result": result, "recommendation": _recommendation(scenario, result)})
+            emit({"type": "result", "result": result, "recommendation": _recommendation(scenario, result, with_message)})
         except Exception as exc:  # noqa: BLE001 - shown on the page instead of a broken stream
             emit({"type": "error", "message": f"{type(exc).__name__}: {exc}"})
         finally:
@@ -873,5 +881,6 @@ def plan_agent_stream(body: PlanIn, request: Request) -> StreamingResponse:
     """The Multi-Agent Pipeline agent by agent, as server-sent events (see _pipeline_events)."""
     scenario, _ = build_scenario(body)  # input errors are answered as JSON before the stream starts
     _allow_llm_run(request)
-    return StreamingResponse(_pipeline_events(scenario, body.fee_eur_per_kw, body.design), media_type="text/event-stream",
+    return StreamingResponse(_pipeline_events(scenario, body.fee_eur_per_kw, body.design, body.message),
+                             media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})  # fmt: skip

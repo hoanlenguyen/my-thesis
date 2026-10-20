@@ -79,7 +79,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         args.models,
         args.runs,
         Path(args.out),
-        summarize=not args.no_summary,
+        summarize=args.message,
     )
 
 
@@ -119,7 +119,7 @@ def cmd_campaign(args: argparse.Namespace) -> None:
     if args.action == "status":
         print(campaign.status(plan))
         return
-    outcome = campaign.run(plan, summarize=not args.no_summary)
+    outcome = campaign.run(plan)
     raise SystemExit(0 if outcome == "done" else 3)  # non-zero lets a scheduler know work remains
 
 
@@ -209,6 +209,26 @@ def cmd_build_factorial(args: argparse.Namespace) -> None:
     print(f"{len(manifest['scenarios'])} scenarios")
 
 
+def cmd_usage(args: argparse.Namespace) -> None:
+    from hems.data.usage import start_minutes, usage_times
+
+    usage = usage_times(start_minutes(args.refit))
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(usage, indent=1), encoding="utf-8")
+    for kind, s in usage["pooled"].items():
+        print(f"{kind:16} {s['houses']:2} households  p25 {s['p25_min'] // 60:02d}:{s['p25_min'] % 60:02d}"
+              f"  median {s['p50_min'] // 60:02d}:{s['p50_min'] % 60:02d}  p75 {s['p75_min'] // 60:02d}:{s['p75_min'] % 60:02d}")
+    print(f"-> {out}")
+
+
+def cmd_build_usage(args: argparse.Namespace) -> None:
+    from hems.data.usage import build_usage_benchmark
+
+    manifest = build_usage_benchmark(args.source, args.out, args.usage, args.id_prefix)
+    print(f"{manifest['scenarios']} scenarios -> {args.out}; peak limit raised in {len(manifest['peak_limit_raised'])}")
+
+
 def main() -> None:
     # Windows consoles default to cp1252; model output (e.g. "≈") must never crash a batch while logging.
     # Line buffering makes progress visible immediately when output goes to a log file.
@@ -268,7 +288,8 @@ def main() -> None:
     p.add_argument("--ids", nargs="*", help="only these scenario ids")
     p.add_argument("--limit", type=int, help="only the first N scenarios")
     p.add_argument("--out", default="results/runs.jsonl")
-    p.add_argument("--no-summary", action="store_true", help="skip the orchestrator's natural-language summary")
+    p.add_argument("--message", action="store_true",
+                   help="also write the household message (one more model call per run); off by default")
     p.set_defaults(func=cmd_run)
 
     p = sub.add_parser("demo", help="run one scenario and print the result")
@@ -280,8 +301,7 @@ def main() -> None:
 
     p = sub.add_parser("campaign", help="resumable evaluation from a plan file (configs/*.json)")
     p.add_argument("action", choices=["run", "status"])
-    p.add_argument("--plan", default="configs/full_evaluation.json")
-    p.add_argument("--no-summary", action="store_true", help="skip the orchestrator's natural-language summary")
+    p.add_argument("--plan", default="configs/full_evaluation.json")  # "message": true in a plan adds the message
     p.set_defaults(func=cmd_campaign)
 
     p = sub.add_parser("resolution", help="MILP: value of 15-min vs hourly price information")
@@ -330,6 +350,18 @@ def main() -> None:
     p.add_argument("--tariff", default="fi", choices=["fi", "uk2015"], help="consumer tariff (data.tariff)")
     p.add_argument("--allow-fewer", action="store_true", help="take every candidate day when a pattern has too few")
     p.set_defaults(func=cmd_build_factorial)
+
+    p = sub.add_parser("usage", help="usual run times of each household's appliances from REFIT cycle start times")
+    p.add_argument("--refit", default="data/raw/refit")
+    p.add_argument("--out", default="data/usage/usage_times.json")
+    p.set_defaults(func=cmd_usage)
+
+    p = sub.add_parser("build-usage", help="a factorial set with windows from the households' usual run times")
+    p.add_argument("--source", default="data/scenarios_v2")
+    p.add_argument("--out", default="data/scenarios_v3")
+    p.add_argument("--usage", default="data/usage/usage_times.json")
+    p.add_argument("--id-prefix", default="U-")
+    p.set_defaults(func=cmd_build_usage)
 
     args = parser.parse_args()
     args.func(args)

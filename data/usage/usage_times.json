@@ -1,0 +1,306 @@
+{
+ "percentiles": [
+  25,
+  50,
+  75
+ ],
+ "houses": {
+  "1": {
+   "washing_machine": {
+    "cycles": 368,
+    "p25_min": 366,
+    "p50_min": 606,
+    "p75_min": 713
+   },
+   "dishwasher": {
+    "cycles": 160,
+    "p25_min": 221,
+    "p50_min": 523,
+    "p75_min": 706
+   }
+  },
+  "2": {
+   "washing_machine": {
+    "cycles": 319,
+    "p25_min": 549,
+    "p50_min": 780,
+    "p75_min": 942
+   },
+   "dishwasher": {
+    "cycles": 454,
+    "p25_min": 748,
+    "p50_min": 1044,
+    "p75_min": 1141
+   }
+  },
+  "3": {
+   "tumble_dryer": {
+    "cycles": 652,
+    "p25_min": 588,
+    "p50_min": 787,
+    "p75_min": 989
+   },
+   "dishwasher": {
+    "cycles": 445,
+    "p25_min": 564,
+    "p50_min": 813,
+    "p75_min": 1084
+   },
+   "washing_machine": {
+    "cycles": 636,
+    "p25_min": 542,
+    "p50_min": 665,
+    "p75_min": 883
+   }
+  },
+  "4": {
+   "washing_machine": {
+    "cycles": 262,
+    "p25_min": 465,
+    "p50_min": 500,
+    "p75_min": 584
+   }
+  },
+  "5": {
+   "tumble_dryer": {
+    "cycles": 375,
+    "p25_min": 540,
+    "p50_min": 765,
+    "p75_min": 1025
+   },
+   "washing_machine": {
+    "cycles": 625,
+    "p25_min": 568,
+    "p50_min": 752,
+    "p75_min": 1005
+   },
+   "dishwasher": {
+    "cycles": 785,
+    "p25_min": 104,
+    "p50_min": 461,
+    "p75_min": 880
+   }
+  },
+  "6": {
+   "washing_machine": {
+    "cycles": 116,
+    "p25_min": 617,
+    "p50_min": 659,
+    "p75_min": 729
+   },
+   "dishwasher": {
+    "cycles": 95,
+    "p25_min": 658,
+    "p50_min": 703,
+    "p75_min": 810
+   }
+  },
+  "7": {
+   "tumble_dryer": {
+    "cycles": 528,
+    "p25_min": 722,
+    "p50_min": 844,
+    "p75_min": 1044
+   },
+   "washing_machine": {
+    "cycles": 833,
+    "p25_min": 469,
+    "p50_min": 667,
+    "p75_min": 1057
+   },
+   "dishwasher": {
+    "cycles": 654,
+    "p25_min": 509,
+    "p50_min": 828,
+    "p75_min": 1064
+   }
+  },
+  "8": {
+   "washing_machine": {
+    "cycles": 367,
+    "p25_min": 135,
+    "p50_min": 294,
+    "p75_min": 396
+   }
+  },
+  "9": {
+   "washing_machine": {
+    "cycles": 239,
+    "p25_min": 611,
+    "p50_min": 935,
+    "p75_min": 1115
+   },
+   "dishwasher": {
+    "cycles": 357,
+    "p25_min": 480,
+    "p50_min": 870,
+    "p75_min": 1176
+   }
+  },
+  "10": {
+   "washing_machine": {
+    "cycles": 575,
+    "p25_min": 630,
+    "p50_min": 1009,
+    "p75_min": 1142
+   },
+   "dishwasher": {
+    "cycles": 481,
+    "p25_min": 579,
+    "p50_min": 961,
+    "p75_min": 1116
+   }
+  },
+  "11": {
+   "washing_machine": {
+    "cycles": 73,
+    "p25_min": 603,
+    "p50_min": 687,
+    "p75_min": 867
+   },
+   "dishwasher": {
+    "cycles": 38,
+    "p25_min": 643,
+    "p50_min": 741,
+    "p75_min": 950
+   }
+  },
+  "13": {
+   "washing_machine": {
+    "cycles": 412,
+    "p25_min": 497,
+    "p50_min": 628,
+    "p75_min": 848
+   },
+   "dishwasher": {
+    "cycles": 181,
+    "p25_min": 489,
+    "p50_min": 818,
+    "p75_min": 1102
+   }
+  },
+  "15": {
+   "tumble_dryer": {
+    "cycles": 69,
+    "p25_min": 750,
+    "p50_min": 898,
+    "p75_min": 1118
+   },
+   "washing_machine": {
+    "cycles": 237,
+    "p25_min": 487,
+    "p50_min": 724,
+    "p75_min": 918
+   },
+   "dishwasher": {
+    "cycles": 18,
+    "p25_min": 709,
+    "p50_min": 1038,
+    "p75_min": 1135
+   }
+  },
+  "16": {
+   "washing_machine": {
+    "cycles": 302,
+    "p25_min": 483,
+    "p50_min": 744,
+    "p75_min": 1055
+   },
+   "dishwasher": {
+    "cycles": 353,
+    "p25_min": 878,
+    "p50_min": 1121,
+    "p75_min": 1183
+   }
+  },
+  "17": {
+   "tumble_dryer": {
+    "cycles": 28,
+    "p25_min": 770,
+    "p50_min": 873,
+    "p75_min": 1002
+   },
+   "washing_machine": {
+    "cycles": 269,
+    "p25_min": 519,
+    "p50_min": 716,
+    "p75_min": 915
+   }
+  },
+  "18": {
+   "washing_machine": {
+    "cycles": 125,
+    "p25_min": 527,
+    "p50_min": 571,
+    "p75_min": 600
+   },
+   "dishwasher": {
+    "cycles": 153,
+    "p25_min": 826,
+    "p50_min": 1119,
+    "p75_min": 1148
+   }
+  },
+  "20": {
+   "tumble_dryer": {
+    "cycles": 181,
+    "p25_min": 581,
+    "p50_min": 633,
+    "p75_min": 818
+   },
+   "washing_machine": {
+    "cycles": 185,
+    "p25_min": 498,
+    "p50_min": 538,
+    "p75_min": 741
+   },
+   "dishwasher": {
+    "cycles": 138,
+    "p25_min": 464,
+    "p50_min": 1096,
+    "p75_min": 1170
+   }
+  },
+  "21": {
+   "tumble_dryer": {
+    "cycles": 107,
+    "p25_min": 680,
+    "p50_min": 870,
+    "p75_min": 1052
+   },
+   "washing_machine": {
+    "cycles": 229,
+    "p25_min": 537,
+    "p50_min": 679,
+    "p75_min": 831
+   },
+   "dishwasher": {
+    "cycles": 390,
+    "p25_min": 224,
+    "p50_min": 670,
+    "p75_min": 855
+   }
+  }
+ },
+ "pooled": {
+  "washing_machine": {
+   "houses": 18,
+   "p25_min": 523,
+   "p50_min": 673,
+   "p75_min": 875
+  },
+  "dishwasher": {
+   "houses": 15,
+   "p25_min": 564,
+   "p50_min": 828,
+   "p75_min": 1102
+  },
+  "tumble_dryer": {
+   "houses": 7,
+   "p25_min": 680,
+   "p50_min": 844,
+   "p75_min": 1025
+  }
+ },
+ "note": "minute of the day (local time of the REFIT recording) at which detected cycles started"
+}

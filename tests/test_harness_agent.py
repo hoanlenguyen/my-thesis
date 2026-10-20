@@ -26,8 +26,8 @@ class Recording(ScriptedModel):
 
 
 def _model(*turns: Any, summary: str = "All set.") -> Recording:
-    """The agent's turns (a schedule list becomes a ScheduleOutput), then its household message."""
-    items = [call("ScheduleOutput", assignments=t, total_cost_eur=1.0, explanation="") if isinstance(t, list) else t
+    """The agent's turns (a schedule list becomes a FinalSchedule), then its household message."""
+    items = [call("FinalSchedule", assignments=t) if isinstance(t, list) else t
              for t in turns]  # fmt: skip
     SEEN.clear()
     return Recording(messages=iter([*items, AIMessage(content=summary)]))

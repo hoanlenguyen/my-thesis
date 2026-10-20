@@ -1,0 +1,10 @@
+{
+  "name": "gpt-oss-20b on the data-based benchmark v3 (usual run times; exploratory): two agents vs one agent in the harness, design iteration 14",
+  "scenarios": "data/scenarios_v3",
+  "systems": ["milp", "naive", "timer", "cheapest_hours", "cheapest_window", "multi_duo", "single_harness", "oneshot"],
+  "models": ["gpt-oss-20b"],
+  "runs": 3,
+  "out": "results/oss_v3.jsonl",
+  "order": "model",
+  "message": false
+}

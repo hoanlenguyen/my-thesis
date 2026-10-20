@@ -201,12 +201,18 @@ class Retriever:
         return sorted(scored, key=lambda cs: cs[1], reverse=True)[: self.k]
 
     def __call__(self, scenario: Scenario) -> str:
-        examples = [f"Example {i} ({c.id}, similarity {s:.2f}):\n{c.text}" for i, (c, s) in enumerate(self.retrieve(scenario), 1)]
+        examples = [f"Example {i} ({c.id}, similarity {s:.2f}):\n{brief(c.text)}"
+                    for i, (c, s) in enumerate(self.retrieve(scenario), 1)]  # fmt: skip
         return (
-            "Worked examples: similar past days solved optimally. Their prices and appliances differ from today, so "
-            "use them as patterns for staggering, not as answers; always check today's prices and loads with your tools.\n\n"
-            + "\n\n".join(examples)
+            "Worked examples: similar past days solved optimally (patterns for staggering, not answers; today's "
+            "prices and loads differ).\n\n" + "\n\n".join(examples)
         )
+
+
+def brief(text: str) -> str:
+    """A worked example without its "Pattern" line, which restates the plan's overlaps in prose (design iteration 14:
+    about 40 % fewer tokens; the plan lines keep every start, end and window)."""
+    return "\n".join(line for line in text.splitlines() if not line.startswith("Pattern:"))
 
 
 _default: Retriever | None = None

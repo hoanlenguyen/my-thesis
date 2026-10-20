@@ -247,3 +247,58 @@ def test_emhass_that_never_answers_is_given_up(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(demo_api.urllib.request, "urlopen", refused)
     monkeypatch.setattr(demo_api, "EMHASS_WAIT_S", 1.0)  # less than one retry interval: one try only
     assert not demo_api._emhass_answers()
+
+
+def test_the_recommendation_leaves_out_the_message_when_not_asked_for(client: TestClient) -> None:
+    out = client.post("/api/plan/tools", json=PROFILE).json()
+    plan = demo_api.PlanIn.model_validate(PROFILE)
+    scenario, _ = demo_api.build_scenario(plan)
+    result = next(r for r in out["results"] if r["system"] == "milp") | {"message": "Your appliances are set."}
+    assert demo_api._recommendation(scenario, result)["message"] == "Your appliances are set."
+    assert "message" not in demo_api._recommendation(scenario, result, message=False)
+    assert plan.message and not demo_api.PlanIn.model_validate({**PROFILE, "message": False}).message
+
+
+@pytest.mark.parametrize("with_message", [True, False])
+def test_the_live_stream_runs_with_and_without_the_message(monkeypatch: pytest.MonkeyPatch, with_message: bool) -> None:
+    import json
+
+    from langchain_core.messages import AIMessage
+
+    from .fakes import ScriptedModel, call
+
+    prices = 0.05 + 0.04 * np.sin(np.linspace(0, 2 * np.pi, 96))
+    monkeypatch.setattr(demo_api, "day_prices", lambda _day: prices)
+    plan = demo_api.PlanIn.model_validate({**PROFILE, "design": "one_agent", "message": with_message})
+    scenario, _ = demo_api.build_scenario(plan)
+    ids = [a.id for a in scenario.appliances]
+    best = demo_api.optimum_with_fee(scenario, plan.fee_eur_per_kw)
+    turns = [call("optimize_schedule", thought="solve the day", appliance_ids=ids),
+             call("FinalSchedule", assignments=[{"appliance_id": k, "start_time": scenario.slot_to_time(v)} for k, v in best.items()])]  # fmt: skip
+    if with_message:
+        turns.append(AIMessage(content="Your appliances are set."))
+    monkeypatch.setattr("hems.agents.llm.make_model", lambda _name: ScriptedModel(messages=iter(turns), disable_streaming=True))
+    events = [json.loads(chunk.removeprefix("data: "))
+              for chunk in demo_api._pipeline_events(scenario, plan.fee_eur_per_kw, plan.design, plan.message)]  # fmt: skip
+    assert not [e for e in events if e["type"] == "error"]
+    recommendation = next(e for e in events if e["type"] == "result")["recommendation"]
+    assert ("message" in recommendation) is with_message
+
+
+def test_the_agent_endpoint_leaves_out_an_empty_message(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    import json
+
+    rec = {"schedules": [], "cost": 0.1, "currency": "EUR", "currencySymbol": "€", "peakKw": 1.0, "peakLimitKw": 3.5,
+           "valid": True, "date": "2026-01-15"}  # fmt: skip
+    event = {"type": "result", "result": {"system": "multi_duo_thoughts"}, "recommendation": rec}
+    monkeypatch.setattr(demo_api, "_pipeline_events", lambda *_args: iter([f"data: {json.dumps(event)}\n\n"]))
+    out = client.post("/api/plan/agent", json={**PROFILE, "message": False}).json()
+    assert "message" not in out["recommendation"] and out["recommendation"]["currencySymbol"] == "€"
+
+
+def test_every_comparison_system_comes_with_a_recommendation_without_a_message(client: TestClient) -> None:
+    out = client.post("/api/plan/tools", json=PROFILE).json()
+    for r in out["results"]:
+        rec = r["recommendation"]
+        assert "message" not in rec and rec["cost"] == r["costEur"] and rec["valid"] == r["feasible"], r["system"]
+        assert {s["applianceId"] for s in rec["schedules"]} == set(r["starts"]), r["system"]

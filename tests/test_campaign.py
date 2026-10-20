@@ -65,3 +65,17 @@ def test_campaign_resumes_after_interruption(tmp_path) -> None:
     assert campaign.run(plan) == "done"
     assert sorted(r["key"] for r in read_records(out)) == sorted(json.loads(l)["key"] for l in first)
     assert "total 12/12 jobs (100%)" in campaign.status(plan)
+
+
+def test_campaigns_skip_the_household_message_unless_the_plan_asks() -> None:
+    import json
+    from pathlib import Path
+
+    from hems.campaign import Plan
+
+    assert Plan(name="x", scenarios="s", systems=["multi_duo"], models=["gpt-6-luna"], runs=1, out="o").message is False
+    earlier = ("baselines", "confirmation", "confirmation_q2", "full_evaluation", "iteration9", "iteration10",
+               "iteration11", "main_v2", "pilot", "rapt_ch", "uk2015")  # plans run before 19 Oct 2026, with the message
+    for name in earlier:
+        assert json.loads(Path(f"configs/{name}.json").read_text(encoding="utf-8"))["message"] is True, name
+    assert json.loads(Path("configs/luna_v2.json").read_text(encoding="utf-8"))["message"] is False  # new runs skip it

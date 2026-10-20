@@ -1,0 +1,10 @@
+{
+  "name": "GPT-6 Luna on the factorial benchmark v2 (exploratory): two agents vs one agent in the harness, design iteration 13",
+  "scenarios": "data/scenarios_v2",
+  "systems": ["milp", "naive", "timer", "cheapest_hours", "cheapest_window", "multi_duo", "single_harness", "oneshot"],
+  "models": ["gpt-6-luna"],
+  "runs": 3,
+  "out": "results/luna_v2.jsonl",
+  "order": "model",
+  "message": false
+}

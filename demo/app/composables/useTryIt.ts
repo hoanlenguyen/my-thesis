@@ -44,6 +44,7 @@ export interface PlanResult {
   tokens: number
   usd: number | null
   message: string
+  recommendation?: Recommendation // the comparison systems: their schedule in the agents' fixed form, no message
 }
 
 export interface BaseLoadSource { source: 'entsoe' | 'refit', label: string, day: string }
@@ -73,6 +74,7 @@ export interface PlanRequest {
   fee_eur_per_kw: number
   appliances: { kind: string, periods: PeriodInput[], power_kw?: number, duration_min?: number }[]
   design?: Design
+  message?: boolean // false: no household message (one model call less); default true
 }
 
 /** One event of the pipeline's live run (POST /api/plan/agent/stream, server-sent events). */
@@ -126,7 +128,7 @@ export interface ScheduleItem {
 /** The pipeline's recommendation in a fixed form (src/hems/demo_api.py Recommendation). Only `message` is written
  *  by the language model; `schedules` and the figures come from the verified, scored schedule. */
 export interface Recommendation {
-  message: string
+  message?: string // only when the request asks for it (message: true, the default)
   schedules: ScheduleItem[]
   cost: number // energy plus the fee above the peak limit
   currency: string // ISO code, "EUR"

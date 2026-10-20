@@ -6,5 +6,6 @@
   "models": ["gpt-4o-mini", "gpt-oss-20b"],
   "runs": 1,
   "out": "results/pilot_real.jsonl",
-  "order": "model"
+  "order": "model",
+  "message": true
 }

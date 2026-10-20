@@ -1,0 +1,14 @@
+{
+ "design": "factorial set with windows from the households' usual run times (hems.data.usage)",
+ "source_set": "data/scenarios_v2",
+ "usage_times": "data/usage/usage_times.json",
+ "id_prefix": "U-",
+ "window_rule": {
+  "ready": "p25 of start times",
+  "finish_by": "p75 of start times + cycle length",
+  "min_slack_slots": 8,
+  "fallback": "median over households owning the kind"
+ },
+ "scenarios": 96,
+ "peak_limit_raised": []
+}

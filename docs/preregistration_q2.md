@@ -251,3 +251,85 @@ optimal schedules as before. Two-agent pipeline: 5 to 4 model calls, mean time 1
 5,430, cost USD 0.0011 to 0.00075 per run. Single agent: 4 to 3 model calls, mean time 8.3 to 8.3 s (no change on
 this small sample), input tokens 11,410 to 7,610, cost USD 0.0013 to 0.0009. Three scenarios with one run each are
 too few to estimate the time effect; the campaigns will measure it.
+
+Also from 19 October 2026, campaigns run the agent systems without the household message unless their plan asks
+for it (`"message": true`): the message is one more model call and is not scored. Response time and API cost of
+new campaigns therefore cover the schedule only, whereas every earlier campaign, including the registered Q2 run,
+included the message; the earlier plans now say `"message": true` so that they rerun as before.
+
+## Note (19 October 2026): design iteration 14, fewer tokens; cost of cached input
+
+Design iteration 14 reduces the tokens of both agent designs without changing what they decide:
+
+1. The acting agent's first round offers only the two tools a normal run uses (`get_spot_prices`,
+   `optimize_schedule`); the other five tools (`calculate_schedule_cost`, `find_cheapest_window`, `sum_load`,
+   `detect_conflicts`, `adjust_schedule`) come with a feedback round. Every tool description is sent with every
+   model call. If the solver finds no schedule, the agent returns each appliance at its earliest start and the
+   check sends it back with all tools.
+2. The worked examples (RAG) leave out their "Pattern" line, which restated the plan's overlaps in prose; two
+   examples are still retrieved.
+3. The appliance profiles are one line per appliance instead of indented JSON.
+4. The agents answer with `FinalSchedule` (start times only) instead of `ScheduleOutput`, whose cost estimate was
+   recomputed anyway and whose explanation the household message replaces. The baselines keep `ScheduleOutput`.
+
+The Scheduler's first model call fell from about 2,540 to 1,630 input tokens (SH04-35, counted offline). On the
+three check scenarios (one run each, GPT-6 Luna, with the message) both designs gave the same valid, optimal
+schedules as in iteration 13; input tokens fell by 26 % (two agents) and 22 % (single agent), and the cost per run
+by about 35 %, of which about a third comes from the corrected cost measurement below.
+
+Cost measurement: OpenAI reads a repeated prompt start of at least 1,024 tokens from a cache and charges it at a lower
+rate. From 19 October 2026 the cost of a run prices cached input tokens at the cached rate (GPT-6 Luna USD 0.01 per
+million, GPT-4o-mini USD 0.075, to be verified on OpenAI's page) and the records carry `tokens_cached`. All earlier
+results priced every input token in full and are not recomputed.
+
+The 84 runs on REFIT house 1 (iteration 13) were archived as `results/luna_v2_iter13.jsonl`; the `luna_v2`
+campaign starts afresh with iteration 14.
+
+## Note (19 October 2026): defect in the recovery nudge inside the pipelines, found and fixed
+
+The gpt-oss-20b pilot of iteration 14 failed in every run: the model solved the day correctly but wrote its answer as
+a Markdown table instead of calling the structured-answer tool, and the recovery nudge did not repair it. Tracing
+showed a defect in `hems.agents.errors.invoke_with_recovery`: the nudge was sent alone, relying on the agent's
+checkpointed conversation, but inside a LangGraph node (every agent of the pipelines, not the single-agent baseline)
+that conversation is not resumed. The model received the nudge without context ("Call the tool now") and could not
+answer. Fixed: every nudge now carries the whole conversation so far, on a fresh thread, inside or outside a graph.
+With the fix, both agent designs give the optimal schedule on NH04-35 with gpt-oss-20b after one nudge.
+
+Impact on recorded results (runs of agents inside a pipeline that needed a nudge):
+
+- GPT-4o-mini, every file including the registered Q and Q2 runs: 1 to 12 such runs per file, none invalid; the 9 in
+  `results/confirmation_q2.jsonl` all reached the optimum. The registered results are unaffected in validity and
+  saving; their response time and tokens include the failed nudges.
+- gpt-oss-20b, earlier design (`results/runs.jsonl`): 63 of 68 pipeline runs needed a nudge and 52 of them ended
+  invalid; the pilots behave the same. The earlier finding that the pipeline worked poorly with gpt-oss-20b is
+  therefore largely an artifact of this defect, and the comparison with the single-agent baseline (whose nudge
+  worked) was biased against the pipeline. These runs must not be reported as a model result.
+- The two gpt-oss-20b runs of the stopped iteration-14 pilot (`results/oss_v2.jsonl`) were made with the defect and
+  are removed before the pilot restarts.
+
+## Note (20 October 2026): the LLM without tools in iteration 14; nudge at the step limit
+
+The no-tools baseline (`oneshot`) now (1) answers with the agents' `FinalSchedule` (start times only; the cost
+estimate and explanation of `ScheduleOutput` were never scored), (2) receives the price and base-load table as one row
+per hour with the four 15-minute values (the same values) and (3) a household text without what does not apply to a
+system without tools (tool names, fixed appliances, the windows already stated in the request). Input per model call:
+2,165 to 1,532 tokens. The aim is the same answer form as the agents and no irrelevant input, not a better or worse
+baseline.
+
+The shared recovery (`hems.agents.errors.invoke_with_recovery`) now also nudges, with the conversation so far, when a
+run reaches its step limit without a valid answer (before, the run ended there); the limit of two nudges is unchanged.
+It applies to every system and model. In the gpt-oss-20b pilot the baseline wrote its schedule as text and then sent
+empty replies until the step limit, so the nudge never fired.
+
+On U-NH04-35: GPT-6 Luna 6 s, 1,487 input tokens, valid; gpt-oss-20b valid after one nudge (it failed in all three
+earlier runs on that day), but still 250 s and about 50,000 input tokens, because it reasons at length and loops on
+empty replies before the nudge.
+
+The 18 baseline runs of the gpt-oss-20b pilot on v3 were made with the old baseline and moved to
+`results/oss_v3_oneshot_before_iter14b.jsonl`; the 36 agent runs of the pilot did not reach the step limit and stay.
+
+Also on 20 October 2026, the baseline's step limit was lowered from 6 to 3 (`oneshot.RECURSION_LIMIT`): a valid
+answer needs one step, and a model that writes its schedule as text and then sends empty replies reaches the nudge
+after fewer wasted calls. On U-NH04-35, GPT-6 Luna was unchanged (6 s, valid, no nudge); gpt-oss-20b stayed valid
+after one nudge with 30,412 instead of 49,950 input tokens, but took 402 s instead of 250 s because it produced more
+reasoning output (11,075 against 7,591 tokens) in that single run.

@@ -3,10 +3,11 @@
 // Scheduler agent) and two functions without a language model (profile_data, verify_schedule). For every action an
 // agent takes, the page shows its Thought and the function it called with the arguments, and the result
 // (Observation). Built from the server-sent events of POST /api/plan/agent/stream.
-import type { AgentEvent, AgentInput, AgentName, Design, PlanResult } from '~/composables/useTryIt'
+import type { AgentEvent, AgentInput, AgentName, Design, PlanResult, Recommendation } from '~/composables/useTryIt'
 
-const props = withDefaults(defineProps<{ events: AgentEvent[], running: boolean, summary: string, result?: PlanResult | null, design?: Design, title?: string }>(),
-  { result: null, design: 'two_agents', title: '' })
+const props = withDefaults(defineProps<{ events: AgentEvent[], running: boolean, summary: string, result?: PlanResult | null,
+  design?: Design, title?: string, recommendation?: Recommendation | null }>(),
+  { result: null, design: 'two_agents', title: '', recommendation: null })
 
 interface ToolCall { name: string, count: number, ms: number, args: string, output: string, thoughts: string[], turn: number }
 interface Step {
@@ -128,7 +129,7 @@ function callText(tool: ToolCall): string {
   return `${tool.name}(${text.length > 160 ? `${text.slice(0, 157)}…` : text})`
 }
 // tools an agent returns its structured answer through; not actions
-const ANSWER_TOOLS = new Set(['TaskBrief', 'ScheduleOutput'])
+const ANSWER_TOOLS = new Set(['TaskBrief', 'ScheduleOutput', 'FinalSchedule'])
 /** Consecutive actions requested by the same model call (made together in one response). */
 function byTurn(tools: ToolCall[]): ToolCall[][] {
   const out: ToolCall[][] = []
@@ -330,5 +331,58 @@ const errorMessage = computed(() => props.events.find(e => e.type === 'error')?.
         </template>
       </li>
     </ol>
+
+    <!-- the result: the schedules of the output JSON (the same data an app receives) -->
+    <div v-if="recommendation?.schedules?.length" class="mt-5 border-t border-default pt-4">
+      <div class="mb-2 flex flex-wrap items-center gap-2">
+        <UIcon name="i-lucide-calendar-check" class="size-4 text-primary" />
+        <span class="text-sm font-medium text-highlighted">Recommended schedule</span>
+        <span class="text-xs text-dimmed">· from <code class="font-mono">schedules</code> in the output JSON</span>
+        <UBadge size="xs" variant="subtle" :color="recommendation.valid ? 'success' : 'error'">
+          {{ recommendation.valid ? 'valid' : 'invalid' }}
+        </UBadge>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm tabular-nums">
+          <thead class="text-xs text-muted text-left">
+            <tr>
+              <th class="py-1.5 pr-3 font-medium">Appliance</th>
+              <th class="py-1.5 pr-3 font-medium">Start</th>
+              <th class="py-1.5 pr-3 font-medium">End</th>
+              <th class="py-1.5 pr-3 font-medium">Allowed period</th>
+              <th class="py-1.5 pr-3 font-medium text-right">Energy</th>
+              <th class="py-1.5 font-medium text-right">Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="s in recommendation.schedules" :key="s.applianceId" class="border-t border-default">
+              <td class="py-1.5 pr-3">
+                <span class="inline-flex items-center gap-1.5">
+                  <UIcon :name="applianceIcon(kindOf(s.applianceId))" class="size-3.5 text-muted" />
+                  {{ s.appliance }}
+                </span>
+              </td>
+              <td class="py-1.5 pr-3 font-medium text-highlighted">{{ s.start }}</td>
+              <td class="py-1.5 pr-3">{{ s.end }}</td>
+              <td class="py-1.5 pr-3 text-muted">{{ s.period }}</td>
+              <td class="py-1.5 pr-3 text-right text-muted">{{ s.energyKwh.toFixed(2) }} kWh</td>
+              <td class="py-1.5 text-right">{{ euro(s.cost, 3) }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="border-t border-default text-xs text-muted">
+              <td class="py-1.5 pr-3" colspan="4">
+                Peak {{ recommendation.peakKw.toFixed(2) }} kW (limit {{ recommendation.peakLimitKw }} kW)
+              </td>
+              <td class="py-1.5 pr-3 text-right">Total</td>
+              <td class="py-1.5 text-right font-medium text-highlighted">{{ euro(recommendation.cost, 3) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p v-if="recommendation.cost - recommendation.schedules.reduce((n, s) => n + s.cost, 0) > 0.0005" class="mt-1 text-xs text-dimmed">
+        Total includes the fee for the load above the peak limit.
+      </p>
+    </div>
   </UCard>
 </template>

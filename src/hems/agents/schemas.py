@@ -18,6 +18,12 @@ class ScheduleOutput(BaseModel):
     explanation: str = Field(description="One short sentence (at most 20 words) on why these times were chosen")
 
 
+class FinalSchedule(BaseModel):
+    """The day's schedule: one start time for every appliance to run."""
+
+    assignments: list[Assignment]
+
+
 class TaskBrief(BaseModel):
     """Orchestrator's parse of the household request."""
 
