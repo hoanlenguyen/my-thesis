@@ -175,42 +175,33 @@ several appliances under a volatile price curve and a household peak
 load limit is difficult without automation. This thesis follows Design
 Science Research to design and evaluate a hierarchical ReAct multi-agent
 system, built in LangGraph, that gives a household a daily appliance
-recommendation. An Orchestrator, an Appliance Profiler, a Price-Aware
-Scheduler and a Conflict Resolver work from the day's appliance plan,
-the base load, the peak limit and the prices, and a verification step
-returns flawed schedules for revision. The agents are given similar
-past days whose optimal schedules are known as worked examples, and an
-optimiser tool that they call, check and explain. The study asks how
-much the recommendations save, how often they are valid and what they
-cost to produce compared with a language model answering without tools
-(SQ1), and under which price patterns, household loads
-and peak limits the recommendations save more than, or as much as,
-existing home energy management tools available to households:
-cheapest-hours automations and the open-source optimiser EMHASS (SQ2).
+recommendation. Two language model agents share the work: an
+Orchestrator reads the day's appliance plan and explains the final
+schedule, and a Price-Aware Scheduler plans the start times with tools,
+among them an optimiser that solves the whole day. The steps that need
+no language model are done by a deterministic harness: it builds the
+appliance profiles from the household data, retrieves similar solved
+days as worked examples, and checks every schedule against the windows
+and the peak limit, returning any problem to the Scheduler once. To
+test whether the hierarchy matters, the same harness also runs a single
+agent with the same tools. The study asks how much the recommendations
+save, how often they are valid and what they cost to produce compared
+with a language model answering without tools (SQ1), and under which
+price patterns and household loads they save more than, or as much as,
+the home energy management tools households use today: cheapest-hours
+automations and the open-source optimiser EMHASS (SQ2).
 
-The evaluation combines appliance cycles from the REFIT dataset with
-Finnish Nord Pool prices in a factorial benchmark of four price
-patterns, two household loads and two peak limits. The design was
-developed on 96 exploratory scenarios, and seven pre-registered
-hypotheses were tested on 96 held-out scenarios with fifteen-minute
-prices. The primary outcome is the saving against starting every
-appliance when it is ready. On the held-out scenarios, the pipeline with
-GPT-4o-mini produced a valid schedule in all 288 runs and saved 27.4\,\%
-of the cost, the same as the optimal schedule. It saved 15.4 percentage
-points more than the same model without tools, at an API cost of
-\$0.0025 per recommendation. It saved 8.6 to 10.0 percentage points more
-than the cheapest-hours automations, whose schedules plan each appliance
-on its own and exceed the household peak limit on most days that need
-coordination, and the same as EMHASS within 0.1 percentage points. Five
-of the seven hypotheses were supported. The pipeline was not valid
-significantly more often than the model without tools, which was itself
-valid in 96.5\,\% of its runs, and its mean response time of 63.5 seconds
-missed the objective of 60 seconds after the language model service
-slowed down during the run; a later design iteration with fewer model
-calls halved the response time on the exploratory benchmark. The pipeline thus matches an optimizer in
-cost and adds an explanation of every schedule, while a simple
-peak-aware rule written for this study came within 0.1 percentage
-points of it without a language model.
+The evaluation combines appliance cycles and usual run times from the
+REFIT dataset with Finnish Nord Pool prices. Every scenario keeps the
+household load within 8\,kW, the threshold of the Finnish power charge.
+A factorial benchmark varies four price patterns and three household
+loads, from two appliances to a household that also charges an electric
+car and heats a sauna. The design was developed on exploratory
+scenarios, and nine pre-registered hypotheses are tested on 72 held-out
+scenarios with fifteen-minute prices. The primary outcome is the saving
+against starting every appliance when it is ready.
+\textbf{[Results: to be added after the registered run on the held-out
+set Q3.]}
 
 \vspace{12pt}
 {\sffamily\itshape Keywords}
@@ -384,18 +375,24 @@ under dynamic electricity prices?
 recommendations save, how often are they valid, and what do they cost to
 produce, compared with a language model that answers without tools?
 
-\textbf{SQ2 (conditions):} Under which price patterns, household loads and
-peak limits do the recommendations save more than, or as much as,
-existing home energy management tools available to households, namely
-cheapest-hours automations and the EMHASS optimizer?
+\textbf{SQ2 (conditions):} Under the 8\,kW power-charge threshold, for
+which price patterns and household loads, from a light load to a
+household with an electric car and a sauna, do the recommendations save
+more than, or as much as, existing home energy management tools
+available to households, namely cheapest-hours automations and the
+EMHASS optimizer?
 \end{quote}
 
 The main RQ states the design aim: recommendations that are reliable,
 meaning that they respect every appliance window and the household peak
 limit, and that save money against starting every appliance when it is
-ready. The pipeline studied is the final design: four ReAct agents that
-are shown how similar past days were solved best and that hand the
-search to an optimiser tool, then check the answer and explain it. SQ1
+ready. The pipeline studied is the final design: two ReAct agents, an
+Orchestrator and a Price-Aware Scheduler, inside a deterministic harness
+that profiles the appliances, shows the Scheduler how similar past days
+were solved best and checks every schedule. The Scheduler hands the
+search to an optimiser tool, and the Orchestrator explains the result.
+Part of the RQ is whether the hierarchy itself matters, so the pipeline
+is also compared with a single agent in the same harness. SQ1
 concerns what its recommendations are worth and what they cost. It tests
 the premise of the ReAct approach, that reasoning grounded in tool
 observations does better than unaided generation, by comparing the
@@ -407,8 +404,12 @@ software that a household can install without programming: the
 cheapest-hours automations shared for Home Assistant, which switch a device on in the day's cheapest hours, and the
 open-source optimizer EMHASS, which computes a schedule for the whole
 household. SQ2 compares the recommendations with these tools and asks
-how the comparison depends on the day's prices, on how many appliances
-the household runs, and on how tight its peak limit is.
+how the comparison depends on the day's prices and on the household's
+load. The peak limit is the 8\,kW threshold above which Finnish network
+companies may charge for power (Section~\ref{sec:dataset}). The REFIT
+laundry and dishwasher loads rarely reach it, so the heaviest load adds
+an electric car charge and a sauna, the loads that make Finnish houses
+compete for capacity.
 
 \section{Design Science Research approach}
 
@@ -844,9 +845,10 @@ Limitation in prior work & Response in this thesis & Tested in \\
 \midrule
 Multi-appliance coordination fails for some models (El Makroum,
   Zwickl-Bernhard, \& Kranzl, 2026; Jonah et al., 2026) &
-  A Conflict Resolver, retrieval of solved days, an optimiser tool, and a
-  household peak limit that forces appliances to be staggered on
-  heavy-load days & SQ1, SQ2 \\[3pt]
+  An optimiser tool, retrieval of solved days, conflict tools for
+  repairs, and an electrified household load (car charge and sauna)
+  that forces appliances to be staggered under the 8\,kW limit & SQ1,
+  SQ2 \\[3pt]
 Committed schedules can violate constraints the model reasoned about
   correctly; an independent check is recommended (Jonah et al., 2026) &
   A deterministic verification step checks every schedule for conflicts,
@@ -854,14 +856,14 @@ Committed schedules can violate constraints the model reasoned about
   SQ1 (validity) \\[3pt]
 Evaluation on a single day or a few days, one household, one price
   series (El Makroum, Zwickl-Bernhard, \& Kranzl, 2026; Jonah et al., 2026) &
-  A factorial benchmark of four price patterns, two household loads and
-  two peak limits, built from 18 REFIT households, and a held-out
-  benchmark with pre-registered hypotheses & SQ2 \\[3pt]
+  A factorial benchmark of four price patterns and three household
+  loads, built from 18 REFIT households, and a held-out benchmark with
+  pre-registered hypotheses & SQ2 \\[3pt]
 Scheduling on the price signal alone (Jonah et al., 2026) & Partly
   addressed: every schedule must also keep base load plus appliances
-  under a peak limit, with a strict and a realistic limit compared; the
-  objective remains the electricity cost, and other signals such as
-  carbon intensity are not added & SQ2 \\[3pt]
+  under the 8\,kW threshold of the Finnish power charge; the objective
+  remains the electricity cost, and other signals such as carbon
+  intensity are not added & SQ2 \\[3pt]
 No comparison with existing home energy management tools &
   Comparison with cheapest-hours automations for Home Assistant and
   with the optimizer EMHASS & SQ2 \\[3pt]
@@ -875,15 +877,18 @@ Rules and optimizers do not explain their decisions (Gokhale et al.,
 
 This thesis addresses that gap with three contributions. The first is
 the Multi-Agent Pipeline, a hierarchical ReAct multi-agent system in
-LangGraph that gives households daily appliance recommendations, using a
-library of solved days for retrieval and an optimiser tool; the design
-iterations that led to it are documented. The second is a measure of
-what its recommendations save, how often they are valid and what they
-cost to produce compared with a language model answering without tools
-(SQ1). The third is a map of the conditions, four
-price patterns, two household loads and two peak limits, under which the
-recommendations save more than, or as much as, existing home energy
-management tools, cheapest-hours automations and EMHASS (SQ2). The hypotheses were fixed in advance and
+LangGraph that gives households daily appliance recommendations: two
+agents inside a deterministic harness that profiles the appliances,
+retrieves solved days and checks every schedule, with an optimiser
+tool. The design iterations that led to it are documented, and the
+pipeline is compared with a single agent in the same harness. The
+second is a measure of what its recommendations save, how often they
+are valid and what they cost to produce compared with a language model
+answering without tools (SQ1). The third is a map of the conditions,
+four price patterns and three household loads under the 8\,kW power
+charge threshold, under which the recommendations save more than, or as
+much as, existing home energy management tools, cheapest-hours
+automations and EMHASS (SQ2). The hypotheses were fixed in advance and
 tested on a held-out benchmark.
 
 % ════════════════════════════════════════════════════════════════════════════
@@ -911,7 +916,9 @@ methods, and instantiations (March \& Smith, 1995). In this thesis, the
 artifact is an instantiation, that is, a working software implementation
 of a hierarchical multi-agent scheduling pipeline. It is supported by
 architectural models (the LangGraph state graph design) and constructs
-(the agent role taxonomy: Profiler, Scheduler, Resolver, Orchestrator).
+(the division into language model agents, Orchestrator and Scheduler,
+and deterministic harness steps for profiling, retrieval and
+verification).
 Table~\ref{tab:dsr} maps the six DSR phases defined by Peffers et al.
 (2007) to the activities and outputs of this thesis.
 
@@ -934,19 +941,21 @@ Phase & DSR step & Activity in this thesis & Output \\
   validity, conflict resolution rate, latency, token use &
   Objective specification \\[4pt]
 3 & Design and development &
-  Implement Appliance Profiler, Price-Aware Scheduler, Conflict
-  Resolver and Orchestrator in LangGraph; add a case library for
-  retrieval and an optimiser tool &
+  Implement the Orchestrator and the Price-Aware Scheduler in
+  LangGraph inside a deterministic harness (profiling, retrieval of
+  solved days, verification) with an optimiser tool; build a single
+  agent in the same harness for comparison &
   Working multi-agent artifact \\[4pt]
 4 & Demonstration &
   Run pipeline on five representative scenarios; confirm valid
   cost-reducing schedules &
   Demonstration results \\[4pt]
 5 & Evaluation &
-  Exploratory run on 48 hourly-price scenarios; two pre-registered
-  confirmatory runs on held-out fifteen-minute scenarios (Q, Q2);
-  comparison with existing home energy management tools; Wilcoxon and
-  TOST tests &
+  Exploratory runs on the factorial benchmark (72 hourly-price
+  scenarios); a pre-registered confirmatory run on 72 held-out
+  fifteen-minute scenarios (Q3); comparison with existing home energy
+  management tools and with a single agent; Wilcoxon, TOST and
+  Mann--Whitney tests &
   Quantitative evaluation results \\[4pt]
 6 & Communication &
   Write findings, design guidelines, limitations, and future work &
@@ -1058,29 +1067,35 @@ under dynamic electricity prices?
 recommendations save, how often are they valid, and what do they cost to
 produce, compared with a language model that answers without tools?
 
-\textbf{SQ2 (conditions):} Under which price patterns, household loads and
-peak limits do the recommendations save more than, or as much as,
-existing home energy management tools available to households, namely
-cheapest-hours automations and the EMHASS optimizer?
+\textbf{SQ2 (conditions):} Under the 8\,kW power-charge threshold, for
+which price patterns and household loads, from a light load to a
+household with an electric car and a sauna, do the recommendations save
+more than, or as much as, existing home energy management tools
+available to households, namely cheapest-hours automations and the
+EMHASS optimizer?
 \end{quote}
-The RQ is answered by the design itself and by the evidence that the
-design meets its objectives (Section~\ref{sec:objectives}). SQ1 and SQ2
-are answered by measurement: each is tested by the registered hypotheses
-of Table~\ref{tab:hypotheses}, H1a to H1c for SQ1 and H2a to H2c for SQ2,
-and SQ2 is also examined descriptively for each price pattern, household
-load and peak limit. The systems that SQ1 and SQ2 compare are defined
-next.
+The RQ is answered by the design itself, by the evidence that the
+design meets its objectives (Section~\ref{sec:objectives}), and by a
+comparison of the pipeline with a single agent in the same harness,
+which shows what the division into two agents adds. SQ1 and SQ2 are
+answered by measurement: each is tested by the registered hypotheses of
+Table~\ref{tab:hypotheses}, H1a to H1c for SQ1 and H2a to H2e for SQ2,
+and SQ2 is also examined descriptively for each price pattern and
+household load. The systems that SQ1 and SQ2 compare are defined next.
 
 \paragraph{Systems compared.} The artifact is the \emph{Multi-Agent
-Pipeline} with GPT-4o-mini (Chapter~\ref{ch:design}). Its Scheduler and
-Resolver receive the two most similar solved days from a case library as
-worked examples, and the Scheduler has a tool that solves the whole day
-exactly; the agents decide when to call it, check its answer and explain
-the result (Section~\ref{sec:rag-design}). Its earlier versions, without
-the optimiser tool and without retrieval, are design iterations: they
-were run on the exploratory benchmark and are reported in
-Section~\ref{sec:iterations}, but they are not compared systems. The
-pipeline is compared with the following alternatives:
+Pipeline} with GPT-6 Luna (Chapter~\ref{ch:design}): an Orchestrator and
+a Price-Aware Scheduler inside a deterministic harness. The Scheduler
+receives the two most similar solved days from a case library as worked
+examples and has a tool that solves the whole day exactly; it decides
+when to call it, and the harness checks the answer before the
+Orchestrator explains it (Section~\ref{sec:rag-design}). Its earlier
+versions are design iterations: they were run on the exploratory
+benchmarks and are reported in Section~\ref{sec:iterations}, but they
+are not compared systems. The \emph{single agent in the harness}, one
+ReAct agent with the Scheduler's tools, the same context and the same
+checks, is reported without hypotheses as part of the answer to the RQ.
+The pipeline is compared with the following alternatives:
 \begin{itemize}
 \item \emph{No scheduling}: every appliance starts as soon as the user
   allows. It defines the saving of every other system.
@@ -1141,41 +1156,34 @@ solver behind the optimiser tool. Since a schedule cannot save more than
 the MILP schedule, its saving is reported as the upper bound in the
 result tables.
 
-\paragraph{Stages.} The system was developed on a first benchmark of 48
-scenarios with hourly prices in six scenario types, over the design
-iterations of Section~\ref{sec:iterations}. A first confirmatory run,
-on 48 held-out scenarios with fifteen-minute prices (the Q set,
-Section~\ref{sec:resolution}), tested hypotheses registered in advance
-about the pipeline, the LLM without tools and an earlier single-agent
-design. Its results are summarised in Section~\ref{sec:earlier-design} and
-remain valid, but the thesis no longer builds its questions on the
-single-agent comparison.
-
-The research design was then revised. The single agent was dropped as a
-compared system, the saving against no scheduling replaced the gap to
-the optimum as the primary outcome, retrieval and the optimiser tool
-were added, and the cheapest-window rule joined the existing tools. The
-six scenario types were replaced by a factorial design in which the
-price pattern, the household load and the peak limit vary separately
-(Section~\ref{sec:factorial}), because each of the old types changed
-several of these at once. The pre-registration records these changes
-as a dated amendment. Every system was then run on a new exploratory
-benchmark of 96 scenarios with this design. The hypotheses of
-Table~\ref{tab:hypotheses} were fixed afterwards in a second
-pre-registration, committed to the project repository before any run on
-a second held-out benchmark of 96 scenarios (the Q2 set), whose days
-appear in no other benchmark and not in the case library. Only the run
-on Q2 is used to accept or reject them.
+\paragraph{Stages.} The system was developed over the design iterations
+of Section~\ref{sec:iterations}, first on a benchmark of 48 scenarios
+with hourly prices in six scenario types and then on factorial
+exploratory benchmarks in which the price pattern and the household load
+vary separately (Section~\ref{sec:factorial}), because each of the old
+types changed several properties at once. Along the way the saving
+against no scheduling replaced the gap to the optimum as the primary
+outcome, retrieval and the optimiser tool were added, the four agents of
+the earlier design were reduced to two agents in a deterministic
+harness, and the peak limit was set to the sourced 8\,kW threshold, with
+an electrified household load so that the appliances still compete for
+capacity (Section~\ref{sec:dataset}). The hypotheses of
+Table~\ref{tab:hypotheses} were then fixed in a pre-registration,
+committed to the project repository together with its analysis script
+before any run on the held-out set Q3 of 72 scenarios with
+fifteen-minute prices, whose days appear in no exploratory benchmark and
+not in the case library. Only the run on Q3 is used to accept or reject
+them.
 
 \begin{table}[h!]
-\caption{Hypotheses and statistical tests (second pre-registration, Q2 set).}
+\caption{Hypotheses and statistical tests (pre-registration, held-out set Q3).}
 \label{tab:hypotheses}
 \small
 \begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.6cm}}
 \toprule
 & Hypothesis & Test \\
 \midrule
-\multicolumn{3}{l}{\textit{SQ1, value and cost}} \\
+\multicolumn{3}{l}{\textit{SQ1, value and cost (all 72 scenarios)}} \\
 H1a & The Multi-Agent Pipeline saves more than the LLM without tools. &
   Wilcoxon signed-rank \\[3pt]
 H1b & Its recommendations are valid more often than those of the LLM
@@ -1183,13 +1191,17 @@ H1b & Its recommendations are valid more often than those of the LLM
 H1c & Its mean response time is below 60\,s and its mean API cost below
   \$0.10 per recommendation (two tests). & One-sided $t$ test against
   the limit \\[3pt]
-\multicolumn{3}{l}{\textit{SQ2, conditions (over all price patterns, loads and limits)}} \\
+\multicolumn{3}{l}{\textit{SQ2, conditions (all 72 scenarios; H2d and H2e: 24 electrified against 48 other)}} \\
 H2a & The Multi-Agent Pipeline saves more than the cheapest window. &
   Wilcoxon signed-rank \\[3pt]
 H2b & It saves more than the cheapest-hours automation. & Wilcoxon
   signed-rank \\[3pt]
 H2c & It saves the same as EMHASS within $\pm 1$ percentage point. &
-  Paired $t$ TOST \\
+  Paired $t$ TOST \\[3pt]
+H2d & Its advantage over the cheapest-hours automation is larger on
+  electrified days than on the other days. & Mann--Whitney $U$ \\[3pt]
+H2e & Its advantage over the cheapest window is larger on electrified
+  days than on the other days. & Mann--Whitney $U$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1238,16 +1250,16 @@ schedule and is therefore excluded from the cost, but it counts towards
 the peak load limit. The peak limit is the highest total power the
 household may draw: in every fifteen-minute slot, the base load plus the
 power of the appliances running in that slot must stay at or below it.
-The benchmarks use two levels, a strict 3.5\,kW and a realistic 8\,kW,
-and treat the limit as a hard constraint rather than a priced one
+The limit is 8\,kW, the threshold of the Finnish power charge, and it is
+treated as a hard constraint rather than a priced one
 (Section~\ref{sec:dataset}). A schedule is valid when every appliance has
 a start time, every cycle runs within its user window, and the total
 household load never exceeds the peak limit. An invalid schedule, or a
 run that returns no schedule, is scored at the cost of no scheduling, on
 the reasoning that the household would then fall back to starting its
-appliances when they are ready. Starting every appliance when it is
-ready can itself exceed the limit, typically on heavy-load days under
-the strict limit; it nevertheless remains the reference cost, because it
+appliances when they are ready. If starting every appliance when it is
+ready exceeded the limit itself, it would nevertheless remain the
+reference cost, because it
 is what the household would do without a recommendation, so an invalid
 schedule saves nothing against it. The validity rate is reported
 separately, so that this convention does not hide failures.
@@ -1288,12 +1300,13 @@ design objectives of Section~\ref{sec:objectives} (60\,s and \$0.10);
 tokens (input plus output) are reported alongside. SQ2 compares the
 saving and validity of the pipeline with those of the existing home
 energy management tools, the cheapest-hours rules and EMHASS, first over
-all scenarios and
-then separately for each price pattern, household load and peak limit.
-The breakdown by condition is descriptive; the registered tests concern
-all scenarios together. Also reported without hypotheses are the total
-euro saving, the smart timer (own heuristic), the gap to the optimum, and the conflict
-resolution rate,
+all scenarios and then separately for each price pattern and household
+load. Whether the advantage over the cheapest-hours rule and the
+cheapest window grows with the electrified load is tested (H2d, H2e);
+the rest of the breakdown by condition is descriptive. Also reported
+without hypotheses are the single agent in the harness, the total euro
+saving, the smart timer (own heuristic), the gap to the optimum, and the
+conflict resolution rate,
 which is the share of valid runs among the scenarios that require
 coordination (those in which starting every appliance at its
 individually cheapest time would exceed the peak limit).
@@ -1302,7 +1315,7 @@ individually cheapest time would exceed the peak limit).
 
 Two systems are compared per scenario, using the mean saving over the
 runs as the paired observation. The Wilcoxon signed-rank test assesses
-whether the difference across the 96 paired scenarios is statistically
+whether the difference across the 72 paired scenarios is statistically
 significant. It is designed for paired comparisons and does not assume
 that the differences are normally distributed. Pratt's treatment of zero differences is used, so that
 scenarios in which both systems reach the same cost remain in the
@@ -1313,10 +1326,17 @@ significant and the effect has the predicted direction. Two-sided tests
 are the conservative choice for directional hypotheses, since a
 one-sided test would halve each $p$-value. The $p$-values of the
 registered hypotheses are adjusted for multiple testing with the Holm
-procedure within each sub-question: four tests for SQ1 and three for
+procedure within each sub-question: four tests for SQ1 and five for
 SQ2. The two tests of H1c compare a mean with a fixed limit, which is a
 one-sided claim by nature, so they are one-sided: the upper end of the
-one-sided 95\,\% confidence interval must lie below the limit.
+one-sided 95\,\% confidence interval must lie below the limit. H2d and
+H2e compare two groups of scenarios rather than two systems: the
+per-scenario saving advantage of the pipeline over a rule on the 24
+electrified days against that on the 48 other days, with the
+Mann--Whitney $U$ test and the rank-biserial correlation as effect size.
+A Wilcoxon test whose differences are all zero, which happens when two
+systems reach the same cost on every scenario, cannot be computed and
+counts as showing no difference.
 
 A non-significant difference does not by itself show that two systems
 perform alike, since it can also result from too little data.
@@ -1326,14 +1346,17 @@ considered equivalent when both one-sided tests reject, at the 5\,\%
 level, a mean difference in saving of at least one margin in either
 direction. This is the same as requiring the 90\,\% confidence interval
 of the mean paired difference to lie inside the margin. The margin is
-$\pm 1$ percentage point of the cost without scheduling. On the Q2 set
-that cost has a median of \EUR{0.61} per day (interquartile range
-\EUR{0.28} to \EUR{1.06}, maximum \EUR{2.65}), so one percentage point
-is about 0.6 cents on the median day and under three cents on the most
+$\pm 1$ percentage point of the cost without scheduling. On the Q3 set
+that cost has a median of \EUR{0.90} per day (interquartile range
+\EUR{0.37} to \EUR{1.66}, maximum \EUR{4.49}), so one percentage point
+is about 0.9 cents on the median day and under five cents on the most
 expensive one, which a household would not notice on its bill. The
 paired $t$ version of the test concerns the mean difference and is the
 primary one; a Wilcoxon version, which concerns the typical scenario, and
-margins of 0.5 and 2 percentage points are reported alongside.
+margins of 0.5 and 2 percentage points are reported alongside. If the
+pipeline and EMHASS reach the same cost on every scenario, the
+confidence interval is $[0, 0]$, inside the margin, and equivalence
+holds, although the $t$ statistic is then undefined.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{System Design and Implementation}
@@ -1342,9 +1365,10 @@ margins of 0.5 and 2 percentage points are reported alongside.
 This chapter describes the design and implementation of the hierarchical
 ReAct multi-agent system, the Multi-Agent Pipeline. It presents the
 problem definition and design objectives, the architecture of the
-pipeline, the specifications of each agent, the retrieval of solved days
-and the optimiser tool, the MILP solver, and the technology stack used
-throughout.
+pipeline and of the deterministic harness around its agents, the
+specifications of the agents and of the single agent built for
+comparison, the retrieval of solved days and the optimiser tool, the
+MILP solver, and the technology stack used throughout.
 
 \section{Problem definition and objectives}
 \label{sec:objectives}
@@ -1354,8 +1378,8 @@ Phase 2, the artifact must satisfy five design objectives. First,
 multi-appliance coordination: the pipeline must correctly schedule two
 or more flexible appliances simultaneously without producing overlapping
 high-load windows. Second, price-volatility robustness: the pipeline
-must produce cost-reducing schedules under every price pattern, household
-load and peak limit of the benchmark.
+must produce cost-reducing schedules under every price pattern and
+household load of the benchmark.
 Third, constraint compliance: every schedule must respect user-defined
 completion deadlines and household load limits. Fourth,
 interpretability: the full reasoning trace of every scheduling decision
@@ -1368,32 +1392,47 @@ one; Section~\ref{sec:stack}).
 \section{Architecture overview}
 \label{sec:architecture}
 
-The artifact is a LangGraph state graph in which each node is either a
-ReAct agent or a coordination step. All nodes read from and write to a
-shared state object that persists for the whole run
-(Table~\ref{tab:state}). The Orchestrator first turns the household's
-request into a task brief listing the appliances to schedule. The
-Appliance Profiler then classifies the appliances and records the power
-draw, cycle duration and time window of every flexible one. The
-Price-Aware Scheduler proposes a start time for each flexible appliance
-from the price curve, and the Conflict Resolver checks the proposal
-against the household peak load limit and staggers start times where
-appliances overlap.
+The artifact is a LangGraph state graph whose nodes are either ReAct
+agents, which use a language model, or deterministic steps, which do
+not. All nodes read from and write to a shared state object that
+persists for the whole run (Table~\ref{tab:state}). Two agents do the
+work that needs a language model. The Orchestrator turns the
+household's appliance plan into a task brief listing the appliances to
+schedule and, at the end, explains the final schedule to the household.
+The Price-Aware Scheduler plans a start time for every flexible
+appliance with its tools, among them the optimiser tool
+(Section~\ref{sec:rag-design}). The deterministic steps form a harness
+around the agents: they prepare what an agent needs and check what it
+returns, so that no number and no check depends on the language model.
 
-After the Resolver, the Orchestrator's verification step checks the
-resolved schedule for three kinds of problems: remaining peak load
-conflicts, detected with the same conflict tool that the Resolver uses;
-requested appliances that have no start time; and start times outside
-the user's time window. If a problem remains, the step sends a
-description of it back to the Scheduler, which proposes a revised
-schedule for the Resolver to check again. The Scheduler and Resolver run
-at most twice, that is, with one feedback round. The schedule is then
-finalised, and the Orchestrator writes a short summary for the household
-that states the result of the final peak load check. The
-original request travels in the shared state together with the
-Orchestrator's brief, so an appliance missing from the brief can still
-be profiled and scheduled. Figure~\ref{fig:arch} shows the architecture,
-and Table~\ref{tab:state} lists the fields of the shared state.
+After the Orchestrator's brief, the profiling step builds the appliance
+profiles (type, peak power, cycle length and time window) directly from
+the household data, and the retrieval step adds the two most similar
+solved days as worked examples to the Scheduler's message. After the
+Scheduler, the verification step checks its schedule for three kinds of
+problems: requested appliances without a start time, start times
+outside the user's time window, and peak load conflicts. If a problem
+remains, the step sends a description of it back to the Scheduler,
+which revises its schedule; the Scheduler runs at most twice, that is,
+with one feedback round. If an appliance still has no start time after
+that round, the verification step places it at its cheapest start that
+keeps the load within the limit. The Orchestrator then writes a short
+summary for the household that states the result of the final peak
+load check. The original request travels in the shared state together
+with the Orchestrator's brief, so an appliance missing from the brief
+is still profiled and scheduled. Figure~\ref{fig:arch} shows the
+architecture, and Table~\ref{tab:state} lists the fields of the shared
+state.
+
+The earlier design had four agents. An Appliance Profiler classified the
+appliances with two data tools, and a Conflict Resolver checked the
+Scheduler's proposal against the peak limit and staggered overlapping
+cycles. In the design iterations the profiling turned out to be a fixed
+reading of the household data and, once the Scheduler had the optimiser
+tool, the Resolver's repairs were almost never needed, while each agent
+added model calls, tokens and response time. The final design therefore
+does the profiling deterministically and gives the conflict tools to the
+Scheduler for the feedback round (Section~\ref{sec:iterations}).
 
 \begin{figure}[h!]
 \centering
@@ -1403,46 +1442,44 @@ and Table~\ref{tab:state} lists the fields of the shared state.
   agent/.style={draw, rounded corners=2pt, align=center, text width=6.2cm, inner sep=4pt, fill=#1},
   agent/.default=white,
   io/.style={draw, rounded corners=2pt, align=center, text width=6.2cm, inner sep=3pt, fill=gray!10},
-  gate/.style={draw, diamond, aspect=3.2, align=center, inner sep=1pt, fill=orange!12},
+  hstep/.style={draw, densely dashed, align=center, text width=6.2cm, inner sep=4pt, fill=gray!15},
+  gate/.style={draw, densely dashed, diamond, aspect=3.2, align=center, inner sep=1pt, fill=gray!15},
   ref/.style={draw, dashed, rounded corners=2pt, align=center, text width=3.7cm, inner sep=3pt},
   flow/.style={-{Latex[length=2mm]}, thick},
   upd/.style={-{Latex[length=1.5mm]}, dashed, gray!70!black},
 ]
 \node[io] (req) {Daily appliance plan: cycles to run, ready times and deadlines};
-\node[agent=blue!8, below=of req] (orch) {\textbf{Orchestrator (plan)}\\
+\node[agent=blue!8, below=of req] (orch) {\textbf{Orchestrator (agent): plan}\\
   parses the plan into a task brief};
-\node[agent=green!8, below=of orch] (prof) {\textbf{Appliance Profiler}\\
-  classifies appliances; power, duration, window\\
-  \textit{read\_household\_data, classify\_appliance}};
-\node[agent=yellow!12, below=of prof] (sched) {\textbf{Price-Aware Scheduler}\\
-  cheapest start time per appliance\\
-  \textit{get\_spot\_prices, calculate\_schedule\_cost, find\_cheapest\_window}};
-\node[agent=red!8, below=of sched] (res) {\textbf{Conflict Resolver}\\
-  staggers overlapping high-load cycles\\
-  \textit{sum\_load, detect\_conflicts, adjust\_schedule}};
-\node[gate, below=5mm of res] (gate) {\textbf{Verification}\\peak conflict, missing\\appliance or start\\outside window?};
-\node[agent=blue!8, below=9mm of gate] (fin) {\textbf{Orchestrator (finalise)}\\
+\node[hstep, below=of orch] (prof) {\textbf{Profiling and retrieval (harness)}\\
+  appliance profiles from the household data;\\
+  the two most similar solved days as worked examples};
+\node[agent=yellow!12, below=of prof] (sched) {\textbf{Price-Aware Scheduler (agent)}\\
+  start time per appliance\\
+  first round: \textit{get\_spot\_prices, optimize\_schedule}\\
+  feedback round: also cost and conflict tools};
+\node[gate, below=5mm of sched] (gate) {\textbf{Verification (harness)}\\missing appliance, start\\outside window or\\peak conflict?};
+\node[agent=blue!8, below=9mm of gate] (fin) {\textbf{Orchestrator (agent): finalise}\\
   final schedule and summary for the household};
 \draw[flow] (req) -- (orch);
 \draw[flow] (orch) -- (prof);
 \draw[flow] (prof) -- (sched);
-\draw[flow] (sched) -- (res);
-\draw[flow] (res) -- (gate);
+\draw[flow] (sched) -- (gate);
 \draw[flow] (gate) -- node[right=2mm, align=left, font=\sffamily\scriptsize] {no, or feedback round\\already used} (fin);
 \draw[flow] (gate.west) -- ++(-0.9,0) |- node[pos=0.25, left, align=right, font=\sffamily\scriptsize] {yes:\\feedback\\to Scheduler} (sched.west);
-% the shared state spans the four agents; every agent writes to it
+% the shared state spans the nodes from the plan to the Scheduler; every node writes to it
 \coordinate (stateNW) at ($(orch.north east)+(0.8,0)$);
-\coordinate (stateSE) at ($(res.south east)+(3.3,0)$);
+\coordinate (stateSE) at ($(sched.south east)+(3.3,0)$);
 \node[draw, dashed, rounded corners=2pt, fill=gray!5, inner sep=0pt, fit=(stateNW)(stateSE)] (state) {};
 \node[align=center, text width=2.3cm, font=\sffamily\scriptsize] at (state.center)
-      {\textbf{\footnotesize Shared LangGraph state}\\[3pt] request, brief,\\ profile, proposal,\\ resolution,\\
-       verification feedback,\\ iteration count,\\ final schedule\\[3pt] (Table~\ref{tab:state})};
-\foreach \n in {orch, prof, sched, res} \draw[upd] (\n.east) -- (\n.east -| state.west);
-\node[ref, below=10mm of fin, xshift=-2.1cm] (lib) {\textbf{Case library (retrieval)}\\164 solved days; the two most similar as worked examples for Scheduler and Resolver};
+      {\textbf{\footnotesize Shared LangGraph state}\\[3pt] request, brief,\\ profile, proposal,\\
+       checked schedule,\\ verification feedback,\\ round count,\\ final schedule\\[3pt] (Table~\ref{tab:state})};
+\foreach \n in {orch, prof, sched} \draw[upd] (\n.east) -- (\n.east -| state.west);
+\node[ref, below=10mm of fin, xshift=-2.1cm] (lib) {\textbf{Case library (retrieval)}\\320 solved days; the two most similar as worked examples for the Scheduler};
 \node[ref, right=4mm of lib] (opt) {\textbf{optimize\_schedule}\\MILP solver as a tool of the Scheduler};
 \node[above=1mm of lib.north east, xshift=2mm, font=\sffamily\scriptsize\itshape] {retrieval and optimiser tool (Section~\ref{sec:rag-design})};
 \end{tikzpicture}
-\caption{Architecture of the hierarchical ReAct multi-agent system.}
+\caption{Architecture of the hierarchical ReAct multi-agent system: two language model agents (coloured, rounded) and the deterministic harness steps (grey, dashed).}
 \label{fig:arch}
 \end{figure}
 
@@ -1456,11 +1493,11 @@ Field & Written by & Content \\
 \midrule
 request & caller & the household's scheduling request in natural language \\
 brief & Orchestrator & appliance identifiers to schedule and stated constraints \\
-profile & Profiler & per appliance: type, flexible or fixed, peak power, cycle duration, earliest start and deadline \\
-proposal & Scheduler & start time per appliance, estimated cost and a short justification \\
-resolution & Resolver & conflict-free start times, whether conflicts remain, and the changes made \\
-verification feedback & verification step & remaining peak conflicts, appliances without a start time and start times outside the user window; empty when the schedule passes \\
-iterations & verification step & number of Scheduler--Resolver passes completed (at most two) \\
+profile & profiling step & per appliance: type, flexible or fixed, peak power, cycle duration, earliest start and deadline \\
+proposal & Scheduler & start time per appliance \\
+checked schedule & verification step & the Scheduler's schedule as checked; in the last round, an appliance still missing is added at its cheapest start within the limit \\
+verification feedback & verification step & appliances without a start time, start times outside the user window and remaining peak conflicts; empty when the schedule passes \\
+rounds & verification step & number of Scheduler rounds completed (at most two) \\
 final, summary & Orchestrator & final start times and the summary shown to the household \\
 tool calls, recoveries, errors & all nodes & counters and error messages recorded for the evaluation \\
 \bottomrule
@@ -1469,93 +1506,124 @@ tool calls, recoveries, errors & all nodes & counters and error messages recorde
 
 \section{Agent specifications}
 
-The \textbf{Orchestrator} receives the household scheduling request,
-coordinates the three specialist agents in sequence, and writes the
-final output. It does no scheduling itself, so its context stays small.
+The \textbf{Orchestrator} reads the household's appliance plan and
+returns a task brief: the identifiers of all appliances to schedule and
+any constraint the household states. It has no tools and does no
+scheduling, so its context stays small; its budget is six graph steps.
+At the end it receives the final schedule, its cost and the result of
+the final peak load check and writes a summary of at most four
+sentences for the household. It is told never to claim that the
+constraints are met unless the check confirms it.
 
-The \textbf{Appliance Profiler} reads the household consumption data and
-classifies each appliance by shiftability. The classification
-distinguishes flexible loads, which have long cycle durations and
-user-defined completion windows (washing machines, dishwashers and tumble
-dryers), from fixed loads such as refrigerators and microwaves. The Profiler
-outputs a structured appliance profile containing power draw in Watts,
-typical cycle duration in minutes, and the constraint window for each
-flexible load.
+The \textbf{Price-Aware Scheduler} receives the appliance profiles, one
+line per flexible appliance, and the worked examples of two similar
+solved days. In its first response it makes two tool calls together:
+\texttt{get\_spot\_prices} without arguments, for a summary of the
+day's prices, and \texttt{optimize\_schedule} with all flexible
+appliances. It returns the solver's start times without checking them
+again, because the verification step checks every schedule after it. If
+the solver finds no schedule, the Scheduler returns every appliance at
+its earliest start, and the verification step sends the schedule back
+with its problems. In that feedback round, and only then, the Scheduler
+is also given the cost and conflict tools (Table~\ref{tab:tools}), so
+that it can call the optimiser again or move single appliances and
+confirm that no conflict remains. Offering only two tools in the first
+round keeps every model call short, since the description of every
+offered tool is sent with each call. Its budget is 60 graph steps.
 
-The \textbf{Price-Aware Scheduler} receives the appliance profile and
-the day-ahead prices. It finds the cheapest window for each flexible
-appliance within its user window and proposes a daily schedule with a
-start time per appliance and an estimate of the total cost.
+Both agents are ReAct agents that must end with a structured output
+(the task brief or the start time of every appliance), which is
+validated against a schema before it is written to the shared state.
+When a model replies in prose instead of producing the required output,
+or uses up its steps without one, it is given its conversation so far
+and asked once more to return the output, at most twice. This rule
+applies identically to every agent and model, and every such recovery
+is recorded. In the evaluation runs the household summary is not
+written: the schedule is the recommendation that is scored, and the
+summary would add one model call to the measured time and cost. The
+demonstration in Section~\ref{sec:demonstration} shows it.
 
-The \textbf{Conflict Resolver} receives the proposed schedule and looks
-for times when two or more appliances with high power draw would run
-together and exceed the household's peak load limit. If it finds such a
-conflict, it staggers start times to remove it, choosing the moves that
-add the least to the total cost.
+\paragraph{The single agent in the harness.} To test whether the
+division into two agents matters, the same harness also runs a single
+ReAct agent (Figure~\ref{fig:harness}). It receives the household's
+appliance plan itself, without an Orchestrator's brief, together with
+the same appliance profiles and worked examples. It has the
+Scheduler's tools, offered in the same two stages, and its schedule is
+checked by the same verification step. Verification feedback is added
+to the same conversation, so the agent revises its schedule with its
+whole history in view, and after the check it writes the household
+summary in that conversation as well. Its budget per round is the sum
+of the two agents' budgets, 66 graph steps. Everything that differs
+from the pipeline is therefore the number of agents and what each one
+sees.
 
-Each specialist is a ReAct agent that may only call its own tools and
-must end with a structured output (the appliance profile, the proposed
-schedule or the resolved schedule), which is validated against a schema
-before it is written to the shared state. The agents share a budget of
-75 graph steps, divided by workload: 15 for the Profiler, 35 for the
-Scheduler and 25 for the Resolver. The Scheduler received the largest
-share after the pilot runs showed that it performs most of the tool
-calls. When a model replies in prose instead of producing the required
-structured output, the agent is resumed from its last state and asked
-once more to return the output, at most twice. This rule applies
-identically to every agent and model, and every such recovery is
-recorded.
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  font=\sffamily\footnotesize, node distance=4mm,
+  agent/.style={draw, rounded corners=2pt, align=center, text width=5.4cm, inner sep=4pt, fill=yellow!12},
+  hstep/.style={draw, densely dashed, align=center, text width=5.4cm, inner sep=4pt, fill=gray!15},
+  flow/.style={-{Latex[length=2mm]}, thick},
+]
+\node[hstep] (prof) {\textbf{Profiling and retrieval (harness)}};
+\node[agent, below=of prof] (agent) {\textbf{Single agent}\\reads the plan, plans with the Scheduler's tools};
+\node[hstep, below=of agent] (ver) {\textbf{Verification (harness)}};
+\node[agent, below=of ver] (exp) {\textbf{Single agent}: summary for the household\\(same conversation)};
+\draw[flow] (prof) -- (agent);
+\draw[flow] (agent) -- (ver);
+\draw[flow] (ver) -- (exp);
+\draw[flow] (ver.east) -- ++(0.7,0) |- node[pos=0.25, right, align=left, font=\sffamily\scriptsize] {problem and\\a round left:\\feedback in the\\same conversation} (agent.east);
+\end{tikzpicture}
+\caption{The single agent in the same harness, built to compare one agent with two.}
+\label{fig:harness}
+\end{figure}
 
 Table~\ref{tab:tools} lists the tools. They are deterministic functions
 over the scenario data, so every number an agent reasons with comes from
-a calculation rather than from the language model. The first seven
-tools each handle part of the problem: \texttt{find\_cheapest\_window},
-for example, considers one appliance at a time and ignores both the
-other appliances and the peak load limit. With these tools alone,
-coordinating the appliances is left to the agents. The eighth,
-\texttt{optimize\_schedule}, solves the whole day and was added in the
-last design iteration (Section~\ref{sec:rag-design}).
+a calculation rather than from the language model. All but one handle
+part of the problem: \texttt{find\_cheapest\_window}, for example,
+considers one appliance at a time and ignores both the other appliances
+and the peak load limit. With these tools alone, coordinating the
+appliances is left to the agent. \texttt{optimize\_schedule} solves the
+whole day (Section~\ref{sec:rag-design}). The profiling step reads the
+same household data as the data tools of the earlier design, which the
+agents no longer need.
 
 \begin{table}[h!]
-\caption{Tools available to the agents.}
+\caption{Tools of the Scheduler (and of the single agent), and the round in which each is offered.}
 \label{tab:tools}
 \small
 \begin{tabularx}{\textwidth}{>{\ttfamily\footnotesize\raggedright}p{4.3cm}lX}
 \toprule
-\normalfont Tool (inputs) & Agent & Output and logic \\
+\normalfont Tool (inputs) & Offered & Output and logic \\
 \midrule
-read\_household\_data() & Profiler &
-  Peak load limit, measured base load range, and for each appliance its
-  type, cycle duration, energy, peak power and user window (flexible) or
-  rated power (fixed). \\[2pt]
-classify\_appliance(\allowbreak appliance\_id) & Profiler &
-  Flexible or fixed, with a reason; washing machines, dishwashers and
-  tumble dryers are shiftable cycle loads. \\[2pt]
-get\_spot\_prices(\allowbreak from\_time, to\_time) & Scheduler &
-  Consumer price in c/kWh for every 15-minute slot, optionally for a time
-  range. \\[2pt]
-calculate\_\allowbreak schedule\_cost(\allowbreak appliance\_id, start\_time) & Scheduler &
+get\_spot\_prices(\allowbreak from\_time, to\_time) & both rounds &
+  Without arguments, a summary of the day: hourly mean consumer prices
+  and the cheapest and dearest 15-minute slots. With a time range, the
+  consumer price in c/kWh of every 15-minute slot in it. Answers are
+  cached, so a repeated call costs nothing. \\[2pt]
+optimize\_schedule(\allowbreak appliance\_ids) & both rounds &
+  Solves the day for the given appliances with the MILP of
+  Section~\ref{sec:milp} and returns the start times, the cost and the
+  maximum load. \\[2pt]
+calculate\_\allowbreak schedule\_cost(\allowbreak appliance\_id, start\_time) & feedback &
   Cost of one cycle started at the given time (power profile $\times$
   price $\times$ 0.25\,h, summed over the cycle), its end time, and
   whether it lies within the user window. \\[2pt]
-find\_cheapest\_\allowbreak window(\allowbreak appliance\_id, top\_k) & Scheduler &
+find\_cheapest\_\allowbreak window(\allowbreak appliance\_id, top\_k) & feedback &
   The $k$ cheapest start times within the user window for one appliance,
   found by evaluating every valid start. \\[2pt]
-sum\_load(schedule) & Resolver &
+sum\_load(schedule) & feedback &
   Maximum total household load (base load plus scheduled cycles) and the
   five highest slots, compared with the limit. \\[2pt]
-detect\_conflicts(\allowbreak schedule) & Resolver &
+detect\_conflicts(\allowbreak schedule) & feedback &
   Time ranges in which the total load exceeds the limit and the
   appliances running then, or confirmation that there is no conflict. \\[2pt]
-adjust\_schedule(\allowbreak schedule, appliance\_id, new\_start\_time) & Resolver &
+adjust\_schedule(\allowbreak schedule, appliance\_id, new\_start\_time) & feedback &
   Moves one appliance and reports the cost change, the window check and
   any remaining overload. Without a start time, it moves the appliance to
   its cheapest start at which it causes no overload, keeping the others
-  fixed, and lists alternatives. \\[2pt]
-optimize\_schedule(\allowbreak appliance\_ids) & Scheduler$^{*}$ &
-  Solves the day for the given appliances with the MILP of
-  Section~\ref{sec:milp} and returns the start times, the cost and the
-  maximum load. $^{*}$Added in the last design iteration. \\
+  fixed, and lists alternatives. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1565,11 +1633,10 @@ Before the optimiser tool was added, the automatic mode of
 It optimizes the start of one appliance while all others stay where they
 are and never re-plans several appliances together. Which appliances to
 move, in which order, and when to stop were decisions of the agent, and
-a poor sequence of single moves could settle on a schedule far from the
-optimum. In scenario D06 of the first benchmark, for example, the
-pipeline ended about 30\,\% above the optimal cost with a staggered
-schedule that no single further move could improve. This limitation led
-to the retrieval of solved days and the optimiser tool described next.
+a poor sequence of single moves could settle on a staggered schedule
+far from the optimum that no single further move could improve. This
+limitation led to the retrieval of solved days and the optimiser tool
+described next.
 
 \section{Retrieval of solved days and the optimiser tool}
 \label{sec:rag-design}
@@ -1577,14 +1644,17 @@ to the retrieval of solved days and the optimiser tool described next.
 \paragraph{Case library.} Retrieval gives the agents examples of how
 similar days were solved best. The case library holds
 320 cases: 20 price days for each combination of price pattern and
-household load, each under both peak limits. The days are drawn from the
-hourly prices up to 30 September 2025, excluding every day of every
-benchmark, so no evaluated day is in the library. Each case is composed
-exactly like a benchmark scenario (Section~\ref{sec:dataset}), with the
-same REFIT cycle pool, price patterns, loads and limits, and solved with
-the MILP of
-Section~\ref{sec:milp}. A deployed system would build such a library
-from the household's own past days in the same way.
+household load of the earlier factorial design, each under its two peak
+limits, 3.5 and 8\,kW. The days are drawn from the hourly prices up to
+30 September 2025, excluding every day of every benchmark, so no
+evaluated day is in the library. Each case is composed like a benchmark
+scenario of that design (Section~\ref{sec:dataset}), with the same REFIT
+cycle pool, price patterns and loads, and solved with the MILP of
+Section~\ref{sec:milp}. The library was not rebuilt for the final
+benchmark, so it contains no electrified day, and its cases keep the
+windows of the earlier design rather than the households' usual run
+times. A deployed system would build such a library from the
+household's own past days in the same way.
 
 \paragraph{Retrieval.} Each day is described by two vectors: the shape
 of its price curve (24 hourly consumer prices, standardised to mean zero
@@ -1602,35 +1672,31 @@ deterministic and needs no embedding model.
 \paragraph{Worked examples.} Each retrieved case is turned into a short
 text in the agents' own vocabulary: the number of appliances, the peak
 limit and the price range; whether the individually cheapest starts
-would exceed the limit; the optimal start of every appliance with its
-own cheapest start and the extra cost of the difference; and the pattern
-of the staggering, for example that the tumble dryer starts as the
-washing machine ends. The text is appended to the messages of the
-Scheduler and the Resolver with an instruction to use the examples as
-patterns, not as answers, and to check the day's own prices and loads
-with the tools.
+would exceed the limit; and the optimal start and end of every
+appliance with its own cheapest start and the extra cost of the
+difference. The text is appended to the Scheduler's message (and to the
+single agent's) with a note that the examples show patterns of
+staggering, not answers, since the day's own prices and loads differ.
 
-\paragraph{Optimiser tool.} The Scheduler also has
-\texttt{optimize\_schedule} (Table~\ref{tab:tools}), and its prompt
-asks it to call the tool once with all flexible appliances, to check any
-unusual start time with \texttt{calculate\_schedule\_cost}, and to fall
-back to \texttt{find\_cheapest\_window} if the solver finds no schedule.
-The Resolver and the verification step are unchanged, so every schedule
-is still checked independently of the tool that produced it, as Jonah et
-al. (2026) recommend. This follows the division of work of Li et al.
-(2023): the solver searches, and the agents formulate the call, check
-the result and explain it to the household.
+\paragraph{Optimiser tool.} The Scheduler's prompt asks it to call
+\texttt{optimize\_schedule} (Table~\ref{tab:tools}) in its first
+response with all flexible appliances, together with
+\texttt{get\_spot\_prices}, and to return the solver's start times. The
+verification step checks every schedule independently of the tool that
+produced it, as Jonah et al. (2026) recommend, and returns any problem
+to the Scheduler, which then has the cost and conflict tools to repair
+it. This follows the division of work of Li et al. (2023): the solver
+searches, the agent formulates the call and repairs what the check
+reports, and the Orchestrator explains the result to the household.
 
 The pipeline reached this form over several design iterations
-(Section~\ref{sec:iterations}): the base pipeline without retrieval or
-the optimiser tool, then the pipeline with retrieval only. Both earlier
-versions were run on the exploratory benchmark, and their results show
-what each addition contributed. An earlier version of the study also
-compared the base pipeline with a single ReAct agent that had the first
-seven tools of Table~\ref{tab:tools} and the same step budget; that
-comparison is summarised in Section~\ref{sec:earlier-design}. Only the
-final Multi-Agent Pipeline is a compared system in the current
-evaluation.
+(Section~\ref{sec:iterations}): a four-agent pipeline without retrieval
+or the optimiser tool, then with retrieval, then with the optimiser
+tool; then two agents in a deterministic harness; and finally changes
+that shortened the response time and the prompts without changing what
+the agents do. The single agent in the harness was built before those
+last changes, for the comparison of one agent with two, and every
+change since was applied to both designs alike.
 
 \section{MILP solver}
 \label{sec:milp}
@@ -1737,6 +1803,10 @@ Statistics & SciPy 1.18 & Wilcoxon signed-rank test, TOST equivalence test, effe
 % the AI declaration, sec:stack (paragraph and table row), the systems compared, sec:iterations, the results and
 % Q2 sections, Discussion, Limitations, Future research, Conclusions. Keep the mentions in the literature review
 % (other authors' studies that used GPT-4o-mini or GPT-4o).
+% AGENTS (21 Oct 2026): the Abstract (results marked pending) and Chapters 1-4 describe the final design, two agents
+% in a deterministic harness plus the single agent in the same harness, the 8 kW limit, the three loads and the Q3
+% hypotheses (tab:hypotheses). Chapters 5-7 (sec:demonstration, sec:iterations, the results sections, Discussion,
+% Limitations, Conclusions) still describe the four-agent design and its runs: rewrite them with the Q3/v4 results.
 % PEAK LIMIT (20 Oct 2026): the 3.5 kW level had no source and was dropped; the final benchmark (data/scenarios_v3,
 % 48 scenarios) uses only the Energy Authority's 8 kW threshold (sec:dataset says so). The passages below that report
 % the strict level describe recorded runs and go when the results are replaced: the abstract ("two peak limits"),
