@@ -19,7 +19,8 @@ from hems.data.tariff import Tariff
 from hems.solvers.milp import solve_milp
 
 INSTANCES_PER_TYPE = 8
-LABELS = {"washing_machine": "washing machine", "dishwasher": "dishwasher", "tumble_dryer": "tumble dryer"}
+LABELS = {"washing_machine": "washing machine", "dishwasher": "dishwasher", "tumble_dryer": "tumble dryer",
+          "ev_charger": "electric car charging"}  # fmt: skip
 
 
 @dataclass(frozen=True)

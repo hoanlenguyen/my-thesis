@@ -1,0 +1,10 @@
+{
+  "name": "confirmation Q3 (DRAFT pre-registration, docs/preregistration_q3.md; do not run before it is committed)",
+  "scenarios": "data/scenarios_q3",
+  "systems": ["milp", "naive", "timer", "cheapest_hours", "cheapest_window", "multi_duo", "single_harness", "oneshot"],
+  "models": ["gpt-6-luna"],
+  "runs": 3,
+  "out": "results/confirmation_q3.jsonl",
+  "order": "model",
+  "message": false
+}

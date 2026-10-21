@@ -360,3 +360,27 @@ starts exceed the limit). On v3 at 8 kW, with GPT-6 Luna, the two-agent pipeline
 all 144 runs each and capture 100 % of the achievable saving (18.7 %); so do EMHASS (REST, profiles) and the smart
 timer (48 days each); the Home Assistant rules are valid on 47 of 48 days and capture 73.5 % (cheapest hours) and
 88.9 % (cheapest window); the LLM without tools is valid in 81.2 % of runs and captures 39.7 %.
+
+## Note (20 October 2026): benchmark v4, an electrified household load (exploratory, not yet run)
+
+Under 8 kW the REFIT loads rarely compete for capacity, so SQ2's conditions showed nothing on v3. Benchmark v4
+(`data/scenarios_v4`, `hems build-electrified`, `hems.data.electrified`) holds the 48 v3 scenarios unchanged plus a
+third household load on each of the 24 heavy-load days ("electrified", ids `U-?E??-80`): the heavy load, a flexible
+electric car charge (3.7 kW, the single-phase home charge point; 2 h, 7.4 kWh; ready 17:00, finished by midnight;
+without scheduling it charges on arrival) and a fixed sauna (6.8 kW heater, 19:00-20:30 including one hour of
+heating; added to the base load and stated in the request). Sources: charger manufacturer data, Traficom HLT 2021
+(distance per day), Harvia product data, ELY Centre (heating and bathing time); the arrival and sauna times are
+assumptions, the same on every day. An 11 kW charger was not used: it alone exceeds 8 kW, so it cannot be scheduled
+under a hard limit.
+
+Design choices made after looking at results (reported as such): the electrified level was chosen after the v3
+results showed that 8 kW rarely binds. A first build had a 2 h 15 min charge, which overlapped the sauna by one slot,
+so no scheduling broke the limit on all 24 days and the optimum cost more than that invalid reference on 3 days. The
+charge was shortened to 2 h so that no scheduling is a valid plan; the deciding criterion was the validity of the
+reference. The scores of the rule systems were seen for both versions (first build / final): days needing
+coordination 12 / 8 of 24; smart timer 100 % / 100 % of the achievable saving; HA cheapest hours valid on 0 / 15
+days, 0 % / 13 %; HA cheapest window valid on 13 / 18 days, 81 % / 94 %. One smoke run per agent design (GPT-6 Luna,
+first build, U-VE01-80) was valid and optimal; it is not recorded.
+
+The v3 scenarios in v4 are byte-identical, so their v3 results carry over; the campaigns `configs/luna_v4.json` and
+`configs/oss_v4.json` (not yet run) need only the 24 electrified scenarios if the v3 rows are copied in first.

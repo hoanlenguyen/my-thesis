@@ -27,6 +27,9 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 | `src/hems/analysis/` | metrics, Wilcoxon/Spearman, LaTeX tables, `resolution.py` (hourly vs 15-min) |
 | `data/scenarios/` | main benchmark A01–F08 (hourly Sahkotin prices, frozen, seed 2026) |
 | `data/scenarios_15min/` | Q-A01–Q-F08 (native 15-min Elering prices, Oct 2025 – Sep 2026) |
+| `data/scenarios_v3/` | U-*-80: v2 days with windows from REFIT usual run times, 8 kW (48; `hems build-usage`) |
+| `data/scenarios_v4/` | v3 + U-?E??-80: each heavy day with a 3.7 kW car charge and a fixed 6.8 kW sauna (72; `hems build-electrified`) |
+| `data/scenarios_q3/` | held out: the Q2 days at 8 kW with v3 windows + electrified heavy days (72; `hems build-q3`); no runs before registration |
 | `data/pilot/` | synthetic SYN-* scenarios — development only, never thesis results |
 | `data/raw/` | gitignored: REFIT CSVs (6.5 GB), price CSVs |
 | `results/` | `runs.jsonl` / `pilot_real.jsonl` (+ archived `*_vN.jsonl`), `resolution/`, tables |
@@ -57,7 +60,11 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   `results/`. The thesis text and its results are to be redesigned around the two-agent pipeline. **SQ1 (value and cost)**: saving and validity vs the LLM without tools,
   latency < 60 s and API cost < $0.10 per recommendation (H1a–c). **SQ2 (conditions)**: under which price
   pattern / load / peak limit the pipeline beats or matches existing home energy management tools (cheapest window, cheapest
-  hours, EMHASS) (H2a–c; per-condition breakdown descriptive).
+  hours, EMHASS) (H2a–c; per-condition breakdown descriptive). **Reworded draft (21 Oct 2026,
+  `docs/preregistration_q3.md`, not yet registered)**: under the 8 kW threshold, price pattern × load (light,
+  heavy, electrified = car charge + sauna); H2a/b beat the HA rules, H2c ≈ EMHASS ±1 pt, H2d/e larger advantage on
+  electrified days. Tested on the held-out **Q3** (`data/scenarios_q3`, `configs/confirmation_q3.json`); v4 is the
+  exploratory set. **Run nothing on Q3** until the draft and `analysis/confirm_q3.py` are committed.
 - Primary outcome: **saving vs no scheduling** (`metrics.scored_runs` saving_pct); gap to MILP secondary.
 - The single agent and the MILP are no longer compared systems (Amendment 2); old H1–H2c stay confirmed
   on Q as history. Benchmarks: factorial `data/scenarios_v2` (exploratory) and `data/scenarios_q2`
@@ -128,6 +135,10 @@ OpenAI's current small model, USD 0.10/0.50 per 1M tokens (third-party figures, 
 so only the id `gpt-6-luna` can be pinned. Every result recorded before that date, the design iterations and the
 registered Q2 confirmation used `gpt-4o-mini` and stay attributed to it (`confirm.py` / `confirm_q2.py` keep
 `MODEL = "gpt-4o-mini"`). `main.tex` describes the change in `sec:stack`; its results still need the new campaign.
+**Thesis text (author's decision, 21 Oct 2026): the final thesis does not mention GPT-4o-mini or its runs.** They are
+removed in the same pass as the GPT-6 Luna results rewrite (after the Q3 and v4 runs), never earlier; the list of
+passages is in the GPT-4o-MINI comment in `main.tex`. Literature-review mentions of other authors' GPT-4o-mini studies
+stay. Results files and code keep the attribution (never relabel a run's model).
 
 The registered Q2 confirmation uses `gpt-4o-mini` only. The earlier-design campaign
 (`configs/full_evaluation.json`) used two models: commercial cloud vs small open-weight model run locally.

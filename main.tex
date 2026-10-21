@@ -428,8 +428,7 @@ decisions in prior work.
 This thesis is organized into seven chapters. Chapter 2 presents the
 literature review covering HEMS concepts, LLM-based agents for energy
 management, the ReAct framework, multi-agent LLM systems, retrieval and
-solver tools for agents, current agentic AI trends, and the Finnish
-energy market context. Chapter 3 describes the Design Science Research
+solver tools for agents, and the Finnish energy market context. Chapter 3 describes the Design Science Research
 methodology and evaluation strategy. Chapter 4 presents the system
 design and implementation. Chapter 5 presents the results on an
 exploratory and a held-out benchmark of 96 scenarios each. Chapter 6
@@ -781,45 +780,6 @@ has been compared with the home energy management tools that households
 already use. This thesis studies both as extensions of the pipeline
 (Section~\ref{sec:rag-design}).
 
-\section{Agentic AI trends in 2025--2026}
-
-Three recent developments in agentic AI bear on this thesis. The first
-is the move from single agents to systems in which several LLM-based
-agents with distinct roles cooperate, a research area that has grown
-quickly since 2023 (Guo et al., 2024; Wang et al., 2024). Two surveys
-describe how the profiles, memory, planning
-and communication of such agents are organized, and they identify
-coordination between agents and the evaluation of multi-agent systems as
-open challenges. The idea is that a complex task can be divided among
-specialists, each with a smaller context and fewer tools than a single
-agent that handles the whole task.
-
-The second is the Model Context Protocol (MCP), introduced by Anthropic
-in November 2024 and donated to the Linux Foundation's Agentic AI
-Foundation in December 2025, which has become a common standard for
-connecting agents to tools (Anthropic, 2024). MCP gives agents one
-model-independent interface to external tools and data sources, so each
-tool no longer needs its own integration code. The LangChain MCP
-adapters library makes MCP tools usable by LangGraph agents, so the
-price API and data reader of this thesis could be offered as reusable
-MCP servers.
-
-The third is a growing set of design patterns for such agents. Y. Liu et
-al. (2025) catalogue eighteen architectural patterns for agents built on
-foundation models, three of which match designs in this thesis:
-role-based cooperation, in which agents with assigned
-roles divide the work, describes the multi-agent pipeline; one-shot
-model querying, in which the model produces its answer in a single step,
-describes the LLM-without-tools baseline; and human reflection, in which
-humans give feedback on the agent's plan, describes a human-in-the-loop
-(HITL) checkpoint. Guidelines for human-AI interaction likewise
-recommend that a system make clear why it did what it did and support
-efficient correction by the user (Amershi et al., 2019). The artifact
-therefore has an optional HITL checkpoint, a LangGraph interrupt node at
-which the Orchestrator shows the proposed schedule to the user for
-approval before it is finalized. The checkpoint was not enabled in the
-reported evaluations, which run without human intervention.
-
 \section{Finnish energy market context}
 
 Finland belongs to the Nordic spot electricity market (Nord Pool) and
@@ -999,50 +959,26 @@ Phase & DSR step & Activity in this thesis & Output \\
 \label{sec:litsearch}
 
 The literature review in Chapter~\ref{ch:literature} draws on a
-structured search of two databases, reported following the PRISMA 2020
-statement (Page et al., 2021). Scopus was searched on 12 October 2026 in
-titles, abstracts and keywords, limited to articles and conference
-papers in English:
-\begin{quote}\small\ttfamily\raggedright
-TITLE-ABS-KEY ( ( "large language model*" OR llm* OR "agentic AI" OR
-"language agent*" ) AND ( "home energy management" OR "demand response"
-OR "smart home*" OR ( ( appliance* OR load* ) W/3 schedul* ) ) ) AND
-PUBYEAR > 2019
-\end{quote}
-IEEE Xplore was searched on 13 October 2026 in all metadata:
-\begin{quote}\small\ttfamily\raggedright
-("All Metadata":"large language model*" OR "All Metadata":LLM* OR "All
-Metadata":"agentic AI" OR "All Metadata":"language agent*") AND ("All
-Metadata":"home energy management" OR "All Metadata":"demand response"
-OR "All Metadata":"appliance scheduling" OR "All Metadata":"smart
-home*")
-\end{quote}
-
-The two searches returned 608 records, 358 from Scopus and 250 from IEEE
-Xplore (Figure~\ref{fig:prisma}); the Scopus search returned 357 records
-on its first run and 358 when it was rerun for screening. All 608
-records were screened on their titles against one criterion: a language
-model or language model agent applied to household or building energy
-management, demand response or appliance scheduling. Screening was done
-by a single reviewer with the help of an AI assistant, and 540 records
-were excluded. Of the 68 records that remained, 14 appeared in both
-databases, which left 54 reports. The full texts of 7 were available and
-the other 47 were assessed on their abstracts. Two further studies known
-to the author, on language model agents in smart homes, were added. Of
-the 56 reports assessed, 7 were excluded: four do not use a language
-model, two do not concern energy, and one is an earlier version of an
-included study. Of the 49 eligible studies, 25 are discussed in
+structured search of Scopus (12 October 2026) and IEEE Xplore (13
+October 2026), reported following the PRISMA 2020 statement (Page et
+al., 2021); the search strings are in Appendix~\ref{app:queries}. The
+searches returned 608 records, 358 from Scopus and 250 from IEEE Xplore
+(Figure~\ref{fig:prisma}). Their titles were screened against one
+criterion: a language model or language model agent applied to
+household or building energy management, demand response or appliance
+scheduling. This excluded 540 records, and removing 14 duplicates left
+54 reports, to which two studies known to the author were added. Of the
+56 reports assessed, 7 were excluded (four use no language model, two
+do not concern energy, one is an earlier version of an included study).
+Of the 49 eligible studies, 25 are discussed in
 Chapter~\ref{ch:literature}; Appendix~\ref{app:studies} lists all 49.
 
-The procedure deviates from PRISMA 2020 in three respects. Duplicates
-were identified only among the records that passed title screening,
-because complete record exports were not available, so the count of
-excluded records may include duplicates; 47 of the 56
-eligibility decisions rest on abstracts rather than full texts; and
-screening was done by one reviewer, so its reliability was not checked.
-The references on design science, agent architectures, statistics and
-the Finnish electricity market were collected separately and are not
-part of the flow.
+The procedure deviates from PRISMA 2020 in three respects: duplicates
+were identified only after title screening, 47 of the 56 eligibility
+decisions rest on abstracts, and one reviewer screened the records with
+the help of an AI assistant, so reliability was not checked. The
+references on design science, agent architectures, statistics and the
+Finnish electricity market were collected separately.
 
 \begin{figure}[h!]
 \centering
@@ -1795,6 +1731,12 @@ Statistics & SciPy 1.18 & Wilcoxon signed-rank test, TOST equivalence test, effe
 % REDESIGN NOTE (19 Oct 2026): every result in this chapter, the Discussion and the Abstract was produced with
 % GPT-4o-mini and stays attributed to it. Replace them after the GPT-6 Luna campaigns (two-agent pipeline, single
 % agent with harness), and then also update the model mentions in sec:limitations and sec:future.
+% GPT-4o-MINI (author's decision, 21 Oct 2026): the final thesis does not mention GPT-4o-mini or any of its runs
+% (design iterations, exploratory results, the registered Q and Q2 confirmations, the response-time iteration).
+% Remove them in the same pass as the GPT-6 Luna rewrite, never before (no thesis without results): the abstract,
+% the AI declaration, sec:stack (paragraph and table row), the systems compared, sec:iterations, the results and
+% Q2 sections, Discussion, Limitations, Future research, Conclusions. Keep the mentions in the literature review
+% (other authors' studies that used GPT-4o-mini or GPT-4o).
 % PEAK LIMIT (20 Oct 2026): the 3.5 kW level had no source and was dropped; the final benchmark (data/scenarios_v3,
 % 48 scenarios) uses only the Energy Authority's 8 kW threshold (sec:dataset says so). The passages below that report
 % the strict level describe recorded runs and go when the results are replaced: the abstract ("two peak limits"),
@@ -2916,7 +2858,8 @@ Several directions for future research emerge from this study. First,
 extending the pipeline to thermal loads such as electric space heating,
 heat pumps and domestic hot water systems would address the gap
 explicitly identified by El Makroum, Zwickl-Bernhard, and Kranzl (2026). Second,
-implementing the price API and data reader as MCP servers would enable
+implementing the price API and data reader as Model Context Protocol
+(MCP) servers (Anthropic, 2024) would enable
 reuse by future researchers without custom integration code,
 contributing to the emerging standardization of agent tool interfaces.
 Third, a live deployment study involving Finnish households on
@@ -3284,12 +3227,6 @@ energy management. In \textit{2025 IEEE 26th China Conference on System
 Simulation Technology and its Applications (CCSSTA)} (pp. 69--74). IEEE.
 \url{https://doi.org/10.1109/IEEECONF65522.2025.11137227}
 
-Liu, Y., Lo, S. K., Lu, Q., Zhu, L., Zhao, D., Xu, X., Harrer, S., \&
-Whittle, J. (2025). Agent design pattern catalogue: A collection of
-architectural patterns for foundation model based agents.
-\textit{Journal of Systems and Software, 220}, 112278.
-\url{https://doi.org/10.1016/j.jss.2024.112278}
-
 Luccioni, S., Jernite, Y., \& Strubell, E. (2024). Power hungry
 processing: Watts driving the cost of AI deployment? In
 \textit{Proceedings of the 2024 ACM Conference on Fairness,
@@ -3419,12 +3356,6 @@ framework for evaluation in design science research. \textit{European
 Journal of Information Systems, 25}(1), 77--89.
 \url{https://doi.org/10.1057/ejis.2014.36}
 
-Wang, L., Ma, C., Feng, X., Zhang, Z., Yang, H., Zhang, J., Chen, Z.,
-Tang, J., Chen, X., Lin, Y., Zhao, W. X., Wei, Z., \& Wen, J. (2024). A
-survey on large language model based autonomous agents.
-\textit{Frontiers of Computer Science, 18}, 186345.
-\url{https://doi.org/10.1007/s11704-024-40231-1}
-
 Yang, Y., Yang, Q., Li, D., Sun, L., Liu, S., \& Liu, R. (2025).
 LLM-MAC: LLM-driven multi-agent coordination for generalizable home
 energy management. In \textit{2025 44th Chinese Control Conference
@@ -3453,6 +3384,32 @@ Data Science, 3}, e7. \url{https://doi.org/10.1017/eds.2024.8}
 \titleformat{\chapter}[block]
   {\sffamily\fontsize{18}{22}\bfseries}
   {Appendix \thechapter.}{0.5em}{}
+
+\chapter{Literature search strings}
+\label{app:queries}
+
+This appendix gives the searches of Section~\ref{sec:litsearch}. Scopus
+was searched on 12 October 2026 in titles, abstracts and keywords,
+limited to articles and conference papers in English:
+\begin{quote}\small\ttfamily\raggedright
+TITLE-ABS-KEY ( ( "large language model*" OR llm* OR "agentic AI" OR
+"language agent*" ) AND ( "home energy management" OR "demand response"
+OR "smart home*" OR ( ( appliance* OR load* ) W/3 schedul* ) ) ) AND
+PUBYEAR > 2019
+\end{quote}
+IEEE Xplore was searched on 13 October 2026 in all metadata:
+\begin{quote}\small\ttfamily\raggedright
+("All Metadata":"large language model*" OR "All Metadata":LLM* OR "All
+Metadata":"agentic AI" OR "All Metadata":"language agent*") AND ("All
+Metadata":"home energy management" OR "All Metadata":"demand response"
+OR "All Metadata":"appliance scheduling" OR "All Metadata":"smart
+home*")
+\end{quote}
+The Scopus search returned 357 records on its first run and 358 when it
+was rerun for screening; the 358 are used in Figure~\ref{fig:prisma}.
+Duplicates were identified only among the records that passed title
+screening, because complete record exports were not available, so the
+count of excluded records may include duplicates.
 
 \chapter{Eligible studies}
 \label{app:studies}

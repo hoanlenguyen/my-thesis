@@ -1,0 +1,18 @@
+{
+ "design": "held-out: Q2 days, 8 kW, windows from usual run times, plus an electrified load on every heavy-load day (hems.data.electrified.build_heldout)",
+ "source_set": "data/scenarios_q2",
+ "usage_times": "data\\usage\\usage_times.json",
+ "id_prefix": "Q3",
+ "electrified": {
+  "ev_kw": 3.7,
+  "ev_slots": 8,
+  "ev_ready": "17:00",
+  "ev_finish_by": "24:00",
+  "sauna_kw": 6.8,
+  "sauna": "19:00-20:30, fixed (in the base load)"
+ },
+ "scenarios": 72,
+ "light_and_heavy": 48,
+ "electrified_scenarios": 24,
+ "peak_limit_raised": []
+}

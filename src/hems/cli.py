@@ -229,6 +229,22 @@ def cmd_build_usage(args: argparse.Namespace) -> None:
     print(f"{manifest['scenarios']} scenarios -> {args.out}; peak limit raised in {len(manifest['peak_limit_raised'])}")
 
 
+def cmd_build_electrified(args: argparse.Namespace) -> None:
+    from hems.data.electrified import build_electrified_benchmark
+
+    manifest = build_electrified_benchmark(args.source, args.out)
+    print(f"{manifest['scenarios']} scenarios ({manifest['electrified_scenarios']} electrified) -> {args.out}; "
+          f"peak limit raised in {len(manifest['peak_limit_raised'])}")  # fmt: skip
+
+
+def cmd_build_q3(args: argparse.Namespace) -> None:
+    from hems.data.electrified import build_heldout
+
+    manifest = build_heldout(args.source, args.out)
+    print(f"{manifest['scenarios']} scenarios ({manifest['electrified_scenarios']} electrified) -> {args.out}; "
+          f"peak limit raised in {len(manifest['peak_limit_raised'])}")  # fmt: skip
+
+
 def main() -> None:
     # Windows consoles default to cp1252; model output (e.g. "≈") must never crash a batch while logging.
     # Line buffering makes progress visible immediately when output goes to a log file.
@@ -362,6 +378,16 @@ def main() -> None:
     p.add_argument("--usage", default="data/usage/usage_times.json")
     p.add_argument("--id-prefix", default="U-")
     p.set_defaults(func=cmd_build_usage)
+
+    p = sub.add_parser("build-electrified", help="v3 plus a car charge and a sauna on every heavy-load day (v4)")
+    p.add_argument("--source", default="data/scenarios_v3")
+    p.add_argument("--out", default="data/scenarios_v4")
+    p.set_defaults(func=cmd_build_electrified)
+
+    p = sub.add_parser("build-q3", help="held-out set Q3: the Q2 days at 8 kW with v3 windows, plus electrified days")
+    p.add_argument("--source", default="data/scenarios_q2")
+    p.add_argument("--out", default="data/scenarios_q3")
+    p.set_defaults(func=cmd_build_q3)
 
     args = parser.parse_args()
     args.func(args)

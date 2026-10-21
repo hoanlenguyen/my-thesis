@@ -1,0 +1,10 @@
+{
+  "name": "gpt-6-luna on benchmark v4 (v3 plus an electric car and a sauna on every heavy-load day; 8 kW limit; exploratory)",
+  "scenarios": "data/scenarios_v4",
+  "systems": ["milp", "naive", "timer", "cheapest_hours", "cheapest_window", "multi_duo", "single_harness", "oneshot"],
+  "models": ["gpt-6-luna"],
+  "runs": 3,
+  "out": "results/luna_v4.jsonl",
+  "order": "model",
+  "message": false
+}
