@@ -1,9 +1,9 @@
 # Pre-registration draft: SQ1 and SQ2 under the 8 kW limit, held-out set Q3
 
-**Status: DRAFT (21 October 2026), not registered.** It counts as registered once the author commits it together
-with the analysis script `src/hems/analysis/confirm_q3.py` and its tests, before any run of any system on
-Q3. Q3 was built on 21 October 2026; only its benchmark characteristics (section 2) were computed, no system was
-scored on it. On the exploratory set v4, one unrecorded smoke run per agent design was made on U-VE01-80 of its
+**Status: registered in commit f1d187c (21 October 2026)**, together with the analysis script
+`src/hems/analysis/confirm_q3.py` and its tests, before any run of any system on Q3. Only the status line and the
+note at the end were added afterwards. Q3 was built on 21 October 2026; before the registration only its benchmark
+characteristics (section 2) were computed, no system was scored on it. On the exploratory set v4, one unrecorded smoke run per agent design was made on U-VE01-80 of its
 first build (see the note of 20 October 2026 in `docs/preregistration_q2.md`).
 
 ## 1. Why SQ2 is reworded
@@ -119,3 +119,17 @@ the deterministic systems on v4, not on Q3, assuming the pipeline reaches the op
   schedules on electrified days); total EUR saved; `single_harness`, `timer`, `emhass_rest_nominal`, `oneshot`; the
   gap to the MILP optimum; TOST at +-0.5 and +-2 points.
 - Any deviation is described in the thesis with the result under the original plan.
+
+## Note (21 October 2026): the registered run
+
+The run followed the registration the same day with nothing changed in between (`configs/confirmation_q3.json`
+-> `results/confirmation_q3.jsonl`, 1,008 jobs; EMHASS REST -> `results/tools/scenarios_q3.jsonl`, run on the same
+machine during the first minutes of the campaign). LangSmith tracing was switched off for the campaign. Result of
+`uv run python -m hems.analysis.confirm_q3` (`results/confirmation_q3/tests.csv`): H1a, H1b, H1c (both), H2a, H2b
+and H2c supported; H2d (Holm p = 0.30) and H2e (p = 0.51) not supported. Both agent designs were valid in all 216
+runs and cost exactly the optimum in every run; the single agent was faster (mean 5.0 s against 7.4 s) and cheaper
+(USD 0.00025 against 0.00040 per run). API cost of the whole run: about USD 0.16.
+
+Exploratory set v4 (`configs/luna_v4.json` -> `results/luna_v4.jsonl`, its 48 light and heavy scenarios copied
+from `results/luna_v3.jsonl`: byte-identical scenarios and no change to agents, prompts, tools or scoring since):
+the same tests would support eight of nine hypotheses, H2d included (p = 0.04), H2e not.
