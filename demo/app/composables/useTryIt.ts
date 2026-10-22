@@ -160,30 +160,38 @@ export function toRunResult(r: PlanResult): RunResult {
 
 export function useTryItApi() {
   const base = useRuntimeConfig().public.apiBase as string
+  // Time to wait for the API's first answer. Locally the dev proxy never answers when the API is down, so without a
+  // limit the page would wait forever; the cloud API may need up to a minute to start after a quiet period.
+  const answerTimeout = base ? 90_000 : 30_000
   const errorText = (e: unknown) => {
-    const err = e as { data?: { detail?: unknown }, message?: string }
+    const err = e as { data?: { detail?: unknown }, message?: string, name?: string }
     const detail = err?.data?.detail
     if (typeof detail === 'string') return detail
     if (Array.isArray(detail)) return detail.map(d => (d as { msg?: string }).msg ?? '').join('; ')
-    if (!err?.message?.includes('fetch')) return err?.message ?? 'Request failed'
+    const unreachable = /fetch|timeout|abort/i.test(err?.message ?? '') || err?.name === 'AbortError' || err?.name === 'TimeoutError'
+    if (!unreachable) return err?.message ?? 'Request failed'
     // deployed (apiBase set): the cloud API scales to zero, so the first request after a quiet period may fail
     return base
       ? 'The live API did not answer. After a quiet period it needs up to a minute to start; please try again.'
-      : 'The local API is not running. Start it with: uv run --extra demo uvicorn hems.demo_api:app --port 8001'
+      : 'The local API did not answer. Start it with: uv run --extra demo uvicorn hems.demo_api:app --port 8001'
   }
   return {
-    catalog: () => $fetch<{ appliances: CatalogItem[], housing: Record<Housing, number>, entsoe: boolean }>(`${base}/api/catalog`),
-    tools: (body: PlanRequest) => $fetch<ToolsResponse>(`${base}/api/plan/tools`, { method: 'POST', body }),
+    catalog: () => $fetch<{ appliances: CatalogItem[], housing: Record<Housing, number>, entsoe: boolean }>(`${base}/api/catalog`, { timeout: answerTimeout }),
+    tools: (body: PlanRequest) => $fetch<ToolsResponse>(`${base}/api/plan/tools`, { method: 'POST', body, timeout: answerTimeout }),
     /** The language model without tools, live (one prompt, one answer). */
     oneshot: (body: PlanRequest) => $fetch<{ result: PlanResult }>(`${base}/api/plan/oneshot`, { method: 'POST', body, timeout: 120_000 }),
     agent: (body: PlanRequest) => $fetch<{ result: PlanResult, recommendation: Recommendation }>(`${base}/api/plan/agent`, { method: 'POST', body, timeout: 180_000 }),
     /** Run the pipeline and call onEvent for each agent event as it arrives. */
     async agentStream(body: PlanRequest, onEvent: (e: AgentEvent) => void) {
+      // the limit covers the wait for the first answer only; the stream itself may run longer
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), answerTimeout)
       const res = await fetch(`${base}/api/plan/agent/stream`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(body)
-      })
+        body: JSON.stringify(body),
+        signal: controller.signal
+      }).finally(() => clearTimeout(timer))
       if (!res.ok || !res.body) {
         const detail = await res.json().catch(() => null) as { detail?: unknown } | null
         throw { data: detail ?? undefined, message: `Request failed (${res.status})` }
