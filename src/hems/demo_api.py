@@ -550,6 +550,14 @@ def catalog() -> dict[str, Any]:
             "emhassUrl": EMHASS_URL}  # fmt: skip
 
 
+@app.get("/api/warm")
+def warm() -> dict[str, bool]:
+    """Called by the site when a page loads: this request starts the API, and the background check starts EMHASS,
+    so both are up by the time the visitor asks for a recommendation (both scale to zero in the cloud)."""
+    threading.Thread(target=_emhass_answers, daemon=True).start()
+    return {"ok": True}
+
+
 @app.get("/api/day")
 def day(
     day_str: str | None = Query(None, alias="date"), housing: str = "house", base_kw: float | None = None

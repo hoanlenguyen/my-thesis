@@ -35,6 +35,13 @@ def test_catalog_lists_measured_and_constant_appliances(client: TestClient) -> N
     assert items["ev_charger"]["peakKw"] == 7.0 and items["ev_charger"]["durationMin"] == 240
 
 
+def test_warm_answers_at_once_and_wakes_emhass(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    woken = demo_api.threading.Event()
+    monkeypatch.setattr(demo_api, "_emhass_answers", woken.set)
+    assert client.get("/api/warm").json() == {"ok": True}
+    assert woken.wait(5)
+
+
 def test_tools_schedule_the_profile_and_report_savings(client: TestClient) -> None:
     out = client.post("/api/plan/tools", json=PROFILE).json()
     assert len(out["appliances"]) == 3 and len(out["priceEurPerKwh"]) == 96

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
-const houseNo = computed(() => Number(route.params.house))
+// the URL holds the demo number (1-18); the data use the REFIT house number
+const houseNo = computed(() => refitHouse(Number(route.params.house)))
 const { data: households } = await useHouseholds()
 const { data: fullPeriod } = await useFullPeriod()
 const { data: benchmarks } = await useBenchmarks()
@@ -33,9 +34,9 @@ const hasLocal = computed(() => day.value?.results.some(r => r.model === 'gpt-os
       <UButton to="/households" icon="i-lucide-arrow-left" size="xs" variant="ghost" color="neutral" class="-ml-2 mb-1">
         All households
       </UButton>
-      <h1 class="text-2xl font-semibold text-highlighted">Household {{ household.house }}</h1>
+      <h1 class="text-2xl font-semibold text-highlighted">Household {{ householdNo(household.house) }}</h1>
       <p class="text-sm text-muted">
-        REFIT recordings {{ household.firstDay }} to {{ household.lastDay }} ({{ household.days }} complete days) ·
+        REFIT house {{ household.house }} · recordings {{ household.firstDay }} to {{ household.lastDay }} ({{ household.days }} complete days) ·
         monitored appliances use {{ totalKwh.toFixed(1) }} kWh per day on average
       </p>
     </div>

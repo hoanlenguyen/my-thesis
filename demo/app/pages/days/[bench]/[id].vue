@@ -34,7 +34,8 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
         </p>
         <p v-if="day.house" class="text-xs text-dimmed mt-0.5">
           Base load and fixed appliances from
-          <NuxtLink :to="`/households/${day.house}`" class="text-primary hover:underline">household {{ day.house }}</NuxtLink>;
+          <NuxtLink :to="`/households/${householdNo(day.house)}`" class="text-primary hover:underline">household {{ householdNo(day.house) }}</NuxtLink>
+          (REFIT house {{ day.house }});
           the cycles to schedule are recorded REFIT cycles drawn from all 18 households.
         </p>
       </div>

@@ -19,12 +19,15 @@ const scheduledKinds = (h: { appliances: { kind: string, scheduled: boolean }[] 
       <h1 class="text-2xl font-semibold text-highlighted">Households</h1>
       <p class="mt-1 text-sm text-muted max-w-3xl">
         The 18 UK households of the REFIT dataset whose appliance cycles make up the benchmark. Each profile shows all
-        monitored appliances and when the household typically uses them, from its 2013–2015 recordings.
+        monitored appliances and when the household typically uses them, from its 2013–2015 recordings. They are
+        numbered 1 to 18 here; REFIT numbers its 20 houses 1 to 21 without a house 14, and houses 12 and 19 are left
+        out (no monitored laundry or dishwasher, and a washing-machine monitor that never records heating), so each
+        household also shows its REFIT number.
       </p>
     </div>
 
     <div v-if="households" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <NuxtLink v-for="h in households" :key="h.house" :to="`/households/${h.house}`">
+      <NuxtLink v-for="h in households" :key="h.house" :to="`/households/${householdNo(h.house)}`">
         <UCard class="hover:ring-primary/50 transition h-full">
           <div class="flex items-start justify-between gap-2">
             <div class="flex items-center gap-2">
@@ -32,8 +35,8 @@ const scheduledKinds = (h: { appliances: { kind: string, scheduled: boolean }[] 
                 <UIcon name="i-lucide-house" class="size-5 text-primary" />
               </div>
               <div>
-                <p class="font-semibold text-highlighted">Household {{ h.house }}</p>
-                <p class="text-xs text-muted">{{ h.appliances.length }} monitored appliances · {{ h.days }} recorded days</p>
+                <p class="font-semibold text-highlighted">Household {{ householdNo(h.house) }}</p>
+                <p class="text-xs text-muted">REFIT house {{ h.house }} · {{ h.appliances.length }} monitored appliances · {{ h.days }} recorded days</p>
               </div>
             </div>
             <UBadge color="neutral" variant="subtle" size="xs">{{ daysOf(h.house) }} benchmark days</UBadge>

@@ -2,6 +2,15 @@
 
 export const SLOTS = 96
 
+// REFIT numbers its 20 houses 1-21 without a house 14, and the study leaves out houses 12 and 19 (hems.data.refit).
+// The demo numbers the 18 households it uses 1-18 in REFIT order and shows the REFIT number alongside; the data
+// files keep the REFIT number.
+export const REFIT_HOUSES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 16, 17, 18, 20, 21]
+/** Demo number (1-18) of a REFIT house, also used in the household page's URL. */
+export const householdNo = (refitHouse: number) => REFIT_HOUSES.indexOf(refitHouse) + 1
+/** REFIT house of a demo number, or NaN if there is none. */
+export const refitHouse = (no: number) => REFIT_HOUSES[no - 1] ?? Number.NaN
+
 /** Slot index (15 min each, from 00:00) -> "HH:MM". */
 export function slotTime(slot: number): string {
   const minutes = slot * 15
