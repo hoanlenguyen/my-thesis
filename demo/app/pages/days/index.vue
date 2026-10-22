@@ -2,9 +2,9 @@
 import type { ScenarioIndex } from '~/composables/useDemoData'
 
 const { data: benchmarks } = await useBenchmarks()
-const benchId = useState('bench', () => 'q2')
+const benchId = useState('bench', () => 'q3')
 // One filter per factor of the benchmark design (null = all)
-const filters = reactive<Record<FactorKey, string | null>>({ pattern: null, load: null, limit: null })
+const filters = reactive<Record<FactorKey, string | null>>({ pattern: null, load: null })
 
 const bench = computed(() => benchmarks.value?.find(b => b.id === benchId.value) ?? benchmarks.value?.[0])
 const days = computed(() =>
@@ -20,7 +20,7 @@ const factorKeys = Object.keys(FACTORS) as FactorKey[]
       <h1 class="text-2xl font-semibold text-highlighted">Daily recommendations</h1>
       <p class="mt-1 text-sm text-muted">
         Pick a household-day to compare what every system recommends and what it would cost. Each day combines a
-        price pattern, a household load and a peak limit.
+        price pattern and a household load, under the 8 kW peak limit.
       </p>
     </div>
 

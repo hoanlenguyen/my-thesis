@@ -4,7 +4,8 @@ Every washing-machine, dishwasher and tumble-dryer cycle the household actually 
 cycle to schedule on its recording day: ready at its recorded start, to be finished by midnight. "No
 scheduling" is the recorded start. Each day is priced at recent Finnish consumer prices: the same calendar
 day in Oct 2025 - Sep 2026 (native 15-minute Elering prices, the thesis tariff), and the household's
-typical base load counts towards the 3.5 kW peak limit, as in the benchmark.
+typical base load counts towards the 8 kW peak limit, as in the benchmark (until 21 Oct 2026 the estimate used the
+stylised 3.5 kW limit; those results are archived in results/fullperiod_strict35/).
 
 Computed exactly per day: no scheduling, MILP optimum, smart timer, cheapest hours, and EMHASS (Docker
 service, default settings, via tools/emhass_rest.py). The LLM systems are not run; the demo extrapolates
@@ -42,7 +43,7 @@ REFIT = ROOT / "data" / "raw" / "refit"
 PRICES = ROOT / "data" / "raw" / "prices_fi_elering.csv"
 OUT = ROOT / "results" / "fullperiod"
 DEMO = ROOT / "demo" / "public" / "data" / "fullperiod.json"
-PEAK_LIMIT_KW = 3.5
+PEAK_LIMIT_KW = 8.0  # the Energy Authority's power-charge threshold, as in the benchmarks (hems.data.factorial)
 PRICE_YEAR_START = date(2025, 10, 1)  # recent year: 1 Oct 2025 - 30 Sep 2026
 RULE_SYSTEMS = ("naive", "milp", "timer", "cheapest_hours")
 
@@ -157,8 +158,8 @@ def run_house(house: int, spot: pd.DataFrame, consumer: pd.DataFrame, with_emhas
 def summary() -> None:
     """Totals per household and system -> demo/public/data/fullperiod.json."""
     benchmarks = json.loads((DEMO.parent / "benchmarks.json").read_text(encoding="utf-8"))
-    q = next(b for b in benchmarks if b["id"] == "q2")  # held-out set, recent (15-minute) price era, as here
-    shares = {r["system"]: r["savingsCaptured"] for r in q["summary"] if r["model"] == "gpt-4o-mini"}
+    q = next(b for b in benchmarks if b["id"] == "q3")  # held-out set, recent (15-minute) price era, as here
+    shares = {r["system"]: r["savingsCaptured"] for r in q["summary"] if r["model"] == "gpt-6-luna"}
     households = []
     for path in sorted(OUT.glob("house_*.jsonl"), key=lambda p: int(p.stem.split("_")[1])):
         rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
@@ -172,7 +173,7 @@ def summary() -> None:
             saving = sum(r["naive"]["cost"] - r[system]["cost"] for r in have if r[system]["feasible"] and r[system]["cost"] is not None)
             totals[system] = {"saving": round(saving, 2), "validDays": sum(r[system]["feasible"] for r in have), "estimated": False}
         optimum = totals["milp"]["saving"]
-        for system in ("multi_rag_opt", "oneshot"):
+        for system in ("multi_duo", "single_harness", "oneshot"):
             if shares.get(system) is not None:
                 totals[system] = {"saving": round(optimum * shares[system], 2), "validDays": None, "estimated": True,
                                   "share": shares[system]}  # fmt: skip

@@ -20,7 +20,7 @@ const totalKwh = computed(() => appliances.value.reduce((s, a) => s + a.kwhPerDa
 // "When each system runs the appliances" for one of the household's benchmark days.
 const pickedKey = ref('')
 const picked = computed(() => days.value.find(d => `${d.bench}/${d.id}` === pickedKey.value) ?? days.value[0])
-const { data: day } = await useDay(() => picked.value?.bench ?? benchmarks.value?.[0]?.id ?? 'q2', () => picked.value?.id ?? '')
+const { data: day } = await useDay(() => picked.value?.bench ?? benchmarks.value?.[0]?.id ?? 'q3', () => picked.value?.id ?? '')
 const run = ref(1)
 const showLocal = ref(false)
 const { results, usual, fixed } = useDayComparison(day, households, run, showLocal)

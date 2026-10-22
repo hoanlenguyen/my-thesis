@@ -15,7 +15,7 @@ const showLocal = ref(false)
 const keyOf = (r: RunResult) => `${r.system}|${r.model}`
 const { results, usual, fixed: fixedRows } = useDayComparison(day, households, run, showLocal)
 const hasLocal = computed(() => day.value?.results.some(r => r.model === 'gpt-oss-20b'))
-const selected = ref('multi_rag_opt|gpt-4o-mini')
+const selected = ref('multi_duo|gpt-6-luna')
 const current = computed(() => results.value.find(r => keyOf(r) === selected.value) ?? results.value[0])
 watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]) selected.value = keyOf(rs[0]) })
 </script>

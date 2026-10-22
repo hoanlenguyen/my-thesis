@@ -20,35 +20,21 @@ from hems.core.models import load_scenarios
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "demo" / "public" / "data"
 
-BENCHMARKS = {  # first = default view in the demo
-    "q2": {
-        "label": "Held-out benchmark Q2 (confirmatory)",
-        "scenarios": "data/scenarios_q2",
-        "runs": ["results/confirmation_q2.jsonl", "results/tools/scenarios_q2.jsonl"],
+BENCHMARKS = {  # first = default view in the demo; the benchmarks and runs the thesis reports (GPT-6 Luna)
+    "q3": {
+        "label": "Held-out benchmark Q3 (confirmatory)",
+        "scenarios": "data/scenarios_q3",
+        "runs": ["results/confirmation_q3.jsonl", "results/tools/scenarios_q3.jsonl"],
     },
-    "v2": {
+    "v4": {
         "label": "Factorial benchmark (exploratory)",
-        "scenarios": "data/scenarios_v2",
-        "runs": ["results/main_v2.jsonl", "results/tools/scenarios_v2.jsonl"],
-    },
-    # Design iterations 9 and 10: the three pipelines interleaved in one campaign (same API conditions), with the
-    # deterministic systems and EMHASS of the exploratory set as references. A dict entry keeps only the listed
-    # systems of that file.
-    "iter10": {
-        "label": "Design iterations: 4 vs 2 agents (exploratory)",
-        "scenarios": "data/scenarios_v2",
-        "runs": ["results/iteration10.jsonl",
-                 {"path": "results/main_v2.jsonl", "systems": ["milp", "naive", "timer", "cheapest_window",
-                                                               "cheapest_hours", "cheapest_hours_hourly"]},
-                 "results/tools/scenarios_v2.jsonl"],
+        "scenarios": "data/scenarios_v4",
+        "runs": ["results/luna_v4.jsonl", "results/tools/scenarios_v4.jsonl"],
     },
 }
-SYSTEMS = {  # order = display order; multi_rag and multi are design iterations (v2 only)
-    "multi_rag_opt": "Multi-Agent Pipeline",
-    "multi_duo": "Design iteration 10: two agents",
-    "multi_lean": "Design iteration 9: lean, four agents",
-    "multi_rag": "Design iteration: retrieval, no optimiser",
-    "multi": "Design iteration: no retrieval, no optimiser",
+SYSTEMS = {  # order = display order
+    "multi_duo": "Multi-Agent Pipeline",
+    "single_harness": "Single agent in the harness",
     "oneshot": "LLM without tools",
     "emhass_rest": "EMHASS, profiles",
     "emhass_rest_nominal": "EMHASS, nominal power",
@@ -59,11 +45,11 @@ SYSTEMS = {  # order = display order; multi_rag and multi are design iterations 
     "milp": "MILP optimum",
     "naive": "No scheduling",
 }
-MODELS = ("-", "gpt-4o-mini", "gpt-6-luna")  # recorded runs; GPT-6 Luna from the redesigned evaluation
+MODELS = ("-", "gpt-6-luna")  # the model of the reported evaluation
 
 
 def _factors(scenario_type: str) -> dict:
-    """Scenario type "pattern-load-limit", e.g. "spike-heavy-strict"."""
+    """Scenario type "pattern-load-limit", e.g. "spike-electrified-realistic"."""
     pattern, load, limit = scenario_type.split("-")
     return {"pattern": pattern, "load": load, "limit": limit}
 
@@ -97,11 +83,11 @@ def export(key: str, spec: dict) -> dict:
         })  # fmt: skip
     summary.sort(key=lambda r: (list(SYSTEMS).index(r["system"]), r["model"]))
 
-    # Saving by condition (SQ2): pooled over the runs of the scenarios with that factor level,
-    # each factor averaged over the other two, as in the thesis table tab:q2-conditions.
+    # Saving by condition (SQ2): pooled over the runs of the scenarios with that factor level, each factor averaged
+    # over the other, as in the thesis table tab:q3-conditions. The limit is 8 kW everywhere, so it is no factor.
     factors = {sid: _factors(sc.type) for sid, sc in scenarios.items()}
     by_condition = []
-    for factor in ("pattern", "load", "limit"):
+    for factor in ("pattern", "load"):
         for level in sorted({f[factor] for f in factors.values()}):
             ids = [sid for sid, f in factors.items() if f[factor] == level]
             g_ref = ref.loc[ids]

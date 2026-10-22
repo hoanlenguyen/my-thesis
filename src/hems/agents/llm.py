@@ -23,7 +23,8 @@ MODELS: dict[str, ModelSpec] = {
     # Model of the redesigned evaluation (since 19 Oct 2026). OpenAI publishes no dated snapshot of gpt-6-luna, so
     # the model id is all that can be pinned. It accepts temperature 0 only with reasoning effort "none", which also
     # keeps every call fast; the solver tool does the search, so the agents need no reasoning phase.
-    # Cached input at a 90 % discount, as third-party trackers report for the GPT-6 generation (verify on OpenAI's page).
+    # Prices as on OpenAI's pricing page (standard tier, checked 21 Oct 2026): cached input USD 0.01. Cache writes
+    # (USD 0.125 per 1M for 30 min, 0.25 for 12 h) are not priced here; thesis sec:stack gives the bound.
     "gpt-6-luna": ModelSpec("openai", "gpt-6-luna", 0.10, 0.50, reasoning_effort="none", usd_per_m_cached_input=0.01),
     # Model of design iterations 1-11, the registered Q2 confirmation and every result recorded before 19 Oct 2026.
     # Its recorded costs priced every input token in full; the cached rate applies from 19 Oct 2026.

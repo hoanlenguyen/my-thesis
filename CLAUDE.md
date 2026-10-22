@@ -57,7 +57,7 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   (retrieval + optimiser tool). **Since 16 Oct 2026 the code has only the two-agent pipeline**
   (`multi_duo`, `multi_duo_thoughts`; design iterations 10 and 11, exploratory); the four-agent systems
   (`multi`, `multi_v3`, `multi_rag`, `multi_rag_opt`, `multi_lean`) were deleted, their results stay in
-  `results/`. The thesis text and its results are to be redesigned around the two-agent pipeline. **SQ1 (value and cost)**: saving and validity vs the LLM without tools,
+  `results/`. The thesis text describes the two-agent pipeline and its Q3 results. **SQ1 (value and cost)**: saving and validity vs the LLM without tools,
   latency < 60 s and API cost < $0.10 per recommendation (H1a–c). **SQ2 (conditions)**: under which price
   pattern / load / peak limit the pipeline beats or matches existing home energy management tools (cheapest window, cheapest
   hours, EMHASS) (H2a–c; per-condition breakdown descriptive). **Reworded and registered (commit f1d187c, 21 Oct
@@ -66,6 +66,11 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   **Run done on the held-out Q3** (GPT-6 Luna, `results/confirmation_q3.jsonl`, `results/tools/scenarios_q3.jsonl`,
   `hems.analysis.confirm_q3`): 7 of 9 supported, H2d/H2e not. v4 (`results/luna_v4.jsonl`) is the exploratory set.
   Never rerun or re-analyse Q3 differently; Chapters 5–7 of `main.tex` report these results.
+- **Wording in `main.tex`** (22 Oct 2026, same meaning as registered): RQ "How can a hierarchical ReAct multi-agent
+  system (the Multi-Agent Pipeline) be designed to give households reliable, cost-saving daily appliance
+  recommendations under dynamic electricity prices?"; SQ2 "Under which price patterns and household loads do the
+  pipeline's recommendations save at least as much as existing home energy management tools?" (the 8 kW limit,
+  the tools and the electrified load are explained in the paragraph after the questions).
 - **Thesis text no longer mentions GPT-4o-mini or its runs** (author's decision, 21 Oct 2026); only the literature
   review names it for other authors' studies. Results files and code keep their attribution.
 - Primary outcome: **saving vs no scheduling** (`metrics.scored_runs` saving_pct); gap to MILP secondary.
@@ -133,7 +138,8 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 ## Models (`agents/llm.py`)
 
 **Since 19 Oct 2026 new runs use `gpt-6-luna`** (`llm.DEFAULT_MODEL`; CLI, Studio and the live demo):
-OpenAI's current small model, USD 0.10/0.50 per 1M tokens (third-party figures, verify), called with
+OpenAI's current small model, USD 0.10/0.50 per 1M tokens, cached input 0.01 (checked on OpenAI's pricing page
+21 Oct 2026; cache writes, 0.125/0.25, are not priced by `usage_cost_usd`, bound in `sec:stack`), called with
 `reasoning_effort="none"` (the API rejects `temperature` otherwise) and temperature 0. No dated snapshot exists,
 so only the id `gpt-6-luna` can be pinned. Every result recorded before that date, the design iterations and the
 registered Q2 confirmation used `gpt-4o-mini` and stay attributed to it (`confirm.py` / `confirm_q2.py` keep

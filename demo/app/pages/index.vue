@@ -2,7 +2,7 @@
 import type { SystemSummary } from '~/composables/useDemoData'
 
 const { data: benchmarks } = await useBenchmarks()
-const benchId = useState('bench', () => 'q2')
+const benchId = useState('bench', () => 'q3')
 const showIterations = ref(false)
 
 const bench = computed(() => benchmarks.value?.find(b => b.id === benchId.value) ?? benchmarks.value?.[0])
@@ -56,7 +56,7 @@ const cellStyle = (saving: number | null | undefined, optimum: number | null) =>
       </h1>
       <p class="mt-1 text-sm text-muted max-w-3xl">
         Every day, each system receives the household's appliance plan (which cycles to run, when each is
-        ready and must be finished), its base load, its peak limit (3.5 or 8 kW, higher on days whose base load alone exceeds it) and the day's prices, and recommends
+        ready and must be finished), its base load, its peak limit of 8 kW (the threshold of the Finnish power charge) and the day's prices, and recommends
         a start time for each appliance. Each recommendation is scored by what the household would pay.
       </p>
     </div>
@@ -229,7 +229,7 @@ const cellStyle = (saving: number | null | undefined, optimum: number | null) =>
       </div>
       <p class="px-4 py-3 text-xs text-dimmed border-t border-default">
         Saving compared with no scheduling, pooled over all runs of the days with that condition; each factor is averaged
-        over the other two. The greener a cell, the closer the system comes to the optimum. Hover a cell for the share of
+        over the other. The greener a cell, the closer the system comes to the optimum. Hover a cell for the share of
         valid schedules.
       </p>
     </UCard>

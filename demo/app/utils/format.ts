@@ -92,18 +92,16 @@ export function hourly(values: number[]): number[] {
 // One colour per appliance position (timeline blocks, legend).
 export const APPLIANCE_COLORS = ['#00C16A', '#3B82F6', '#F59E0B', '#A855F7', '#EF4444', '#14B8A6']
 
-// The three factors of the factorial benchmarks; a scenario type is "pattern-load-limit".
+// The two factors of the factorial benchmarks; a scenario type is "pattern-load-realistic" (the limit is always 8 kW).
 export const FACTORS = {
   pattern: { label: 'Price pattern', values: { stable: 'Stable prices', volatile: 'Volatile prices', spike: 'Price spike', negative: 'Negative prices' } },
-  load: { label: 'Household load', values: { light: 'Light load', heavy: 'Heavy load' } },
-  // strict = 3.5 kW and realistic = 8 kW, raised on days whose base load alone would exceed them
-  limit: { label: 'Peak limit', values: { strict: 'Strict limit', realistic: 'Realistic limit' } }
+  load: { label: 'Household load', values: { light: 'Light load', heavy: 'Heavy load', electrified: 'Electrified load (car and sauna)' } }
 } as const
 
 export type FactorKey = keyof typeof FACTORS
 
-// Nominal peak limit of each limit level (src/hems/data/factorial.py LIMITS)
-export const NOMINAL_LIMIT_KW: Record<string, number> = { strict: 3.5, realistic: 8 }
+// Nominal peak limit of each limit level (src/hems/data/factorial.py LIMIT_KW): the Energy Authority's 8 kW threshold
+export const NOMINAL_LIMIT_KW: Record<string, number> = { realistic: 8 }
 
 /**
  * Why a day's limit is above its level's nominal value, or null. The benchmark raises a limit to at
@@ -136,22 +134,18 @@ export function smallSavingNote(d: { naiveCost: number, milpCost: number, naiveF
       }
 }
 
-/** "spike-heavy-strict" -> "Price spike · Heavy load · Strict limit". */
+/** "spike-electrified-realistic" -> "Price spike · Electrified load (car and sauna)". */
 export function scenarioTypeLabel(type: string): string {
-  const [pattern, load, limit] = type.split('-')
+  const [pattern, load] = type.split('-')
   const v = (k: FactorKey, x?: string) => (FACTORS[k].values as Record<string, string>)[x ?? ''] ?? x ?? ''
-  return [v('pattern', pattern), v('load', load), v('limit', limit)].filter(Boolean).join(' · ')
+  return [v('pattern', pattern), v('load', load)].filter(Boolean).join(' · ')
 }
 
 export const SYSTEM_GROUPS: Record<string, 'agent' | 'iteration' | 'llm' | 'rule' | 'heuristic' | 'tool' | 'reference'> = {
-  multi_rag_opt: 'agent',
-  multi_lean: 'agent', // lean variant (iteration 9)
-  multi_duo: 'agent', // two agents (iteration 10)
-  multi_duo_thoughts: 'agent', // two agents with explicit Thoughts (iteration 11), run live on the "Try it" page
+  multi_duo: 'agent', // the Multi-Agent Pipeline: two agents in the harness
+  multi_duo_thoughts: 'agent', // two agents with explicit Thoughts, run live on the "Try it" page
   single_harness: 'agent', // one agent in the same harness
   single_harness_thoughts: 'agent', // one agent in the harness with explicit Thoughts, run live on the "Try it" page
-  multi_rag: 'iteration',
-  multi: 'iteration',
   oneshot: 'llm',
   timer: 'heuristic',
   cheapest_window: 'rule',
@@ -179,6 +173,5 @@ export function groupBadge(system: string) {
 
 export const MODEL_LABELS: Record<string, string> = {
   '-': '',
-  'gpt-4o-mini': 'GPT-4o-mini',
   'gpt-6-luna': 'GPT-6 Luna'
 }

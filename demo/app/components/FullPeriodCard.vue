@@ -5,7 +5,8 @@ import type { FullPeriod } from '~/composables/useDemoData'
 
 const props = defineProps<{ house: number, data: FullPeriod | null | undefined }>()
 const LABELS: Record<string, string> = {
-  milp: 'MILP optimum', multi_rag_opt: 'Multi-Agent Pipeline', timer: 'Smart timer (own heuristic)',
+  milp: 'MILP optimum', multi_duo: 'Multi-Agent Pipeline', single_harness: 'Single agent in the harness',
+  timer: 'Smart timer (own heuristic)',
   emhass_rest: 'EMHASS, profiles', cheapest_hours: 'HA cheapest-hours blueprint', oneshot: 'LLM without tools'
 }
 const h = computed(() => props.data?.households.find(x => x.house === props.house))
@@ -75,12 +76,12 @@ const barColor = (system: string) => {
     <p class="mt-4 text-xs text-dimmed leading-relaxed">
       This estimate is separate from the benchmark days on the other pages. Every washing-machine, dishwasher and
       tumble-dryer cycle the household actually ran is scheduled on its own recorded day: ready at its recorded start,
-      finished by midnight, with the household's typical base load. Every day uses the strict 3.5 kW limit (raised, as in
-      the benchmark, where the largest cycle would not fit otherwise), so the figures show a tight limit, not the
-      realistic 8 kW one. Each day is priced at the same calendar day of {{ data?.priceYear }} (what a household pays
-      today). No scheduling = the recorded start times; a plan that breaks the peak limit saves nothing that day. The
-      LLM systems are not run on these days: their saving is the optimum's saving times their share of the optimal
-      saving on the held-out set Q2 (all 96 days, both limits).
+      finished by midnight, with the household's typical base load. Every day uses the 8 kW limit of the benchmark,
+      the threshold of the Finnish power charge (raised, as in the benchmark, where the largest cycle would not fit
+      otherwise). Each day is priced at the same calendar day of {{ data?.priceYear }} (what a household pays today).
+      No scheduling = the recorded start times; a plan that breaks the peak limit saves nothing that day. The LLM
+      systems are not run on these days: their saving is the optimum's saving times their share of the optimal saving
+      on the held-out set Q3 (GPT-6 Luna, all 72 days).
     </p>
   </UCard>
   <UCard v-else>

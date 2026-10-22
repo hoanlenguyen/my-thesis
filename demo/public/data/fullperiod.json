@@ -12,36 +12,42 @@
    "lastDay": "2015-07-10",
    "totals": {
     "milp": {
-     "saving": 5.53,
+     "saving": 5.55,
      "validDays": 323,
      "estimated": false
     },
     "timer": {
-     "saving": 5.53,
+     "saving": 5.55,
      "validDays": 323,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 4.05,
-     "validDays": 318,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 5.51,
+     "saving": 4.42,
      "validDays": 323,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 5.53,
+    "emhass_rest": {
+     "saving": 5.54,
+     "validDays": 323,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 5.55,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 5.55,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.26,
+     "saving": 1.42,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -56,36 +62,42 @@
    "lastDay": "2015-05-28",
    "totals": {
     "milp": {
-     "saving": 23.39,
+     "saving": 23.5,
      "validDays": 403,
      "estimated": false
     },
     "timer": {
-     "saving": 23.37,
+     "saving": 23.5,
      "validDays": 403,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 8.22,
-     "validDays": 393,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 23.35,
+     "saving": 8.49,
      "validDays": 403,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 23.39,
+    "emhass_rest": {
+     "saving": 23.5,
+     "validDays": 403,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 23.5,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 23.5,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 5.33,
+     "saving": 6.01,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -100,36 +112,42 @@
    "lastDay": "2015-06-02",
    "totals": {
     "milp": {
-     "saving": 43.38,
+     "saving": 46.8,
      "validDays": 438,
      "estimated": false
     },
     "timer": {
-     "saving": 39.18,
-     "validDays": 428,
-     "estimated": false
-    },
-    "cheapest_hours": {
-     "saving": 8.76,
-     "validDays": 282,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 42.37,
+     "saving": 46.6,
      "validDays": 438,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 43.38,
+    "cheapest_hours": {
+     "saving": 23.91,
+     "validDays": 417,
+     "estimated": false
+    },
+    "emhass_rest": {
+     "saving": 46.6,
+     "validDays": 438,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 46.8,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 46.8,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 9.88,
+     "saving": 11.97,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -144,36 +162,42 @@
    "lastDay": "2015-07-07",
    "totals": {
     "milp": {
-     "saving": 6.77,
+     "saving": 6.81,
      "validDays": 213,
      "estimated": false
     },
     "timer": {
-     "saving": 6.77,
+     "saving": 6.81,
      "validDays": 213,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 4.85,
-     "validDays": 193,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 6.76,
+     "saving": 5.87,
      "validDays": 213,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 6.77,
+    "emhass_rest": {
+     "saving": 6.81,
+     "validDays": 213,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 6.81,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 6.81,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.54,
+     "saving": 1.74,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -188,36 +212,42 @@
    "lastDay": "2015-07-06",
    "totals": {
     "milp": {
-     "saving": 18.45,
+     "saving": 18.62,
      "validDays": 419,
      "estimated": false
     },
     "timer": {
-     "saving": 18.34,
-     "validDays": 418,
-     "estimated": false
-    },
-    "cheapest_hours": {
-     "saving": 5.61,
-     "validDays": 357,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 18.11,
+     "saving": 18.62,
      "validDays": 419,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 18.45,
+    "cheapest_hours": {
+     "saving": 9.74,
+     "validDays": 419,
+     "estimated": false
+    },
+    "emhass_rest": {
+     "saving": 18.62,
+     "validDays": 419,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 18.62,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 18.62,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 4.2,
+     "saving": 4.76,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -242,26 +272,32 @@
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 3.08,
-     "validDays": 171,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 5.85,
+     "saving": 3.13,
      "validDays": 173,
      "estimated": false
     },
-    "multi_rag_opt": {
+    "emhass_rest": {
+     "saving": 5.86,
+     "validDays": 173,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 5.86,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
      "saving": 5.86,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.33,
+     "saving": 1.5,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -276,36 +312,42 @@
    "lastDay": "2015-07-08",
    "totals": {
     "milp": {
-     "saving": 51.07,
+     "saving": 52.37,
      "validDays": 511,
      "estimated": false
     },
     "timer": {
-     "saving": 50.22,
-     "validDays": 510,
-     "estimated": false
-    },
-    "cheapest_hours": {
-     "saving": 15.28,
-     "validDays": 378,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 50.38,
+     "saving": 52.36,
      "validDays": 511,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 51.07,
+    "cheapest_hours": {
+     "saving": 31.15,
+     "validDays": 507,
+     "estimated": false
+    },
+    "emhass_rest": {
+     "saving": 52.34,
+     "validDays": 511,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 52.37,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 52.37,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 11.63,
+     "saving": 13.4,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -330,8 +372,8 @@
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 5.64,
-     "validDays": 285,
+     "saving": 5.76,
+     "validDays": 286,
      "estimated": false
     },
     "emhass_rest": {
@@ -339,17 +381,23 @@
      "validDays": 286,
      "estimated": false
     },
-    "multi_rag_opt": {
+    "multi_duo": {
+     "saving": 7.79,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
      "saving": 7.79,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.77,
+     "saving": 1.99,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -364,36 +412,42 @@
    "lastDay": "2015-07-08",
    "totals": {
     "milp": {
-     "saving": 16.57,
+     "saving": 16.61,
      "validDays": 327,
      "estimated": false
     },
     "timer": {
-     "saving": 16.52,
-     "validDays": 326,
-     "estimated": false
-    },
-    "cheapest_hours": {
-     "saving": 8.07,
-     "validDays": 317,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 16.5,
+     "saving": 16.61,
      "validDays": 327,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 16.57,
+    "cheapest_hours": {
+     "saving": 8.43,
+     "validDays": 327,
+     "estimated": false
+    },
+    "emhass_rest": {
+     "saving": 16.6,
+     "validDays": 327,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 16.61,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 16.61,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 3.77,
+     "saving": 4.25,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -408,36 +462,42 @@
    "lastDay": "2015-06-30",
    "totals": {
     "milp": {
-     "saving": 22.41,
+     "saving": 22.51,
      "validDays": 442,
      "estimated": false
     },
     "timer": {
-     "saving": 22.34,
+     "saving": 22.51,
      "validDays": 442,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 8.41,
-     "validDays": 413,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 22.24,
+     "saving": 9.64,
      "validDays": 442,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 22.41,
+    "emhass_rest": {
+     "saving": 22.51,
+     "validDays": 442,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 22.51,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 22.51,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 5.1,
+     "saving": 5.76,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -471,17 +531,23 @@
      "validDays": 81,
      "estimated": false
     },
-    "multi_rag_opt": {
+    "multi_duo": {
+     "saving": 1.72,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
      "saving": 1.72,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 0.39,
+     "saving": 0.44,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -496,36 +562,42 @@
    "lastDay": "2015-05-31",
    "totals": {
     "milp": {
-     "saving": 11.09,
+     "saving": 11.19,
      "validDays": 272,
      "estimated": false
     },
     "timer": {
-     "saving": 11.06,
+     "saving": 11.19,
      "validDays": 272,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 7.16,
-     "validDays": 249,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 10.96,
+     "saving": 8.45,
      "validDays": 272,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 11.09,
+    "emhass_rest": {
+     "saving": 11.18,
+     "validDays": 272,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 11.19,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 11.19,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 2.53,
+     "saving": 2.86,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -540,36 +612,42 @@
    "lastDay": "2015-07-08",
    "totals": {
     "milp": {
-     "saving": 7.77,
+     "saving": 7.93,
      "validDays": 202,
      "estimated": false
     },
     "timer": {
-     "saving": 7.68,
+     "saving": 7.93,
      "validDays": 202,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 3.17,
-     "validDays": 182,
+     "saving": 4.19,
+     "validDays": 201,
      "estimated": false
     },
     "emhass_rest": {
-     "saving": 7.72,
+     "saving": 7.93,
      "validDays": 202,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 7.77,
+    "multi_duo": {
+     "saving": 7.93,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 7.93,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.77,
+     "saving": 2.03,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -584,36 +662,42 @@
    "lastDay": "2015-07-08",
    "totals": {
     "milp": {
-     "saving": 14.38,
+     "saving": 14.5,
      "validDays": 384,
      "estimated": false
     },
     "timer": {
-     "saving": 14.32,
-     "validDays": 383,
-     "estimated": false
-    },
-    "cheapest_hours": {
-     "saving": 7.66,
-     "validDays": 356,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 14.13,
+     "saving": 14.5,
      "validDays": 384,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 14.38,
+    "cheapest_hours": {
+     "saving": 8.68,
+     "validDays": 384,
+     "estimated": false
+    },
+    "emhass_rest": {
+     "saving": 14.49,
+     "validDays": 384,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 14.5,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 14.5,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 3.28,
+     "saving": 3.71,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -628,36 +712,42 @@
    "lastDay": "2015-06-19",
    "totals": {
     "milp": {
-     "saving": 5.82,
+     "saving": 5.86,
      "validDays": 200,
      "estimated": false
     },
     "timer": {
-     "saving": 5.82,
+     "saving": 5.86,
      "validDays": 200,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 2.69,
-     "validDays": 192,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 5.75,
+     "saving": 4.25,
      "validDays": 200,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 5.82,
+    "emhass_rest": {
+     "saving": 5.86,
+     "validDays": 200,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 5.86,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 5.86,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.33,
+     "saving": 1.5,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -682,26 +772,32 @@
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 3.8,
-     "validDays": 210,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 7.91,
+     "saving": 3.96,
      "validDays": 213,
      "estimated": false
     },
-    "multi_rag_opt": {
+    "emhass_rest": {
+     "saving": 7.93,
+     "validDays": 213,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 7.93,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
      "saving": 7.93,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 1.81,
+     "saving": 2.03,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -716,36 +812,42 @@
    "lastDay": "2015-06-23",
    "totals": {
     "milp": {
-     "saving": 15.64,
+     "saving": 15.72,
      "validDays": 224,
      "estimated": false
     },
     "timer": {
-     "saving": 15.62,
+     "saving": 15.72,
      "validDays": 224,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 7.9,
-     "validDays": 197,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 15.56,
+     "saving": 10.48,
      "validDays": 224,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 15.64,
+    "emhass_rest": {
+     "saving": 15.72,
+     "validDays": 224,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 15.72,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 15.72,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 3.56,
+     "saving": 4.02,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   },
@@ -760,36 +862,42 @@
    "lastDay": "2015-07-10",
    "totals": {
     "milp": {
-     "saving": 12.65,
+     "saving": 12.85,
      "validDays": 310,
      "estimated": false
     },
     "timer": {
-     "saving": 12.63,
+     "saving": 12.85,
      "validDays": 310,
      "estimated": false
     },
     "cheapest_hours": {
-     "saving": 5.32,
-     "validDays": 294,
-     "estimated": false
-    },
-    "emhass_rest": {
-     "saving": 12.53,
+     "saving": 6.27,
      "validDays": 310,
      "estimated": false
     },
-    "multi_rag_opt": {
-     "saving": 12.65,
+    "emhass_rest": {
+     "saving": 12.85,
+     "validDays": 310,
+     "estimated": false
+    },
+    "multi_duo": {
+     "saving": 12.85,
+     "validDays": null,
+     "estimated": true,
+     "share": 1.0
+    },
+    "single_harness": {
+     "saving": 12.85,
      "validDays": null,
      "estimated": true,
      "share": 1.0
     },
     "oneshot": {
-     "saving": 2.88,
+     "saving": 3.29,
      "validDays": null,
      "estimated": true,
-     "share": 0.2278
+     "share": 0.2558
     }
    }
   }

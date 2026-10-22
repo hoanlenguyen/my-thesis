@@ -187,7 +187,7 @@ test whether the hierarchy matters, the same harness also runs a single
 agent with the same tools. The study asks how much the recommendations
 save, how often they are valid and what they cost to produce compared
 with a language model answering without tools (SQ1), and under which
-price patterns and household loads they save more than, or as much as,
+price patterns and household loads they save at least as much as
 the home energy management tools households use today: cheapest-hours
 automations and the open-source optimiser EMHASS (SQ2).
 
@@ -330,7 +330,7 @@ designed for.
 
 Large Language Models (LLMs) can be used as general reasoning engines,
 which gives HEMS design another option. Yao et al. (2023) introduce
-ReAct, a Thought-Action-Observation loop in which the model alternates
+ReAct, a Thought-\allowbreak Action-\allowbreak Observation loop in which the model alternates
 between reasoning and tool calls, and show that it solves multi-step
 tasks that need information looked up along the way. For household
 scheduling, a ReAct agent can read the price forecast, decide which
@@ -380,20 +380,18 @@ limitations above, the study is guided by one main research question and
 two sub-questions:
 
 \begin{quote}
-\textbf{RQ:} How can a hierarchical ReAct multi-agent system be designed
-to give households reliable, cost-saving daily appliance recommendations
-under dynamic electricity prices?
+\textbf{RQ:} How can a hierarchical ReAct multi-agent system (the
+Multi-Agent Pipeline) be designed to give households reliable,
+cost-saving daily appliance recommendations under dynamic electricity
+prices?
 
 \textbf{SQ1 (value and cost):} How much do the pipeline's
 recommendations save, how often are they valid, and what do they cost to
 produce, compared with a language model that answers without tools?
 
-\textbf{SQ2 (conditions):} Under the 8\,kW power-charge threshold, for
-which price patterns and household loads, from a light load to a
-household with an electric car and a sauna, do the recommendations save
-more than, or as much as, existing home energy management tools
-available to households, namely cheapest-hours automations and the
-EMHASS optimizer?
+\textbf{SQ2 (conditions):} Under which price patterns and household
+loads do the pipeline's recommendations save at least as much as existing home
+energy management tools?
 \end{quote}
 
 The main RQ states the design aim: recommendations that are reliable,
@@ -445,7 +443,7 @@ management, the ReAct framework, multi-agent LLM systems, retrieval and
 solver tools for agents, and the Finnish energy market context. Chapter 3 describes the Design Science Research
 methodology and evaluation strategy. Chapter 4 presents the system
 design and implementation. Chapter 5 presents the results on an
-exploratory and a held-out benchmark of 96 scenarios each. Chapter 6
+exploratory and a held-out benchmark of 72 scenarios each. Chapter 6
 discusses findings, limitations, and future work. Chapter 7 concludes
 the thesis.
 
@@ -1042,20 +1040,18 @@ question and the two sub-questions posed in Chapter~\ref{ch:intro}, which
 are restated here because the rest of this section is organised around
 them:
 \begin{quote}
-\textbf{RQ:} How can a hierarchical ReAct multi-agent system be designed
-to give households reliable, cost-saving daily appliance recommendations
-under dynamic electricity prices?
+\textbf{RQ:} How can a hierarchical ReAct multi-agent system (the
+Multi-Agent Pipeline) be designed to give households reliable,
+cost-saving daily appliance recommendations under dynamic electricity
+prices?
 
 \textbf{SQ1 (value and cost):} How much do the pipeline's
 recommendations save, how often are they valid, and what do they cost to
 produce, compared with a language model that answers without tools?
 
-\textbf{SQ2 (conditions):} Under the 8\,kW power-charge threshold, for
-which price patterns and household loads, from a light load to a
-household with an electric car and a sauna, do the recommendations save
-more than, or as much as, existing home energy management tools
-available to households, namely cheapest-hours automations and the
-EMHASS optimizer?
+\textbf{SQ2 (conditions):} Under which price patterns and household
+loads do the pipeline's recommendations save at least as much as existing home
+energy management tools?
 \end{quote}
 The RQ is answered by the design itself, by the evidence that the
 design meets its objectives (Section~\ref{sec:objectives}), and by a
@@ -1743,12 +1739,17 @@ except the commercial language model are open source. The API cost of
 the commercial model is an outcome of the evaluation and is reported with
 the results in Chapter~5.
 
-% Prices from third-party trackers (Oct 2026); verify on https://openai.com/api/pricing/ and cite before submission.
+% Prices checked on OpenAI's pricing page (standard tier, short context) on 21 Oct 2026.
 The evaluation uses GPT-6 Luna, the small model of OpenAI's current
 generation, which costs USD~0.10 per million input tokens and USD~0.50
 per million output tokens; input that repeats the start of an earlier
-prompt is read from a cache and costs USD~0.01 per million tokens, and
-the API cost of every run is computed at these rates. OpenAI publishes
+prompt is read from a cache and costs USD~0.01 per million tokens
+(OpenAI, 2026). The API cost of every run is computed at these rates.
+OpenAI also charges for writing input to the cache (USD~0.125 or 0.25
+per million tokens, depending on how long it is kept), which the
+recorded cost does not include; billing every uncached input token at
+the higher write rate would raise the mean cost of a recommendation on
+the held-out set from USD~0.0004 to at most USD~0.0007. OpenAI publishes
 no dated snapshot of GPT-6 Luna, so the model name returned with every
 response is recorded with the run. The model is called without a
 reasoning phase (reasoning effort \emph{none}): with its default setting
@@ -2367,7 +2368,13 @@ without scheduling, which is the saving of the optimal schedule: their
 schedules cost exactly the optimum in every run, without a single
 feedback round or recovery nudge. EMHASS with measured profiles and the
 smart timer also reached the optimum, the former within 0.01 percentage
-points. The cheapest-hours tools were valid on 83 to 86\,\% of the days
+points: it differed from the pipeline on 9 of the 72 days, by at most
+0.07 points. The equivalence with EMHASS also holds at margins of 0.5
+and 2 points and in the Wilcoxon version of the test ($p < 0.001$ in
+every case). Measured as the gap to the optimum, the cheapest window
+cost 8.7\,\%, the cheapest-hours automation 13.5\,\% and the LLM without
+tools 14.1\,\% more than the optimal schedule, invalid schedules counted
+at the cost without scheduling. The cheapest-hours tools were valid on 83 to 86\,\% of the days
 and captured only 29 to 54\,\% of the achievable saving, and the LLM
 without tools was valid in 77\,\% of its runs and captured 26\,\%.
 Over the 72 days, following the pipeline would have saved
@@ -2375,7 +2382,7 @@ Over the 72 days, following the pipeline would have saved
 about \$0.0004 per recommendation.
 
 \begin{table}[h!]
-\caption{All systems on the held-out set Q3 (72 scenarios; systems with a language model: GPT-6 Luna, three runs each). Saving pooled over runs; share = share of the achievable saving captured; coordination = valid share on the 11 scenarios that require coordination.}
+\caption{All systems on the held-out set Q3 (72 scenarios; systems with a language model: GPT-6 Luna, three runs each). Saving pooled over runs; share = share of the achievable saving captured; coordination = conflict resolution rate, the valid share on the 11 scenarios that require coordination.}
 \label{tab:q3-systems}
 \footnotesize
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
@@ -2558,8 +2565,8 @@ spent waiting for the model.
 \subsection{SQ2: conditions under which the system pays off}
 
 SQ2 asked under which price patterns and household loads the
-recommendations save more than, or as much as, the home energy
-management tools available to households. Against the cheapest-hours
+recommendations save at least as much as existing home energy
+management tools. Against the cheapest-hours
 tools the answer is: under every condition. The pipeline saved 4.6 and
 6.0 percentage points more per scenario than the cheapest window and the
 cheapest-hours automation (H2a, H2b), and more under every price pattern
@@ -2813,7 +2820,7 @@ on average and cost about \$0.0004 in API fees. Tool use, not the
 language model alone, is what makes the recommendations valuable.
 
 \textbf{SQ2} asked under which price patterns and household loads the
-recommendations save more than, or as much as, existing home energy
+recommendations save at least as much as existing home energy
 management tools. The pipeline saved more than the cheapest-hours
 automations shared for Home Assistant under every price pattern and
 every load, by 4.6 and 6.0 percentage points per scenario on average;
@@ -2836,7 +2843,7 @@ them (Section~\ref{sec:discussion-rq}). The second is an evaluation of
 what its recommendations are worth and cost, against a language model
 without tools, tested with pre-registered hypotheses on held-out days.
 The third is a map of the conditions under which an agent-based
-recommendation saves more than, or as much as, the home energy
+recommendation saves at least as much as the home energy
 management tools households can already install, built on a factorial
 benchmark that varies the price pattern and the household load
 separately under a sourced peak limit. The benchmarks, the case
@@ -3172,6 +3179,9 @@ longitudinal study. \textit{Scientific Data, 4}, 160122.
 OpenHEMS contributors. (2026). \textit{OpenHEMS: Home energy management
 system based on Home Assistant} [Computer software]. GitHub. Retrieved
 5 October 2026, from \url{https://github.com/abriotde/openhems-sample}
+
+OpenAI. (2026). \textit{Pricing}. OpenAI API documentation. Retrieved 21
+October 2026, from \url{https://developers.openai.com/api/docs/pricing}
 
 Oprea, S.-V., \& Bâra, A. (2024). A recommendation system for prosumers
 based on large language models. \textit{Sensors, 24}(11), 3530.

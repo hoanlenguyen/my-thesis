@@ -1,44 +1,57 @@
 [
  {
-  "id": "q2",
-  "label": "Held-out benchmark Q2 (confirmatory)",
+  "id": "q3",
+  "label": "Held-out benchmark Q3 (confirmatory)",
   "summary": [
    {
-    "system": "multi_rag_opt",
+    "system": "multi_duo",
     "label": "Multi-Agent Pipeline",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
+    "model": "gpt-6-luna",
+    "runs": 216,
+    "feasible": 216,
     "gapMean": 0.0,
-    "savingPct": 27.399,
+    "savingPct": 15.916,
     "savingsCaptured": 1.0,
-    "latencyMean": 63.46,
-    "usdPerRun": 0.002537,
-    "tokensIn": 13252.0
+    "latencyMean": 7.38,
+    "usdPerRun": 0.000399,
+    "tokensIn": 3456.0
+   },
+   {
+    "system": "single_harness",
+    "label": "Single agent in the harness",
+    "model": "gpt-6-luna",
+    "runs": 216,
+    "feasible": 216,
+    "gapMean": 0.0,
+    "savingPct": 15.916,
+    "savingsCaptured": 1.0,
+    "latencyMean": 4.99,
+    "usdPerRun": 0.000248,
+    "tokensIn": 3524.0
    },
    {
     "system": "oneshot",
     "label": "LLM without tools",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 278,
-    "gapMean": 25.786,
-    "savingPct": 6.241,
-    "savingsCaptured": 0.2278,
-    "latencyMean": 6.76,
-    "usdPerRun": 0.000384,
-    "tokensIn": 1993.0
+    "model": "gpt-6-luna",
+    "runs": 216,
+    "feasible": 166,
+    "gapMean": 9.922,
+    "savingPct": 4.071,
+    "savingsCaptured": 0.2558,
+    "latencyMean": 2.2,
+    "usdPerRun": 0.000112,
+    "tokensIn": 1457.0
    },
    {
     "system": "emhass_rest",
     "label": "EMHASS, profiles",
     "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 0.121,
-    "savingPct": 27.3,
-    "savingsCaptured": 0.9964,
-    "latencyMean": 0.86,
+    "runs": 72,
+    "feasible": 72,
+    "gapMean": 0.002,
+    "savingPct": 15.915,
+    "savingsCaptured": 0.9999,
+    "latencyMean": 0.31,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
    },
@@ -46,12 +59,12 @@
     "system": "emhass_rest_nominal",
     "label": "EMHASS, nominal power",
     "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 2.171,
-    "savingPct": 25.395,
-    "savingsCaptured": 0.9269,
-    "latencyMean": 0.93,
+    "runs": 72,
+    "feasible": 72,
+    "gapMean": 0.757,
+    "savingPct": 15.365,
+    "savingsCaptured": 0.9654,
+    "latencyMean": 0.38,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
    },
@@ -59,11 +72,11 @@
     "system": "cheapest_window",
     "label": "HA Nordpool Planner",
     "model": "-",
-    "runs": 96,
-    "feasible": 63,
-    "gapMean": 15.374,
-    "savingPct": 12.488,
-    "savingsCaptured": 0.4558,
+    "runs": 72,
+    "feasible": 62,
+    "gapMean": 6.679,
+    "savingPct": 8.627,
+    "savingsCaptured": 0.542,
     "latencyMean": 0.0,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
@@ -72,24 +85,11 @@
     "system": "cheapest_hours",
     "label": "HA cheapest-hours blueprint (15 min)",
     "model": "-",
-    "runs": 96,
-    "feasible": 66,
-    "gapMean": 17.901,
-    "savingPct": 10.71,
-    "savingsCaptured": 0.3909,
-    "latencyMean": 0.0,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "cheapest_hours_hourly",
-    "label": "HA cheapest-hours blueprint (hourly)",
-    "model": "-",
-    "runs": 96,
-    "feasible": 64,
-    "gapMean": 17.991,
-    "savingPct": 10.089,
-    "savingsCaptured": 0.3682,
+    "runs": 72,
+    "feasible": 60,
+    "gapMean": 8.209,
+    "savingPct": 4.567,
+    "savingsCaptured": 0.2869,
     "latencyMean": 0.0,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
@@ -98,11 +98,11 @@
     "system": "timer",
     "label": "Smart timer (own heuristic)",
     "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 0.046,
-    "savingPct": 27.342,
-    "savingsCaptured": 0.9979,
+    "runs": 72,
+    "feasible": 72,
+    "gapMean": -0.0,
+    "savingPct": 15.916,
+    "savingsCaptured": 1.0,
     "latencyMean": 0.0,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
@@ -112,119 +112,119 @@
    {
     "factor": "pattern",
     "level": "negative",
-    "scenarios": 24,
-    "optimumPct": 4.08,
+    "scenarios": 18,
+    "optimumPct": 1.187,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 2.27,
-      "validShare": 0.708
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 2.263,
-      "validShare": 0.708
+      "savingPct": 1.031,
+      "validShare": 0.944
      },
      "cheapest_window|-": {
-      "savingPct": 2.955,
-      "validShare": 0.708
+      "savingPct": 1.114,
+      "validShare": 1.0
      },
      "emhass_rest|-": {
-      "savingPct": 3.787,
+      "savingPct": 1.181,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 3.867,
+      "savingPct": 0.839,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 4.081,
+      "savingPct": 1.187,
       "validShare": 1.0
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 4.08,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 1.187,
       "validShare": 1.0
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 0.48,
-      "validShare": 0.917
+     "oneshot|gpt-6-luna": {
+      "savingPct": -0.339,
+      "validShare": 0.944
+     },
+     "single_harness|gpt-6-luna": {
+      "savingPct": 1.187,
+      "validShare": 1.0
      }
     }
    },
    {
     "factor": "pattern",
     "level": "spike",
-    "scenarios": 24,
-    "optimumPct": 34.176,
+    "scenarios": 18,
+    "optimumPct": 20.079,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 14.894,
-      "validShare": 0.75
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 14.119,
-      "validShare": 0.708
+      "savingPct": 5.866,
+      "validShare": 0.778
      },
      "cheapest_window|-": {
-      "savingPct": 16.981,
-      "validShare": 0.708
+      "savingPct": 8.943,
+      "validShare": 0.722
      },
      "emhass_rest|-": {
-      "savingPct": 34.175,
+      "savingPct": 20.079,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 31.558,
+      "savingPct": 19.409,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 34.118,
+      "savingPct": 20.079,
       "validShare": 1.0
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 34.176,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 20.079,
       "validShare": 1.0
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 8.428,
-      "validShare": 0.944
+     "oneshot|gpt-6-luna": {
+      "savingPct": 4.046,
+      "validShare": 0.611
+     },
+     "single_harness|gpt-6-luna": {
+      "savingPct": 20.079,
+      "validShare": 1.0
      }
     }
    },
    {
     "factor": "pattern",
     "level": "stable",
-    "scenarios": 24,
-    "optimumPct": 9.029,
+    "scenarios": 18,
+    "optimumPct": 3.391,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 3.021,
-      "validShare": 0.625
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 3.49,
-      "validShare": 0.667
+      "savingPct": 1.546,
+      "validShare": 0.889
      },
      "cheapest_window|-": {
-      "savingPct": 4.143,
-      "validShare": 0.667
+      "savingPct": 2.759,
+      "validShare": 1.0
      },
      "emhass_rest|-": {
-      "savingPct": 8.776,
+      "savingPct": 3.39,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 8.034,
+      "savingPct": 2.849,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 8.98,
+      "savingPct": 3.391,
       "validShare": 1.0
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 9.029,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 3.391,
       "validShare": 1.0
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 4.179,
+     "oneshot|gpt-6-luna": {
+      "savingPct": 1.178,
+      "validShare": 0.833
+     },
+     "single_harness|gpt-6-luna": {
+      "savingPct": 3.391,
       "validShare": 1.0
      }
     }
@@ -232,39 +232,79 @@
    {
     "factor": "pattern",
     "level": "volatile",
-    "scenarios": 24,
-    "optimumPct": 36.96,
+    "scenarios": 18,
+    "optimumPct": 23.561,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 12.127,
-      "validShare": 0.667
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 10.882,
-      "validShare": 0.583
+      "savingPct": 5.967,
+      "validShare": 0.722
      },
      "cheapest_window|-": {
-      "savingPct": 14.252,
-      "validShare": 0.542
+      "savingPct": 14.909,
+      "validShare": 0.722
      },
      "emhass_rest|-": {
-      "savingPct": 36.882,
+      "savingPct": 23.561,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 34.586,
+      "savingPct": 23.088,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 36.879,
+      "savingPct": 23.561,
       "validShare": 1.0
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 36.96,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 23.561,
       "validShare": 1.0
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 6.457,
+     "oneshot|gpt-6-luna": {
+      "savingPct": 7.761,
+      "validShare": 0.685
+     },
+     "single_harness|gpt-6-luna": {
+      "savingPct": 23.561,
+      "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "load",
+    "level": "electrified",
+    "scenarios": 24,
+    "optimumPct": 16.049,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 1.561,
+      "validShare": 0.542
+     },
+     "cheapest_window|-": {
+      "savingPct": 7.888,
+      "validShare": 0.708
+     },
+     "emhass_rest|-": {
+      "savingPct": 16.049,
+      "validShare": 1.0
+     },
+     "emhass_rest_nominal|-": {
+      "savingPct": 15.611,
+      "validShare": 1.0
+     },
+     "timer|-": {
+      "savingPct": 16.049,
+      "validShare": 1.0
+     },
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 16.049,
+      "validShare": 1.0
+     },
+     "oneshot|gpt-6-luna": {
+      "savingPct": 2.943,
+      "validShare": 0.694
+     },
+     "single_harness|gpt-6-luna": {
+      "savingPct": 16.049,
       "validShare": 1.0
      }
     }
@@ -272,212 +312,192 @@
    {
     "factor": "load",
     "level": "heavy",
-    "scenarios": 48,
-    "optimumPct": 28.566,
+    "scenarios": 24,
+    "optimumPct": 15.691,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 9.944,
-      "validShare": 0.458
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 9.02,
-      "validShare": 0.417
+      "savingPct": 9.455,
+      "validShare": 0.958
      },
      "cheapest_window|-": {
-      "savingPct": 11.404,
-      "validShare": 0.417
+      "savingPct": 9.224,
+      "validShare": 0.875
      },
      "emhass_rest|-": {
-      "savingPct": 28.441,
+      "savingPct": 15.689,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 26.445,
+      "savingPct": 15.033,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 28.497,
+      "savingPct": 15.691,
       "validShare": 1.0
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 28.566,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 15.691,
       "validShare": 1.0
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 7.498,
-      "validShare": 0.979
+     "oneshot|gpt-6-luna": {
+      "savingPct": 5.438,
+      "validShare": 0.792
+     },
+     "single_harness|gpt-6-luna": {
+      "savingPct": 15.691,
+      "validShare": 1.0
      }
     }
    },
    {
     "factor": "load",
     "level": "light",
-    "scenarios": 48,
-    "optimumPct": 23.163,
+    "scenarios": 24,
+    "optimumPct": 15.658,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 13.491,
-      "validShare": 0.917
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 13.968,
-      "validShare": 0.917
+      "savingPct": 11.085,
+      "validShare": 1.0
      },
      "cheapest_window|-": {
-      "savingPct": 16.423,
-      "validShare": 0.896
+      "savingPct": 12.399,
+      "validShare": 1.0
      },
      "emhass_rest|-": {
-      "savingPct": 23.162,
+      "savingPct": 15.658,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 21.584,
+      "savingPct": 14.586,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 23.151,
+      "savingPct": 15.658,
       "validShare": 1.0
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 23.163,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 15.658,
       "validShare": 1.0
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 1.678,
-      "validShare": 0.951
-     }
-    }
-   },
-   {
-    "factor": "limit",
-    "level": "realistic",
-    "scenarios": 48,
-    "optimumPct": 27.863,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 18.42,
-      "validShare": 0.917
+     "oneshot|gpt-6-luna": {
+      "savingPct": 8.194,
+      "validShare": 0.819
      },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 17.825,
-      "validShare": 0.917
-     },
-     "cheapest_window|-": {
-      "savingPct": 22.183,
-      "validShare": 0.917
-     },
-     "emhass_rest|-": {
-      "savingPct": 27.826,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 15.658,
       "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 27.026,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 27.859,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 27.863,
-      "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 6.576,
-      "validShare": 0.979
-     }
-    }
-   },
-   {
-    "factor": "limit",
-    "level": "strict",
-    "scenarios": 48,
-    "optimumPct": 26.935,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 3.0,
-      "validShare": 0.458
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 2.352,
-      "validShare": 0.417
-     },
-     "cheapest_window|-": {
-      "savingPct": 2.793,
-      "validShare": 0.396
-     },
-     "emhass_rest|-": {
-      "savingPct": 26.775,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 23.764,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 26.826,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 26.935,
-      "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 5.906,
-      "validShare": 0.951
      }
     }
    }
   ],
   "scenarios": [
    {
-    "id": "Q2-NH01-35",
-    "type": "negative-heavy-strict",
+    "id": "Q3-NE01-80",
+    "type": "negative-electrified-realistic",
     "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-10-05",
-    "appliances": 5,
-    "house": 4,
-    "naiveCost": 0.5964,
-    "milpCost": 0.5974,
-    "naiveFeasible": false,
-    "achievableSaving": -0.001
-   },
-   {
-    "id": "Q2-NH01-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2025-10-05",
+    "appliances": 6,
+    "house": 4,
+    "naiveCost": 1.3491,
+    "milpCost": 1.3491,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "Q3-NE02-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-11-29",
+    "appliances": 6,
+    "house": 1,
+    "naiveCost": 1.2322,
+    "milpCost": 1.2224,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0098
+   },
+   {
+    "id": "Q3-NE03-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-12-25",
+    "appliances": 6,
+    "house": 11,
+    "naiveCost": 1.0618,
+    "milpCost": 1.0618,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "Q3-NE04-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-06-21",
+    "appliances": 6,
+    "house": 9,
+    "naiveCost": 1.2936,
+    "milpCost": 1.2821,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0116
+   },
+   {
+    "id": "Q3-NE05-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-06-30",
+    "appliances": 6,
+    "house": 2,
+    "naiveCost": 1.4592,
+    "milpCost": 1.4502,
+    "naiveFeasible": true,
+    "achievableSaving": 0.009
+   },
+   {
+    "id": "Q3-NE06-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-09-20",
+    "appliances": 6,
+    "house": 17,
+    "naiveCost": 1.4097,
+    "milpCost": 1.4077,
+    "naiveFeasible": true,
+    "achievableSaving": 0.002
+   },
+   {
+    "id": "Q3-NH01-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-10-05",
     "appliances": 5,
     "house": 4,
-    "naiveCost": 0.5964,
-    "milpCost": 0.5964,
+    "naiveCost": 0.5967,
+    "milpCost": 0.5967,
     "naiveFeasible": true,
     "achievableSaving": 0.0
    },
    {
-    "id": "Q2-NH02-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-11-29",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 0.4853,
-    "milpCost": 0.4852,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "Q2-NH02-80",
+    "id": "Q3-NH02-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -486,28 +506,13 @@
     "date": "2025-11-29",
     "appliances": 5,
     "house": 1,
-    "naiveCost": 0.4853,
-    "milpCost": 0.4852,
+    "naiveCost": 0.4861,
+    "milpCost": 0.4854,
     "naiveFeasible": true,
-    "achievableSaving": 0.0001
+    "achievableSaving": 0.0007
    },
    {
-    "id": "Q2-NH03-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-12-25",
-    "appliances": 5,
-    "house": 11,
-    "naiveCost": 0.3308,
-    "milpCost": 0.3308,
-    "naiveFeasible": false,
-    "achievableSaving": -0.0001
-   },
-   {
-    "id": "Q2-NH03-80",
+    "id": "Q3-NH03-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -516,28 +521,13 @@
     "date": "2025-12-25",
     "appliances": 5,
     "house": 11,
-    "naiveCost": 0.3308,
-    "milpCost": 0.3308,
+    "naiveCost": 0.332,
+    "milpCost": 0.332,
     "naiveFeasible": true,
     "achievableSaving": 0.0
    },
    {
-    "id": "Q2-NH04-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-21",
-    "appliances": 5,
-    "house": 9,
-    "naiveCost": 0.5541,
-    "milpCost": 0.5278,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0263
-   },
-   {
-    "id": "Q2-NH04-80",
+    "id": "Q3-NH04-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -546,28 +536,13 @@
     "date": "2026-06-21",
     "appliances": 5,
     "house": 9,
-    "naiveCost": 0.5541,
+    "naiveCost": 0.5392,
     "milpCost": 0.5276,
     "naiveFeasible": true,
-    "achievableSaving": 0.0265
+    "achievableSaving": 0.0116
    },
    {
-    "id": "Q2-NH05-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-30",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.5904,
-    "milpCost": 0.5524,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0381
-   },
-   {
-    "id": "Q2-NH05-80",
+    "id": "Q3-NH05-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -576,28 +551,13 @@
     "date": "2026-06-30",
     "appliances": 5,
     "house": 2,
-    "naiveCost": 0.5904,
+    "naiveCost": 0.5611,
     "milpCost": 0.5521,
     "naiveFeasible": true,
-    "achievableSaving": 0.0383
+    "achievableSaving": 0.009
    },
    {
-    "id": "Q2-NH06-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-09-20",
-    "appliances": 5,
-    "house": 17,
-    "naiveCost": 0.572,
-    "milpCost": 0.5653,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0067
-   },
-   {
-    "id": "Q2-NH06-80",
+    "id": "Q3-NH06-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -606,28 +566,13 @@
     "date": "2026-09-20",
     "appliances": 5,
     "house": 17,
-    "naiveCost": 0.572,
-    "milpCost": 0.5649,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0071
-   },
-   {
-    "id": "Q2-NL01-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-10-04",
-    "appliances": 2,
-    "house": 13,
-    "naiveCost": 0.1212,
-    "milpCost": 0.1212,
+    "naiveCost": 0.5676,
+    "milpCost": 0.5656,
     "naiveFeasible": true,
-    "achievableSaving": 0.0
+    "achievableSaving": 0.002
    },
    {
-    "id": "Q2-NL01-80",
+    "id": "Q3-NL01-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -636,148 +581,73 @@
     "date": "2025-10-04",
     "appliances": 2,
     "house": 13,
-    "naiveCost": 0.1212,
-    "milpCost": 0.1212,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "Q2-NL02-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-10-16",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.133,
-    "milpCost": 0.1318,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0012
-   },
-   {
-    "id": "Q2-NL02-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-10-16",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.133,
-    "milpCost": 0.1318,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0012
-   },
-   {
-    "id": "Q2-NL03-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 4.88,
-    "date": "2026-05-02",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1566,
-    "milpCost": 0.1468,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0098
-   },
-   {
-    "id": "Q2-NL03-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2026-05-02",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1566,
-    "milpCost": 0.1468,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0098
-   },
-   {
-    "id": "Q2-NL04-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-05-25",
-    "appliances": 2,
-    "house": 6,
-    "naiveCost": 0.1914,
-    "milpCost": 0.1844,
-    "naiveFeasible": true,
-    "achievableSaving": 0.007
-   },
-   {
-    "id": "Q2-NL04-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2026-05-25",
-    "appliances": 2,
-    "house": 6,
-    "naiveCost": 0.1914,
-    "milpCost": 0.1844,
-    "naiveFeasible": true,
-    "achievableSaving": 0.007
-   },
-   {
-    "id": "Q2-NL05-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-29",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.3058,
-    "milpCost": 0.2251,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0807
-   },
-   {
-    "id": "Q2-NL05-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2026-06-29",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.3058,
-    "milpCost": 0.2251,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0807
-   },
-   {
-    "id": "Q2-NL06-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-07-19",
-    "appliances": 2,
-    "house": 20,
-    "naiveCost": 0.1216,
+    "naiveCost": 0.1218,
     "milpCost": 0.1216,
     "naiveFeasible": true,
-    "achievableSaving": 0.0
+    "achievableSaving": 0.0002
    },
    {
-    "id": "Q2-NL06-80",
+    "id": "Q3-NL02-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-10-16",
+    "appliances": 2,
+    "house": 5,
+    "naiveCost": 0.1296,
+    "milpCost": 0.1282,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0014
+   },
+   {
+    "id": "Q3-NL03-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-05-02",
+    "appliances": 2,
+    "house": 8,
+    "naiveCost": 0.1603,
+    "milpCost": 0.1495,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0108
+   },
+   {
+    "id": "Q3-NL04-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-05-25",
+    "appliances": 2,
+    "house": 6,
+    "naiveCost": 0.187,
+    "milpCost": 0.1847,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0023
+   },
+   {
+    "id": "Q3-NL05-80",
+    "type": "negative-light-realistic",
+    "pattern": "negative",
+    "load": "light",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-06-29",
+    "appliances": 2,
+    "house": 3,
+    "naiveCost": 0.328,
+    "milpCost": 0.2568,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0712
+   },
+   {
+    "id": "Q3-NL06-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -792,52 +662,112 @@
     "achievableSaving": 0.0
    },
    {
-    "id": "Q2-PH01-35",
-    "type": "spike-heavy-strict",
+    "id": "Q3-PE01-80",
+    "type": "spike-electrified-realistic",
     "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.58,
-    "date": "2025-10-15",
-    "appliances": 5,
-    "house": 13,
-    "naiveCost": 2.5705,
-    "milpCost": 0.766,
-    "naiveFeasible": false,
-    "achievableSaving": 1.8045
-   },
-   {
-    "id": "Q2-PH01-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2025-10-15",
+    "appliances": 6,
+    "house": 13,
+    "naiveCost": 3.6912,
+    "milpCost": 2.1715,
+    "naiveFeasible": true,
+    "achievableSaving": 1.5196
+   },
+   {
+    "id": "Q3-PE02-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-01-12",
+    "appliances": 6,
+    "house": 5,
+    "naiveCost": 4.4863,
+    "milpCost": 3.6389,
+    "naiveFeasible": true,
+    "achievableSaving": 0.8474
+   },
+   {
+    "id": "Q3-PE03-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-01-31",
+    "appliances": 6,
+    "house": 8,
+    "naiveCost": 3.8936,
+    "milpCost": 3.2647,
+    "naiveFeasible": true,
+    "achievableSaving": 0.6289
+   },
+   {
+    "id": "Q3-PE04-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-02-23",
+    "appliances": 6,
+    "house": 6,
+    "naiveCost": 3.906,
+    "milpCost": 3.6575,
+    "naiveFeasible": true,
+    "achievableSaving": 0.2486
+   },
+   {
+    "id": "Q3-PE05-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-09-09",
+    "appliances": 6,
+    "house": 3,
+    "naiveCost": 3.9619,
+    "milpCost": 3.318,
+    "naiveFeasible": true,
+    "achievableSaving": 0.6438
+   },
+   {
+    "id": "Q3-PE06-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-09-24",
+    "appliances": 6,
+    "house": 20,
+    "naiveCost": 4.1095,
+    "milpCost": 3.075,
+    "naiveFeasible": true,
+    "achievableSaving": 1.0345
+   },
+   {
+    "id": "Q3-PH01-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-10-15",
     "appliances": 5,
     "house": 13,
-    "naiveCost": 2.5705,
-    "milpCost": 0.7536,
+    "naiveCost": 2.0852,
+    "milpCost": 1.415,
     "naiveFeasible": true,
-    "achievableSaving": 1.8169
+    "achievableSaving": 0.6702
    },
    {
-    "id": "Q2-PH02-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-01-12",
-    "appliances": 5,
-    "house": 5,
-    "naiveCost": 2.8115,
-    "milpCost": 1.8611,
-    "naiveFeasible": false,
-    "achievableSaving": 0.9504
-   },
-   {
-    "id": "Q2-PH02-80",
+    "id": "Q3-PH02-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -846,28 +776,13 @@
     "date": "2026-01-12",
     "appliances": 5,
     "house": 5,
-    "naiveCost": 2.8115,
-    "milpCost": 1.8347,
+    "naiveCost": 2.6111,
+    "milpCost": 1.9689,
     "naiveFeasible": true,
-    "achievableSaving": 0.9768
+    "achievableSaving": 0.6422
    },
    {
-    "id": "Q2-PH03-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 5.75,
-    "date": "2026-01-31",
-    "appliances": 5,
-    "house": 8,
-    "naiveCost": 1.4616,
-    "milpCost": 1.2376,
-    "naiveFeasible": false,
-    "achievableSaving": 0.224
-   },
-   {
-    "id": "Q2-PH03-80",
+    "id": "Q3-PH03-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -876,28 +791,13 @@
     "date": "2026-01-31",
     "appliances": 5,
     "house": 8,
-    "naiveCost": 1.4616,
-    "milpCost": 1.2376,
-    "naiveFeasible": false,
-    "achievableSaving": 0.224
+    "naiveCost": 1.5549,
+    "milpCost": 1.5154,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0396
    },
    {
-    "id": "Q2-PH04-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-02-23",
-    "appliances": 5,
-    "house": 6,
-    "naiveCost": 1.7628,
-    "milpCost": 1.6443,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1185
-   },
-   {
-    "id": "Q2-PH04-80",
+    "id": "Q3-PH04-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -906,28 +806,13 @@
     "date": "2026-02-23",
     "appliances": 5,
     "house": 6,
-    "naiveCost": 1.7628,
-    "milpCost": 1.6014,
+    "naiveCost": 1.83,
+    "milpCost": 1.7986,
     "naiveFeasible": true,
-    "achievableSaving": 0.1614
+    "achievableSaving": 0.0314
    },
    {
-    "id": "Q2-PH05-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-09-09",
-    "appliances": 5,
-    "house": 3,
-    "naiveCost": 1.9187,
-    "milpCost": 1.295,
-    "naiveFeasible": false,
-    "achievableSaving": 0.6237
-   },
-   {
-    "id": "Q2-PH05-80",
+    "id": "Q3-PH05-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -936,28 +821,13 @@
     "date": "2026-09-09",
     "appliances": 5,
     "house": 3,
-    "naiveCost": 1.9187,
-    "milpCost": 1.2673,
-    "naiveFeasible": false,
-    "achievableSaving": 0.6513
+    "naiveCost": 1.9124,
+    "milpCost": 1.2686,
+    "naiveFeasible": true,
+    "achievableSaving": 0.6438
    },
    {
-    "id": "Q2-PH06-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-09-24",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 2.093,
-    "milpCost": 1.4098,
-    "naiveFeasible": false,
-    "achievableSaving": 0.6832
-   },
-   {
-    "id": "Q2-PH06-80",
+    "id": "Q3-PH06-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -966,28 +836,13 @@
     "date": "2026-09-24",
     "appliances": 5,
     "house": 20,
-    "naiveCost": 2.093,
-    "milpCost": 1.3464,
+    "naiveCost": 2.0769,
+    "milpCost": 1.6617,
     "naiveFeasible": true,
-    "achievableSaving": 0.7466
+    "achievableSaving": 0.4152
    },
    {
-    "id": "Q2-PL01-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-10-06",
-    "appliances": 2,
-    "house": 18,
-    "naiveCost": 0.3038,
-    "milpCost": 0.2931,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0108
-   },
-   {
-    "id": "Q2-PL01-80",
+    "id": "Q3-PL01-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -996,28 +851,13 @@
     "date": "2025-10-06",
     "appliances": 2,
     "house": 18,
-    "naiveCost": 0.3038,
-    "milpCost": 0.2931,
+    "naiveCost": 0.3453,
+    "milpCost": 0.3106,
     "naiveFeasible": true,
-    "achievableSaving": 0.0108
+    "achievableSaving": 0.0347
    },
    {
-    "id": "Q2-PL02-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-11-25",
-    "appliances": 2,
-    "house": 21,
-    "naiveCost": 0.5317,
-    "milpCost": 0.2735,
-    "naiveFeasible": true,
-    "achievableSaving": 0.2582
-   },
-   {
-    "id": "Q2-PL02-80",
+    "id": "Q3-PL02-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -1026,28 +866,13 @@
     "date": "2025-11-25",
     "appliances": 2,
     "house": 21,
-    "naiveCost": 0.5317,
-    "milpCost": 0.2735,
+    "naiveCost": 0.3823,
+    "milpCost": 0.3504,
     "naiveFeasible": true,
-    "achievableSaving": 0.2582
+    "achievableSaving": 0.0319
    },
    {
-    "id": "Q2-PL03-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-01-26",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.5747,
-    "milpCost": 0.4237,
-    "naiveFeasible": true,
-    "achievableSaving": 0.151
-   },
-   {
-    "id": "Q2-PL03-80",
+    "id": "Q3-PL03-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -1056,28 +881,13 @@
     "date": "2026-01-26",
     "appliances": 2,
     "house": 7,
-    "naiveCost": 0.5747,
-    "milpCost": 0.4237,
+    "naiveCost": 0.5501,
+    "milpCost": 0.4258,
     "naiveFeasible": true,
-    "achievableSaving": 0.151
+    "achievableSaving": 0.1243
    },
    {
-    "id": "Q2-PL04-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-01",
-    "appliances": 2,
-    "house": 10,
-    "naiveCost": 0.4832,
-    "milpCost": 0.3862,
-    "naiveFeasible": true,
-    "achievableSaving": 0.097
-   },
-   {
-    "id": "Q2-PL04-80",
+    "id": "Q3-PL04-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -1086,28 +896,13 @@
     "date": "2026-06-01",
     "appliances": 2,
     "house": 10,
-    "naiveCost": 0.4832,
+    "naiveCost": 0.4773,
     "milpCost": 0.3862,
     "naiveFeasible": true,
-    "achievableSaving": 0.097
+    "achievableSaving": 0.091
    },
    {
-    "id": "Q2-PL05-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-08",
-    "appliances": 2,
-    "house": 16,
-    "naiveCost": 0.3403,
-    "milpCost": 0.26,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0803
-   },
-   {
-    "id": "Q2-PL05-80",
+    "id": "Q3-PL05-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -1116,28 +911,13 @@
     "date": "2026-06-08",
     "appliances": 2,
     "house": 16,
-    "naiveCost": 0.3403,
-    "milpCost": 0.26,
+    "naiveCost": 0.3288,
+    "milpCost": 0.2764,
     "naiveFeasible": true,
-    "achievableSaving": 0.0803
+    "achievableSaving": 0.0524
    },
    {
-    "id": "Q2-PL06-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-09-12",
-    "appliances": 2,
-    "house": 15,
-    "naiveCost": 0.3389,
-    "milpCost": 0.2351,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1038
-   },
-   {
-    "id": "Q2-PL06-80",
+    "id": "Q3-PL06-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -1146,178 +926,178 @@
     "date": "2026-09-12",
     "appliances": 2,
     "house": 15,
-    "naiveCost": 0.3389,
+    "naiveCost": 0.2583,
     "milpCost": 0.2351,
     "naiveFeasible": true,
-    "achievableSaving": 0.1038
+    "achievableSaving": 0.0232
    },
    {
-    "id": "Q2-SH01-35",
-    "type": "stable-heavy-strict",
+    "id": "Q3-SE01-80",
+    "type": "stable-electrified-realistic",
     "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-04-05",
-    "appliances": 5,
-    "house": 4,
-    "naiveCost": 0.7199,
-    "milpCost": 0.6636,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0563
-   },
-   {
-    "id": "Q2-SH01-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2026-04-05",
-    "appliances": 5,
+    "appliances": 6,
     "house": 4,
-    "naiveCost": 0.7199,
-    "milpCost": 0.6633,
+    "naiveCost": 1.475,
+    "milpCost": 1.4413,
     "naiveFeasible": true,
-    "achievableSaving": 0.0567
+    "achievableSaving": 0.0337
    },
    {
-    "id": "Q2-SH02-35",
-    "type": "stable-heavy-strict",
+    "id": "Q3-SE02-80",
+    "type": "stable-electrified-realistic",
     "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-07-02",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 1.0614,
-    "milpCost": 0.8939,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1675
-   },
-   {
-    "id": "Q2-SH02-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2026-07-02",
-    "appliances": 5,
+    "appliances": 6,
     "house": 1,
-    "naiveCost": 1.0614,
-    "milpCost": 0.8813,
+    "naiveCost": 1.9511,
+    "milpCost": 1.9152,
     "naiveFeasible": true,
-    "achievableSaving": 0.1801
+    "achievableSaving": 0.0359
    },
    {
-    "id": "Q2-SH03-35",
-    "type": "stable-heavy-strict",
+    "id": "Q3-SE03-80",
+    "type": "stable-electrified-realistic",
     "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-07-03",
-    "appliances": 5,
-    "house": 11,
-    "naiveCost": 0.8537,
-    "milpCost": 0.8074,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0463
-   },
-   {
-    "id": "Q2-SH03-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2026-07-03",
-    "appliances": 5,
+    "appliances": 6,
     "house": 11,
-    "naiveCost": 0.8537,
-    "milpCost": 0.8008,
+    "naiveCost": 1.7423,
+    "milpCost": 1.7071,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0351
+   },
+   {
+    "id": "Q3-SE04-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-07-14",
+    "appliances": 6,
+    "house": 9,
+    "naiveCost": 1.3287,
+    "milpCost": 1.2864,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0423
+   },
+   {
+    "id": "Q3-SE05-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-07-16",
+    "appliances": 6,
+    "house": 2,
+    "naiveCost": 1.31,
+    "milpCost": 1.257,
     "naiveFeasible": true,
     "achievableSaving": 0.0529
    },
    {
-    "id": "Q2-SH04-35",
-    "type": "stable-heavy-strict",
+    "id": "Q3-SE06-80",
+    "type": "stable-electrified-realistic",
     "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.83,
-    "date": "2026-07-14",
-    "appliances": 5,
-    "house": 9,
-    "naiveCost": 0.5335,
-    "milpCost": 0.4771,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0565
-   },
-   {
-    "id": "Q2-SH04-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
-    "date": "2026-07-14",
-    "appliances": 5,
-    "house": 9,
-    "naiveCost": 0.5335,
-    "milpCost": 0.4764,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0571
-   },
-   {
-    "id": "Q2-SH05-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-07-16",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.5699,
-    "milpCost": 0.5059,
-    "naiveFeasible": false,
-    "achievableSaving": 0.064
-   },
-   {
-    "id": "Q2-SH05-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2026-07-16",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.5699,
-    "milpCost": 0.5053,
+    "date": "2026-07-18",
+    "appliances": 6,
+    "house": 17,
+    "naiveCost": 1.4548,
+    "milpCost": 1.4065,
     "naiveFeasible": true,
-    "achievableSaving": 0.0646
+    "achievableSaving": 0.0483
    },
    {
-    "id": "Q2-SH06-35",
-    "type": "stable-heavy-strict",
+    "id": "Q3-SH01-80",
+    "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-07-18",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-04-05",
     "appliances": 5,
-    "house": 17,
-    "naiveCost": 0.6609,
-    "milpCost": 0.6236,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0373
+    "house": 4,
+    "naiveCost": 0.7041,
+    "milpCost": 0.6704,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0337
    },
    {
-    "id": "Q2-SH06-80",
+    "id": "Q3-SH02-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-07-02",
+    "appliances": 5,
+    "house": 1,
+    "naiveCost": 0.9477,
+    "milpCost": 0.9107,
+    "naiveFeasible": true,
+    "achievableSaving": 0.037
+   },
+   {
+    "id": "Q3-SH03-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-07-03",
+    "appliances": 5,
+    "house": 11,
+    "naiveCost": 0.8478,
+    "milpCost": 0.8127,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0351
+   },
+   {
+    "id": "Q3-SH04-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-07-14",
+    "appliances": 5,
+    "house": 9,
+    "naiveCost": 0.5175,
+    "milpCost": 0.4764,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0411
+   },
+   {
+    "id": "Q3-SH05-80",
+    "type": "stable-heavy-realistic",
+    "pattern": "stable",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-07-16",
+    "appliances": 5,
+    "house": 2,
+    "naiveCost": 0.5447,
+    "milpCost": 0.5108,
+    "naiveFeasible": true,
+    "achievableSaving": 0.034
+   },
+   {
+    "id": "Q3-SH06-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -1326,28 +1106,13 @@
     "date": "2026-07-18",
     "appliances": 5,
     "house": 17,
-    "naiveCost": 0.6609,
+    "naiveCost": 0.6372,
     "milpCost": 0.6227,
     "naiveFeasible": true,
-    "achievableSaving": 0.0382
+    "achievableSaving": 0.0145
    },
    {
-    "id": "Q2-SL01-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-10-25",
-    "appliances": 2,
-    "house": 13,
-    "naiveCost": 0.1656,
-    "milpCost": 0.1652,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0004
-   },
-   {
-    "id": "Q2-SL01-80",
+    "id": "Q3-SL01-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -1356,28 +1121,13 @@
     "date": "2025-10-25",
     "appliances": 2,
     "house": 13,
-    "naiveCost": 0.1656,
-    "milpCost": 0.1652,
+    "naiveCost": 0.1632,
+    "milpCost": 0.1632,
     "naiveFeasible": true,
-    "achievableSaving": 0.0004
+    "achievableSaving": 0.0
    },
    {
-    "id": "Q2-SL02-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-12-21",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.135,
-    "milpCost": 0.1349,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0001
-   },
-   {
-    "id": "Q2-SL02-80",
+    "id": "Q3-SL02-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -1387,27 +1137,12 @@
     "appliances": 2,
     "house": 5,
     "naiveCost": 0.135,
-    "milpCost": 0.1349,
+    "milpCost": 0.1346,
     "naiveFeasible": true,
-    "achievableSaving": 0.0001
+    "achievableSaving": 0.0004
    },
    {
-    "id": "Q2-SL03-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 5.75,
-    "date": "2026-07-25",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.2169,
-    "milpCost": 0.1992,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0176
-   },
-   {
-    "id": "Q2-SL03-80",
+    "id": "Q3-SL03-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -1416,28 +1151,13 @@
     "date": "2026-07-25",
     "appliances": 2,
     "house": 8,
-    "naiveCost": 0.2169,
+    "naiveCost": 0.2112,
     "milpCost": 0.1992,
     "naiveFeasible": true,
-    "achievableSaving": 0.0176
+    "achievableSaving": 0.0121
    },
    {
-    "id": "Q2-SL04-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-08-03",
-    "appliances": 2,
-    "house": 6,
-    "naiveCost": 0.2773,
-    "milpCost": 0.2524,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0249
-   },
-   {
-    "id": "Q2-SL04-80",
+    "id": "Q3-SL04-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -1446,28 +1166,13 @@
     "date": "2026-08-03",
     "appliances": 2,
     "house": 6,
-    "naiveCost": 0.2773,
-    "milpCost": 0.2524,
+    "naiveCost": 0.279,
+    "milpCost": 0.2599,
     "naiveFeasible": true,
-    "achievableSaving": 0.0249
+    "achievableSaving": 0.0192
    },
    {
-    "id": "Q2-SL05-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-08-06",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.1638,
-    "milpCost": 0.1456,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0182
-   },
-   {
-    "id": "Q2-SL05-80",
+    "id": "Q3-SL05-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -1476,28 +1181,13 @@
     "date": "2026-08-06",
     "appliances": 2,
     "house": 3,
-    "naiveCost": 0.1638,
-    "milpCost": 0.1456,
+    "naiveCost": 0.165,
+    "milpCost": 0.1457,
     "naiveFeasible": true,
-    "achievableSaving": 0.0182
+    "achievableSaving": 0.0193
    },
    {
-    "id": "Q2-SL06-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-09-16",
-    "appliances": 2,
-    "house": 20,
-    "naiveCost": 0.1927,
-    "milpCost": 0.1915,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0012
-   },
-   {
-    "id": "Q2-SL06-80",
+    "id": "Q3-SL06-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -1506,58 +1196,118 @@
     "date": "2026-09-16",
     "appliances": 2,
     "house": 20,
-    "naiveCost": 0.1927,
-    "milpCost": 0.1915,
+    "naiveCost": 0.1935,
+    "milpCost": 0.1926,
     "naiveFeasible": true,
-    "achievableSaving": 0.0012
+    "achievableSaving": 0.0008
    },
    {
-    "id": "Q2-VH01-35",
-    "type": "volatile-heavy-strict",
+    "id": "Q3-VE01-80",
+    "type": "volatile-electrified-realistic",
     "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-10-02",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 1.4854,
-    "milpCost": 0.8438,
-    "naiveFeasible": false,
-    "achievableSaving": 0.6417
-   },
-   {
-    "id": "Q2-VH01-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2025-10-02",
+    "appliances": 6,
+    "house": 18,
+    "naiveCost": 3.5727,
+    "milpCost": 2.167,
+    "naiveFeasible": true,
+    "achievableSaving": 1.4057
+   },
+   {
+    "id": "Q3-VE02-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-12-04",
+    "appliances": 6,
+    "house": 21,
+    "naiveCost": 3.1968,
+    "milpCost": 2.7424,
+    "naiveFeasible": true,
+    "achievableSaving": 0.4544
+   },
+   {
+    "id": "Q3-VE03-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-01-28",
+    "appliances": 6,
+    "house": 7,
+    "naiveCost": 4.0139,
+    "milpCost": 3.0898,
+    "naiveFeasible": true,
+    "achievableSaving": 0.9241
+   },
+   {
+    "id": "Q3-VE04-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-02-20",
+    "appliances": 6,
+    "house": 10,
+    "naiveCost": 2.2537,
+    "milpCost": 1.5586,
+    "naiveFeasible": true,
+    "achievableSaving": 0.695
+   },
+   {
+    "id": "Q3-VE05-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-02-25",
+    "appliances": 6,
+    "house": 16,
+    "naiveCost": 2.0419,
+    "milpCost": 1.5354,
+    "naiveFeasible": true,
+    "achievableSaving": 0.5065
+   },
+   {
+    "id": "Q3-VE06-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2026-06-05",
+    "appliances": 6,
+    "house": 15,
+    "naiveCost": 1.634,
+    "milpCost": 1.5421,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0919
+   },
+   {
+    "id": "Q3-VH01-80",
+    "type": "volatile-heavy-realistic",
+    "pattern": "volatile",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-10-02",
     "appliances": 5,
     "house": 18,
-    "naiveCost": 1.4854,
-    "milpCost": 0.7698,
+    "naiveCost": 1.4028,
+    "milpCost": 1.3259,
     "naiveFeasible": true,
-    "achievableSaving": 0.7157
+    "achievableSaving": 0.0769
    },
    {
-    "id": "Q2-VH02-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 4.13,
-    "date": "2025-12-04",
-    "appliances": 5,
-    "house": 21,
-    "naiveCost": 1.2908,
-    "milpCost": 1.167,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1238
-   },
-   {
-    "id": "Q2-VH02-80",
+    "id": "Q3-VH02-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -1566,28 +1316,13 @@
     "date": "2025-12-04",
     "appliances": 5,
     "house": 21,
-    "naiveCost": 1.2908,
-    "milpCost": 1.1528,
-    "naiveFeasible": false,
-    "achievableSaving": 0.138
+    "naiveCost": 1.1919,
+    "milpCost": 1.1497,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0422
    },
    {
-    "id": "Q2-VH03-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-01-28",
-    "appliances": 5,
-    "house": 7,
-    "naiveCost": 1.2006,
-    "milpCost": 0.8987,
-    "naiveFeasible": false,
-    "achievableSaving": 0.3019
-   },
-   {
-    "id": "Q2-VH03-80",
+    "id": "Q3-VH03-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -1596,28 +1331,13 @@
     "date": "2026-01-28",
     "appliances": 5,
     "house": 7,
-    "naiveCost": 1.2006,
-    "milpCost": 0.8778,
+    "naiveCost": 1.2375,
+    "milpCost": 1.0707,
     "naiveFeasible": true,
-    "achievableSaving": 0.3228
+    "achievableSaving": 0.1668
    },
    {
-    "id": "Q2-VH04-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-02-20",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 1.3766,
-    "milpCost": 0.5173,
-    "naiveFeasible": false,
-    "achievableSaving": 0.8592
-   },
-   {
-    "id": "Q2-VH04-80",
+    "id": "Q3-VH04-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -1626,28 +1346,13 @@
     "date": "2026-02-20",
     "appliances": 5,
     "house": 10,
-    "naiveCost": 1.3766,
-    "milpCost": 0.5166,
+    "naiveCost": 1.1233,
+    "milpCost": 0.5866,
     "naiveFeasible": true,
-    "achievableSaving": 0.8599
+    "achievableSaving": 0.5367
    },
    {
-    "id": "Q2-VH05-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.64,
-    "date": "2026-02-25",
-    "appliances": 5,
-    "house": 16,
-    "naiveCost": 1.2407,
-    "milpCost": 0.5774,
-    "naiveFeasible": false,
-    "achievableSaving": 0.6633
-   },
-   {
-    "id": "Q2-VH05-80",
+    "id": "Q3-VH05-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -1656,28 +1361,13 @@
     "date": "2026-02-25",
     "appliances": 5,
     "house": 16,
-    "naiveCost": 1.2407,
-    "milpCost": 0.5671,
-    "naiveFeasible": false,
-    "achievableSaving": 0.6736
+    "naiveCost": 1.0757,
+    "milpCost": 0.5798,
+    "naiveFeasible": true,
+    "achievableSaving": 0.4958
    },
    {
-    "id": "Q2-VH06-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-05",
-    "appliances": 5,
-    "house": 15,
-    "naiveCost": 0.6504,
-    "milpCost": 0.4795,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1709
-   },
-   {
-    "id": "Q2-VH06-80",
+    "id": "Q3-VH06-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -1686,28 +1376,13 @@
     "date": "2026-06-05",
     "appliances": 5,
     "house": 15,
-    "naiveCost": 0.6504,
+    "naiveCost": 0.565,
     "milpCost": 0.4731,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1773
-   },
-   {
-    "id": "Q2-VL01-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-12-05",
-    "appliances": 2,
-    "house": 4,
-    "naiveCost": 0.5654,
-    "milpCost": 0.444,
     "naiveFeasible": true,
-    "achievableSaving": 0.1214
+    "achievableSaving": 0.0919
    },
    {
-    "id": "Q2-VL01-80",
+    "id": "Q3-VL01-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -1716,28 +1391,13 @@
     "date": "2025-12-05",
     "appliances": 2,
     "house": 4,
-    "naiveCost": 0.5654,
-    "milpCost": 0.444,
+    "naiveCost": 0.5932,
+    "milpCost": 0.538,
     "naiveFeasible": true,
-    "achievableSaving": 0.1214
+    "achievableSaving": 0.0553
    },
    {
-    "id": "Q2-VL02-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-04-09",
-    "appliances": 2,
-    "house": 1,
-    "naiveCost": 0.445,
-    "milpCost": 0.2907,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1543
-   },
-   {
-    "id": "Q2-VL02-80",
+    "id": "Q3-VL02-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -1746,28 +1406,13 @@
     "date": "2026-04-09",
     "appliances": 2,
     "house": 1,
-    "naiveCost": 0.445,
-    "milpCost": 0.2907,
+    "naiveCost": 0.3546,
+    "milpCost": 0.2944,
     "naiveFeasible": true,
-    "achievableSaving": 0.1543
+    "achievableSaving": 0.0602
    },
    {
-    "id": "Q2-VL03-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.51,
-    "date": "2026-04-10",
-    "appliances": 2,
-    "house": 11,
-    "naiveCost": 0.6242,
-    "milpCost": 0.3288,
-    "naiveFeasible": true,
-    "achievableSaving": 0.2954
-   },
-   {
-    "id": "Q2-VL03-80",
+    "id": "Q3-VL03-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -1776,28 +1421,13 @@
     "date": "2026-04-10",
     "appliances": 2,
     "house": 11,
-    "naiveCost": 0.6242,
+    "naiveCost": 0.5389,
     "milpCost": 0.3279,
     "naiveFeasible": true,
-    "achievableSaving": 0.2963
+    "achievableSaving": 0.211
    },
    {
-    "id": "Q2-VL04-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-06-11",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.2036,
-    "milpCost": 0.2015,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0021
-   },
-   {
-    "id": "Q2-VL04-80",
+    "id": "Q3-VL04-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -1806,28 +1436,13 @@
     "date": "2026-06-11",
     "appliances": 2,
     "house": 9,
-    "naiveCost": 0.2036,
-    "milpCost": 0.2015,
+    "naiveCost": 0.2395,
+    "milpCost": 0.2381,
     "naiveFeasible": true,
-    "achievableSaving": 0.0021
+    "achievableSaving": 0.0014
    },
    {
-    "id": "Q2-VL05-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-08-21",
-    "appliances": 2,
-    "house": 2,
-    "naiveCost": 0.6549,
-    "milpCost": 0.457,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1979
-   },
-   {
-    "id": "Q2-VL05-80",
+    "id": "Q3-VL05-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -1836,28 +1451,13 @@
     "date": "2026-08-21",
     "appliances": 2,
     "house": 2,
-    "naiveCost": 0.6549,
+    "naiveCost": 0.5723,
     "milpCost": 0.4568,
     "naiveFeasible": true,
-    "achievableSaving": 0.198
+    "achievableSaving": 0.1155
    },
    {
-    "id": "Q2-VL06-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2026-09-21",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.3004,
-    "milpCost": 0.1861,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1144
-   },
-   {
-    "id": "Q2-VL06-80",
+    "id": "Q3-VL06-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -1866,79 +1466,66 @@
     "date": "2026-09-21",
     "appliances": 2,
     "house": 17,
-    "naiveCost": 0.3004,
+    "naiveCost": 0.3768,
     "milpCost": 0.1861,
     "naiveFeasible": true,
-    "achievableSaving": 0.1144
+    "achievableSaving": 0.1908
    }
   ]
  },
  {
-  "id": "v2",
+  "id": "v4",
   "label": "Factorial benchmark (exploratory)",
   "summary": [
    {
-    "system": "multi_rag_opt",
+    "system": "multi_duo",
     "label": "Multi-Agent Pipeline",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
-    "gapMean": 0.006,
-    "savingPct": 27.582,
-    "savingsCaptured": 0.9998,
-    "latencyMean": 21.54,
-    "usdPerRun": 0.002481,
-    "tokensIn": 12911.0
+    "model": "gpt-6-luna",
+    "runs": 216,
+    "feasible": 216,
+    "gapMean": 0.0,
+    "savingPct": 21.909,
+    "savingsCaptured": 1.0,
+    "latencyMean": 7.89,
+    "usdPerRun": 0.000396,
+    "tokensIn": 3454.0
    },
    {
-    "system": "multi_rag",
-    "label": "Design iteration: retrieval, no optimiser",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
-    "gapMean": 0.361,
-    "savingPct": 27.087,
-    "savingsCaptured": 0.9818,
-    "latencyMean": 21.81,
-    "usdPerRun": 0.004504,
-    "tokensIn": 25308.0
-   },
-   {
-    "system": "multi",
-    "label": "Design iteration: no retrieval, no optimiser",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
-    "gapMean": 0.759,
-    "savingPct": 26.725,
-    "savingsCaptured": 0.9687,
-    "latencyMean": 26.01,
-    "usdPerRun": 0.003041,
-    "tokensIn": 13098.0
+    "system": "single_harness",
+    "label": "Single agent in the harness",
+    "model": "gpt-6-luna",
+    "runs": 216,
+    "feasible": 216,
+    "gapMean": 0.0,
+    "savingPct": 21.909,
+    "savingsCaptured": 1.0,
+    "latencyMean": 4.95,
+    "usdPerRun": 0.000243,
+    "tokensIn": 3522.0
    },
    {
     "system": "oneshot",
     "label": "LLM without tools",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 266,
-    "gapMean": 32.703,
-    "savingPct": 7.756,
-    "savingsCaptured": 0.2811,
-    "latencyMean": 2.23,
-    "usdPerRun": 0.000382,
-    "tokensIn": 1977.0
+    "model": "gpt-6-luna",
+    "runs": 216,
+    "feasible": 176,
+    "gapMean": 12.978,
+    "savingPct": 6.224,
+    "savingsCaptured": 0.2841,
+    "latencyMean": 2.04,
+    "usdPerRun": 0.000112,
+    "tokensIn": 1457.0
    },
    {
     "system": "emhass_rest",
     "label": "EMHASS, profiles",
     "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 0.243,
-    "savingPct": 27.364,
-    "savingsCaptured": 0.9919,
-    "latencyMean": 1.01,
+    "runs": 72,
+    "feasible": 72,
+    "gapMean": 0.013,
+    "savingPct": 21.899,
+    "savingsCaptured": 0.9996,
+    "latencyMean": 0.34,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
    },
@@ -1946,12 +1533,12 @@
     "system": "emhass_rest_nominal",
     "label": "EMHASS, nominal power",
     "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 1.478,
-    "savingPct": 25.923,
-    "savingsCaptured": 0.9396,
-    "latencyMean": 0.72,
+    "runs": 72,
+    "feasible": 72,
+    "gapMean": 0.619,
+    "savingPct": 21.467,
+    "savingsCaptured": 0.9798,
+    "latencyMean": 0.39,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
    },
@@ -1959,11 +1546,11 @@
     "system": "cheapest_window",
     "label": "HA Nordpool Planner",
     "model": "-",
-    "runs": 96,
+    "runs": 72,
     "feasible": 65,
-    "gapMean": 15.753,
-    "savingPct": 12.428,
-    "savingsCaptured": 0.4505,
+    "gapMean": 2.583,
+    "savingPct": 20.185,
+    "savingsCaptured": 0.9213,
     "latencyMean": 0.0,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
@@ -1972,24 +1559,11 @@
     "system": "cheapest_hours",
     "label": "HA cheapest-hours blueprint (15 min)",
     "model": "-",
-    "runs": 96,
-    "feasible": 68,
-    "gapMean": 14.57,
-    "savingPct": 13.795,
-    "savingsCaptured": 0.5,
-    "latencyMean": 0.0,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "cheapest_hours_hourly",
-    "label": "HA cheapest-hours blueprint (hourly)",
-    "model": "-",
-    "runs": 96,
-    "feasible": 67,
-    "gapMean": 15.306,
-    "savingPct": 13.372,
-    "savingsCaptured": 0.4847,
+    "runs": 72,
+    "feasible": 62,
+    "gapMean": 8.943,
+    "savingPct": 6.824,
+    "savingsCaptured": 0.3115,
     "latencyMean": 0.0,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
@@ -1998,11 +1572,11 @@
     "system": "timer",
     "label": "Smart timer (own heuristic)",
     "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 0.056,
-    "savingPct": 27.5,
-    "savingsCaptured": 0.9968,
+    "runs": 72,
+    "feasible": 72,
+    "gapMean": 0.001,
+    "savingPct": 21.908,
+    "savingsCaptured": 1.0,
     "latencyMean": 0.0,
     "usdPerRun": 0.0,
     "tokensIn": 0.0
@@ -2012,2126 +1586,199 @@
    {
     "factor": "pattern",
     "level": "negative",
-    "scenarios": 24,
-    "optimumPct": 30.955,
+    "scenarios": 18,
+    "optimumPct": 13.93,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 12.215,
-      "validShare": 0.708
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 11.814,
-      "validShare": 0.708
+      "savingPct": 2.432,
+      "validShare": 0.778
      },
      "cheapest_window|-": {
-      "savingPct": 14.594,
+      "savingPct": 5.025,
       "validShare": 0.667
      },
      "emhass_rest|-": {
-      "savingPct": 30.755,
+      "savingPct": 13.93,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 30.243,
+      "savingPct": 13.339,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 30.953,
+      "savingPct": 13.93,
       "validShare": 1.0
      },
-     "multi|gpt-4o-mini": {
-      "savingPct": 30.729,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 13.93,
       "validShare": 1.0
      },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 30.395,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 3.995,
+      "validShare": 0.852
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 30.955,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 13.93,
       "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 5.8,
-      "validShare": 0.931
      }
     }
    },
    {
     "factor": "pattern",
     "level": "spike",
-    "scenarios": 24,
-    "optimumPct": 32.643,
+    "scenarios": 18,
+    "optimumPct": 29.831,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 15.711,
-      "validShare": 0.75
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 15.113,
-      "validShare": 0.708
+      "savingPct": 7.734,
+      "validShare": 0.778
      },
      "cheapest_window|-": {
-      "savingPct": 13.546,
-      "validShare": 0.667
+      "savingPct": 28.657,
+      "validShare": 1.0
      },
      "emhass_rest|-": {
-      "savingPct": 32.458,
+      "savingPct": 29.831,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 31.219,
+      "savingPct": 29.52,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 32.546,
+      "savingPct": 29.83,
       "validShare": 1.0
      },
-     "multi|gpt-4o-mini": {
-      "savingPct": 32.048,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 29.831,
       "validShare": 1.0
      },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 32.233,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 8.151,
+      "validShare": 0.741
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 32.632,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 29.831,
       "validShare": 1.0
+     }
+    }
+   },
+   {
+    "factor": "pattern",
+    "level": "stable",
+    "scenarios": 18,
+    "optimumPct": 4.577,
+    "systems": {
+     "cheapest_hours|-": {
+      "savingPct": 1.333,
+      "validShare": 0.889
      },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 10.985,
+     "cheapest_window|-": {
+      "savingPct": 4.084,
       "validShare": 0.944
-     }
-    }
-   },
-   {
-    "factor": "pattern",
-    "level": "stable",
-    "scenarios": 24,
-    "optimumPct": 7.466,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 2.212,
-      "validShare": 0.708
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 2.254,
-      "validShare": 0.708
-     },
-     "cheapest_window|-": {
-      "savingPct": 3.78,
-      "validShare": 0.708
      },
      "emhass_rest|-": {
-      "savingPct": 7.183,
+      "savingPct": 4.479,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 6.801,
+      "savingPct": 3.672,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 7.391,
+      "savingPct": 4.574,
       "validShare": 1.0
      },
-     "multi|gpt-4o-mini": {
-      "savingPct": 7.223,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 4.577,
       "validShare": 1.0
      },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 7.273,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 2.856,
+      "validShare": 0.889
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 7.466,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 4.577,
       "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 1.51,
-      "validShare": 0.917
      }
     }
    },
    {
     "factor": "pattern",
     "level": "volatile",
-    "scenarios": 24,
-    "optimumPct": 23.633,
+    "scenarios": 18,
+    "optimumPct": 15.03,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 14.72,
-      "validShare": 0.667
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 14.466,
-      "validShare": 0.667
+      "savingPct": 8.348,
+      "validShare": 1.0
      },
      "cheapest_window|-": {
-      "savingPct": 12.53,
-      "validShare": 0.667
+      "savingPct": 14.093,
+      "validShare": 1.0
      },
      "emhass_rest|-": {
-      "savingPct": 23.346,
+      "savingPct": 15.03,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 20.802,
+      "savingPct": 14.539,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 23.527,
+      "savingPct": 15.03,
       "validShare": 1.0
      },
-     "multi|gpt-4o-mini": {
-      "savingPct": 21.799,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 15.03,
       "validShare": 1.0
      },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 22.866,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 4.348,
+      "validShare": 0.778
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 23.633,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 15.03,
       "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 4.365,
-      "validShare": 0.903
      }
     }
    },
    {
     "factor": "load",
-    "level": "heavy",
-    "scenarios": 48,
-    "optimumPct": 28.101,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 11.68,
-      "validShare": 0.438
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 11.649,
-      "validShare": 0.438
-     },
-     "cheapest_window|-": {
-      "savingPct": 9.152,
-      "validShare": 0.375
-     },
-     "emhass_rest|-": {
-      "savingPct": 27.802,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 26.209,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 27.985,
-      "validShare": 1.0
-     },
-     "multi|gpt-4o-mini": {
-      "savingPct": 26.954,
-      "validShare": 1.0
-     },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 27.434,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 28.101,
-      "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 10.208,
-      "validShare": 0.979
-     }
-    }
-   },
-   {
-    "factor": "load",
-    "level": "light",
-    "scenarios": 48,
-    "optimumPct": 26.066,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 20.064,
-      "validShare": 0.979
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 18.482,
-      "validShare": 0.958
-     },
-     "cheapest_window|-": {
-      "savingPct": 22.141,
-      "validShare": 0.979
-     },
-     "emhass_rest|-": {
-      "savingPct": 26.065,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 25.074,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 26.062,
-      "validShare": 1.0
-     },
-     "multi|gpt-4o-mini": {
-      "savingPct": 26.044,
-      "validShare": 1.0
-     },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 26.059,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 26.043,
-      "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 0.486,
-      "validShare": 0.868
-     }
-    }
-   },
-   {
-    "factor": "limit",
-    "level": "realistic",
-    "scenarios": 48,
-    "optimumPct": 28.256,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 22.627,
-      "validShare": 0.938
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 22.279,
-      "validShare": 0.938
-     },
-     "cheapest_window|-": {
-      "savingPct": 19.371,
-      "validShare": 0.875
-     },
-     "emhass_rest|-": {
-      "savingPct": 28.164,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 27.537,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 28.253,
-      "validShare": 1.0
-     },
-     "multi|gpt-4o-mini": {
-      "savingPct": 27.907,
-      "validShare": 1.0
-     },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 28.243,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 28.256,
-      "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 8.282,
-      "validShare": 0.951
-     }
-    }
-   },
-   {
-    "factor": "limit",
-    "level": "strict",
-    "scenarios": 48,
-    "optimumPct": 26.92,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 4.963,
-      "validShare": 0.479
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 4.465,
-      "validShare": 0.458
-     },
-     "cheapest_window|-": {
-      "savingPct": 5.486,
-      "validShare": 0.479
-     },
-     "emhass_rest|-": {
-      "savingPct": 26.565,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 24.308,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 26.747,
-      "validShare": 1.0
-     },
-     "multi|gpt-4o-mini": {
-      "savingPct": 25.542,
-      "validShare": 1.0
-     },
-     "multi_rag|gpt-4o-mini": {
-      "savingPct": 25.93,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 26.908,
-      "validShare": 1.0
-     },
-     "oneshot|gpt-4o-mini": {
-      "savingPct": 7.23,
-      "validShare": 0.896
-     }
-    }
-   }
-  ],
-  "scenarios": [
-   {
-    "id": "NH01-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-10-10",
-    "appliances": 5,
-    "house": 21,
-    "naiveCost": 2.1643,
-    "milpCost": 0.6498,
-    "naiveFeasible": false,
-    "achievableSaving": 1.5144
-   },
-   {
-    "id": "NH01-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-10-10",
-    "appliances": 5,
-    "house": 21,
-    "naiveCost": 2.1643,
-    "milpCost": 0.6487,
-    "naiveFeasible": true,
-    "achievableSaving": 1.5156
-   },
-   {
-    "id": "NH02-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.88,
-    "date": "2024-04-10",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 0.7285,
-    "milpCost": 0.6006,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1279
-   },
-   {
-    "id": "NH02-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-04-10",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 0.7285,
-    "milpCost": 0.6006,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1279
-   },
-   {
-    "id": "NH03-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-04-14",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 0.5393,
-    "milpCost": 0.4649,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0744
-   },
-   {
-    "id": "NH03-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-04-14",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 0.5393,
-    "milpCost": 0.4571,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0822
-   },
-   {
-    "id": "NH04-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-03-05",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 0.4347,
-    "milpCost": 0.4187,
-    "naiveFeasible": false,
-    "achievableSaving": 0.016
-   },
-   {
-    "id": "NH04-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-03-05",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 0.4347,
-    "milpCost": 0.4185,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0162
-   },
-   {
-    "id": "NH05-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-05-20",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.7412,
-    "milpCost": 0.7194,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0217
-   },
-   {
-    "id": "NH05-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-05-20",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.7412,
-    "milpCost": 0.7192,
-    "naiveFeasible": true,
-    "achievableSaving": 0.022
-   },
-   {
-    "id": "NH06-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-08-07",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.4183,
-    "milpCost": 0.4021,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0162
-   },
-   {
-    "id": "NH06-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-08-07",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.4183,
-    "milpCost": 0.4016,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0167
-   },
-   {
-    "id": "NL01-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-02-23",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.2023,
-    "milpCost": 0.1903,
-    "naiveFeasible": true,
-    "achievableSaving": 0.012
-   },
-   {
-    "id": "NL01-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-02-23",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.2023,
-    "milpCost": 0.1903,
-    "naiveFeasible": true,
-    "achievableSaving": 0.012
-   },
-   {
-    "id": "NL02-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-05-17",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.1423,
-    "milpCost": 0.1337,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0086
-   },
-   {
-    "id": "NL02-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-05-17",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.1423,
-    "milpCost": 0.1337,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0086
-   },
-   {
-    "id": "NL03-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 5.36,
-    "date": "2024-05-27",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1288,
-    "milpCost": 0.1254,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0034
-   },
-   {
-    "id": "NL03-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-05-27",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1288,
-    "milpCost": 0.1254,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0034
-   },
-   {
-    "id": "NL04-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-08-23",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.2055,
-    "milpCost": 0.1643,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0412
-   },
-   {
-    "id": "NL04-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-08-23",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.2055,
-    "milpCost": 0.1643,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0412
-   },
-   {
-    "id": "NL05-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-08-31",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.2606,
-    "milpCost": 0.1966,
-    "naiveFeasible": true,
-    "achievableSaving": 0.064
-   },
-   {
-    "id": "NL05-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-08-31",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.2606,
-    "milpCost": 0.1966,
-    "naiveFeasible": true,
-    "achievableSaving": 0.064
-   },
-   {
-    "id": "NL06-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-07-01",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.195,
-    "milpCost": 0.1927,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0023
-   },
-   {
-    "id": "NL06-80",
-    "type": "negative-light-realistic",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-07-01",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.195,
-    "milpCost": 0.1927,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0023
-   },
-   {
-    "id": "PH01-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-03-09",
-    "appliances": 5,
-    "house": 9,
-    "naiveCost": 3.9621,
-    "milpCost": 1.0099,
-    "naiveFeasible": false,
-    "achievableSaving": 2.9521
-   },
-   {
-    "id": "PH01-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-03-09",
-    "appliances": 5,
-    "house": 9,
-    "naiveCost": 3.9621,
-    "milpCost": 0.9457,
-    "naiveFeasible": false,
-    "achievableSaving": 3.0164
-   },
-   {
-    "id": "PH02-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.76,
-    "date": "2022-09-01",
-    "appliances": 5,
-    "house": 3,
-    "naiveCost": 2.9922,
-    "milpCost": 1.7618,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2304
-   },
-   {
-    "id": "PH02-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-09-01",
-    "appliances": 5,
-    "house": 3,
-    "naiveCost": 2.9922,
-    "milpCost": 1.7385,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2537
-   },
-   {
-    "id": "PH03-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 5.01,
-    "date": "2022-09-30",
-    "appliances": 5,
-    "house": 8,
-    "naiveCost": 3.1006,
-    "milpCost": 2.0792,
-    "naiveFeasible": false,
-    "achievableSaving": 1.0214
-   },
-   {
-    "id": "PH03-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-09-30",
-    "appliances": 5,
-    "house": 8,
-    "naiveCost": 3.1006,
-    "milpCost": 2.0772,
-    "naiveFeasible": true,
-    "achievableSaving": 1.0234
-   },
-   {
-    "id": "PH04-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-11-16",
-    "appliances": 5,
-    "house": 7,
-    "naiveCost": 2.4348,
-    "milpCost": 2.4304,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0045
-   },
-   {
-    "id": "PH04-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-11-16",
-    "appliances": 5,
-    "house": 7,
-    "naiveCost": 2.4348,
-    "milpCost": 2.4268,
-    "naiveFeasible": true,
-    "achievableSaving": 0.008
-   },
-   {
-    "id": "PH05-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-12-16",
-    "appliances": 5,
-    "house": 5,
-    "naiveCost": 5.4429,
-    "milpCost": 3.6036,
-    "naiveFeasible": false,
-    "achievableSaving": 1.8393
-   },
-   {
-    "id": "PH05-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-12-16",
-    "appliances": 5,
-    "house": 5,
-    "naiveCost": 5.4429,
-    "milpCost": 3.3442,
-    "naiveFeasible": true,
-    "achievableSaving": 2.0987
-   },
-   {
-    "id": "PH06-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-01-05",
-    "appliances": 5,
-    "house": 17,
-    "naiveCost": 6.3365,
-    "milpCost": 5.1255,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2111
-   },
-   {
-    "id": "PH06-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-01-05",
-    "appliances": 5,
-    "house": 17,
-    "naiveCost": 6.3365,
-    "milpCost": 5.0348,
-    "naiveFeasible": true,
-    "achievableSaving": 1.3017
-   },
-   {
-    "id": "PL01-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-08",
-    "appliances": 2,
-    "house": 13,
-    "naiveCost": 1.5163,
-    "milpCost": 1.1869,
-    "naiveFeasible": true,
-    "achievableSaving": 0.3294
-   },
-   {
-    "id": "PL01-80",
-    "type": "spike-light-realistic",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-08-08",
-    "appliances": 2,
-    "house": 13,
-    "naiveCost": 1.5163,
-    "milpCost": 1.1869,
-    "naiveFeasible": true,
-    "achievableSaving": 0.3294
-   },
-   {
-    "id": "PL02-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-16",
-    "appliances": 2,
-    "house": 11,
-    "naiveCost": 1.4846,
-    "milpCost": 1.0834,
-    "naiveFeasible": true,
-    "achievableSaving": 0.4011
-   },
-   {
-    "id": "PL02-80",
-    "type": "spike-light-realistic",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-08-16",
-    "appliances": 2,
-    "house": 11,
-    "naiveCost": 1.4846,
-    "milpCost": 1.0834,
-    "naiveFeasible": true,
-    "achievableSaving": 0.4011
-   },
-   {
-    "id": "PL03-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-18",
-    "appliances": 2,
-    "house": 15,
-    "naiveCost": 1.7566,
-    "milpCost": 1.5282,
-    "naiveFeasible": true,
-    "achievableSaving": 0.2285
-   },
-   {
-    "id": "PL03-80",
-    "type": "spike-light-realistic",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-08-18",
-    "appliances": 2,
-    "house": 15,
-    "naiveCost": 1.7566,
-    "milpCost": 1.5282,
-    "naiveFeasible": true,
-    "achievableSaving": 0.2285
-   },
-   {
-    "id": "PL04-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-24",
-    "appliances": 2,
-    "house": 4,
-    "naiveCost": 1.0961,
-    "milpCost": 0.9411,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1551
-   },
-   {
-    "id": "PL04-80",
-    "type": "spike-light-realistic",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-08-24",
-    "appliances": 2,
-    "house": 4,
-    "naiveCost": 1.0961,
-    "milpCost": 0.9411,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1551
-   },
-   {
-    "id": "PL05-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-25",
-    "appliances": 2,
-    "house": 6,
-    "naiveCost": 1.2662,
-    "milpCost": 1.1416,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1246
-   },
-   {
-    "id": "PL05-80",
-    "type": "spike-light-realistic",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-08-25",
-    "appliances": 2,
-    "house": 6,
-    "naiveCost": 1.2662,
-    "milpCost": 1.1416,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1246
-   },
-   {
-    "id": "PL06-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-11-21",
-    "appliances": 2,
-    "house": 16,
-    "naiveCost": 2.1455,
-    "milpCost": 0.9179,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2275
-   },
-   {
-    "id": "PL06-80",
-    "type": "spike-light-realistic",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-11-21",
-    "appliances": 2,
-    "house": 16,
-    "naiveCost": 2.1455,
-    "milpCost": 0.9179,
-    "naiveFeasible": true,
-    "achievableSaving": 1.2275
-   },
-   {
-    "id": "SH01-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.95,
-    "date": "2022-03-28",
-    "appliances": 5,
-    "house": 21,
-    "naiveCost": 0.8263,
-    "milpCost": 0.7066,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1197
-   },
-   {
-    "id": "SH01-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-03-28",
-    "appliances": 5,
-    "house": 21,
-    "naiveCost": 0.8263,
-    "milpCost": 0.7059,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1205
-   },
-   {
-    "id": "SH02-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-07-13",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 0.631,
-    "milpCost": 0.6191,
-    "naiveFeasible": false,
-    "achievableSaving": 0.012
-   },
-   {
-    "id": "SH02-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-07-13",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 0.631,
-    "milpCost": 0.6165,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0145
-   },
-   {
-    "id": "SH03-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-08-06",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 0.7416,
-    "milpCost": 0.6799,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0617
-   },
-   {
-    "id": "SH03-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-08-06",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 0.7416,
-    "milpCost": 0.6676,
-    "naiveFeasible": false,
-    "achievableSaving": 0.074
-   },
-   {
-    "id": "SH04-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-02-15",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 1.149,
-    "milpCost": 1.093,
-    "naiveFeasible": false,
-    "achievableSaving": 0.056
-   },
-   {
-    "id": "SH04-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-02-15",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 1.149,
-    "milpCost": 1.0863,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0627
-   },
-   {
-    "id": "SH05-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-08-02",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.6943,
-    "milpCost": 0.6891,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0052
-   },
-   {
-    "id": "SH05-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-08-02",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.6943,
-    "milpCost": 0.6886,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0057
-   },
-   {
-    "id": "SH06-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-01-18",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.5168,
-    "milpCost": 0.5182,
-    "naiveFeasible": false,
-    "achievableSaving": -0.0014
-   },
-   {
-    "id": "SH06-80",
-    "type": "stable-heavy-realistic",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-01-18",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.5168,
-    "milpCost": 0.5168,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "SL01-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-01-13",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.153,
-    "milpCost": 0.1502,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0029
-   },
-   {
-    "id": "SL01-80",
-    "type": "stable-light-realistic",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-01-13",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.153,
-    "milpCost": 0.1502,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0029
-   },
-   {
-    "id": "SL02-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-01-22",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.3467,
-    "milpCost": 0.3126,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0341
-   },
-   {
-    "id": "SL02-80",
-    "type": "stable-light-realistic",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-01-22",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.3467,
-    "milpCost": 0.3126,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0341
-   },
-   {
-    "id": "SL03-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 4.97,
-    "date": "2023-02-13",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1875,
-    "milpCost": 0.1871,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0004
-   },
-   {
-    "id": "SL03-80",
-    "type": "stable-light-realistic",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-02-13",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1875,
-    "milpCost": 0.1871,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0004
-   },
-   {
-    "id": "SL04-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-03-17",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.267,
-    "milpCost": 0.2242,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0428
-   },
-   {
-    "id": "SL04-80",
-    "type": "stable-light-realistic",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-03-17",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.267,
-    "milpCost": 0.2242,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0428
-   },
-   {
-    "id": "SL05-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-04-22",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.2482,
-    "milpCost": 0.1772,
-    "naiveFeasible": true,
-    "achievableSaving": 0.071
-   },
-   {
-    "id": "SL05-80",
-    "type": "stable-light-realistic",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-04-22",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.2482,
-    "milpCost": 0.1772,
-    "naiveFeasible": true,
-    "achievableSaving": 0.071
-   },
-   {
-    "id": "SL06-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-07-15",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.3176,
-    "milpCost": 0.2801,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0375
-   },
-   {
-    "id": "SL06-80",
-    "type": "stable-light-realistic",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-07-15",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.3176,
-    "milpCost": 0.2801,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0375
-   },
-   {
-    "id": "VH01-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-04-30",
-    "appliances": 5,
-    "house": 13,
-    "naiveCost": 0.8284,
-    "milpCost": 0.7557,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0727
-   },
-   {
-    "id": "VH01-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-04-30",
-    "appliances": 5,
-    "house": 13,
-    "naiveCost": 0.8284,
-    "milpCost": 0.7554,
-    "naiveFeasible": true,
-    "achievableSaving": 0.073
-   },
-   {
-    "id": "VH02-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-06-17",
-    "appliances": 5,
-    "house": 11,
-    "naiveCost": 2.736,
-    "milpCost": 1.7515,
-    "naiveFeasible": false,
-    "achievableSaving": 0.9846
-   },
-   {
-    "id": "VH02-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-06-17",
-    "appliances": 5,
-    "house": 11,
-    "naiveCost": 2.736,
-    "milpCost": 1.7432,
-    "naiveFeasible": false,
-    "achievableSaving": 0.9928
-   },
-   {
-    "id": "VH03-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-07-24",
-    "appliances": 5,
-    "house": 15,
-    "naiveCost": 2.6412,
-    "milpCost": 2.5258,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1153
-   },
-   {
-    "id": "VH03-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-07-24",
-    "appliances": 5,
-    "house": 15,
-    "naiveCost": 2.6412,
-    "milpCost": 2.4953,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1458
-   },
-   {
-    "id": "VH04-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-27",
-    "appliances": 5,
-    "house": 4,
-    "naiveCost": 1.055,
-    "milpCost": 1.0596,
-    "naiveFeasible": false,
-    "achievableSaving": -0.0046
-   },
-   {
-    "id": "VH04-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-08-27",
-    "appliances": 5,
-    "house": 4,
-    "naiveCost": 1.055,
-    "milpCost": 1.055,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "VH05-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-09-05",
-    "appliances": 5,
-    "house": 6,
-    "naiveCost": 5.1121,
-    "milpCost": 3.6181,
-    "naiveFeasible": false,
-    "achievableSaving": 1.494
-   },
-   {
-    "id": "VH05-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-09-05",
-    "appliances": 5,
-    "house": 6,
-    "naiveCost": 5.1121,
-    "milpCost": 3.4341,
-    "naiveFeasible": true,
-    "achievableSaving": 1.678
-   },
-   {
-    "id": "VH06-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-10-12",
-    "appliances": 5,
-    "house": 16,
-    "naiveCost": 0.8488,
-    "milpCost": 0.9851,
-    "naiveFeasible": false,
-    "achievableSaving": -0.1363
-   },
-   {
-    "id": "VH06-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-10-12",
-    "appliances": 5,
-    "house": 16,
-    "naiveCost": 0.8488,
-    "milpCost": 0.8488,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "VL01-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-05-18",
-    "appliances": 2,
-    "house": 21,
-    "naiveCost": 0.625,
-    "milpCost": 0.498,
-    "naiveFeasible": true,
-    "achievableSaving": 0.127
-   },
-   {
-    "id": "VL01-80",
-    "type": "volatile-light-realistic",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-05-18",
-    "appliances": 2,
-    "house": 21,
-    "naiveCost": 0.625,
-    "milpCost": 0.498,
-    "naiveFeasible": true,
-    "achievableSaving": 0.127
-   },
-   {
-    "id": "VL02-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-07-06",
-    "appliances": 2,
-    "house": 10,
-    "naiveCost": 0.6181,
-    "milpCost": 0.6181,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "VL02-80",
-    "type": "volatile-light-realistic",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-07-06",
-    "appliances": 2,
-    "house": 10,
-    "naiveCost": 0.6181,
-    "milpCost": 0.6181,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "VL03-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-09-02",
-    "appliances": 2,
-    "house": 18,
-    "naiveCost": 1.0876,
-    "milpCost": 0.723,
-    "naiveFeasible": true,
-    "achievableSaving": 0.3646
-   },
-   {
-    "id": "VL03-80",
-    "type": "volatile-light-realistic",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2022-09-02",
-    "appliances": 2,
-    "house": 18,
-    "naiveCost": 1.0876,
-    "milpCost": 0.723,
-    "naiveFeasible": true,
-    "achievableSaving": 0.3646
-   },
-   {
-    "id": "VL04-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-10-02",
-    "appliances": 2,
-    "house": 1,
-    "naiveCost": 0.3909,
-    "milpCost": 0.2668,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1241
-   },
-   {
-    "id": "VL04-80",
-    "type": "volatile-light-realistic",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2023-10-02",
-    "appliances": 2,
-    "house": 1,
-    "naiveCost": 0.3909,
-    "milpCost": 0.2668,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1241
-   },
-   {
-    "id": "VL05-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-05-08",
-    "appliances": 2,
-    "house": 20,
-    "naiveCost": 0.5116,
-    "milpCost": 0.3279,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1837
-   },
-   {
-    "id": "VL05-80",
-    "type": "volatile-light-realistic",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2024-05-08",
-    "appliances": 2,
-    "house": 20,
-    "naiveCost": 0.5116,
-    "milpCost": 0.3279,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1837
-   },
-   {
-    "id": "VL06-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-01-15",
-    "appliances": 2,
-    "house": 2,
-    "naiveCost": 0.7255,
-    "milpCost": 0.1722,
-    "naiveFeasible": true,
-    "achievableSaving": 0.5532
-   },
-   {
-    "id": "VL06-80",
-    "type": "volatile-light-realistic",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-01-15",
-    "appliances": 2,
-    "house": 2,
-    "naiveCost": 0.7255,
-    "milpCost": 0.1722,
-    "naiveFeasible": true,
-    "achievableSaving": 0.5532
-   }
-  ]
- },
- {
-  "id": "iter10",
-  "label": "Design iterations: 4 vs 2 agents (exploratory)",
-  "summary": [
-   {
-    "system": "multi_rag_opt",
-    "label": "Multi-Agent Pipeline",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
-    "gapMean": 0.006,
-    "savingPct": 27.582,
-    "savingsCaptured": 0.9998,
-    "latencyMean": 15.37,
-    "usdPerRun": 0.002491,
-    "tokensIn": 12930.0
-   },
-   {
-    "system": "multi_duo",
-    "label": "Design iteration 10: two agents",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
-    "gapMean": 0.0,
-    "savingPct": 27.588,
-    "savingsCaptured": 1.0,
-    "latencyMean": 6.49,
-    "usdPerRun": 0.000981,
-    "tokensIn": 4897.0
-   },
-   {
-    "system": "multi_lean",
-    "label": "Design iteration 9: lean, four agents",
-    "model": "gpt-4o-mini",
-    "runs": 288,
-    "feasible": 288,
-    "gapMean": 0.0,
-    "savingPct": 27.588,
-    "savingsCaptured": 1.0,
-    "latencyMean": 8.02,
-    "usdPerRun": 0.001076,
-    "tokensIn": 4948.0
-   },
-   {
-    "system": "emhass_rest",
-    "label": "EMHASS, profiles",
-    "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 0.243,
-    "savingPct": 27.364,
-    "savingsCaptured": 0.9919,
-    "latencyMean": 1.01,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "emhass_rest_nominal",
-    "label": "EMHASS, nominal power",
-    "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 1.478,
-    "savingPct": 25.923,
-    "savingsCaptured": 0.9396,
-    "latencyMean": 0.72,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "cheapest_window",
-    "label": "HA Nordpool Planner",
-    "model": "-",
-    "runs": 96,
-    "feasible": 65,
-    "gapMean": 15.753,
-    "savingPct": 12.428,
-    "savingsCaptured": 0.4505,
-    "latencyMean": 0.0,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "cheapest_hours",
-    "label": "HA cheapest-hours blueprint (15 min)",
-    "model": "-",
-    "runs": 96,
-    "feasible": 68,
-    "gapMean": 14.57,
-    "savingPct": 13.795,
-    "savingsCaptured": 0.5,
-    "latencyMean": 0.0,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "cheapest_hours_hourly",
-    "label": "HA cheapest-hours blueprint (hourly)",
-    "model": "-",
-    "runs": 96,
-    "feasible": 67,
-    "gapMean": 15.306,
-    "savingPct": 13.372,
-    "savingsCaptured": 0.4847,
-    "latencyMean": 0.0,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   },
-   {
-    "system": "timer",
-    "label": "Smart timer (own heuristic)",
-    "model": "-",
-    "runs": 96,
-    "feasible": 96,
-    "gapMean": 0.056,
-    "savingPct": 27.5,
-    "savingsCaptured": 0.9968,
-    "latencyMean": 0.0,
-    "usdPerRun": 0.0,
-    "tokensIn": 0.0
-   }
-  ],
-  "byCondition": [
-   {
-    "factor": "pattern",
-    "level": "negative",
+    "level": "electrified",
     "scenarios": 24,
-    "optimumPct": 30.955,
+    "optimumPct": 23.688,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 12.215,
-      "validShare": 0.708
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 11.814,
-      "validShare": 0.708
+      "savingPct": 3.037,
+      "validShare": 0.625
      },
      "cheapest_window|-": {
-      "savingPct": 14.594,
-      "validShare": 0.667
-     },
-     "emhass_rest|-": {
-      "savingPct": 30.755,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 30.243,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 30.953,
-      "validShare": 1.0
-     },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 30.955,
-      "validShare": 1.0
-     },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 30.955,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 30.955,
-      "validShare": 1.0
-     }
-    }
-   },
-   {
-    "factor": "pattern",
-    "level": "spike",
-    "scenarios": 24,
-    "optimumPct": 32.643,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 15.711,
+      "savingPct": 22.158,
       "validShare": 0.75
      },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 15.113,
-      "validShare": 0.708
-     },
-     "cheapest_window|-": {
-      "savingPct": 13.546,
-      "validShare": 0.667
-     },
      "emhass_rest|-": {
-      "savingPct": 32.458,
+      "savingPct": 23.674,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 31.219,
+      "savingPct": 23.316,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 32.546,
+      "savingPct": 23.688,
       "validShare": 1.0
      },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 32.643,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 23.688,
       "validShare": 1.0
      },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 32.643,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 5.577,
+      "validShare": 0.819
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 32.632,
-      "validShare": 1.0
-     }
-    }
-   },
-   {
-    "factor": "pattern",
-    "level": "stable",
-    "scenarios": 24,
-    "optimumPct": 7.466,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 2.212,
-      "validShare": 0.708
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 2.254,
-      "validShare": 0.708
-     },
-     "cheapest_window|-": {
-      "savingPct": 3.78,
-      "validShare": 0.708
-     },
-     "emhass_rest|-": {
-      "savingPct": 7.183,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 6.801,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 7.391,
-      "validShare": 1.0
-     },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 7.466,
-      "validShare": 1.0
-     },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 7.466,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 7.466,
-      "validShare": 1.0
-     }
-    }
-   },
-   {
-    "factor": "pattern",
-    "level": "volatile",
-    "scenarios": 24,
-    "optimumPct": 23.633,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 14.72,
-      "validShare": 0.667
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 14.466,
-      "validShare": 0.667
-     },
-     "cheapest_window|-": {
-      "savingPct": 12.53,
-      "validShare": 0.667
-     },
-     "emhass_rest|-": {
-      "savingPct": 23.346,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 20.802,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 23.527,
-      "validShare": 1.0
-     },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 23.633,
-      "validShare": 1.0
-     },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 23.633,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 23.633,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 23.688,
       "validShare": 1.0
      }
     }
@@ -4139,43 +1786,39 @@
    {
     "factor": "load",
     "level": "heavy",
-    "scenarios": 48,
-    "optimumPct": 28.101,
+    "scenarios": 24,
+    "optimumPct": 17.509,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 11.68,
-      "validShare": 0.438
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 11.649,
-      "validShare": 0.438
+      "savingPct": 14.005,
+      "validShare": 0.958
      },
      "cheapest_window|-": {
-      "savingPct": 9.152,
-      "validShare": 0.375
+      "savingPct": 16.068,
+      "validShare": 0.958
      },
      "emhass_rest|-": {
-      "savingPct": 27.802,
+      "savingPct": 17.509,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 26.209,
+      "savingPct": 17.047,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 27.985,
+      "savingPct": 17.509,
       "validShare": 1.0
      },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 28.101,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 17.509,
       "validShare": 1.0
      },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 28.101,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 8.453,
+      "validShare": 0.861
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 28.101,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 17.509,
       "validShare": 1.0
      }
     }
@@ -4183,131 +1826,39 @@
    {
     "factor": "load",
     "level": "light",
-    "scenarios": 48,
-    "optimumPct": 26.066,
+    "scenarios": 24,
+    "optimumPct": 21.754,
     "systems": {
      "cheapest_hours|-": {
-      "savingPct": 20.064,
-      "validShare": 0.979
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 18.482,
-      "validShare": 0.958
+      "savingPct": 12.98,
+      "validShare": 1.0
      },
      "cheapest_window|-": {
-      "savingPct": 22.141,
-      "validShare": 0.979
+      "savingPct": 17.99,
+      "validShare": 1.0
      },
      "emhass_rest|-": {
-      "savingPct": 26.065,
+      "savingPct": 21.753,
       "validShare": 1.0
      },
      "emhass_rest_nominal|-": {
-      "savingPct": 25.074,
+      "savingPct": 20.897,
       "validShare": 1.0
      },
      "timer|-": {
-      "savingPct": 26.062,
+      "savingPct": 21.754,
       "validShare": 1.0
      },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 26.066,
+     "multi_duo|gpt-6-luna": {
+      "savingPct": 21.754,
       "validShare": 1.0
      },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 26.066,
-      "validShare": 1.0
+     "oneshot|gpt-6-luna": {
+      "savingPct": 4.594,
+      "validShare": 0.764
      },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 26.043,
-      "validShare": 1.0
-     }
-    }
-   },
-   {
-    "factor": "limit",
-    "level": "realistic",
-    "scenarios": 48,
-    "optimumPct": 28.256,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 22.627,
-      "validShare": 0.938
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 22.279,
-      "validShare": 0.938
-     },
-     "cheapest_window|-": {
-      "savingPct": 19.371,
-      "validShare": 0.875
-     },
-     "emhass_rest|-": {
-      "savingPct": 28.164,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 27.537,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 28.253,
-      "validShare": 1.0
-     },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 28.256,
-      "validShare": 1.0
-     },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 28.256,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 28.244,
-      "validShare": 1.0
-     }
-    }
-   },
-   {
-    "factor": "limit",
-    "level": "strict",
-    "scenarios": 48,
-    "optimumPct": 26.92,
-    "systems": {
-     "cheapest_hours|-": {
-      "savingPct": 4.963,
-      "validShare": 0.479
-     },
-     "cheapest_hours_hourly|-": {
-      "savingPct": 4.465,
-      "validShare": 0.458
-     },
-     "cheapest_window|-": {
-      "savingPct": 5.486,
-      "validShare": 0.479
-     },
-     "emhass_rest|-": {
-      "savingPct": 26.565,
-      "validShare": 1.0
-     },
-     "emhass_rest_nominal|-": {
-      "savingPct": 24.308,
-      "validShare": 1.0
-     },
-     "timer|-": {
-      "savingPct": 26.747,
-      "validShare": 1.0
-     },
-     "multi_duo|gpt-4o-mini": {
-      "savingPct": 26.92,
-      "validShare": 1.0
-     },
-     "multi_lean|gpt-4o-mini": {
-      "savingPct": 26.92,
-      "validShare": 1.0
-     },
-     "multi_rag_opt|gpt-4o-mini": {
-      "savingPct": 26.92,
+     "single_harness|gpt-6-luna": {
+      "savingPct": 21.754,
       "validShare": 1.0
      }
     }
@@ -4315,52 +1866,112 @@
   ],
   "scenarios": [
    {
-    "id": "NH01-35",
-    "type": "negative-heavy-strict",
+    "id": "U-NE01-80",
+    "type": "negative-electrified-realistic",
     "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-10-10",
-    "appliances": 5,
-    "house": 21,
-    "naiveCost": 2.1643,
-    "milpCost": 0.6498,
-    "naiveFeasible": false,
-    "achievableSaving": 1.5144
-   },
-   {
-    "id": "NH01-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2023-10-10",
+    "appliances": 6,
+    "house": 21,
+    "naiveCost": 2.695,
+    "milpCost": 1.8111,
+    "naiveFeasible": true,
+    "achievableSaving": 0.8839
+   },
+   {
+    "id": "U-NE02-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-04-10",
+    "appliances": 6,
+    "house": 10,
+    "naiveCost": 1.351,
+    "milpCost": 1.2986,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0524
+   },
+   {
+    "id": "U-NE03-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-04-14",
+    "appliances": 6,
+    "house": 18,
+    "naiveCost": 1.5036,
+    "milpCost": 1.2809,
+    "naiveFeasible": true,
+    "achievableSaving": 0.2227
+   },
+   {
+    "id": "U-NE04-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-03-05",
+    "appliances": 6,
+    "house": 1,
+    "naiveCost": 1.1715,
+    "milpCost": 1.1685,
+    "naiveFeasible": true,
+    "achievableSaving": 0.003
+   },
+   {
+    "id": "U-NE05-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-05-20",
+    "appliances": 6,
+    "house": 20,
+    "naiveCost": 1.4914,
+    "milpCost": 1.4693,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0222
+   },
+   {
+    "id": "U-NE06-80",
+    "type": "negative-electrified-realistic",
+    "pattern": "negative",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-08-07",
+    "appliances": 6,
+    "house": 2,
+    "naiveCost": 1.1803,
+    "milpCost": 1.1653,
+    "naiveFeasible": true,
+    "achievableSaving": 0.015
+   },
+   {
+    "id": "U-NH01-80",
+    "type": "negative-heavy-realistic",
+    "pattern": "negative",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-10-10",
     "appliances": 5,
     "house": 21,
-    "naiveCost": 2.1643,
-    "milpCost": 0.6487,
+    "naiveCost": 1.5409,
+    "milpCost": 0.9563,
     "naiveFeasible": true,
-    "achievableSaving": 1.5156
+    "achievableSaving": 0.5845
    },
    {
-    "id": "NH02-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.88,
-    "date": "2024-04-10",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 0.7285,
-    "milpCost": 0.6006,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1279
-   },
-   {
-    "id": "NH02-80",
+    "id": "U-NH02-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -4369,28 +1980,13 @@
     "date": "2024-04-10",
     "appliances": 5,
     "house": 10,
-    "naiveCost": 0.7285,
+    "naiveCost": 0.6496,
     "milpCost": 0.6006,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1279
+    "naiveFeasible": true,
+    "achievableSaving": 0.049
    },
    {
-    "id": "NH03-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-04-14",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 0.5393,
-    "milpCost": 0.4649,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0744
-   },
-   {
-    "id": "NH03-80",
+    "id": "U-NH03-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -4399,88 +1995,43 @@
     "date": "2024-04-14",
     "appliances": 5,
     "house": 18,
-    "naiveCost": 0.5393,
-    "milpCost": 0.4571,
+    "naiveCost": 0.5826,
+    "milpCost": 0.5465,
     "naiveFeasible": true,
-    "achievableSaving": 0.0822
+    "achievableSaving": 0.0361
    },
    {
-    "id": "NH04-35",
-    "type": "negative-heavy-strict",
+    "id": "U-NH04-80",
+    "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
     "date": "2025-03-05",
     "appliances": 5,
     "house": 1,
-    "naiveCost": 0.4347,
+    "naiveCost": 0.4218,
     "milpCost": 0.4187,
-    "naiveFeasible": false,
-    "achievableSaving": 0.016
-   },
-   {
-    "id": "NH04-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-03-05",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 0.4347,
-    "milpCost": 0.4185,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0162
-   },
-   {
-    "id": "NH05-35",
-    "type": "negative-heavy-strict",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-05-20",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.7412,
-    "milpCost": 0.7194,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0217
-   },
-   {
-    "id": "NH05-80",
-    "type": "negative-heavy-realistic",
-    "pattern": "negative",
-    "load": "heavy",
-    "limit": "realistic",
-    "peakLimitKw": 8.0,
-    "date": "2025-05-20",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.7412,
-    "milpCost": 0.7192,
     "naiveFeasible": true,
-    "achievableSaving": 0.022
+    "achievableSaving": 0.003
    },
    {
-    "id": "NH06-35",
-    "type": "negative-heavy-strict",
+    "id": "U-NH05-80",
+    "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-08-07",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-05-20",
     "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.4183,
-    "milpCost": 0.4021,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0162
+    "house": 20,
+    "naiveCost": 0.7421,
+    "milpCost": 0.7199,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0222
    },
    {
-    "id": "NH06-80",
+    "id": "U-NH06-80",
     "type": "negative-heavy-realistic",
     "pattern": "negative",
     "load": "heavy",
@@ -4489,28 +2040,13 @@
     "date": "2025-08-07",
     "appliances": 5,
     "house": 2,
-    "naiveCost": 0.4183,
+    "naiveCost": 0.4154,
     "milpCost": 0.4016,
     "naiveFeasible": true,
-    "achievableSaving": 0.0167
+    "achievableSaving": 0.0138
    },
    {
-    "id": "NL01-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-02-23",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.2023,
-    "milpCost": 0.1903,
-    "naiveFeasible": true,
-    "achievableSaving": 0.012
-   },
-   {
-    "id": "NL01-80",
+    "id": "U-NL01-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -4519,28 +2055,13 @@
     "date": "2024-02-23",
     "appliances": 2,
     "house": 9,
-    "naiveCost": 0.2023,
-    "milpCost": 0.1903,
+    "naiveCost": 0.2244,
+    "milpCost": 0.1902,
     "naiveFeasible": true,
-    "achievableSaving": 0.012
+    "achievableSaving": 0.0341
    },
    {
-    "id": "NL02-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-05-17",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.1423,
-    "milpCost": 0.1337,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0086
-   },
-   {
-    "id": "NL02-80",
+    "id": "U-NL02-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -4549,28 +2070,13 @@
     "date": "2024-05-17",
     "appliances": 2,
     "house": 3,
-    "naiveCost": 0.1423,
-    "milpCost": 0.1337,
+    "naiveCost": 0.2143,
+    "milpCost": 0.1338,
     "naiveFeasible": true,
-    "achievableSaving": 0.0086
+    "achievableSaving": 0.0806
    },
    {
-    "id": "NL03-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 5.36,
-    "date": "2024-05-27",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1288,
-    "milpCost": 0.1254,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0034
-   },
-   {
-    "id": "NL03-80",
+    "id": "U-NL03-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -4579,28 +2085,13 @@
     "date": "2024-05-27",
     "appliances": 2,
     "house": 8,
-    "naiveCost": 0.1288,
-    "milpCost": 0.1254,
+    "naiveCost": 0.1369,
+    "milpCost": 0.1251,
     "naiveFeasible": true,
-    "achievableSaving": 0.0034
+    "achievableSaving": 0.0118
    },
    {
-    "id": "NL04-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-08-23",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.2055,
-    "milpCost": 0.1643,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0412
-   },
-   {
-    "id": "NL04-80",
+    "id": "U-NL04-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -4609,28 +2100,13 @@
     "date": "2024-08-23",
     "appliances": 2,
     "house": 7,
-    "naiveCost": 0.2055,
-    "milpCost": 0.1643,
+    "naiveCost": 0.2381,
+    "milpCost": 0.2171,
     "naiveFeasible": true,
-    "achievableSaving": 0.0412
+    "achievableSaving": 0.021
    },
    {
-    "id": "NL05-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-08-31",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.2606,
-    "milpCost": 0.1966,
-    "naiveFeasible": true,
-    "achievableSaving": 0.064
-   },
-   {
-    "id": "NL05-80",
+    "id": "U-NL05-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -4639,28 +2115,13 @@
     "date": "2024-08-31",
     "appliances": 2,
     "house": 5,
-    "naiveCost": 0.2606,
-    "milpCost": 0.1966,
+    "naiveCost": 0.1949,
+    "milpCost": 0.191,
     "naiveFeasible": true,
-    "achievableSaving": 0.064
+    "achievableSaving": 0.0039
    },
    {
-    "id": "NL06-35",
-    "type": "negative-light-strict",
-    "pattern": "negative",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-07-01",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.195,
-    "milpCost": 0.1927,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0023
-   },
-   {
-    "id": "NL06-80",
+    "id": "U-NL06-80",
     "type": "negative-light-realistic",
     "pattern": "negative",
     "load": "light",
@@ -4669,58 +2130,118 @@
     "date": "2025-07-01",
     "appliances": 2,
     "house": 17,
-    "naiveCost": 0.195,
+    "naiveCost": 0.219,
     "milpCost": 0.1927,
     "naiveFeasible": true,
-    "achievableSaving": 0.0023
+    "achievableSaving": 0.0263
    },
    {
-    "id": "PH01-35",
-    "type": "spike-heavy-strict",
+    "id": "U-PE01-80",
+    "type": "spike-electrified-realistic",
     "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-03-09",
-    "appliances": 5,
-    "house": 9,
-    "naiveCost": 3.9621,
-    "milpCost": 1.0099,
-    "naiveFeasible": false,
-    "achievableSaving": 2.9521
-   },
-   {
-    "id": "PH01-80",
-    "type": "spike-heavy-realistic",
-    "pattern": "spike",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2022-03-09",
+    "appliances": 6,
+    "house": 9,
+    "naiveCost": 4.7224,
+    "milpCost": 2.6379,
+    "naiveFeasible": true,
+    "achievableSaving": 2.0845
+   },
+   {
+    "id": "U-PE02-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-01",
+    "appliances": 6,
+    "house": 3,
+    "naiveCost": 8.2841,
+    "milpCost": 5.5326,
+    "naiveFeasible": true,
+    "achievableSaving": 2.7515
+   },
+   {
+    "id": "U-PE03-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-30",
+    "appliances": 6,
+    "house": 8,
+    "naiveCost": 7.2496,
+    "milpCost": 6.2099,
+    "naiveFeasible": true,
+    "achievableSaving": 1.0397
+   },
+   {
+    "id": "U-PE04-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-11-16",
+    "appliances": 6,
+    "house": 7,
+    "naiveCost": 6.5944,
+    "milpCost": 6.2394,
+    "naiveFeasible": true,
+    "achievableSaving": 0.355
+   },
+   {
+    "id": "U-PE05-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-12-16",
+    "appliances": 6,
+    "house": 5,
+    "naiveCost": 10.1855,
+    "milpCost": 7.6917,
+    "naiveFeasible": true,
+    "achievableSaving": 2.4938
+   },
+   {
+    "id": "U-PE06-80",
+    "type": "spike-electrified-realistic",
+    "pattern": "spike",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-01-05",
+    "appliances": 6,
+    "house": 17,
+    "naiveCost": 22.3034,
+    "milpCost": 10.8067,
+    "naiveFeasible": true,
+    "achievableSaving": 11.4968
+   },
+   {
+    "id": "U-PH01-80",
+    "type": "spike-heavy-realistic",
+    "pattern": "spike",
+    "load": "heavy",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-03-09",
     "appliances": 5,
     "house": 9,
-    "naiveCost": 3.9621,
-    "milpCost": 0.9457,
-    "naiveFeasible": false,
-    "achievableSaving": 3.0164
+    "naiveCost": 2.4069,
+    "milpCost": 1.1401,
+    "naiveFeasible": true,
+    "achievableSaving": 1.2668
    },
    {
-    "id": "PH02-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.76,
-    "date": "2022-09-01",
-    "appliances": 5,
-    "house": 3,
-    "naiveCost": 2.9922,
-    "milpCost": 1.7618,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2304
-   },
-   {
-    "id": "PH02-80",
+    "id": "U-PH02-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -4729,28 +2250,13 @@
     "date": "2022-09-01",
     "appliances": 5,
     "house": 3,
-    "naiveCost": 2.9922,
-    "milpCost": 1.7385,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2537
+    "naiveCost": 2.9592,
+    "milpCost": 2.1727,
+    "naiveFeasible": true,
+    "achievableSaving": 0.7864
    },
    {
-    "id": "PH03-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 5.01,
-    "date": "2022-09-30",
-    "appliances": 5,
-    "house": 8,
-    "naiveCost": 3.1006,
-    "milpCost": 2.0792,
-    "naiveFeasible": false,
-    "achievableSaving": 1.0214
-   },
-   {
-    "id": "PH03-80",
+    "id": "U-PH03-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -4759,28 +2265,13 @@
     "date": "2022-09-30",
     "appliances": 5,
     "house": 8,
-    "naiveCost": 3.1006,
-    "milpCost": 2.0772,
+    "naiveCost": 2.2957,
+    "milpCost": 1.8273,
     "naiveFeasible": true,
-    "achievableSaving": 1.0234
+    "achievableSaving": 0.4684
    },
    {
-    "id": "PH04-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-11-16",
-    "appliances": 5,
-    "house": 7,
-    "naiveCost": 2.4348,
-    "milpCost": 2.4304,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0045
-   },
-   {
-    "id": "PH04-80",
+    "id": "U-PH04-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -4789,28 +2280,13 @@
     "date": "2022-11-16",
     "appliances": 5,
     "house": 7,
-    "naiveCost": 2.4348,
-    "milpCost": 2.4268,
+    "naiveCost": 2.7038,
+    "milpCost": 2.5724,
     "naiveFeasible": true,
-    "achievableSaving": 0.008
+    "achievableSaving": 0.1313
    },
    {
-    "id": "PH05-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-12-16",
-    "appliances": 5,
-    "house": 5,
-    "naiveCost": 5.4429,
-    "milpCost": 3.6036,
-    "naiveFeasible": false,
-    "achievableSaving": 1.8393
-   },
-   {
-    "id": "PH05-80",
+    "id": "U-PH05-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -4819,28 +2295,13 @@
     "date": "2022-12-16",
     "appliances": 5,
     "house": 5,
-    "naiveCost": 5.4429,
-    "milpCost": 3.3442,
+    "naiveCost": 5.1546,
+    "milpCost": 4.446,
     "naiveFeasible": true,
-    "achievableSaving": 2.0987
+    "achievableSaving": 0.7086
    },
    {
-    "id": "PH06-35",
-    "type": "spike-heavy-strict",
-    "pattern": "spike",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-01-05",
-    "appliances": 5,
-    "house": 17,
-    "naiveCost": 6.3365,
-    "milpCost": 5.1255,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2111
-   },
-   {
-    "id": "PH06-80",
+    "id": "U-PH06-80",
     "type": "spike-heavy-realistic",
     "pattern": "spike",
     "load": "heavy",
@@ -4849,28 +2310,13 @@
     "date": "2024-01-05",
     "appliances": 5,
     "house": 17,
-    "naiveCost": 6.3365,
-    "milpCost": 5.0348,
+    "naiveCost": 6.5527,
+    "milpCost": 5.2112,
     "naiveFeasible": true,
-    "achievableSaving": 1.3017
+    "achievableSaving": 1.3415
    },
    {
-    "id": "PL01-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-08",
-    "appliances": 2,
-    "house": 13,
-    "naiveCost": 1.5163,
-    "milpCost": 1.1869,
-    "naiveFeasible": true,
-    "achievableSaving": 0.3294
-   },
-   {
-    "id": "PL01-80",
+    "id": "U-PL01-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -4879,28 +2325,13 @@
     "date": "2022-08-08",
     "appliances": 2,
     "house": 13,
-    "naiveCost": 1.5163,
+    "naiveCost": 1.9535,
     "milpCost": 1.1869,
     "naiveFeasible": true,
-    "achievableSaving": 0.3294
+    "achievableSaving": 0.7667
    },
    {
-    "id": "PL02-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-16",
-    "appliances": 2,
-    "house": 11,
-    "naiveCost": 1.4846,
-    "milpCost": 1.0834,
-    "naiveFeasible": true,
-    "achievableSaving": 0.4011
-   },
-   {
-    "id": "PL02-80",
+    "id": "U-PL02-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -4909,28 +2340,13 @@
     "date": "2022-08-16",
     "appliances": 2,
     "house": 11,
-    "naiveCost": 1.4846,
-    "milpCost": 1.0834,
+    "naiveCost": 1.7755,
+    "milpCost": 1.4096,
     "naiveFeasible": true,
-    "achievableSaving": 0.4011
+    "achievableSaving": 0.3659
    },
    {
-    "id": "PL03-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-18",
-    "appliances": 2,
-    "house": 15,
-    "naiveCost": 1.7566,
-    "milpCost": 1.5282,
-    "naiveFeasible": true,
-    "achievableSaving": 0.2285
-   },
-   {
-    "id": "PL03-80",
+    "id": "U-PL03-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -4939,28 +2355,13 @@
     "date": "2022-08-18",
     "appliances": 2,
     "house": 15,
-    "naiveCost": 1.7566,
-    "milpCost": 1.5282,
+    "naiveCost": 1.908,
+    "milpCost": 1.8766,
     "naiveFeasible": true,
-    "achievableSaving": 0.2285
+    "achievableSaving": 0.0315
    },
    {
-    "id": "PL04-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-24",
-    "appliances": 2,
-    "house": 4,
-    "naiveCost": 1.0961,
-    "milpCost": 0.9411,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1551
-   },
-   {
-    "id": "PL04-80",
+    "id": "U-PL04-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -4969,28 +2370,13 @@
     "date": "2022-08-24",
     "appliances": 2,
     "house": 4,
-    "naiveCost": 1.0961,
-    "milpCost": 0.9411,
+    "naiveCost": 1.0104,
+    "milpCost": 0.952,
     "naiveFeasible": true,
-    "achievableSaving": 0.1551
+    "achievableSaving": 0.0584
    },
    {
-    "id": "PL05-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-25",
-    "appliances": 2,
-    "house": 6,
-    "naiveCost": 1.2662,
-    "milpCost": 1.1416,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1246
-   },
-   {
-    "id": "PL05-80",
+    "id": "U-PL05-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -4999,28 +2385,13 @@
     "date": "2022-08-25",
     "appliances": 2,
     "house": 6,
-    "naiveCost": 1.2662,
-    "milpCost": 1.1416,
+    "naiveCost": 1.3793,
+    "milpCost": 1.2915,
     "naiveFeasible": true,
-    "achievableSaving": 0.1246
+    "achievableSaving": 0.0878
    },
    {
-    "id": "PL06-35",
-    "type": "spike-light-strict",
-    "pattern": "spike",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-11-21",
-    "appliances": 2,
-    "house": 16,
-    "naiveCost": 2.1455,
-    "milpCost": 0.9179,
-    "naiveFeasible": false,
-    "achievableSaving": 1.2275
-   },
-   {
-    "id": "PL06-80",
+    "id": "U-PL06-80",
     "type": "spike-light-realistic",
     "pattern": "spike",
     "load": "light",
@@ -5029,28 +2400,103 @@
     "date": "2023-11-21",
     "appliances": 2,
     "house": 16,
-    "naiveCost": 2.1455,
-    "milpCost": 0.9179,
+    "naiveCost": 2.2867,
+    "milpCost": 1.159,
     "naiveFeasible": true,
-    "achievableSaving": 1.2275
+    "achievableSaving": 1.1278
    },
    {
-    "id": "SH01-35",
-    "type": "stable-heavy-strict",
+    "id": "U-SE01-80",
+    "type": "stable-electrified-realistic",
     "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.95,
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
     "date": "2022-03-28",
-    "appliances": 5,
+    "appliances": 6,
     "house": 21,
-    "naiveCost": 0.8263,
-    "milpCost": 0.7066,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1197
+    "naiveCost": 1.6283,
+    "milpCost": 1.6033,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0249
    },
    {
-    "id": "SH01-80",
+    "id": "U-SE02-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-07-13",
+    "appliances": 6,
+    "house": 10,
+    "naiveCost": 1.7813,
+    "milpCost": 1.7645,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0168
+   },
+   {
+    "id": "U-SE03-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2023-08-06",
+    "appliances": 6,
+    "house": 18,
+    "naiveCost": 1.5623,
+    "milpCost": 1.4371,
+    "naiveFeasible": true,
+    "achievableSaving": 0.1252
+   },
+   {
+    "id": "U-SE04-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-02-15",
+    "appliances": 6,
+    "house": 1,
+    "naiveCost": 2.5485,
+    "milpCost": 2.2772,
+    "naiveFeasible": true,
+    "achievableSaving": 0.2713
+   },
+   {
+    "id": "U-SE05-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2024-08-02",
+    "appliances": 6,
+    "house": 20,
+    "naiveCost": 1.6182,
+    "milpCost": 1.5976,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0205
+   },
+   {
+    "id": "U-SE06-80",
+    "type": "stable-electrified-realistic",
+    "pattern": "stable",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2025-01-18",
+    "appliances": 6,
+    "house": 2,
+    "naiveCost": 1.2749,
+    "milpCost": 1.2749,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0
+   },
+   {
+    "id": "U-SH01-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -5059,28 +2505,13 @@
     "date": "2022-03-28",
     "appliances": 5,
     "house": 21,
-    "naiveCost": 0.8263,
-    "milpCost": 0.7059,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1205
+    "naiveCost": 0.7249,
+    "milpCost": 0.7,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0249
    },
    {
-    "id": "SH02-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-07-13",
-    "appliances": 5,
-    "house": 10,
-    "naiveCost": 0.631,
-    "milpCost": 0.6191,
-    "naiveFeasible": false,
-    "achievableSaving": 0.012
-   },
-   {
-    "id": "SH02-80",
+    "id": "U-SH02-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -5089,28 +2520,13 @@
     "date": "2023-07-13",
     "appliances": 5,
     "house": 10,
-    "naiveCost": 0.631,
+    "naiveCost": 0.6341,
     "milpCost": 0.6165,
     "naiveFeasible": true,
-    "achievableSaving": 0.0145
+    "achievableSaving": 0.0176
    },
    {
-    "id": "SH03-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-08-06",
-    "appliances": 5,
-    "house": 18,
-    "naiveCost": 0.7416,
-    "milpCost": 0.6799,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0617
-   },
-   {
-    "id": "SH03-80",
+    "id": "U-SH03-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -5119,28 +2535,13 @@
     "date": "2023-08-06",
     "appliances": 5,
     "house": 18,
-    "naiveCost": 0.7416,
-    "milpCost": 0.6676,
-    "naiveFeasible": false,
-    "achievableSaving": 0.074
+    "naiveCost": 0.7329,
+    "milpCost": 0.6955,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0374
    },
    {
-    "id": "SH04-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-02-15",
-    "appliances": 5,
-    "house": 1,
-    "naiveCost": 1.149,
-    "milpCost": 1.093,
-    "naiveFeasible": false,
-    "achievableSaving": 0.056
-   },
-   {
-    "id": "SH04-80",
+    "id": "U-SH04-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -5149,28 +2550,13 @@
     "date": "2024-02-15",
     "appliances": 5,
     "house": 1,
-    "naiveCost": 1.149,
-    "milpCost": 1.0863,
+    "naiveCost": 1.0927,
+    "milpCost": 1.0595,
     "naiveFeasible": true,
-    "achievableSaving": 0.0627
+    "achievableSaving": 0.0333
    },
    {
-    "id": "SH05-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-08-02",
-    "appliances": 5,
-    "house": 20,
-    "naiveCost": 0.6943,
-    "milpCost": 0.6891,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0052
-   },
-   {
-    "id": "SH05-80",
+    "id": "U-SH05-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -5179,28 +2565,13 @@
     "date": "2024-08-02",
     "appliances": 5,
     "house": 20,
-    "naiveCost": 0.6943,
-    "milpCost": 0.6886,
+    "naiveCost": 0.6982,
+    "milpCost": 0.6824,
     "naiveFeasible": true,
-    "achievableSaving": 0.0057
+    "achievableSaving": 0.0158
    },
    {
-    "id": "SH06-35",
-    "type": "stable-heavy-strict",
-    "pattern": "stable",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-01-18",
-    "appliances": 5,
-    "house": 2,
-    "naiveCost": 0.5168,
-    "milpCost": 0.5182,
-    "naiveFeasible": false,
-    "achievableSaving": -0.0014
-   },
-   {
-    "id": "SH06-80",
+    "id": "U-SH06-80",
     "type": "stable-heavy-realistic",
     "pattern": "stable",
     "load": "heavy",
@@ -5209,28 +2580,13 @@
     "date": "2025-01-18",
     "appliances": 5,
     "house": 2,
-    "naiveCost": 0.5168,
-    "milpCost": 0.5168,
+    "naiveCost": 0.5212,
+    "milpCost": 0.5212,
     "naiveFeasible": true,
     "achievableSaving": 0.0
    },
    {
-    "id": "SL01-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-01-13",
-    "appliances": 2,
-    "house": 9,
-    "naiveCost": 0.153,
-    "milpCost": 0.1502,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0029
-   },
-   {
-    "id": "SL01-80",
+    "id": "U-SL01-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -5239,28 +2595,13 @@
     "date": "2022-01-13",
     "appliances": 2,
     "house": 9,
-    "naiveCost": 0.153,
-    "milpCost": 0.1502,
+    "naiveCost": 0.1622,
+    "milpCost": 0.1534,
     "naiveFeasible": true,
-    "achievableSaving": 0.0029
+    "achievableSaving": 0.0088
    },
    {
-    "id": "SL02-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-01-22",
-    "appliances": 2,
-    "house": 3,
-    "naiveCost": 0.3467,
-    "milpCost": 0.3126,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0341
-   },
-   {
-    "id": "SL02-80",
+    "id": "U-SL02-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -5269,28 +2610,13 @@
     "date": "2023-01-22",
     "appliances": 2,
     "house": 3,
-    "naiveCost": 0.3467,
-    "milpCost": 0.3126,
+    "naiveCost": 0.3336,
+    "milpCost": 0.3265,
     "naiveFeasible": true,
-    "achievableSaving": 0.0341
+    "achievableSaving": 0.007
    },
    {
-    "id": "SL03-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 4.97,
-    "date": "2023-02-13",
-    "appliances": 2,
-    "house": 8,
-    "naiveCost": 0.1875,
-    "milpCost": 0.1871,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0004
-   },
-   {
-    "id": "SL03-80",
+    "id": "U-SL03-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -5299,28 +2625,13 @@
     "date": "2023-02-13",
     "appliances": 2,
     "house": 8,
-    "naiveCost": 0.1875,
-    "milpCost": 0.1871,
+    "naiveCost": 0.1791,
+    "milpCost": 0.1771,
     "naiveFeasible": true,
-    "achievableSaving": 0.0004
+    "achievableSaving": 0.002
    },
    {
-    "id": "SL04-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-03-17",
-    "appliances": 2,
-    "house": 7,
-    "naiveCost": 0.267,
-    "milpCost": 0.2242,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0428
-   },
-   {
-    "id": "SL04-80",
+    "id": "U-SL04-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -5329,28 +2640,13 @@
     "date": "2023-03-17",
     "appliances": 2,
     "house": 7,
-    "naiveCost": 0.267,
-    "milpCost": 0.2242,
+    "naiveCost": 0.2561,
+    "milpCost": 0.2241,
     "naiveFeasible": true,
-    "achievableSaving": 0.0428
+    "achievableSaving": 0.0321
    },
    {
-    "id": "SL05-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-04-22",
-    "appliances": 2,
-    "house": 5,
-    "naiveCost": 0.2482,
-    "milpCost": 0.1772,
-    "naiveFeasible": true,
-    "achievableSaving": 0.071
-   },
-   {
-    "id": "SL05-80",
+    "id": "U-SL05-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -5359,28 +2655,13 @@
     "date": "2023-04-22",
     "appliances": 2,
     "house": 5,
-    "naiveCost": 0.2482,
+    "naiveCost": 0.2419,
     "milpCost": 0.1772,
     "naiveFeasible": true,
-    "achievableSaving": 0.071
+    "achievableSaving": 0.0647
    },
    {
-    "id": "SL06-35",
-    "type": "stable-light-strict",
-    "pattern": "stable",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-07-15",
-    "appliances": 2,
-    "house": 17,
-    "naiveCost": 0.3176,
-    "milpCost": 0.2801,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0375
-   },
-   {
-    "id": "SL06-80",
+    "id": "U-SL06-80",
     "type": "stable-light-realistic",
     "pattern": "stable",
     "load": "light",
@@ -5389,58 +2670,118 @@
     "date": "2024-07-15",
     "appliances": 2,
     "house": 17,
-    "naiveCost": 0.3176,
+    "naiveCost": 0.3244,
     "milpCost": 0.2801,
     "naiveFeasible": true,
-    "achievableSaving": 0.0375
+    "achievableSaving": 0.0443
    },
    {
-    "id": "VH01-35",
-    "type": "volatile-heavy-strict",
+    "id": "U-VE01-80",
+    "type": "volatile-electrified-realistic",
     "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-04-30",
-    "appliances": 5,
-    "house": 13,
-    "naiveCost": 0.8284,
-    "milpCost": 0.7557,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0727
-   },
-   {
-    "id": "VH01-80",
-    "type": "volatile-heavy-realistic",
-    "pattern": "volatile",
-    "load": "heavy",
+    "load": "electrified",
     "limit": "realistic",
     "peakLimitKw": 8.0,
     "date": "2022-04-30",
-    "appliances": 5,
+    "appliances": 6,
     "house": 13,
-    "naiveCost": 0.8284,
-    "milpCost": 0.7554,
+    "naiveCost": 2.1412,
+    "milpCost": 2.1165,
     "naiveFeasible": true,
-    "achievableSaving": 0.073
+    "achievableSaving": 0.0247
    },
    {
-    "id": "VH02-35",
-    "type": "volatile-heavy-strict",
+    "id": "U-VE02-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-06-17",
+    "appliances": 6,
+    "house": 11,
+    "naiveCost": 5.07,
+    "milpCost": 4.2905,
+    "naiveFeasible": true,
+    "achievableSaving": 0.7796
+   },
+   {
+    "id": "U-VE03-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-07-24",
+    "appliances": 6,
+    "house": 15,
+    "naiveCost": 5.6861,
+    "milpCost": 5.0501,
+    "naiveFeasible": true,
+    "achievableSaving": 0.636
+   },
+   {
+    "id": "U-VE04-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-08-27",
+    "appliances": 6,
+    "house": 4,
+    "naiveCost": 4.7305,
+    "milpCost": 4.3591,
+    "naiveFeasible": true,
+    "achievableSaving": 0.3713
+   },
+   {
+    "id": "U-VE05-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-09-05",
+    "appliances": 6,
+    "house": 6,
+    "naiveCost": 9.2882,
+    "milpCost": 7.5395,
+    "naiveFeasible": true,
+    "achievableSaving": 1.7487
+   },
+   {
+    "id": "U-VE06-80",
+    "type": "volatile-electrified-realistic",
+    "pattern": "volatile",
+    "load": "electrified",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-10-12",
+    "appliances": 6,
+    "house": 16,
+    "naiveCost": 3.8203,
+    "milpCost": 3.2307,
+    "naiveFeasible": true,
+    "achievableSaving": 0.5896
+   },
+   {
+    "id": "U-VH01-80",
+    "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-06-17",
+    "limit": "realistic",
+    "peakLimitKw": 8.0,
+    "date": "2022-04-30",
     "appliances": 5,
-    "house": 11,
-    "naiveCost": 2.736,
-    "milpCost": 1.7515,
-    "naiveFeasible": false,
-    "achievableSaving": 0.9846
+    "house": 13,
+    "naiveCost": 0.7771,
+    "milpCost": 0.7524,
+    "naiveFeasible": true,
+    "achievableSaving": 0.0247
    },
    {
-    "id": "VH02-80",
+    "id": "U-VH02-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -5449,28 +2790,13 @@
     "date": "2022-06-17",
     "appliances": 5,
     "house": 11,
-    "naiveCost": 2.736,
-    "milpCost": 1.7432,
-    "naiveFeasible": false,
-    "achievableSaving": 0.9928
+    "naiveCost": 2.3048,
+    "milpCost": 1.7513,
+    "naiveFeasible": true,
+    "achievableSaving": 0.5535
    },
    {
-    "id": "VH03-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-07-24",
-    "appliances": 5,
-    "house": 15,
-    "naiveCost": 2.6412,
-    "milpCost": 2.5258,
-    "naiveFeasible": false,
-    "achievableSaving": 0.1153
-   },
-   {
-    "id": "VH03-80",
+    "id": "U-VH03-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -5479,28 +2805,13 @@
     "date": "2022-07-24",
     "appliances": 5,
     "house": 15,
-    "naiveCost": 2.6412,
+    "naiveCost": 2.685,
     "milpCost": 2.4953,
     "naiveFeasible": true,
-    "achievableSaving": 0.1458
+    "achievableSaving": 0.1896
    },
    {
-    "id": "VH04-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-08-27",
-    "appliances": 5,
-    "house": 4,
-    "naiveCost": 1.055,
-    "milpCost": 1.0596,
-    "naiveFeasible": false,
-    "achievableSaving": -0.0046
-   },
-   {
-    "id": "VH04-80",
+    "id": "U-VH04-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -5509,28 +2820,13 @@
     "date": "2022-08-27",
     "appliances": 5,
     "house": 4,
-    "naiveCost": 1.055,
-    "milpCost": 1.055,
+    "naiveCost": 1.4951,
+    "milpCost": 1.1238,
     "naiveFeasible": true,
-    "achievableSaving": 0.0
+    "achievableSaving": 0.3713
    },
    {
-    "id": "VH05-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-09-05",
-    "appliances": 5,
-    "house": 6,
-    "naiveCost": 5.1121,
-    "milpCost": 3.6181,
-    "naiveFeasible": false,
-    "achievableSaving": 1.494
-   },
-   {
-    "id": "VH05-80",
+    "id": "U-VH05-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -5539,28 +2835,13 @@
     "date": "2022-09-05",
     "appliances": 5,
     "house": 6,
-    "naiveCost": 5.1121,
-    "milpCost": 3.4341,
+    "naiveCost": 4.4872,
+    "milpCost": 3.6689,
     "naiveFeasible": true,
-    "achievableSaving": 1.678
+    "achievableSaving": 0.8184
    },
    {
-    "id": "VH06-35",
-    "type": "volatile-heavy-strict",
-    "pattern": "volatile",
-    "load": "heavy",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-10-12",
-    "appliances": 5,
-    "house": 16,
-    "naiveCost": 0.8488,
-    "milpCost": 0.9851,
-    "naiveFeasible": false,
-    "achievableSaving": -0.1363
-   },
-   {
-    "id": "VH06-80",
+    "id": "U-VH06-80",
     "type": "volatile-heavy-realistic",
     "pattern": "volatile",
     "load": "heavy",
@@ -5569,28 +2850,13 @@
     "date": "2022-10-12",
     "appliances": 5,
     "house": 16,
-    "naiveCost": 0.8488,
-    "milpCost": 0.8488,
-    "naiveFeasible": false,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "VL01-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-05-18",
-    "appliances": 2,
-    "house": 21,
-    "naiveCost": 0.625,
-    "milpCost": 0.498,
+    "naiveCost": 1.2955,
+    "milpCost": 1.1119,
     "naiveFeasible": true,
-    "achievableSaving": 0.127
+    "achievableSaving": 0.1836
    },
    {
-    "id": "VL01-80",
+    "id": "U-VL01-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -5599,28 +2865,13 @@
     "date": "2022-05-18",
     "appliances": 2,
     "house": 21,
-    "naiveCost": 0.625,
-    "milpCost": 0.498,
+    "naiveCost": 0.5865,
+    "milpCost": 0.3789,
     "naiveFeasible": true,
-    "achievableSaving": 0.127
+    "achievableSaving": 0.2076
    },
    {
-    "id": "VL02-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-07-06",
-    "appliances": 2,
-    "house": 10,
-    "naiveCost": 0.6181,
-    "milpCost": 0.6181,
-    "naiveFeasible": true,
-    "achievableSaving": 0.0
-   },
-   {
-    "id": "VL02-80",
+    "id": "U-VL02-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -5629,28 +2880,13 @@
     "date": "2022-07-06",
     "appliances": 2,
     "house": 10,
-    "naiveCost": 0.6181,
-    "milpCost": 0.6181,
+    "naiveCost": 0.6047,
+    "milpCost": 0.6047,
     "naiveFeasible": true,
     "achievableSaving": 0.0
    },
    {
-    "id": "VL03-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2022-09-02",
-    "appliances": 2,
-    "house": 18,
-    "naiveCost": 1.0876,
-    "milpCost": 0.723,
-    "naiveFeasible": true,
-    "achievableSaving": 0.3646
-   },
-   {
-    "id": "VL03-80",
+    "id": "U-VL03-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -5659,28 +2895,13 @@
     "date": "2022-09-02",
     "appliances": 2,
     "house": 18,
-    "naiveCost": 1.0876,
-    "milpCost": 0.723,
+    "naiveCost": 0.9332,
+    "milpCost": 0.8975,
     "naiveFeasible": true,
-    "achievableSaving": 0.3646
+    "achievableSaving": 0.0356
    },
    {
-    "id": "VL04-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2023-10-02",
-    "appliances": 2,
-    "house": 1,
-    "naiveCost": 0.3909,
-    "milpCost": 0.2668,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1241
-   },
-   {
-    "id": "VL04-80",
+    "id": "U-VL04-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -5689,28 +2910,13 @@
     "date": "2023-10-02",
     "appliances": 2,
     "house": 1,
-    "naiveCost": 0.3909,
-    "milpCost": 0.2668,
+    "naiveCost": 0.1351,
+    "milpCost": 0.1351,
     "naiveFeasible": true,
-    "achievableSaving": 0.1241
+    "achievableSaving": 0.0
    },
    {
-    "id": "VL05-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2024-05-08",
-    "appliances": 2,
-    "house": 20,
-    "naiveCost": 0.5116,
-    "milpCost": 0.3279,
-    "naiveFeasible": true,
-    "achievableSaving": 0.1837
-   },
-   {
-    "id": "VL05-80",
+    "id": "U-VL05-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -5719,28 +2925,13 @@
     "date": "2024-05-08",
     "appliances": 2,
     "house": 20,
-    "naiveCost": 0.5116,
-    "milpCost": 0.3279,
+    "naiveCost": 0.7265,
+    "milpCost": 0.3961,
     "naiveFeasible": true,
-    "achievableSaving": 0.1837
+    "achievableSaving": 0.3304
    },
    {
-    "id": "VL06-35",
-    "type": "volatile-light-strict",
-    "pattern": "volatile",
-    "load": "light",
-    "limit": "strict",
-    "peakLimitKw": 3.5,
-    "date": "2025-01-15",
-    "appliances": 2,
-    "house": 2,
-    "naiveCost": 0.7255,
-    "milpCost": 0.1722,
-    "naiveFeasible": true,
-    "achievableSaving": 0.5532
-   },
-   {
-    "id": "VL06-80",
+    "id": "U-VL06-80",
     "type": "volatile-light-realistic",
     "pattern": "volatile",
     "load": "light",
@@ -5749,10 +2940,10 @@
     "date": "2025-01-15",
     "appliances": 2,
     "house": 2,
-    "naiveCost": 0.7255,
-    "milpCost": 0.1722,
+    "naiveCost": 0.3965,
+    "milpCost": 0.1727,
     "naiveFeasible": true,
-    "achievableSaving": 0.5532
+    "achievableSaving": 0.2238
    }
   ]
  }
