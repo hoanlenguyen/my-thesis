@@ -68,9 +68,16 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   Never rerun or re-analyse Q3 differently; Chapters 5–7 of `main.tex` report these results.
 - **Wording in `main.tex`** (22 Oct 2026, same meaning as registered): RQ "How can a hierarchical ReAct multi-agent
   system (the Multi-Agent Pipeline) be designed to give households reliable, cost-saving daily appliance
-  recommendations under dynamic electricity prices?"; SQ2 "Under which price patterns and household loads do the
-  pipeline's recommendations save at least as much as existing home energy management tools?" (the 8 kW limit,
-  the tools and the electrified load are explained in the paragraph after the questions).
+  recommendations under dynamic electricity prices?"; SQ1 "How much do the Multi-Agent Pipeline's recommendations
+  save, how often are they valid, and what do they cost to produce, compared with a base language model without
+  tools?"; SQ2 "Under which price patterns and household loads do the pipeline's recommendations save at least as
+  much as existing home energy management tools?" (the 8 kW limit, the tools and the electrified load are explained
+  in the paragraph after the questions).
+- **SQ3 (added 23 Oct 2026, after the Q3 run)**: "Does dividing the work between two agents make the recommendations
+  more reliable, cheaper or faster than a single agent in the same harness?" The registration reports
+  `single_harness` without hypotheses, so SQ3 is answered descriptively (paired Wilcoxon reported without a
+  confirmatory claim); H1/H2 and their Holm families stay exactly as registered (SQ1 = H1a-c, SQ2 = H2a-e).
+  Answer: same schedules in every run; the single agent is faster (5.0 vs 7.4 s) and cheaper.
 - **Thesis text no longer mentions GPT-4o-mini or its runs** (author's decision, 21 Oct 2026); only the literature
   review names it for other authors' studies. Results files and code keep their attribution.
 - Primary outcome: **saving vs no scheduling** (`metrics.scored_runs` saving_pct); gap to MILP secondary.

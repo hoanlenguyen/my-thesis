@@ -182,14 +182,15 @@ among them an optimiser that solves the whole day. The steps that need
 no language model are done by a deterministic harness: it builds the
 appliance profiles from the household data, retrieves similar solved
 days as worked examples, and checks every schedule against the windows
-and the peak limit, returning any problem to the Scheduler once. To
-test whether the hierarchy matters, the same harness also runs a single
-agent with the same tools. The study asks how much the recommendations
-save, how often they are valid and what they cost to produce compared
-with a language model answering without tools (SQ1), and under which
-price patterns and household loads they save at least as much as
-the home energy management tools households use today: cheapest-hours
-automations and the open-source optimiser EMHASS (SQ2).
+and the peak limit, returning any problem to the Scheduler once. The
+study asks how much the recommendations save, how often they are valid
+and what they cost to produce compared with a base language model
+without tools (SQ1), under which price patterns and household loads
+they save at least as much as the home energy management tools
+households use today: cheapest-hours automations and the open-source
+optimiser EMHASS (SQ2), and whether dividing the work between two agents
+makes the recommendations more reliable, cheaper or faster than a single
+agent with the same tools in the same harness (SQ3).
 
 The evaluation combines appliance cycles and usual run times from the
 REFIT dataset with Finnish Nord Pool prices. Every scenario keeps the
@@ -353,6 +354,7 @@ fewer model calls is cheaper to run and easier to move to a small local
 model later.
 
 \section{Research problem}
+\label{sec:problem}
 
 In the hierarchical multi-agent system of El Makroum, Zwickl-Bernhard, and Kranzl (2026), only one
 of three evaluated models coordinated all appliances, and the evaluation
@@ -377,7 +379,7 @@ ready and must be finished, together with the household's base load,
 its peak load limit and the day's electricity prices. It returns a start
 time for each appliance and a short explanation. To address the
 limitations above, the study is guided by one main research question and
-two sub-questions:
+three sub-questions:
 
 \begin{quote}
 \textbf{RQ:} How can a hierarchical ReAct multi-agent system (the
@@ -385,13 +387,17 @@ Multi-Agent Pipeline) be designed to give households reliable,
 cost-saving daily appliance recommendations under dynamic electricity
 prices?
 
-\textbf{SQ1 (value and cost):} How much do the pipeline's
+\textbf{SQ1 (value and cost):} How much do the Multi-Agent Pipeline's
 recommendations save, how often are they valid, and what do they cost to
-produce, compared with a language model that answers without tools?
+produce, compared with a base language model without tools?
 
 \textbf{SQ2 (conditions):} Under which price patterns and household
 loads do the pipeline's recommendations save at least as much as existing home
 energy management tools?
+
+\textbf{SQ3 (one agent or two):} Does dividing the work between two
+agents make the recommendations more reliable, cheaper or faster than a
+single agent in the same harness?
 \end{quote}
 
 The main RQ states the design aim: recommendations that are reliable,
@@ -402,12 +408,11 @@ Orchestrator and a Price-Aware Scheduler, inside a deterministic harness
 that profiles the appliances, shows the Scheduler how similar past days
 were solved best and checks every schedule. The Scheduler hands the
 search to an optimiser tool, and the Orchestrator explains the result.
-Part of the RQ is whether the hierarchy itself matters, so the pipeline
-is also compared with a single agent in the same harness. SQ1
-concerns what its recommendations are worth and what they cost. It tests
-the premise of the ReAct approach, that reasoning grounded in tool
+SQ1 concerns what its recommendations are worth and what they cost. It
+tests the premise of the ReAct approach, that reasoning grounded in tool
 observations does better than unaided generation, by comparing the
-pipeline with the same language model answering directly, and it checks
+pipeline with the same language model answering directly (the base
+language model), and it checks
 the response time and API cost of each recommendation against the
 design objectives. SQ2 concerns where the system is worth using. Its
 "existing home energy management tools" are real, freely available
@@ -420,7 +425,10 @@ load. The peak limit is the 8\,kW threshold above which Finnish network
 companies may charge for power (Section~\ref{sec:dataset}). The REFIT
 laundry and dishwasher loads rarely reach it, so the heaviest load adds
 an electric car charge and a sauna, the loads that make Finnish houses
-compete for capacity.
+compete for capacity. SQ3 asks whether the hierarchy itself matters. A
+single agent with the same tools runs in the same harness and plays both
+roles; if it is as reliable as the pipeline, the reliability comes from
+the harness and the tools rather than from the division into two agents.
 
 \section{Design Science Research approach}
 
@@ -437,15 +445,11 @@ decisions in prior work.
 
 \section{Structure of the thesis}
 
-This thesis is organized into seven chapters. Chapter 2 presents the
-literature review covering HEMS concepts, LLM-based agents for energy
-management, the ReAct framework, multi-agent LLM systems, retrieval and
-solver tools for agents, and the Finnish energy market context. Chapter 3 describes the Design Science Research
-methodology and evaluation strategy. Chapter 4 presents the system
-design and implementation. Chapter 5 presents the results on an
-exploratory and a held-out benchmark of 72 scenarios each. Chapter 6
-discusses findings, limitations, and future work. Chapter 7 concludes
-the thesis.
+Chapter 2 reviews the literature and identifies the research gap,
+Chapter 3 describes the methodology and the evaluation, and Chapter 4
+the design of the artifact. Chapter 5 reports the results on an
+exploratory and a held-out benchmark, Chapter 6 discusses them, and
+Chapter 7 concludes.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Literature Review}
@@ -461,222 +465,133 @@ described in Appendix~\ref{app:litsearch}.
 \section{Home energy management systems}
 \label{sec:hems}
 
-A Home Energy Management System (HEMS) is a software or hardware system
-that monitors, controls, and optimizes residential electricity
-consumption to reduce cost, support grid stability, and improve energy
-efficiency (Beaudin \& Zareipour, 2015). The core scheduling problem is
-the assignment of flexible appliance loads to time windows where
-electricity prices are lowest, while ensuring that total household load
-at any moment does not exceed safe operational limits. A load is
-flexible when its start time can be shifted without violating user
-preferences or physical constraints.
+A Home Energy Management System (HEMS) monitors, controls and optimizes
+residential electricity consumption to reduce cost, support grid
+stability and improve efficiency (Beaudin \& Zareipour, 2015). Its core
+scheduling problem assigns flexible appliance loads, whose start time
+can be shifted without violating user preferences, to the cheapest time
+windows while keeping the total household load within a limit.
 
-HEMS scheduling approaches fall into three broad groups. Rule-based
-systems apply expert-defined heuristics, for example starting an
-appliance when the price falls below a threshold or in the cheapest
-hours of a window. They are simple to run and easy to follow, because
-each decision follows from one stated rule, but each rule covers only
-the situation it was written for. A rule that picks the cheapest hours
-for one device does not see the other devices, so it cannot keep the
-household under a limit on its total power, and a new requirement means
-writing and testing a new rule.
-
-Mathematical optimization methods such as Mixed Integer Linear
-Programming (MILP) compute the best schedule for a precisely specified
-problem. Sou et al. (2011) formulate appliance scheduling with binary
-start variables, uninterrupted cycles and time windows, and Moradzadeh
-and Tomsovic (2013) formulate residential energy management as a
-two-stage optimization that respects the operational constraints of the
-distribution network. Such methods are optimal for the model they solve,
-but every constraint must first be expressed in mathematical form, so a
-household's preferences have to be translated into variables and
-constraints by someone who can do so, and a new kind of constraint needs
-a new formulation. Their output is a schedule, not a reason for it.
-
-Learning-based methods acquire a scheduling policy from data, as in the
-deep reinforcement learning approach of Mocanu et al. (2019), which is
-trained on measured building data and then optimizes schedules on-line.
-They adapt to the household they are trained on, but a change in the
-task, such as a new appliance or a new tariff, generally requires new
-training, and the learned policy is hard to inspect.
+Scheduling approaches fall into three groups. Rule-based systems start
+an appliance when the price falls below a threshold or in the cheapest
+hours of a window. Each decision is easy to follow, but a rule covers
+only the situation it was written for, and a rule that plans one device
+at a time cannot keep the household under a limit on its total power.
+Mathematical optimization such as Mixed Integer Linear Programming
+(MILP) computes the best schedule for a precisely specified problem: Sou
+et al. (2011) formulate appliance scheduling with binary start
+variables, uninterrupted cycles and time windows, and Moradzadeh and
+Tomsovic (2013) add the operational constraints of the distribution
+network. Every constraint must first be expressed in mathematical form,
+and the output is a schedule, not a reason for it. Learning-based
+methods, such as the deep reinforcement learning of Mocanu et al.
+(2019), learn a policy from data. They adapt to their household, but a
+new appliance or tariff generally requires new training, and the learned
+policy is hard to inspect.
 
 Optimization and learning-based controllers have been described as
-black boxes that are hard for users to understand and trust, which has
-led to work on explainable HEMS, for example by distilling a
-reinforcement-learning policy into a decision tree that can be explained
-to end-users (Gokhale et al., 2024). Zharova et al. (2024) argue that
-users need to understand why and how a recommendation system reaches
-its recommendations before they trust and accept them, and add a
-dedicated explainability agent to a multi-agent system that recommends
-when to run household appliances. Language models have also been used
-to supply the explanation: Zhang and Chen (2024) combine Shapley values
-with a language model that turns the feature contributions of a machine
-learning controller into a narrative, and test the approach on model
-predictive precooling during demand response events in a virtual
-testbed. Kovacs et al. (2025) add textual explanations generated by a
-language model to a recommender that suggests when to run
-energy-intensive household activities during solar production peaks;
-in a questionnaire with 27 respondents, a hybrid of text and visual
-explanation was preferred. Explanation in terms a non-expert
-understands, and adaptation to new constraint types without a new rule,
-formulation or training run, are therefore the two properties that a
-language model agent could add to these approaches.
+black boxes, which has led to work on explainable HEMS. Gokhale et al.
+(2024) distil a reinforcement-learning policy into a decision tree,
+Zharova et al. (2024) add an explainability agent to a multi-agent
+system that recommends when to run household appliances, Zhang and Chen
+(2024) let a language model turn the Shapley values of a controller into
+a narrative, and in the study of Kovacs et al. (2025) 27 respondents
+preferred a hybrid of textual and visual explanations. Explanation in
+terms a non-expert understands, and adaptation to new constraint types
+without a new rule, formulation or training run, are the two properties
+that a language model agent could add to these approaches.
 
-Rule-based and optimization approaches are both available to households
-today as open-source tools. Among Home Assistant users in Finland and
-the other Nordic countries, a widely shared approach is to automate
-devices with community blueprints that switch a device on during the
-cheapest hours of a user-defined time window, based on Nord Pool
-day-ahead prices (Kert, 2023). A related tool, the Home Assistant
-integration Nordpool Planner (Daniel, 2022), chooses the block of
-consecutive hours with the lowest average price before a set end time. Such rules handle each device separately and do not
-consider the household's total load. EMHASS (Energy
-Management for Home Assistant) is an open-source optimizer that
-schedules deferrable loads, batteries and photovoltaic production
-against price forecasts with linear and mixed-integer programming
-(EMHASS contributors, 2026). It supports a time window for each load, a
-limit on the power drawn from the grid, and loads defined by a fixed
-power profile. Both kinds of tool require the household to describe
-each appliance in structured form, namely its power, run time and time
-window. OpenHEMS, a Home Assistant add-on, schedules heavy appliances
-under a maximum power but targets fixed off-peak tariffs rather than
-spot prices (OpenHEMS contributors, 2026). This thesis uses the
-cheapest-hours rules and EMHASS as reference points for the agents
-(Section~\ref{sec:evaluation}).
+Both kinds of approach are available to households as open-source
+tools. Home Assistant users in Finland and the other Nordic countries
+widely use community blueprints that switch a device on in the cheapest
+hours of a window, based on Nord Pool day-ahead prices (Kert, 2023), and
+the integration Nordpool Planner (Daniel, 2022) chooses the cheapest
+block of consecutive hours; both handle each device separately. EMHASS
+(Energy Management for Home Assistant) optimizes deferrable loads,
+batteries and photovoltaic production against price forecasts with
+linear and mixed-integer programming, with a time window and a power
+profile for each load and a limit on the power drawn from the grid
+(EMHASS contributors, 2026). OpenHEMS schedules heavy appliances under a
+maximum power but targets fixed off-peak tariffs rather than spot prices
+(OpenHEMS contributors, 2026). All of them require each appliance to be
+described in structured form. This thesis uses the cheapest-hours rules
+and EMHASS as reference points (Section~\ref{sec:evaluation}).
 
 \section{LLM-based agents for energy management}
 
-Studies applying LLMs to energy management have appeared since 2023, and
-two recent ones are close to this thesis. El Makroum, Zwickl-Bernhard, and Kranzl (2026)
-present a hierarchical agentic architecture for home energy management
-in which an orchestrator agent delegates to three specialist agents that
-follow the ReAct pattern. The household has three flexible loads: a
-washing machine (2.0\,kW for 120 minutes), a dishwasher (1.8\,kW for 90
-minutes) and an electric vehicle charger (7.4\,kW for 360 minutes). The
-agents receive Austrian day-ahead prices from ENTSO-E for one day, 14
-October 2025, and are run with three open-weight models, Llama 3.3 70B,
-Qwen 3 32B and GPT-OSS 120B. The evaluation consists of 75 runs: 15
-single-appliance runs, 15 multi-appliance runs and 45 runs in which the
-user asks analytical questions about the schedule. Each schedule is
-compared with the optimum of a MILP model rather than with an
-unscheduled baseline, so the study reports how often the agents reach
-the optimal cost, not how much they save. All three models scheduled
-single appliances optimally, but only Llama 3.3 70B coordinated all
-appliances in every multi-appliance scenario, and the analytical
-questions were answered unreliably unless the agents were given explicit
-guidance. The authors describe the study as a proof of concept: one
-household, one day and one price series, without thermal loads such as
-heat pumps, electric heating and hot water storage. They name pilot
-deployments and evaluation across electricity markets and household
-types as future work. Its architecture is close to the pipeline of this
-thesis, and several of the systems described below share parts of it.
-The difference lies less in the architecture than in the evaluation:
-this thesis measures the saving against no scheduling on held-out days,
-across several price patterns, and against tools that households already
-use.
+Studies applying LLMs to energy management have appeared since 2023,
+and two are close to this thesis. El Makroum, Zwickl-Bernhard, and
+Kranzl (2026) present a hierarchical architecture in which an
+orchestrator agent delegates to three specialist agents that follow the
+ReAct pattern. They schedule a washing machine, a dishwasher and a
+7.4\,kW electric vehicle charger on Austrian day-ahead prices for one
+day, with three open-weight models (Llama 3.3 70B, Qwen 3 32B and
+GPT-OSS 120B). In 75 runs compared with the optimum of a MILP model, all
+three models scheduled single appliances optimally, but only Llama 3.3
+70B coordinated all appliances in every multi-appliance scenario, and
+analytical questions about the schedule were answered reliably only with
+explicit guidance. The authors describe the study as a proof of concept:
+one household, one day and one price series, without thermal loads. Its
+architecture is close to the pipeline of this thesis. The difference
+lies in the evaluation: this thesis measures the saving against no
+scheduling on held-out days, across several price patterns, and against
+tools that households already use.
 
 Jonah et al. (2026) take the opposite design choice: a single
 tool-calling ReAct agent that turns a household's request into appliance
 schedules, using half-hourly dynamic prices from the United Kingdom
-(Octopus Agile), weather and photovoltaic forecasts and household demand
-data. They test five language models, among them Claude Sonnet 4.6,
-GPT-4o-mini and Qwen 3. Their agents capture 96.7 to 98.0\,\% of the
-savings available between an off-peak timer and a MILP optimum and do
-better than rule-based policies. Their failure analysis is the more
-important result for this thesis. The models sometimes fabricated
-schedules or failed to commit one, and in some cases a model explained a
-deadline correctly and still committed a schedule that violated it.
-Actions parsed from text were less reliable than native function calls.
-Building on the study of El Makroum, Zwickl-Bernhard, and Kranzl, they list multi-appliance coordination
-failures, scheduling on price alone, a single-day evaluation horizon and
-untested constraint safety as open problems, and they recommend that an
-independent deterministic validator check every schedule against
-duration, deadline and power constraints before it is executed. Their
-evaluation covers one household over twelve tariff days and a one-week
-deployment. Section~\ref{sec:gap} sets out how these open problems
-shape the design and evaluation of this thesis.
+(Octopus Agile) with weather, photovoltaic and demand data. Across five
+language models, among them Claude Sonnet 4.6, GPT-4o-mini and Qwen 3,
+the agents capture 96.7 to 98.0\,\% of the savings available between an
+off-peak timer and a MILP optimum. Their failure analysis matters more
+for this thesis: the models sometimes fabricated schedules or failed to
+commit one, and in some cases a model explained a deadline correctly and
+still committed a schedule that violated it. They list multi-appliance
+coordination failures, scheduling on price alone, a single-day
+evaluation horizon and untested constraint safety as open problems, and
+recommend that an independent deterministic validator check every
+schedule before it is executed. Their evaluation covers one household
+over twelve tariff days and a one-week deployment.
+Section~\ref{sec:gap} sets out how these open problems shape this
+thesis.
 
 Further studies, mostly conference papers from 2024 to 2026, apply
-language models to the scheduling itself. Siino and Tinnirello (2024)
-ask a GPT model to re-time the use of household appliances in a
-residential consumption dataset so as to reduce cost while keeping each
-appliance's daily use unchanged, and describe this as a first and
-preliminary attempt. Yang et al. (2025) propose LLM-MAC, a zero-shot
-hierarchical framework in which one agent defines constraints, a second
-optimizes the schedule and a third resolves conflicts iteratively; they
-report feasible, cost-efficient and interpretable schedules across
-household configurations. S. Liu et al. (2025) apply a similar
-zero-shot idea to smart buildings, with zone agents that express local
-intent, a building agent that reconciles them and an LLM scheduler that
-makes and explains the final decision. Raghavan and Giridhar (2025) use
-a small language model, Phi-3 Mini, to interpret commands and call the
-tools of a model predictive controller that schedules a battery, and
-report a higher net profit in a daily scenario than a general
-controller and a price-blind baseline. Mongaillard et al. (2024)
-construct three language model agents that turn a voice request into an
-optimization problem, identify its parameters and solve it, and test
-the architecture on electric vehicle charging requests with Llama 3 8B.
-In El Makroum, Zwickl-Bernhard, Kranzl, and Auer (2026), an aggregator agent and a household
-energy management agent negotiate flexibility requests in natural
-language, and the household agent assesses deliverability and cost by
-calling an optimization-based tool; interactions complete in under 12
-seconds in a proof of concept. Rashed et al. (2025) use a language model
-for the load forecasting agent of a five-agent demand response system
-and report a 14\,\% reduction in residential consumption, Dolinin and
-Kiourt (2026) coordinate device agents under an orchestrator and report
-up to 16\,\% lower air-conditioning power under critical load, and
-Moghanjooghi et al. (2025) combine LSTM forecasts of appliance use with
-GPT-4o to guide users in shifting consumption to off-peak hours.
+language models to the scheduling itself: re-timing appliance use in a
+consumption dataset (Siino \& Tinnirello, 2024); a zero-shot hierarchy in
+which agents define constraints, optimize the schedule and resolve
+conflicts (LLM-MAC; Yang et al., 2025), and a similar idea for smart
+buildings (S. Liu et al., 2025); a small language model that calls the
+tools of a model predictive controller for a battery (Raghavan \&
+Giridhar, 2025); agents that turn a voice request for electric vehicle
+charging into a solved optimization problem (Mongaillard et al., 2024);
+and a household agent that negotiates flexibility with an aggregator by
+calling an optimization tool (El Makroum, Zwickl-Bernhard, Kranzl, \&
+Auer, 2026). Others use a language model inside demand response and
+air-conditioning control (Rashed et al., 2025; Dolinin \& Kiourt, 2026)
+or to guide users towards off-peak use (Moghanjooghi et al., 2025).
 
-A second group of studies uses language models on the interface,
-advice and recommendation side of household energy management and
-leaves the schedule to another component. Michelon et al. (2025) build
-an interface in which a language model, using ReAct and few-shot
-prompting, turns a household's loosely worded answers into the
-parameters of a home energy management system. With users simulated by
-another language model, it retrieves 88\,\% of the parameters correctly
-on average, more than the same interface without ReAct or few-shot
-prompting. Oprea and Bâra (2024) use zero-shot classification with a
-language model to recommend, for a prosumer with a 5.9\,kW system,
-whether to decrease or increase consumption or to sell or buy
-electricity in two scenarios. A. Papaioannou et al. (2025) disaggregate
-appliance-level consumption, profile household routines and fine-tune a
-language model to turn the result into personalized energy-saving
-advice. I. Papaioannou et al. (2025) fine-tune several language models,
-among them GPT-4, to generate recommendations from building conditions,
-forecasts and electricity prices, and report an estimated reduction of
-10\,\% in electricity consumption during a two-week operation in a
-residential building. These studies measure the accuracy of parameters,
-labels or advice, or total consumption, and none of them produces a
-schedule whose cost is compared with an unscheduled day or an optimum.
-
-Assistants that combine a language model with domain tools follow the
-same pattern. Jung (2026) presents HEMA, an open-source multi-agent
-assistant with analysis, knowledge and control agents and 36
-domain-specific tools, and evaluates it with language-model-simulated
-users on 23 metrics. Gkalinikis et al. (2025) fine-tune a pre-trained
-model to generate calls to three external energy analytics tools only
-when needed, as the core of a home energy adviser. Gonçalves et al.
-(2025) connect IoT sensor data to a language model that gives
-personalized recommendations through a conversational interface, and
-report a 5.66\,\% reduction in energy consumption against baseline in a
-12-month randomized controlled trial with 100 households. Systematic
-reviews describe the language model in this field mainly as a
-decision-support and knowledge-integration component: Cali et al. (2026)
-analyse 106 studies of generative AI in renewable energy and smart
-grids, and Ghafari et al. (2025) review language models in power
-systems.
-
-Smart-home assistants show a related pattern without a price signal.
-Sasha (King et al., 2024) lets a language model plan device actions and
-automation routines for goals stated without naming devices, such as
-helping the user save energy, and its user study documents failure
-patterns that reduce its usefulness. Giudici et al. (2024) present
-GreenIFTTT, a GPT-4 assistant that helps users create and control home
-automation routines for energy consumption optimization; an exploratory
-study with 13 participants found it usable and engaging. Both studies
-concern how users express intent and how routines are created, not the
-quality of a multi-appliance schedule.
+A second group uses language models on the interface, advice and
+recommendation side and leaves the schedule to another component.
+Michelon et al. (2025) turn a household's loosely worded answers into
+the parameters of a HEMS with ReAct and few-shot prompting, retrieving
+88\,\% of the parameters correctly with simulated users. Oprea and Bâra
+(2024) recommend whether a prosumer should decrease or increase
+consumption or sell or buy electricity, A. Papaioannou et al. (2025)
+turn disaggregated consumption into personalized advice, and I.
+Papaioannou et al. (2025) fine-tune language models to generate
+recommendations, with an estimated 10\,\% lower consumption in a
+residential building. Assistants that combine a language model with
+domain tools follow the same pattern (Jung, 2026; Gkalinikis et al.,
+2025), and Gonçalves et al. (2025) report 5.66\,\% lower consumption in
+a 12-month randomized controlled trial with 100 households. Smart-home
+assistants such as Sasha (King et al., 2024) and GreenIFTTT (Giudici et
+al., 2024) plan device routines for goals such as saving energy, without
+a price signal. These studies measure parameters, advice, routines or
+consumption; none produces a schedule whose cost is compared with an
+unscheduled day or an optimum. Systematic reviews describe the language
+model in this field mainly as a decision-support and
+knowledge-integration component (Cali et al., 2026; Ghafari et al.,
+2025).
 
 \section{The ReAct framework}
 
@@ -802,20 +717,13 @@ makes its residential market one of the most finely priced in Europe. At
 the end of 2024, about 33\,\% of all Finnish electricity contracts were
 dynamic-price contracts, up from 9\,\% in 2021; these pass hourly and
 quarter-hourly price changes straight to the consumer (Energy Authority,
-2025).
-
-Prices within a day vary a great deal. In the
-Nord Pool FI day-ahead prices from 2023 to 2026, the difference between
-the cheapest and the most expensive hour of a day had a median of
-5.7\,c/kWh excluding VAT and exceeded 10\,c/kWh on 28\,\% of days. On
-days without near-zero prices the most expensive hour cost a median of
-3.1 times the cheapest, and on 19\,\% of days at least one hour had a
-negative price (computed from Pakastin Oy, 2026). Extremes are far
-larger: the highest hourly price in the period, 189.6\,c/kWh on 5 January
-2024 at 19:00, was about one hundred times the median night-time price of
-1.8\,c/kWh. On 24 November 2023 the price fell to $-500$\,EUR/MWh for
-half a day, and households with spot-price contracts noticeably
-increased their consumption (Haakana et al., 2025). At the same time, an
+2025). Prices within a day vary a great deal (Chapter~\ref{ch:intro}):
+from 2023 to 2026 the difference between the cheapest and the most
+expensive hour of a day had a median of 5.7\,c/kWh excluding VAT and
+exceeded 10\,c/kWh on 28\,\% of days (computed from Pakastin Oy, 2026).
+Extremes are far larger: on 24 November 2023 the price fell to
+$-500$\,EUR/MWh for half a day, and households with spot-price contracts
+noticeably increased their consumption (Haakana et al., 2025). At the same time, an
 estimated 7 to 15\,\% of Finnish households are energy poor (Aalto
 University, 2026). Shifting household demand in Finland therefore
 matters for the power system as well as for household bills.
@@ -880,6 +788,9 @@ Scheduling on the price signal alone (Jonah et al., 2026) & Partly
 No comparison with existing home energy management tools &
   Comparison with cheapest-hours automations for Home Assistant and
   with the optimizer EMHASS & SQ2 \\[3pt]
+The benefit of a hierarchy of agents is not separated from the benefit
+  of its tools &
+  A single agent with the same tools in the same harness & SQ3 \\[3pt]
 Rules and optimizers do not explain their decisions (Gokhale et al.,
   2024; Zharova et al., 2024) &
   The Orchestrator explains every recommendation and states the result
@@ -893,16 +804,16 @@ the Multi-Agent Pipeline, a hierarchical ReAct multi-agent system in
 LangGraph that gives households daily appliance recommendations: two
 agents inside a deterministic harness that profiles the appliances,
 retrieves solved days and checks every schedule, with an optimiser
-tool. The design iterations that led to it are documented, and the
-pipeline is compared with a single agent in the same harness. The
+tool. The design iterations that led to it are documented. The
 second is a measure of what its recommendations save, how often they
-are valid and what they cost to produce compared with a language model
-answering without tools (SQ1). The third is a map of the conditions,
-four price patterns and three household loads under the 8\,kW power
-charge threshold, under which the recommendations save more than, or as
-much as, existing home energy management tools, cheapest-hours
-automations and EMHASS (SQ2). The hypotheses were fixed in advance and
-tested on a held-out benchmark.
+are valid and what they cost to produce compared with a base language
+model without tools (SQ1). The third is a map of the conditions, four
+price patterns and three household loads under the 8\,kW power charge
+threshold, under which the recommendations save at least as much as
+existing home energy management tools, cheapest-hours automations and
+EMHASS (SQ2). The hypotheses for SQ1 and SQ2 were fixed in advance and
+tested on a held-out benchmark. A comparison with a single agent in the
+same harness shows what the division into two agents adds (SQ3).
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Research Methodology}
@@ -1036,31 +947,17 @@ The comparison is paired: every system receives the same scenarios and
 is scored by the same function.
 
 \paragraph{Research questions.} The evaluation answers the research
-question and the two sub-questions posed in Chapter~\ref{ch:intro}, which
-are restated here because the rest of this section is organised around
-them:
-\begin{quote}
-\textbf{RQ:} How can a hierarchical ReAct multi-agent system (the
-Multi-Agent Pipeline) be designed to give households reliable,
-cost-saving daily appliance recommendations under dynamic electricity
-prices?
-
-\textbf{SQ1 (value and cost):} How much do the pipeline's
-recommendations save, how often are they valid, and what do they cost to
-produce, compared with a language model that answers without tools?
-
-\textbf{SQ2 (conditions):} Under which price patterns and household
-loads do the pipeline's recommendations save at least as much as existing home
-energy management tools?
-\end{quote}
-The RQ is answered by the design itself, by the evidence that the
-design meets its objectives (Section~\ref{sec:objectives}), and by a
-comparison of the pipeline with a single agent in the same harness,
-which shows what the division into two agents adds. SQ1 and SQ2 are
+question and the three sub-questions of Section~\ref{sec:problem}. The
+RQ is answered by the design itself and by the evidence that the design
+meets its objectives (Section~\ref{sec:objectives}). SQ1 and SQ2 are
 answered by measurement: each is tested by the registered hypotheses of
 Table~\ref{tab:hypotheses}, H1a to H1c for SQ1 and H2a to H2e for SQ2,
 and SQ2 is also examined descriptively for each price pattern and
-household load. The systems that SQ1 and SQ2 compare are defined next.
+household load. SQ3 compares the pipeline with a single agent in the
+same harness. The pre-registration reports that agent without
+hypotheses, so SQ3 is answered descriptively: the same outcomes are
+compared, and paired tests are reported without a confirmatory claim.
+The compared systems are defined next.
 
 \paragraph{Systems compared.} The artifact is the \emph{Multi-Agent
 Pipeline} with GPT-6 Luna (Chapter~\ref{ch:design}): an Orchestrator and
@@ -1073,8 +970,8 @@ versions are design iterations: they were run on the exploratory
 benchmarks and are reported in Section~\ref{sec:iterations}, but they
 are not compared systems. The \emph{single agent in the harness}, one
 ReAct agent with the Scheduler's tools, the same context and the same
-checks, is reported without hypotheses as part of the answer to the RQ.
-The pipeline is compared with the following alternatives:
+checks, is the comparison of SQ3. The pipeline is compared with the
+following alternatives:
 \begin{itemize}
 \item \emph{No scheduling}: every appliance starts as soon as the user
   allows. It defines the saving of every other system.
@@ -1115,7 +1012,7 @@ The pipeline is compared with the following alternatives:
   directly with an exact solver tolerance; the two routes give the same
   schedule in most scenarios, and the remaining differences stem from the
   default tolerance of the service.
-\item \emph{LLM without tools}: the same model as the agents, given the
+\item \emph{LLM without tools}, the base language model of SQ1: the same model as the agents, given the
   day's appliance plan together with all household data and the price and
   measured base load of every slot in a single prompt. Its schedule is
   taken from one answer, without tools or a reasoning loop. This
@@ -1262,17 +1159,12 @@ $(\text{system cost} - \text{MILP cost}) / \text{MILP cost} \times 100$,
 is reported as a secondary measure, because it shows how much saving a
 system leaves on the table.
 
-The choice of tariff does not change the ranking of the systems. The
+The choice of tariff does not change the ranking of the systems: the
 margin, distribution fee and electricity tax are constant per
-kilowatt-hour, and every cycle uses the same energy wherever it is
-placed, so the consumer price changes the cost of every schedule by the
-same amount and scales all cost differences by the common factor
-$1 + v$. The ranking of the systems and the euro differences between
-them are therefore the same as under the spot price, apart from that
-factor, which was also verified on the recorded schedules. The saving in
-percent does depend on the tariff, through its denominator: under the
-spot price alone, the same euro saving would be a larger share. The
-consumer price is used because it is what the household pays.
+kilowatt-hour and every cycle uses the same energy wherever it is
+placed, so all cost differences scale by the common factor $1 + v$
+(verified on the recorded schedules). Only the saving in percent depends
+on the tariff, through its denominator.
 
 The sub-questions use these measures as follows. SQ1 compares the saving
 and validity of the pipeline with those of the LLM without tools, and
@@ -1284,10 +1176,12 @@ energy management tools, the cheapest-hours rules and EMHASS, first over
 all scenarios and then separately for each price pattern and household
 load. Whether the advantage over the cheapest-hours rule and the
 cheapest window grows with the electrified load is tested (H2d, H2e);
-the rest of the breakdown by condition is descriptive. Also reported
-without hypotheses are the single agent in the harness, the total euro
-saving, the smart timer (own heuristic), the gap to the optimum, and the
-conflict resolution rate,
+the rest of the breakdown by condition is descriptive. SQ3 compares the
+pipeline with the single agent in the harness on validity, saving,
+response time, API cost and tokens, with paired Wilcoxon tests reported
+without a confirmatory claim. Also reported without hypotheses are the
+total euro saving, the smart timer (own heuristic), the gap to the
+optimum, and the conflict resolution rate,
 which is the share of valid runs among the scenarios that require
 coordination (those in which starting every appliance at its
 individually cheapest time would exceed the peak limit).
@@ -1679,14 +1573,11 @@ the agents do. The single agent in the harness was built before those
 last changes, for the comparison of one agent with two, and every
 change since was applied to both designs alike.
 
-\section{MILP solver}
+\subsection{MILP formulation}
 \label{sec:milp}
 
-The MILP solver computes the optimal schedule of a day. It is used in
-three roles: it confirms during benchmark construction that every
-scenario has a feasible schedule, it solves the days of the case
-library, and it is the solver behind the optimiser tool. Its schedules
-also give the upper bound on the saving in the result tables. The model
+The MILP behind the optimiser tool, the case library, the feasibility
+check of the benchmarks and the upper bound of the result tables
 is the standard time-indexed formulation of appliance scheduling with
 binary start variables (Sou et al., 2011). The day is divided into slots $t \in \mathcal{T} =
 \{0, \dots, 95\}$ of $\Delta = 0.25$\,h. Each flexible appliance
@@ -1735,9 +1626,7 @@ small scenarios.
 
 Table~\ref{tab:stack} lists the software used to build and evaluate the
 artifact, with the versions used for the reported results. All components
-except the commercial language model are open source. The API cost of
-the commercial model is an outcome of the evaluation and is reported with
-the results in Chapter~5.
+except the commercial language model are open source.
 
 % Prices checked on OpenAI's pricing page (standard tier, short context) on 21 Oct 2026.
 The evaluation uses GPT-6 Luna, the small model of OpenAI's current
@@ -1767,15 +1656,13 @@ run (Section~\ref{sec:exploratory}).
 \toprule
 Component & Tool and version & Purpose \\
 \midrule
-Programming language & Python 3.12 & implementation of the artifact, baselines and analysis \\[2pt]
-Agent orchestration & LangGraph 1.2, LangChain 1.4 & state graph of the pipeline, ReAct agents, tool calling and schema-validated outputs \\[2pt]
+Agent orchestration & LangGraph 1.2, LangChain 1.4 (Python 3.12) & state graph of the pipeline, ReAct agents, tool calling and schema-validated outputs \\[2pt]
 Commercial LLM & GPT-6 Luna (reasoning effort none), OpenAI API & model of the evaluation: the two-agent pipeline, the single agent in the harness and the LLM without tools \\[2pt]
 Open-weight LLM & gpt-oss-20b, Ollama 0.40 & open-weight model hosted on local hardware, used in one exploratory run of both agent designs \\[2pt]
 MILP solver & PuLP 3.3 with CBC & benchmark feasibility check, case library and the optimiser tool \\[2pt]
 HEMS optimizer & EMHASS 0.18.4, Docker & open-source home energy management optimizer compared in SQ2, called through its REST interface \\[2pt]
-Data processing & pandas 3.0, NumPy 2.5 & REFIT cycle extraction, price series and scenario construction \\[2pt]
-Tracing & LangSmith & recording the reasoning trace and tool calls of runs during development \\[2pt]
-Statistics & SciPy 1.18 & Wilcoxon signed-rank, Mann--Whitney and TOST equivalence tests, effect sizes and Spearman correlation \\
+Data and statistics & pandas 3.0, NumPy 2.5, SciPy 1.18 & scenario construction; Wilcoxon, Mann--Whitney, TOST and Spearman \\[2pt]
+Tracing & LangSmith & reasoning traces and tool calls during development \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1787,17 +1674,12 @@ This chapter presents the evaluation of the artifact, corresponding to
 DSR Phases 4 and 5. Section~\ref{sec:dataset} describes the benchmarks:
 the appliance and price data, how a scenario is built, and the two
 factorial benchmarks, an exploratory set and the held-out set Q3.
-Section~\ref{sec:resolution} uses the MILP solver alone to examine
-Finland's move to fifteen-minute electricity prices, quantifying how
-much of the achievable saving depends on fifteen-minute rather than
-hourly price information; this shows where differences between
-schedulers can be expected before any agent is evaluated.
 Section~\ref{sec:demonstration} demonstrates the pipeline on one day
 (DSR Phase 4) and summarises the design iterations that led to it.
-Section~\ref{sec:exploratory} reports the exploratory runs, including
-the comparison of the pipeline with the single agent in the same
-harness, and Section~\ref{sec:confirmatory} reports the pre-registered
-test on the held-out set Q3, which answers SQ1 and SQ2.
+Section~\ref{sec:exploratory} reports the exploratory runs, and
+Section~\ref{sec:confirmatory} reports the evaluation on the held-out
+set Q3: the pre-registered tests that answer SQ1 and SQ2, and the
+comparison with the single agent that answers SQ3.
 
 \section{Dataset and scenario design}
 \label{sec:dataset}
@@ -2034,48 +1916,12 @@ Q3, the cost of starting every appliance when it is ready has a median
 of \EUR{0.90} per scenario (interquartile range \EUR{0.37} to
 \EUR{1.66}, maximum \EUR{4.49}).
 
-\section{Value of 15-minute price information}
-\label{sec:resolution}
-
-Since 1 October 2025 the Nord Pool day-ahead market settles Finnish
-electricity in fifteen-minute periods. The exploratory benchmark and the
-case library use hourly prices, since they cover the years before. The
-held-out set Q3 has native fifteen-minute prices, and in them prices
-genuinely vary within the hour.
-
-For each Q3 scenario, two optimal schedules were computed with the MILP
-solver. The first is planned on the real fifteen-minute prices. The
-second is planned on hourly averages, which is all the price information
-a household had before the switch, and is then settled at the real
-fifteen-minute prices. Hourly prices make the four quarters of an hour
-tie, so ties are broken towards the earliest start. The cost difference
-between the two schedules is the saving that is only reachable with
-fifteen-minute price information. Table~\ref{tab:resolution} reports the
-savings of both schedules relative to starting every appliance when it
-is ready, the additional cost reduction from fifteen-minute information,
-and the share of the achievable saving that requires it, by price
-pattern and by household load; the rows weight scenarios by their cost.
-
-\input{results/resolution_q3/resolution_by_condition.tex}
-
-Fifteen-minute price information lowers the optimal cost in 65 of the 72
-scenarios, but the effect is modest: 0.7\,\% of the cost overall, or
-3.9\,\% of the achievable saving. The remaining 96\,\% of the saving is
-available to a scheduler that plans on hourly prices, since most of the
-value lies in moving appliance cycles between hours rather than between
-quarters of an hour. The additional reduction grows with the intra-hour
-price spread (Spearman $\rho = 0.65$ across scenarios) and is largest on
-volatile and spike days with the light load, where it reaches 7.8\,\%
-in the single largest case (Q3-VL02-80, 9 April 2026). Its share of the
-achievable saving is largest for the light load (13.2\,\%) and on stable
-days (10.6\,\%), where hourly price differences are small, so intra-hour
-variation forms a larger part of the opportunity. In absolute terms the
-gain is under one cent per household and day on average, and at most
-nine cents. The schedules nevertheless differ: 190 of the 312 appliance
-start times change between the two plans. Differences between the
-schedulers on Q3 can therefore come from fifteen-minute prices, but
-mostly from how they place cycles between hours and under the peak
-limit.
+\paragraph{Fifteen-minute prices.} Planning on the real fifteen-minute
+prices instead of their hourly averages lowers the optimal cost in 65
+of the 72 Q3 scenarios, but only by 0.7\,\% of the cost, or 3.9\,\% of
+the achievable saving (Appendix~\ref{sec:resolution}): most of the value
+lies in moving cycles between hours and under the peak limit, not
+between quarters of an hour.
 
 \section{Demonstration results}
 \label{sec:demonstration}
@@ -2287,15 +2133,10 @@ optimum. Applied to these data, the registered tests of
 Table~\ref{tab:hypotheses} supported eight of the nine hypotheses. H2d,
 a larger advantage over the cheapest-hours automation on electrified
 days, was supported here (rank-biserial 0.34, adjusted $p = 0.04$) but
-not on the held-out days, and H2e was not supported in either set.
-
-\paragraph{One agent or two.} The single agent in the harness returned
-the same schedule as the pipeline in every run. It took 4.9 seconds on
-average against 7.9 for the pipeline (median 4.7 against 7.3), cost
-\$0.00024 per run against \$0.00040, and used about 100 fewer tokens per
-run (3,731 against 3,828); all three differences are significant
-(Wilcoxon, $p < 0.001$). Neither design needed a feedback round or a
-recovery nudge in any run.
+not on the held-out days, and H2e was not supported in either set. The
+single agent in the harness again returned the same schedule as the
+pipeline in every run, faster (4.9 against 7.9 seconds on average) and
+cheaper (\$0.00024 against \$0.00040 per run).
 
 \paragraph{An open-weight model run locally.} Both agent designs were
 also run with gpt-oss-20b, a 20-billion-parameter open-weight model, on
@@ -2452,9 +2293,10 @@ Optimum (upper bound) & 15.7\,\% & 15.7\,\% & 16.0\,\% \\
 \end{tabular*}
 \end{table}
 
-\paragraph{One agent or two.} The single agent in the harness returned
-the same schedules as the pipeline in every run, with the same saving
-and validity, but it was faster and cheaper. Its mean response time was
+\paragraph{One agent or two (SQ3).} The single agent in the harness
+returned the same schedules as the pipeline in every run, with the same
+saving and validity, but it was faster and cheaper. The tests below were
+not registered and are reported without a confirmatory claim. Its mean response time was
 5.0 seconds against 7.4 (median 4.9 against 7.2), its API cost
 \$0.00025 against \$0.00040 per run, and it used about 100 fewer tokens
 per run (3,736 against 3,834); all three differences are significant
@@ -2469,7 +2311,7 @@ that the harness did not already do.
 \label{ch:discussion}
 
 This chapter interprets the results of Chapter~5. It first answers the
-main research question and then the two sub-questions that supply its
+main research question and then the three sub-questions that supply its
 evidence. It then relates the findings to the prior work reviewed in
 Chapter~2 and draws implications
 for households and for the design of agent-based home energy
@@ -2484,7 +2326,7 @@ future research.
 The main research question asked how a hierarchical ReAct multi-agent
 system can be designed to give households reliable, cost-saving daily
 recommendations. The design iterations answer it as much as the final
-results do, whose evidence is discussed for SQ1 and SQ2 below. The first designs left the search for a good schedule to
+results do, whose evidence is discussed for SQ1 to SQ3 below. The first designs left the search for a good schedule to
 four agents with tools that move one appliance at a time; they produced
 valid schedules but not always cheap ones on the days that required
 coordination. Retrieval of similar solved days helped only partly. The
@@ -2493,16 +2335,6 @@ turned out to do fixed work: the profiling became a deterministic step
 and the conflict repairs a feedback round of the Scheduler. The final
 pipeline of two agents in a deterministic harness then reached the
 optimum in every held-out run.
-
-The comparison with the single agent in the same harness answers the
-hierarchical part of the RQ. One agent with the same tools, context and
-checks returned the same schedules in every run, a third faster and at
-about 60\,\% of the API cost. On these problems the hierarchy added a
-model call but no decision: the Orchestrator's brief restates the
-appliance plan that the harness already passes on, and its summary can
-be written by the single agent in the same conversation. The reliability
-came from what the agents were given to work with, the solver and the
-checks, not from dividing the work among agents.
 
 Six design principles follow. First, every number the agents reason
 with should come from a deterministic tool, and the combinatorial search
@@ -2521,15 +2353,13 @@ because the response time and the cost grow with every call made one
 after the other and with every token sent. Sixth, a second agent should
 be added only when it has decisions of its own: under the first five
 principles, a single agent in the harness was as reliable as two and
-faster and cheaper. The hierarchy may still pay off where the agents'
-work is less fixed, for example without an optimiser tool or with
-requests stated in ordinary language, which this study did not test.
+faster and cheaper (SQ3).
 
 \subsection{SQ1: value and cost of the recommendations}
 
-SQ1 asked how much the pipeline's recommendations save, how often they
-are valid, and what they cost to produce, compared with a language model
-that answers without tools. On the held-out days the pipeline saved
+SQ1 asked how much the Multi-Agent Pipeline's recommendations save, how
+often they are valid, and what they cost to produce, compared with a base
+language model without tools. On the held-out days the pipeline saved
 15.9\,\% of the cost of starting every appliance when ready, the saving
 of the optimal schedule, in every one of its runs. The same model
 answering in a single prompt saved 4.1\,\%, and on average per scenario
@@ -2607,6 +2437,25 @@ for SQ2: the advantage of the pipeline over the cheapest-hours tools is
 an advantage of planning the appliances together under the limit, which
 a simple peak-aware rule also has, and not of the language model as
 such.
+
+\subsection{SQ3: one agent or two}
+
+SQ3 asked whether dividing the work between two agents makes the
+recommendations more reliable, cheaper or faster than a single agent in
+the same harness. It does not. One agent with the same tools, context
+and checks returned the same schedules in every held-out run, with the
+same validity and saving, a third faster (5.0 against 7.4 seconds) and
+at about 60\,\% of the API cost; the same held on the exploratory days
+and with the local open-weight model. On these problems the hierarchy
+added a model call but no decision: the Orchestrator's brief restates the
+appliance plan that the harness already passes on, and its summary can
+be written by the single agent in the same conversation. The reliability
+came from what the agents were given to work with, the solver and the
+checks, not from dividing the work among agents. The comparison was not
+pre-registered, but its result is unambiguous, since the two designs
+never differed in a schedule. The hierarchy may still pay off where the
+agents' work is less fixed, for example without an optimiser tool or with
+requests stated in ordinary language, which this study did not test.
 
 \section{Relation to prior work}
 \label{sec:discussion-prior}
@@ -2778,62 +2627,45 @@ but did not measure.
 \chapter{Conclusions}
 \label{ch:conclusions}
 
-Households on dynamic electricity contracts can lower their bills by
-running flexible appliances in the day's low-price hours, but planning
-several appliances against a changing price curve and a limit on the
-household's total power is hard to do every day without help. This
-thesis designed and evaluated, following Design Science Research, a
-hierarchical ReAct multi-agent system that gives a household a daily
-appliance recommendation. Two agents built in LangGraph, an Orchestrator
-and a Price-Aware Scheduler, work inside a deterministic harness that
-profiles the appliances, shows the Scheduler similar past days whose
-best schedules are known, and checks every schedule before it is
-returned; the Scheduler hands the search for the cheapest schedule to
-an optimiser tool. A single agent in the same harness was built for
-comparison. The system was evaluated on appliance cycles and usual run
-times measured in the REFIT homes and on Finnish day-ahead prices,
-under the 8\,kW threshold of the Finnish power charge, first on an
-exploratory benchmark and then on a held-out benchmark of 72 scenarios
-with hypotheses registered in advance.
+This thesis designed and evaluated, following Design Science Research,
+a hierarchical ReAct multi-agent system that gives a household a daily
+appliance recommendation under dynamic electricity prices: two agents
+in a deterministic harness that profiles the appliances, retrieves
+solved days and checks every schedule, with an optimiser tool. It was
+evaluated on REFIT appliance data and Finnish prices under the 8\,kW
+power-charge threshold, on an exploratory benchmark and on 72 held-out
+scenarios with hypotheses registered in advance.
 
 \section{Answers to the research questions}
 
-The main \textbf{RQ} asked how such a system can be designed to give
-reliable, cost-saving daily recommendations. The system became reliable
-and optimal once the arithmetic was done by deterministic tools, the
-combinatorial search by a solver, and every schedule was checked
-independently of the agents, with a deterministic fallback for the rare
-case in which the model leaves an appliance out. Moving the fixed parts
-of the work into a deterministic harness reduced four agents to two
-without changing the schedules, and a single agent in the same harness
-was as reliable as the two, a third faster and cheaper. The language
-model's part is to formulate the problem, repair what the check reports
-and explain the result to the household; on these problems, one agent
-suffices for it.
+\textbf{RQ.} The system became reliable and optimal once the arithmetic
+was done by deterministic tools, the combinatorial search by a solver,
+and every schedule was checked independently of the agents, with a
+deterministic fallback for an appliance the model leaves out. Moving the
+fixed parts of the work into the harness reduced four agents to two. The
+language model formulates the problem, repairs what the check reports
+and explains the result.
 
-\textbf{SQ1} asked how much the recommendations save, how often they are
-valid, and what they cost to produce, compared with a language model
-answering without tools. On the held-out days the pipeline saved
-15.9\,\% of the cost of starting every appliance when ready, the saving
-of the optimal schedule, in every run, against 4.1\,\% for the same
-model without tools. All 216 of its schedules were valid, against 77\,\%
-of those of the model without tools. A recommendation took 7.4 seconds
-on average and cost about \$0.0004 in API fees. Tool use, not the
-language model alone, is what makes the recommendations valuable.
+\textbf{SQ1.} On the held-out days the Multi-Agent Pipeline saved
+15.9\,\% of the cost of starting every appliance when ready, the optimal
+saving, in every run, against 4.1\,\% for the base language model
+without tools; all 216 of its schedules were valid, against 77\,\%. A
+recommendation took 7.4 seconds on average and cost about \$0.0004.
 
-\textbf{SQ2} asked under which price patterns and household loads the
-recommendations save at least as much as existing home energy
-management tools. The pipeline saved more than the cheapest-hours
-automations shared for Home Assistant under every price pattern and
-every load, by 4.6 and 6.0 percentage points per scenario on average;
-in homes with an electric car and a sauna, these automations, which plan
-each appliance on its own, broke the 8\,kW limit on up to 46\,\% of the
-days. The advantage was not significantly larger with the electrified
-load than with the lighter ones. The pipeline saved the same as the
-optimizer EMHASS under every condition. A simple peak-aware rule written
-for this study also reached the optimum, which shows that the advantage
-over the cheapest-hours tools comes from planning the appliances
-together under the limit.
+\textbf{SQ2.} The pipeline saved more than the cheapest-hours
+automations for Home Assistant under every price pattern and every load,
+by 4.6 and 6.0 percentage points per scenario; with an electric car and
+a sauna, these automations broke the 8\,kW limit on up to 46\,\% of the
+days, although the advantage was not significantly larger there. It
+saved the same as EMHASS under every condition, and a simple peak-aware
+rule also reached the optimum: the advantage comes from planning the
+appliances together under the limit.
+
+\textbf{SQ3.} Dividing the work between two agents made the
+recommendations neither more reliable nor cheaper or faster: a single
+agent in the same harness returned the same schedules in every run, a
+third faster and at about 60\,\% of the API cost. On these problems, one
+agent suffices.
 
 \section{Contributions}
 
@@ -2853,37 +2685,25 @@ library, the code, the pre-registration and all run records are
 published in the project repository, so the results can be reproduced
 and extended.
 
-\section{Implications}
+\section{Implications, limitations and further work}
 
-For research on language model agents, the results add to the evidence
-that agents are most reliable when they use solvers and checks rather
-than replace them, and they show that once they do, a hierarchy of
-agents may add cost without adding reliability. They also show that
-comparing an agent only with a language model without tools, or only
-with an optimum, hides the most relevant comparison: the simple tools
-and rules that users already have. For practice in Finland, where a
-third of households had a dynamic-price contract at the end of 2024
-(Energy Authority, 2025) and network companies are moving towards
-power-based distribution tariffs, the results suggest that the
-cheapest-hours automations popular today will become costly in homes
-with an electric car or a sauna, and that any recommendation should
-account for the household's total power. An agent-based system can
-match an optimizer on cost at a negligible API cost per day, and its
-value over an optimizer lies in the explanation and in accepting the
-household's plan without numeric configuration.
-
-\section{Limitations and further work}
-
-The evaluation is a simulation based on UK appliance data, modelled car
-and sauna loads and one commercial language model, with the peak limit
-as a hard constraint, and the explanations were not tested with users
-(Section~\ref{sec:limitations}). The most important next steps are a
-comparison of one agent with several where the agents have more to
-decide, a field study with Finnish households, a test of whether
-households understand and act on the explanations, a benchmark of
-wishes stated in ordinary language, where a rule-based tool cannot
-follow, and a version of the problem in which the peak is priced as in a
-real power-based tariff (Section~\ref{sec:future}).
+Agents are most reliable when they use solvers and checks rather than
+replace them, and once they do, a hierarchy of agents may add cost
+without adding reliability. Comparing an agent only with a language
+model without tools, or only with an optimum, hides the most relevant
+comparison: the tools households already have. In Finland, where
+cheapest-hours automations are popular and power-based tariffs are
+coming, any recommendation should account for the household's total
+power; an agent-based system matches an optimizer at a negligible API
+cost and adds an explanation and a plan stated without numeric
+configuration (Section~\ref{sec:implications}). The evaluation is a
+simulation with UK appliance data, modelled car and sauna loads, one
+commercial model and a hard peak limit, and the explanations were not
+tested with users (Section~\ref{sec:limitations}). The next steps are a
+field study with Finnish households, requests in ordinary language,
+where the hierarchy may have more to decide, a user study of the
+explanations, and a priced rather than hard peak limit
+(Section~\ref{sec:future}).
 
 \chapter*{References}
 \addcontentsline{toc}{chapter}{References}
@@ -3438,5 +3258,48 @@ Year & Title & DOI \\
 2026 & What LLM-Simulated Users Can and Cannot Tell Us About Conversational Energy Management Systems & \href{https://doi.org/10.1145/3765611.3815484}{\nolinkurl{10.1145/3765611.3815484}} \\[3pt]
 \end{longtable}
 }
+
+\chapter{Value of 15-minute price information}
+\label{sec:resolution}
+
+Since 1 October 2025 the Nord Pool day-ahead market settles Finnish
+electricity in fifteen-minute periods. The exploratory benchmark and the
+case library use hourly prices, since they cover the years before. The
+held-out set Q3 has native fifteen-minute prices, and in them prices
+genuinely vary within the hour.
+
+For each Q3 scenario, two optimal schedules were computed with the MILP
+solver. The first is planned on the real fifteen-minute prices. The
+second is planned on hourly averages, which is all the price information
+a household had before the switch, and is then settled at the real
+fifteen-minute prices. Hourly prices make the four quarters of an hour
+tie, so ties are broken towards the earliest start. The cost difference
+between the two schedules is the saving that is only reachable with
+fifteen-minute price information. Table~\ref{tab:resolution} reports the
+savings of both schedules relative to starting every appliance when it
+is ready, the additional cost reduction from fifteen-minute information,
+and the share of the achievable saving that requires it, by price
+pattern and by household load; the rows weight scenarios by their cost.
+
+\input{results/resolution_q3/resolution_by_condition.tex}
+
+Fifteen-minute price information lowers the optimal cost in 65 of the 72
+scenarios, but the effect is modest: 0.7\,\% of the cost overall, or
+3.9\,\% of the achievable saving. The remaining 96\,\% of the saving is
+available to a scheduler that plans on hourly prices, since most of the
+value lies in moving appliance cycles between hours rather than between
+quarters of an hour. The additional reduction grows with the intra-hour
+price spread (Spearman $\rho = 0.65$ across scenarios) and is largest on
+volatile and spike days with the light load, where it reaches 7.8\,\%
+in the single largest case (Q3-VL02-80, 9 April 2026). Its share of the
+achievable saving is largest for the light load (13.2\,\%) and on stable
+days (10.6\,\%), where hourly price differences are small, so intra-hour
+variation forms a larger part of the opportunity. In absolute terms the
+gain is under one cent per household and day on average, and at most
+nine cents. The schedules nevertheless differ: 190 of the 312 appliance
+start times change between the two plans. Differences between the
+schedulers on Q3 can therefore come from fifteen-minute prices, but
+mostly from how they place cycles between hours and under the peak
+limit.
 
 \end{document}
