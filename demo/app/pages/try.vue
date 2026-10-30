@@ -342,6 +342,7 @@ const priceCents = computed(() =>
   (tools.value?.priceEurPerKwh ?? []).map((p) => p * 100),
 )
 const hourlyPrices = computed(() => hourly(priceCents.value))
+const priceView = ref<'hour' | 'quarter'>('hour')
 const priceSpread = computed(() =>
   hourlyPrices.value.length
     ? Math.max(...hourlyPrices.value) - Math.min(...hourlyPrices.value)
@@ -953,17 +954,39 @@ const comparison = allResults
       <div class="grid gap-4 lg:grid-cols-2">
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-receipt-euro" class="size-4 text-primary" />
-              <span class="font-semibold text-sm text-highlighted"
-                >Electricity price on {{ tools.date }}, c/kWh</span
-              >
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-receipt-euro" class="size-4 text-primary" />
+                <span class="font-semibold text-sm text-highlighted"
+                  >Electricity price on {{ tools.date }}, c/kWh</span
+                >
+              </div>
+              <div class="flex gap-1">
+                <UButton
+                  size="xs"
+                  :variant="priceView === 'hour' ? 'solid' : 'outline'"
+                  :color="priceView === 'hour' ? 'primary' : 'neutral'"
+                  @click="priceView = 'hour'"
+                >
+                  By hour
+                </UButton>
+                <UButton
+                  size="xs"
+                  :variant="priceView === 'quarter' ? 'solid' : 'outline'"
+                  :color="priceView === 'quarter' ? 'primary' : 'neutral'"
+                  @click="priceView = 'quarter'"
+                >
+                  Every 15 min
+                </UButton>
+              </div>
             </div>
           </template>
-          <PriceBars :prices="hourlyPrices" />
+          <PriceBars v-if="priceView === 'hour'" :prices="hourlyPrices" />
+          <PriceChart v-else :prices="priceCents" />
           <p class="mt-2 text-xs text-dimmed">
             ENTSO-E day-ahead price for Finland plus margin, transfer fee,
-            electricity tax and VAT; hourly means.
+            electricity tax and VAT. The schedules are planned on the 15-minute
+            prices; hourly values are the mean of the four quarter-hours.
           </p>
         </UCard>
         <UCard v-if="current">

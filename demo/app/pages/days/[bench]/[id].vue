@@ -95,10 +95,10 @@ watch(results, (rs) => { if (!rs.some(r => keyOf(r) === selected.value) && rs[0]
             <span class="font-semibold text-sm text-highlighted">Electricity price the household pays, c/kWh</span>
           </div>
           <div class="flex gap-1">
-            <UButton size="xs" :variant="priceView === 'hour' ? 'soft' : 'ghost'" :color="priceView === 'hour' ? 'primary' : 'neutral'" @click="priceView = 'hour'">
+            <UButton size="xs" :variant="priceView === 'hour' ? 'solid' : 'outline'" :color="priceView === 'hour' ? 'primary' : 'neutral'" @click="priceView = 'hour'">
               By hour
             </UButton>
-            <UButton size="xs" :variant="priceView === 'quarter' ? 'soft' : 'ghost'" :color="priceView === 'quarter' ? 'primary' : 'neutral'" @click="priceView = 'quarter'">
+            <UButton size="xs" :variant="priceView === 'quarter' ? 'solid' : 'outline'" :color="priceView === 'quarter' ? 'primary' : 'neutral'" @click="priceView = 'quarter'">
               Every 15 min
             </UButton>
           </div>

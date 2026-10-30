@@ -29,3 +29,4 @@ data/raw/*
 
 # LangGraph Studio dev server state (langgraph dev)
 .langgraph_api/
+presentation/thesis_presentation.mp4

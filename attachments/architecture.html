@@ -1,0 +1,160 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Figure 4.1 architecture</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f8fafc;
+    --fg: #172033;
+    --muted: #5b6475;
+    --line: #64748b;
+    --neutral: #e2e8f0;
+    --input: #bfdbfe;
+    --process: #c7d2fe;
+    --storage: #99f6e4;
+    --external: #fde68a;
+    --panel: #ffffff;
+    --accent: #4338ca;
+    --warn: #b45309;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.4 Arial, Helvetica, sans-serif;
+  }
+  main { margin: 0; padding: 0; }
+  @page { size: 960px 742px; margin: 0; }
+  html, body { background: #ffffff; }
+  svg { width: 960px; height: 742px; display: block; }
+  .title { font-size: 20px; font-weight: 650; fill: var(--fg); }
+  .sub { font-size: 13px; fill: var(--muted); }
+  .label { font-size: 15px; font-weight: 650; fill: var(--fg); }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; fill: var(--accent); }
+  .tag.h { fill: var(--muted); }
+  .small { font-size: 12.5px; fill: var(--muted); }
+  .mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 12px; fill: var(--fg); }
+  .node { stroke: var(--line); stroke-width: 1.2; }
+  .agent { fill: var(--process); stroke: var(--accent); stroke-width: 1.6; }
+  .harness { fill: var(--neutral); stroke-dasharray: 5 4; }
+  .input { fill: var(--input); }
+  .storage { fill: var(--storage); }
+  .external { fill: var(--external); }
+  .panel { fill: var(--panel); stroke: var(--line); stroke-dasharray: 5 4; }
+  .edge { stroke: var(--line); stroke-width: 1.8; fill: none; }
+  .edge.fb { stroke: var(--warn); stroke-dasharray: 6 4; }
+  .edge.state { stroke-width: 1.2; stroke-dasharray: 3 4; }
+  .arrow { fill: var(--line); }
+  .arrow.fb { fill: var(--warn); }
+  .fbtext { font-size: 12.5px; font-weight: 600; fill: var(--warn); }
+  .zone { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 5; opacity: 0.7; }
+</style>
+<main>
+<svg viewBox="0 40 960 742" role="img" aria-label="Architecture of the Multi-Agent Pipeline: two language model agents inside a deterministic harness">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="arrow" />
+    </marker>
+    <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="arrow fb" />
+    </marker>
+  </defs>
+
+  <!-- title and legend -->
+  <g transform="translate(20,52)">
+    <rect width="22" height="14" rx="4" class="agent" /><text x="30" y="11.5" class="small">language model agent</text>
+    <rect x="180" width="22" height="14" rx="2" class="node harness" /><text x="210" y="11.5" class="small">deterministic harness (no LLM)</text>
+    <rect x="410" width="22" height="14" rx="2" class="node storage" /><text x="440" y="11.5" class="small">data</text>
+    <rect x="490" width="22" height="14" rx="2" class="node external" /><text x="520" y="11.5" class="small">tool</text>
+    <line x1="570" y1="7" x2="600" y2="7" class="edge fb" marker-end="url(#af)" /><text x="608" y="11.5" class="small">feedback round</text>
+  </g>
+
+  <!-- connectors (drawn first) -->
+  <path d="M470 152 V176" class="edge" marker-end="url(#a)" />
+  <path d="M470 244 V268" class="edge" marker-end="url(#a)" />
+  <path d="M470 350 V374" class="edge" marker-end="url(#a)" />
+  <path d="M470 476 V498" class="edge" marker-end="url(#a)" />
+  <path d="M470 640 V688" class="edge" marker-end="url(#a)" />
+  <text x="482" y="662" class="small">no problem, or feedback</text>
+  <text x="482" y="678" class="small">round already used</text>
+  <!-- feedback loop -->
+  <path d="M280 570 H262 V448 H298" class="edge fb" marker-end="url(#af)" />
+  <text x="252" y="505" class="fbtext" text-anchor="end">problem found:</text>
+  <text x="252" y="521" class="fbtext" text-anchor="end">sent back once</text>
+  <!-- case library and tools -->
+  <path d="M232 309 H298" class="edge" marker-end="url(#a)" />
+  <path d="M234 404 H298" class="edge" marker-start="url(#a)" marker-end="url(#a)" />
+  <!-- shared state links -->
+  <path d="M640 210 H700" class="edge state" marker-end="url(#a)" />
+  <path d="M640 309 H700" class="edge state" marker-end="url(#a)" />
+  <path d="M640 425 H700" class="edge state" marker-end="url(#a)" />
+  <path d="M640 730 H812 V578" class="edge state" marker-end="url(#a)" />
+
+  <!-- 1 input -->
+  <rect x="300" y="92" width="340" height="60" rx="10" class="node input" />
+  <text x="470" y="117" text-anchor="middle" class="label">Daily appliance plan</text>
+  <text x="470" y="137" text-anchor="middle" class="small">cycles to run, ready times and deadlines</text>
+
+  <!-- 2 orchestrator: plan -->
+  <rect x="300" y="178" width="340" height="66" rx="14" class="agent" />
+  <text x="318" y="198" class="tag">AGENT</text>
+  <text x="470" y="214" text-anchor="middle" class="label">Orchestrator: plan</text>
+  <text x="470" y="234" text-anchor="middle" class="small">turns the plan into a task brief</text>
+
+  <!-- 3 profiling and retrieval -->
+  <rect x="300" y="270" width="340" height="80" rx="4" class="node harness" />
+  <text x="318" y="290" class="tag h">HARNESS</text>
+  <text x="470" y="306" text-anchor="middle" class="label">Profiling and retrieval</text>
+  <text x="470" y="325" text-anchor="middle" class="small">appliance profiles from the household data</text>
+  <text x="470" y="341" text-anchor="middle" class="small">+ the two most similar solved days</text>
+
+  <!-- 4 scheduler -->
+  <rect x="300" y="376" width="340" height="100" rx="14" class="agent" />
+  <text x="318" y="396" class="tag">AGENT · REACT LOOP</text>
+  <text x="470" y="414" text-anchor="middle" class="label">Price-Aware Scheduler</text>
+  <text x="470" y="434" text-anchor="middle" class="small">a start time for every appliance</text>
+  <text x="470" y="454" text-anchor="middle" class="small">thought → action (tool call) → observation</text>
+
+  <!-- 5 verification gate -->
+  <path d="M470 500 L660 570 L470 640 L280 570 Z" class="node harness" />
+  <text x="470" y="532" text-anchor="middle" class="tag h">HARNESS</text>
+  <text x="470" y="551" text-anchor="middle" class="label">Verification</text>
+  <text x="470" y="570" text-anchor="middle" class="small">missing appliance, start</text>
+  <text x="470" y="586" text-anchor="middle" class="small">outside window or</text>
+  <text x="470" y="602" text-anchor="middle" class="small">peak conflict?</text>
+
+  <!-- 6 orchestrator: finalise -->
+  <rect x="300" y="690" width="340" height="80" rx="14" class="agent" />
+  <text x="470" y="718" text-anchor="middle" class="label">Orchestrator (agent): finalise</text>
+  <text x="470" y="739" text-anchor="middle" class="small">final schedule and</text>
+  <text x="470" y="756" text-anchor="middle" class="small">summary for the household</text>
+
+  <!-- left column: data and tools -->
+  <rect x="40" y="270" width="192" height="80" rx="4" class="node storage" />
+  <text x="136" y="296" text-anchor="middle" class="label">Case library</text>
+  <text x="136" y="316" text-anchor="middle" class="small">320 solved days</text>
+  <text x="136" y="334" text-anchor="middle" class="small">(retrieval, RAG)</text>
+
+  <rect x="40" y="370" width="194" height="72" rx="4" class="node external" />
+  <text x="56" y="392" class="label">Tools</text>
+  <text x="56" y="412" class="mono">get_spot_prices</text>
+  <text x="56" y="430" class="mono">optimize_schedule (MILP)</text>
+
+  <!-- right column: shared state -->
+  <rect x="702" y="178" width="220" height="400" rx="10" class="panel" />
+  <text x="812" y="206" text-anchor="middle" class="label">Shared LangGraph state</text>
+  <text x="812" y="224" text-anchor="middle" class="small">read and written by every node</text>
+  <g class="mono" text-anchor="middle">
+    <text x="812" y="262">request</text>
+    <text x="812" y="290">brief</text>
+    <text x="812" y="318">profile</text>
+    <text x="812" y="346">proposal</text>
+    <text x="812" y="374">checked schedule</text>
+    <text x="812" y="402">verification feedback</text>
+    <text x="812" y="430">round count</text>
+    <text x="812" y="458">final schedule</text>
+  </g>
+  <text x="812" y="510" text-anchor="middle" class="small">Table 4.1</text>
+</svg>
+</main>

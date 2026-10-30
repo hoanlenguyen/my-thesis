@@ -1,0 +1,110 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Figure 3.1 evaluation flow</title>
+<style>
+  :root {
+    color-scheme: light;
+    --fg: #172033;
+    --muted: #5b6475;
+    --line: #64748b;
+    --neutral: #e2e8f0;
+    --input: #bfdbfe;
+    --process: #c7d2fe;
+    --storage: #99f6e4;
+    --external: #fde68a;
+    --accent: #4338ca;
+    --band: #f1f5f9;
+  }
+  html, body { margin: 0; padding: 0; background: #ffffff; color: var(--fg); font: 14px/1.4 Arial, Helvetica, sans-serif; }
+  @page { size: 960px 692px; margin: 0; }
+  svg { width: 960px; height: 692px; display: block; }
+  .label { font-size: 15px; font-weight: 700; fill: var(--fg); }
+  .small { font-size: 12.5px; fill: var(--muted); }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; fill: var(--muted); }
+  .tag.k { fill: var(--accent); }
+  .note { font-size: 12.5px; font-style: italic; fill: var(--muted); }
+  .node { stroke: var(--line); stroke-width: 1.2; }
+  .stage { fill: var(--neutral); stroke-dasharray: 5 4; }
+  .data { fill: var(--storage); }
+  .bench { fill: var(--input); }
+  .design { fill: var(--external); }
+  .key { fill: var(--process); stroke: var(--accent); stroke-width: 1.6; }
+  .plain { fill: #ffffff; }
+  .band { fill: var(--band); stroke: none; }
+  .freeze { stroke: var(--accent); stroke-width: 1.4; stroke-dasharray: 8 5; fill: none; }
+  .edge { stroke: var(--line); stroke-width: 1.8; fill: none; }
+  .edge.held { stroke-dasharray: 2 4; }
+  .arrow { fill: var(--line); }
+</style>
+<svg viewBox="0 0 960 692" role="img" aria-label="Evaluation stages from data to the registered tests on the held-out set Q3">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="arrow" />
+    </marker>
+  </defs>
+
+  <!-- phase bands -->
+  <rect x="30" y="182" width="900" height="196" rx="12" class="band" />
+  <text x="44" y="198" class="tag">DESIGN · EXPLORATORY</text>
+  <rect x="30" y="392" width="900" height="294" rx="12" class="band" />
+  <text x="44" y="408" class="tag k">CONFIRMATION · Q3</text>
+  <path d="M30 385 H930" class="freeze" />
+
+  <!-- connectors -->
+  <path d="M480 80 V102" class="edge" marker-end="url(#a)" />
+  <path d="M250 168 V208" class="edge" marker-end="url(#a)" />
+  <path d="M710 168 V208" class="edge" marker-end="url(#a)" />
+  <path d="M250 274 V298" class="edge" marker-end="url(#a)" />
+  <path d="M250 372 V418" class="edge" marker-end="url(#a)" />
+  <path d="M710 274 V418" class="edge held" marker-end="url(#a)" />
+  <text x="724" y="314" class="note">held out: no system</text>
+  <text x="724" y="331" class="note">scored on it before</text>
+  <text x="724" y="348" class="note">the registration</text>
+  <path d="M480 484 V506" class="edge" marker-end="url(#a)" />
+  <path d="M250 572 V594" class="edge" marker-end="url(#a)" />
+  <path d="M710 572 V594" class="edge" marker-end="url(#a)" />
+
+  <!-- data -->
+  <rect x="60" y="16" width="840" height="64" rx="4" class="node data" />
+  <text x="480" y="41" text-anchor="middle" class="label">Data</text>
+  <text x="480" y="62" text-anchor="middle" class="small">REFIT appliance cycles and usual run times (18 households) · Nord Pool FI day-ahead prices · Finnish consumer tariff</text>
+
+  <!-- scenario construction -->
+  <rect x="60" y="104" width="840" height="64" rx="4" class="node stage" />
+  <text x="480" y="129" text-anchor="middle" class="label">Scenario construction (seeded, rebuildable)</text>
+  <text x="480" y="150" text-anchor="middle" class="small">price pattern × household load, 8 kW limit; every day checked feasible by the MILP</text>
+
+  <!-- benchmarks -->
+  <rect x="60" y="210" width="380" height="64" rx="10" class="node bench" />
+  <text x="250" y="235" text-anchor="middle" class="label">Exploratory benchmarks</text>
+  <text x="250" y="256" text-anchor="middle" class="small">hourly prices up to Sept 2025; case library of solved days</text>
+
+  <rect x="520" y="210" width="380" height="64" rx="10" class="node bench" />
+  <text x="710" y="235" text-anchor="middle" class="label">Held-out set Q3</text>
+  <text x="710" y="256" text-anchor="middle" class="small">72 days with fifteen-minute prices, never used in design</text>
+
+  <!-- design iterations -->
+  <rect x="60" y="300" width="380" height="72" rx="10" class="node design" />
+  <text x="250" y="323" text-anchor="middle" class="label">Design iterations 1 to 14 (build and evaluate)</text>
+  <text x="250" y="343" text-anchor="middle" class="small">four agents → retrieval → optimiser tool</text><text x="250" y="360" text-anchor="middle" class="small">→ two agents in a harness</text>
+
+  <!-- pre-registration -->
+  <rect x="60" y="420" width="840" height="64" rx="14" class="key" />
+  <text x="480" y="445" text-anchor="middle" class="label">Pre-registration committed</text>
+  <text x="480" y="466" text-anchor="middle" class="small">hypotheses, analysis script, code, prompts, tools and the held-out set are frozen</text>
+
+  <!-- run -->
+  <rect x="60" y="508" width="840" height="64" rx="4" class="node stage" />
+  <text x="480" y="533" text-anchor="middle" class="label">Run on Q3</text>
+  <text x="480" y="554" text-anchor="middle" class="small">every system on the same 72 days; GPT-6 Luna, three runs per day for systems with a language model; one scoring function</text>
+
+  <!-- outcomes -->
+  <rect x="60" y="596" width="380" height="76" rx="14" class="key" />
+  <text x="250" y="621" text-anchor="middle" class="label">Registered tests</text>
+  <text x="250" y="642" text-anchor="middle" class="small">H1a–H1c (SQ1) and H2a–H2e (SQ2),</text><text x="250" y="659" text-anchor="middle" class="small">corrected for multiple testing</text>
+
+  <rect x="520" y="596" width="380" height="76" rx="10" class="node plain" />
+  <text x="710" y="621" text-anchor="middle" class="label">Reported descriptively</text>
+  <text x="710" y="650" text-anchor="middle" class="small">single agent (SQ3), conditions, euro saving</text>
+</svg>
