@@ -32,6 +32,7 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 | `data/scenarios_q3/` | held out: the Q2 days at 8 kW with v3 windows + electrified heavy days (72; `hems build-q3`); no runs before registration |
 | `data/pilot/` | synthetic SYN-* scenarios — development only, never thesis results |
 | `data/raw/` | gitignored: REFIT CSVs (6.5 GB), price CSVs; also data of the follow-up prototypes (see "Follow-up thesis") |
+| `prototypes/` | follow-up thesis prototypes (home gateway, HIPE, OPSD, heat pump); exploratory, never thesis results |
 | `results/` | `runs.jsonl` / `pilot_real.jsonl` (+ archived `*_vN.jsonl`), `resolution/`, tables |
 | `demo/` | Nuxt 4 demo replaying recorded results (theme/components from Low-carbon-alerts); data from `tools/export_demo_data.py` → `demo/public/data`; `pnpm dev` on :3001 |
 
@@ -90,18 +91,36 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
   groups, industrial sites, what carries over and what does not), Future research item 1 widened to storage,
   smart-device and industrial loads, and the closing paragraph of the Conclusions. No numbers or results changed.
 
-## Follow-up thesis (separate branch, not part of this thesis)
+## Follow-up thesis (this branch: `new-thesis/home-gateway`)
 
-Exploratory work for a possible follow-up thesis lives on branch `new-thesis/home-gateway` (worktree
-`.claude/worktrees/new-thesis-home-gateway`, uncommitted until the author commits it): `prototypes/` (home
-gateway digital twin and agent on OPSD `residential4`; HIPE and OPSD `industrial3` scenarios; heat-pump
-prototype), `docs/proposal_spark.md`, `docs/protocol_home_gateway.md`, the `industrial_machine` appliance kind in
-`core/models.py` and `tools/__init__.py`. Keep all of it off this branch; never cite its numbers in `main.tex`.
-Its data are in `data/raw/` (gitignored): `when2heat.csv` (+ `when2heat_fi.csv`, `when2heat_de_2015_2018.csv`),
-`hipe/`, `opsd_household/`, `dwd_konstanz/`, `ev_norway/`, `prices_de_energycharts_2015_2019.csv`,
-`prices_fi_elering_2015_2017.csv`, `prices_fi_elering_2018_2021.csv`, `prices_fi_elering_2017_10.csv`.
-Its main finding agrees with this thesis: on cost, a tuned optimiser (MPC with fixed PV derating) beat the agents;
-the follow-up is reframed around plan interpretation and configuration, with a tuned MPC as the cost reference.
+This branch is the current thesis (merged from `claude/thesis-scope-expansion-47c694`, PR #1) plus exploratory
+work for a follow-up thesis: a language-model agent as the interface of a home energy gateway (PV, battery, heat
+pump, EV). Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026) and `docs/gateway_thesis_plan.html`
+(the published plan page with diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT).
+
+- **Keep the two theses apart.** `main.tex`, `src/hems/` campaigns, `data/scenarios*` and `results/` belong to the
+  current thesis; never cite prototype numbers in `main.tex`. Prototype code and outputs stay in `prototypes/`.
+  The only shared-code change is the `industrial_machine` appliance kind (`core/models.py`, `tools/__init__.py`),
+  which no thesis scenario uses.
+- `prototypes/home_gateway/`: `twin.py` (one year of OPSD `residential4` with a virtual battery: recorded, battery,
+  rules, perfect-foresight LP; `--market fi|de`, `--export spot|feedin`) and `gateway.py` (12 sample days with
+  forecasts, a control layer with fallbacks, day-ahead LP, MPC, perfect foresight and the ReAct agent;
+  `--forecast noise|weather`, `--models gpt-6-luna gpt-oss-20b`). Run from the repo root, e.g.
+  `uv run python prototypes/home_gateway/gateway.py --raw-dir D:/Study/my-thesis/data/raw --market de --forecast weather`.
+  `prototypes/hipe/`, `prototypes/opsd/`: industrial scenarios for `hems run`; `prototypes/heatpump/`: REFIT +
+  When2Heat + Norwegian EV sessions. Each folder has a README with its data and assumptions.
+- **Lessons to keep** (they decided results): value the battery and heat left at midnight the same way in the
+  optimiser and the score; the control layer holds the planned grid exchange (the battery absorbs forecast error),
+  never the planned battery power; tool descriptions never suggest a default for a decision the agent makes (a
+  suggested 50 % reserve was copied by both models); report savings in EUR when export income cancels the bill.
+- **Main finding so far:** on cost, MPC with a fixed PV derating of 0.8-0.9 closed 46-51 % of the rules-to-optimum
+  gap, more than the agents (36-39 %, GPT-6 Luna and gpt-oss-20b). The follow-up is therefore framed around plan
+  interpretation and configuration, with a tuned MPC as the cost reference, not around beating the optimiser.
+- Prototype data in `data/raw/` (gitignored, shared with the main checkout): `when2heat.csv` (+ `when2heat_fi.csv`,
+  `when2heat_de_2015_2018.csv`), `hipe/`, `opsd_household/`, `dwd_konstanz/`, `ev_norway/`,
+  `prices_de_energycharts_2015_2019.csv`, `prices_fi_elering_2015_2017.csv`, `prices_fi_elering_2018_2021.csv`,
+  `prices_fi_elering_2017_10.csv`. Agent runs need `.env` (found by walking up from the script) and, for
+  gpt-oss-20b, the Ollama server; set `LANGSMITH_TRACING=false` (the trace quota is exhausted).
 
 ## Methodology invariants (keep these true)
 
