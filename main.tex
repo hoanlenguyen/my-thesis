@@ -377,7 +377,14 @@ recommendation. Every day it receives the household's appliance plan for
 that day, namely which appliance cycles are to run and when each is
 ready and must be finished, together with the household's base load,
 its peak load limit and the day's electricity prices. It returns a start
-time for each appliance and a short explanation. To address the
+time for each appliance and a short explanation. The problem it solves
+is more general than household appliances: it places a set of shiftable
+loads, each with a power profile and a time window, under a shared power
+limit at the lowest energy cost. The electric car charge in the heaviest
+household load is already a smart device rather than an appliance.
+Section~\ref{sec:transferability} discusses which other smart devices
+and which industrial and commercial loads fit this description; the
+evaluation itself is limited to households. To address the
 limitations above, the study is guided by one main research question and
 three sub-questions:
 
@@ -2519,6 +2526,54 @@ of the language model is negligible compared with the saving, and a
 response within seconds is fast enough for a day-ahead recommendation,
 which is computed once after the prices are published.
 
+\section{Transferability to smart devices and industrial loads}
+\label{sec:transferability}
+
+The artifact was evaluated on household appliances only, but nothing in
+the pipeline is specific to washing machines or dishwashers. The
+harness, the agents and the optimiser tool see a load only as a power
+profile over its cycle, an earliest start and a deadline, and the
+household only as a base load and a peak limit (Section~\ref{sec:milp}).
+Any load that can be described in these terms can be scheduled without
+changing the agents, the tools or the check. How far the results carry
+over depends on how close a new load comes to this description.
+
+Smart devices fall into three groups. The first fits the formulation as
+it is: an electric car charger, already part of the electrified load, a
+pool pump or a robot vacuum runs a cycle that can be moved within a
+window. A charger that can vary its power is only partly covered,
+because the model fixes the profile of each cycle; splitting a charge
+into shorter blocks with a common deadline would approximate it. The
+second group stores energy. A water heater, a heat pump with a storage
+tank or the space heating of a house keeps a temperature within a band
+rather than completing a cycle, and a home battery keeps a state of
+charge. Scheduling them needs state variables for the stored energy and
+a forecast of its use, which the MILP and the check do not have. The
+third group produces power, such as rooftop solar panels. Their forecast
+could enter the formulation as a negative base load, but the cost would
+then also depend on the price at which surplus power is sold.
+
+Industrial and commercial sites share the core of the problem. A
+factory, a cold store or a depot of electric buses pays a dynamic or
+time-of-use price, often with a power charge, and has flexible
+processes, such as batch production, compressed air, pumping,
+refrigeration and vehicle charging, that can be moved within shift or
+delivery windows. Three differences limit the transfer. First, processes
+are linked: a batch must follow the step before it, machines share
+operators, and some steps cannot wait between stages, so the model would
+need precedence and resource constraints that a household does not
+have. Second, a missed deadline costs production rather than comfort,
+so a schedule would need the approval of an operator and checks of
+safety interlocks that the household harness does not perform. Third,
+there are more loads to schedule, and the solve time of the MILP, well
+under a second here, would have to be measured again. The division of
+work that this thesis found reliable carries over most directly: the
+language model takes the plan and explains the result, a solver finds
+the schedule and an independent check verifies it. The evidence does not
+carry over: the savings, validity rates and costs reported here hold for
+the households of the benchmark and were not measured for any other kind
+of load.
+
 \section{Limitations}
 \label{sec:limitations}
 
@@ -2590,9 +2645,16 @@ of an optimizer.
 \label{sec:future}
 
 Several directions for future research emerge from this study. First,
-extending the pipeline to thermal loads such as electric space heating,
-heat pumps and domestic hot water systems would address the gap
-explicitly identified by El Makroum, Zwickl-Bernhard, and Kranzl (2026).
+the pipeline could be extended beyond shiftable appliances
+(Section~\ref{sec:transferability}). Thermal and storage loads such as
+electric space heating, heat pumps, domestic hot water and home
+batteries would address the gap explicitly identified by El Makroum,
+Zwickl-Bernhard, and Kranzl (2026); they need state variables for the
+stored energy in the optimiser and in the check. A benchmark of
+light-industrial and commercial sites, built from machine-level metering
+data and the same Finnish prices, would test whether the division of
+work between agent, solver and check holds when processes have
+precedence constraints and an operator must approve the plan.
 Second, the comparison of one agent with two should be repeated where
 the agents have more to decide: without the optimiser tool, so that the
 agents must stagger the appliances with the conflict tools, and with
@@ -2702,8 +2764,9 @@ commercial model and a hard peak limit, and the explanations were not
 tested with users (Section~\ref{sec:limitations}). The next steps are a
 field study with Finnish households, requests in ordinary language,
 where the hierarchy may have more to decide, a user study of the
-explanations, and a priced rather than hard peak limit
-(Section~\ref{sec:future}).
+explanations, a priced rather than hard peak limit, and storage, smart
+device and industrial loads, which share the formulation but not yet the
+evidence (Sections~\ref{sec:transferability} and~\ref{sec:future}).
 
 \chapter*{References}
 \addcontentsline{toc}{chapter}{References}
