@@ -1,0 +1,58 @@
+{
+ "recorded": {
+  "cost_eur": 871.252,
+  "import_bill_eur": 1092.71,
+  "export_revenue_eur": 221.459,
+  "import_kwh": 3752.815,
+  "export_kwh": 8456.302,
+  "hp_kwh": 2578.457,
+  "ev_kwh": 984.634,
+  "pv_kwh": 11015.574,
+  "self_consumption_pct": 23.233,
+  "saving_vs_recorded_eur": 0.0,
+  "max_peak_import_kw": 5.268,
+  "min_indoor_c": 21.0
+ },
+ "battery": {
+  "cost_eur": 501.223,
+  "import_bill_eur": 672.245,
+  "export_revenue_eur": 171.021,
+  "import_kwh": 2300.57,
+  "export_kwh": 6851.376,
+  "hp_kwh": 2578.457,
+  "ev_kwh": 984.634,
+  "pv_kwh": 11015.574,
+  "self_consumption_pct": 37.803,
+  "saving_vs_recorded_eur": 370.028,
+  "max_peak_import_kw": 5.268,
+  "min_indoor_c": 21.0
+ },
+ "rules": {
+  "cost_eur": 479.829,
+  "import_bill_eur": 642.672,
+  "export_revenue_eur": 162.843,
+  "import_kwh": 2203.42,
+  "export_kwh": 6566.262,
+  "hp_kwh": 2779.865,
+  "ev_kwh": 984.634,
+  "pv_kwh": 11015.574,
+  "self_consumption_pct": 40.391,
+  "saving_vs_recorded_eur": 391.423,
+  "max_peak_import_kw": 7.052,
+  "min_indoor_c": 21.0
+ },
+ "optimum": {
+  "cost_eur": 387.144,
+  "import_bill_eur": 575.747,
+  "export_revenue_eur": 188.603,
+  "import_kwh": 2010.318,
+  "export_kwh": 6640.297,
+  "hp_kwh": 2405.274,
+  "ev_kwh": 984.634,
+  "pv_kwh": 11015.574,
+  "self_consumption_pct": 39.719,
+  "saving_vs_recorded_eur": 484.108,
+  "max_peak_import_kw": 12.704,
+  "min_indoor_c": 20.0
+ }
+}

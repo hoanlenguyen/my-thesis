@@ -26,8 +26,10 @@ SLOT_HOURS = SLOT_MINUTES / 60
 # 20 Oct 2026 the limit is always "realistic" (8 kW), the earlier sets also hold "strict" (3.5 kW).
 ScenarioType = str
 # The benchmarks use the three REFIT kinds; the demo's "Try it" view also offers constant-power loads
-# from the Low-carbon-alerts appliance catalog (EV charger, sauna, hot tub, electric oven).
-FlexibleKind = Literal["washing_machine", "dishwasher", "tumble_dryer", "ev_charger", "sauna", "hot_tub", "electric_oven"]
+# from the Low-carbon-alerts appliance catalog (EV charger, sauna, hot tub, electric oven). "industrial_machine" is
+# only used by the exploratory HIPE prototype (prototypes/hipe).
+FlexibleKind = Literal["washing_machine", "dishwasher", "tumble_dryer", "ev_charger", "sauna", "hot_tub", "electric_oven",
+                       "industrial_machine"]  # fmt: skip
 
 
 class FlexibleAppliance(BaseModel):
