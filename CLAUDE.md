@@ -31,7 +31,7 @@ evaluation) in `src/hems/`. Author: Hoan Le. Supervisor: Yueqiang Xu.
 | `data/scenarios_v4/` | v3 + U-?E??-80: each heavy day with a 3.7 kW car charge and a fixed 6.8 kW sauna (72; `hems build-electrified`) |
 | `data/scenarios_q3/` | held out: the Q2 days at 8 kW with v3 windows + electrified heavy days (72; `hems build-q3`); no runs before registration |
 | `data/pilot/` | synthetic SYN-* scenarios — development only, never thesis results |
-| `data/raw/` | gitignored: REFIT CSVs (6.5 GB), price CSVs |
+| `data/raw/` | gitignored: REFIT CSVs (6.5 GB), price CSVs; also data of the follow-up prototypes (see "Follow-up thesis") |
 | `results/` | `runs.jsonl` / `pilot_real.jsonl` (+ archived `*_vN.jsonl`), `resolution/`, tables |
 | `demo/` | Nuxt 4 demo replaying recorded results (theme/components from Low-carbon-alerts); data from `tools/export_demo_data.py` → `demo/public/data`; `pnpm dev` on :3001 |
 
@@ -84,6 +84,24 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 - The single agent and the MILP are no longer compared systems (Amendment 2); old H1–H2c stay confirmed
   on Q as history. Benchmarks: factorial `data/scenarios_v2` (exploratory) and `data/scenarios_q2`
   (held out, run only after the Q2 registration is committed).
+- **Scope of the text (30 Oct 2026):** the evaluation stays household-only, but `main.tex` now states that the
+  problem is general (shiftable loads with windows under a power limit): a scope paragraph in `sec:problem`, a new
+  `sec:transferability` (6.4, "Transferability to smart devices and industrial loads": smart devices in three
+  groups, industrial sites, what carries over and what does not), Future research item 1 widened to storage,
+  smart-device and industrial loads, and the closing paragraph of the Conclusions. No numbers or results changed.
+
+## Follow-up thesis (separate branch, not part of this thesis)
+
+Exploratory work for a possible follow-up thesis lives on branch `new-thesis/home-gateway` (worktree
+`.claude/worktrees/new-thesis-home-gateway`, uncommitted until the author commits it): `prototypes/` (home
+gateway digital twin and agent on OPSD `residential4`; HIPE and OPSD `industrial3` scenarios; heat-pump
+prototype), `docs/proposal_spark.md`, `docs/protocol_home_gateway.md`, the `industrial_machine` appliance kind in
+`core/models.py` and `tools/__init__.py`. Keep all of it off this branch; never cite its numbers in `main.tex`.
+Its data are in `data/raw/` (gitignored): `when2heat.csv` (+ `when2heat_fi.csv`, `when2heat_de_2015_2018.csv`),
+`hipe/`, `opsd_household/`, `dwd_konstanz/`, `ev_norway/`, `prices_de_energycharts_2015_2019.csv`,
+`prices_fi_elering_2015_2017.csv`, `prices_fi_elering_2018_2021.csv`, `prices_fi_elering_2017_10.csv`.
+Its main finding agrees with this thesis: on cost, a tuned optimiser (MPC with fixed PV derating) beat the agents;
+the follow-up is reframed around plan interpretation and configuration, with a tuned MPC as the cost reference.
 
 ## Methodology invariants (keep these true)
 
