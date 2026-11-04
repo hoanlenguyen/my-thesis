@@ -71,6 +71,14 @@ td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-spa
 .figure { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; margin-top: 18px; overflow-x: auto; }
 .figure svg { display: block; min-width: 760px; width: 100%; height: auto; }
 .caption { font-size: 0.86rem; color: var(--muted); margin-top: 8px; max-width: 80ch; }
+figure.figure { margin: 18px 0 0; }
+figure.figure figcaption { font-size: 0.86rem; color: var(--muted); padding: 10px 16px 14px; max-width: 90ch; border-top: 1px solid var(--line); }
+svg .icon { fill: none; stroke: var(--fg); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+svg .icon.agent { stroke: var(--grid); }
+svg .icon.sun { stroke: var(--sun); }
+svg .sub { font-size: 12px; fill: var(--muted); }
+svg .lbl { font-size: 11.5px; fill: var(--muted); }
+svg .lbl.agent { fill: var(--grid); }
 
 svg text { font-family: var(--body); fill: var(--fg); }
 svg .small { font-size: 11.5px; fill: var(--muted); }
@@ -87,6 +95,22 @@ svg .arrow.sun { stroke: var(--sun); }
 svg .head { fill: var(--muted); }
 svg .head.agent { fill: var(--grid); }
 svg .head.sun { fill: var(--sun); }
+svg .head.warn { fill: var(--warn); }
+svg .head.ok { fill: var(--ok); }
+svg .ln { fill: none; stroke-width: 2; }
+svg .ln.comm { stroke: var(--warn); stroke-width: 1.6; stroke-dasharray: 3 4; }
+svg .ln.dc { stroke: var(--ok); }
+svg .ln.ac { stroke: var(--sun); }
+svg .ln.two { stroke: var(--grid); }
+svg .dt { fill: color-mix(in srgb, var(--fg) 7%, transparent); stroke: var(--fg); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+svg .dt.grid { fill: var(--grid-soft); }
+svg .dt.sun { fill: var(--sun-soft); stroke: var(--sun); }
+svg .st { fill: none; stroke: var(--fg); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+svg .st.sun { stroke: var(--sun); }
+svg .acc { fill: var(--sun); }
+svg .soft { fill: color-mix(in srgb, var(--fg) 7%, transparent); stroke: none; }
+svg .acc-g { fill: var(--grid); }
+svg .acc-ok { fill: var(--ok); }
 svg .lane { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
 svg .step { fill: var(--grid); }
 svg .stepnum { fill: var(--panel); font: 600 11px var(--mono); }
@@ -103,30 +127,167 @@ ul.tight li { margin: 4px 0; }
 
 <div class="wrap">
 <header class="prose">
-  <div class="eyebrow">Follow-up thesis · design draft · 30 Oct 2026</div>
-  <h1>Home Gateway Agent Plan</h1>
-  <p class="lede">A tuned model predictive controller plans the home's PV, battery, heat pump and EV charging. A language-model agent turns what the household says into constraints, configures the controller from the house's own history, and explains the plan. A deterministic checker and control layer keep it safe.</p>
-  <p class="meta">Branch new-thesis/home-gateway · Prototypes in prototypes/home_gateway · Nothing registered yet</p>
+  <div class="eyebrow">Master's thesis plan · Design Science Research · 3 Nov 2026</div>
+  <h1>Design of a Multi-Agent Home Energy Gateway: Interpreting Household Plans and Configuring an Optimiser</h1>
+  <p class="lede">A home energy gateway controls rooftop PV (photovoltaic solar panels), a home battery, a heat pump and an EV (electric vehicle) charger. A tuned optimiser, MPC (model predictive control), plans them; four language-model agents handle what an optimiser cannot: they turn the household's plain-language plans into constraints, explain the plan, react to plug-ins and deviations, and configure the optimiser from the house's own history. A deterministic checker and control layer keep every plan safe.</p>
+  <ul class="tight">
+    <li><strong>Problem:</strong> optimisers save more than fixed rules, but need expert set-up that households cannot provide (section 1).</li>
+    <li><strong>Questions:</strong> four sub-questions (SQ): interpretation (SQ1), configuration (SQ2), reliability and cost (SQ3), conditions (SQ4) (section 2).</li>
+    <li><strong>Design:</strong> four agents, one per event, inside a verified harness (sections 3-4).</li>
+    <li><strong>Evaluation:</strong> one house with PV, heat pump and EV, real weather and prices, against a tuned MPC and an auto-tuner (sections 5-6). The house comes from the OPSD Household dataset: measured 15-minute energy data of six homes in Konstanz, Germany (2015-2019); other homes of the same dataset test the Configurator across houses.</li>
+    <li><strong>Progress:</strong> two pilots done; plan interpretation is near the ceiling for a cloud model, and the Configurator matched an expert setting (section 9).</li>
+  </ul>
 </header>
 
 <section>
-  <h2>1. Why the thesis is reframed</h2>
+  <h2>1. Problem</h2>
   <div class="prose">
-    <p>Every prototype so far showed the same thing: on cost, an optimiser or a simple tuned rule matches or beats the agent. In the 12-day gateway pilot (German prices, weather-driven forecasts), the agents closed more of the gap between simple rules and perfect foresight than default model predictive control (MPC), but MPC with one fixed setting (plan with 90 % of the PV forecast) closed more than either agent.</p>
+    <p>A home energy gateway is the box in the meter cabinet or on the home network that reads the smart meter and controls the home's energy assets: the solar inverter, the battery, the EV charger, the heat pump and the smart appliances. Its job is to decide every few minutes when each asset draws, stores or exports power, so that the household pays less, uses more of its own solar power and stays within the limits set by the grid operator.</p>
+
   </div>
-  <div class="evidence">
-    <div class="bars" role="img" aria-label="Share of the rules-to-optimum gap closed, 12 days">
-      <span>Rules</span><div class="track"><div class="fill" style="width:0%"></div></div><span class="val">0 %</span>
-      <span>Default MPC, at checkpoints</span><div class="track"><div class="fill" style="width:23%"></div></div><span class="val">23 %</span>
-      <span>Default MPC, hourly</span><div class="track"><div class="fill" style="width:31%"></div></div><span class="val">31 %</span>
-      <span>Agent, GPT-6 Luna</span><div class="track"><div class="fill agent" style="width:36%"></div></div><span class="val">36 %</span>
-      <span>Agent, gpt-oss-20b (local)</span><div class="track"><div class="fill agent" style="width:39%"></div></div><span class="val">39 %</span>
-      <span>Tuned MPC (PV × 0.9), checkpoints</span><div class="track"><div class="fill tuned" style="width:46%"></div></div><span class="val">46 %</span>
-      <span>Tuned MPC (PV × 0.9), hourly</span><div class="track"><div class="fill tuned" style="width:51%"></div></div><span class="val">51 %</span>
-      <span>Perfect foresight</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">100 %</span>
-    </div>
+  <figure class="figure">
+  <svg viewBox="0 0 1130 770" role="img" aria-label="A home energy system: solar PV and a wind turbine feed inverters, inverters and the grid meet at the smart meter, and the energy management controller reads the meter and inverters, takes prices, weather and the household's plans, and sets the battery and the home's loads; it is the gateway this thesis builds on.">
+    <defs>
+      <marker id="hc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head warn" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="hd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head ok" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head sun" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="ht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
+
+    </defs>
+
+    <!-- generation and grid -->
+    <g><circle class="dt sun" cx="58" cy="44" r="11"/><path class="st sun" d="M58 24 V28 M58 60 V64 M38 44 H42 M74 44 H78 M44 30 L47 33 M69 55 L72 58 M72 30 L69 33 M44 58 L47 55"/></g>
+    <path class="dt grid" d="M90 128 L118 66 H214 L186 128 Z"/>
+    <path class="st" d="M104 97 H200 M150 66 L134 128 M182 66 L166 128 M118 66 L102 128 M150 128 V146 M128 146 H172"/>
+    <text class="title" x="150" y="170" text-anchor="middle">Solar PV</text>
+
+    <rect class="box" x="300" y="66" width="130" height="50" rx="6"/>
+    <g transform="translate(306.0,73.0) scale(0.750)"><path class="st" d="M14 20 L10 9 M34 20 L38 9"/><rect class="dt" x="5" y="20" width="38" height="16" rx="4"/><circle class="acc-ok" cx="12" cy="28" r="2"/><circle class="acc-ok" cx="18" cy="28" r="2"/><path class="st" d="M26 28 H37"/></g>
+    <text class="title" x="346" y="96">PV gateway</text>
+
+    <path class="dt" d="M565 34 L542 158 H588 Z"/>
+    <path class="st" d="M528 58 H602 M534 84 H596 M556 84 L581 124 M574 84 L549 124 M549 124 H581 M530 158 H600"/>
+    <circle class="acc-g" cx="528" cy="58" r="3"/><circle class="acc-g" cx="602" cy="58" r="3"/>
+    <circle class="acc-g" cx="534" cy="84" r="3"/><circle class="acc-g" cx="596" cy="84" r="3"/>
+    <text class="title" x="565" y="182" text-anchor="middle">Public grid</text>
+
+    <path class="dt" d="M791 176 L793 84 H797 L799 176 Z"/>
+    <path class="dt" d="M795 80 Q790 54 793 28 Q799 52 795 80 Z M795 80 Q770 96 750 106 Q768 88 795 80 Z M795 80 Q818 96 838 108 Q815 104 795 80 Z"/>
+    <circle class="dt grid" cx="795" cy="80" r="5"/>
+    <path class="st" d="M760 176 H830"/>
+    <text class="title" x="795" y="198" text-anchor="middle">Wind turbine</text>
+
+    <rect class="box" x="930" y="40" width="140" height="50" rx="6"/>
+    <g transform="translate(936.0,47.0) scale(0.750)"><path class="st" d="M14 20 L10 9 M34 20 L38 9"/><rect class="dt" x="5" y="20" width="38" height="16" rx="4"/><circle class="acc-ok" cx="12" cy="28" r="2"/><circle class="acc-ok" cx="18" cy="28" r="2"/><path class="st" d="M26 28 H37"/></g>
+    <text class="title" x="976" y="70">Wind gateway</text>
+
+    <!-- conversion and metering -->
+    <rect class="box" x="60" y="236" width="160" height="80" rx="6"/>
+    <g transform="translate(70.0,250.0) scale(1.042)"><rect class="dt" x="10" y="3" width="28" height="40" rx="4"/><rect class="dt grid" x="15" y="9" width="18" height="10" rx="2"/><path class="st" d="M17 30 Q20.5 25 24 30 T31 30"/><path class="st" d="M16 43 V46 M32 43 V46"/></g>
+    <text class="title" x="124" y="272">Solar</text>
+    <text class="title" x="124" y="290">inverter</text>
+
+    <rect class="box" x="490" y="236" width="150" height="80" rx="6"/>
+    <g transform="translate(500.0,250.0) scale(1.042)"><rect class="dt" x="9" y="3" width="30" height="42" rx="5"/><rect class="dt grid" x="14" y="9" width="20" height="10" rx="2"/><path class="st" d="M17 14 H20 M23 14 H26 M29 14 H31"/><circle class="dt" cx="24" cy="32" r="6"/><path class="st" d="M24 32 L28 28"/></g>
+    <text class="title" x="552" y="272">Smart</text>
+    <text class="title" x="552" y="290">meter</text>
+
+    <rect class="box" x="910" y="236" width="160" height="80" rx="6"/>
+    <g transform="translate(920.0,250.0) scale(1.042)"><rect class="dt" x="10" y="3" width="28" height="40" rx="4"/><rect class="dt grid" x="15" y="9" width="18" height="10" rx="2"/><path class="st" d="M17 30 Q20.5 25 24 30 T31 30"/><path class="st" d="M16 43 V46 M32 43 V46"/></g>
+    <text class="title" x="974" y="272">Wind</text>
+    <text class="title" x="974" y="290">inverter</text>
+
+    <!-- the controller: the gateway of this thesis -->
+    <rect class="agentbox" x="440" y="370" width="250" height="78" rx="8"/>
+    <g transform="translate(450.0,383.0) scale(1.083)"><path class="st" d="M18 11 V5 M24 11 V5 M30 11 V5 M18 37 V43 M24 37 V43 M30 37 V43 M11 18 H5 M11 24 H5 M11 30 H5 M37 18 H43 M37 24 H43 M37 30 H43"/><rect class="dt grid" x="11" y="11" width="26" height="26" rx="5"/><path class="st" d="M19 19 L29 20 L28 29 Z"/><circle class="acc-g" cx="19" cy="19" r="2.6"/><circle class="acc-g" cx="29" cy="20" r="2.6"/><circle class="acc-g" cx="28" cy="29" r="2.6"/></g>
+    <text class="title" x="508" y="398">Energy management</text>
+    <text class="title" x="508" y="416">controller (EMC)</text>
+    <text class="lbl agent" x="508" y="436">= the gateway in this thesis</text>
+
+    <!-- inputs the EMC needs from outside the house -->
+    <rect class="sunbox" x="880" y="476" width="200" height="64" rx="6"/>
+    <g transform="translate(888.0,484.0) scale(0.958)"><circle class="dt sun" cx="17" cy="15" r="7"/><path class="dt" d="M13 37 H36 A7.5 7.5 0 0 0 36 22 A10 10 0 0 0 17 25 A6 6 0 0 0 13 37 Z"/><path class="st sun" d="M18 33 L23 29 L27 31 L32 26"/></g>
+    <text class="title" x="940" y="504">Prices, weather</text>
+    <text class="sub" x="940" y="522">day-ahead, forecasts</text>
+
+    <rect class="box" x="880" y="596" width="200" height="64" rx="6"/>
+    <g transform="translate(888.0,604.0) scale(0.958)"><rect class="dt" x="13" y="3" width="22" height="42" rx="4"/><path class="st" d="M21 7 H27"/><path class="dt grid" d="M17 13 H31 V23 H22 L19 26 V23 H17 Z"/><circle class="acc-g" cx="24" cy="39" r="1.6"/></g>
+    <text class="title" x="940" y="624">Household app</text>
+    <text class="sub" x="940" y="642">plans, messages</text>
+
+    <!-- storage -->
+    <rect class="box" x="60" y="490" width="140" height="170" rx="8"/>
+    <g transform="translate(90.0,500.0) scale(1.667)"><rect class="dt" x="10" y="3" width="28" height="42" rx="4"/><rect class="dt" x="16" y="9" width="16" height="7" rx="1.5"/><rect class="acc-ok" x="17.5" y="10.5" width="9" height="4" rx="0.8"/><path class="st" d="M17 24 H31 M17 30 H31 M17 36 H31"/></g>
+    <text class="title" x="130" y="610" text-anchor="middle">Home</text>
+    <text class="title" x="130" y="628" text-anchor="middle">battery</text>
+
+    <!-- the home and its loads -->
+    <path class="icon" d="M300 560 L560 488 L820 560 M326 553 V694 H794 V553"/>
+    <text class="title" x="560" y="716" text-anchor="middle">Home and its loads</text>
+    <path class="ln ac" d="M350 622 H770 M372 622 V612 M482 622 V612 M600 622 V612 M372 622 V632 M482 622 V632 M592 622 V632 M702 622 V632"/>
+    <g transform="translate(354.0,576.0) scale(0.750)"><path class="dt sun" d="M24 4 A13 13 0 0 1 32 27 Q30 29.5 30 33 H18 Q18 29.5 16 27 A13 13 0 0 1 24 4 Z"/><path class="st" d="M18 38 H30 M20 42 H28 M21 33 V25 L24 22 L27 25 V33"/></g>
+    <text class="lbl" x="372" y="572" text-anchor="middle">lighting</text>
+    <g transform="translate(462.0,574.0) scale(0.833)"><rect class="dt" x="3" y="9" width="42" height="30" rx="4"/><circle class="dt grid" cx="19" cy="24" r="10"/><path class="st" d="M19 24 Q19 17 23 16 M19 24 Q25 27 25 31 M19 24 Q13 28 10 25"/><circle class="acc-g" cx="19" cy="24" r="2"/><path class="st" d="M34 15 H41 M34 20 H41 M34 25 H41 M34 30 H41"/><path class="st" d="M9 39 V43 M39 39 V43"/></g>
+    <text class="lbl" x="482" y="572" text-anchor="middle">heat pump</text>
+    <g transform="translate(580.0,575.0) scale(0.792)"><rect class="dt" x="6" y="4" width="22" height="38" rx="4"/><rect class="dt grid" x="10" y="9" width="14" height="8" rx="1.5"/><path class="acc" d="M19 21 L14 30 H18 L16 38 L23 28 H19 L21 21 Z"/><path class="st" d="M28 27 C38 27 40 33 40 39 V43"/><path class="st" d="M3 45 H31"/></g>
+    <g transform="translate(628.0,572.0) scale(0.917)"><path class="dt" d="M3 31 L8 21 Q10 17 15 17 H33 Q38 17 40 21 L45 31 V37 H3 Z"/><path class="dt grid" d="M12 22 L14 19 H23 V24 H11 Z M26 19 H34 L37 24 H26 Z"/><circle class="dt" cx="13" cy="37" r="4.5"/><circle class="dt" cx="35" cy="37" r="4.5"/><circle class="acc" cx="42" cy="28" r="1.5"/></g>
+    <text class="lbl" x="630" y="566" text-anchor="middle">EV charger and car</text>
+    <g transform="translate(354.0,636.0) scale(0.750)"><rect class="dt" x="11" y="3" width="26" height="42" rx="4"/><path class="st" d="M11 17 H37 M16 8 V12 M16 22 V30"/><circle class="acc-g" cx="31" cy="9" r="1.6"/></g>
+    <text class="lbl" x="372" y="688" text-anchor="middle">fridge</text>
+    <g transform="translate(464.0,636.0) scale(0.750)"><rect class="dt" x="7" y="4" width="34" height="40" rx="4"/><path class="st" d="M7 12 H41 M27 8 H35"/><circle class="acc-g" cx="13" cy="8" r="1.6"/><circle class="dt grid" cx="24" cy="28" r="10"/><path class="st" d="M16 29 Q20 25 24 29 T32 28"/></g>
+    <text class="lbl" x="482" y="688" text-anchor="middle">washer</text>
+    <g transform="translate(574.0,636.0) scale(0.750)"><rect class="dt" x="7" y="4" width="34" height="40" rx="4"/><path class="st" d="M7 12 H41 M13 8 H22"/><circle class="acc-g" cx="35" cy="8" r="1.6"/><path class="st" d="M14 21 V35 M20 19 V35 M26 21 V35 M32 19 V35 M12 35 H36"/></g>
+    <text class="lbl" x="592" y="688" text-anchor="middle">dishwasher</text>
+    <g transform="translate(683.0,636.0) scale(0.792)"><rect class="dt grid" x="9" y="9" width="30" height="21" rx="2.5"/><path class="dt" d="M4 33 H44 L41 38 H7 Z"/></g>
+    <text class="lbl" x="702" y="688" text-anchor="middle">laptop</text>
+
+    <!-- DC lines -->
+    <path class="ln dc" d="M200 92 H298" marker-end="url(#hd)"/>
+    <path class="ln dc" d="M365 116 V200 H180 V234" marker-end="url(#hd)"/>
+    <path class="ln dc" d="M1000 90 V234" marker-end="url(#hd)"/>
+    <path class="ln dc" d="M130 490 V440 H438" marker-start="url(#hd)" marker-end="url(#hd)"/>
+    <!-- AC lines -->
+    <path class="ln ac" d="M220 276 H488" marker-end="url(#ha)"/>
+    <path class="ln ac" d="M910 276 H642" marker-end="url(#ha)"/>
+    <!-- two-way electricity -->
+    <path class="ln two" d="M565 188 V234" marker-start="url(#ht)" marker-end="url(#ht)"/>
+    <path class="ln two" d="M565 448 V486" marker-start="url(#ht)" marker-end="url(#ht)"/>
+    <!-- communication -->
+    <path class="ln comm" d="M432 92 H516" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <path class="ln comm" d="M614 92 H744" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <path class="ln comm" d="M846 66 H928" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <path class="ln comm" d="M565 318 V368" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <text class="lbl" x="573" y="348">meter data</text>
+    <path class="ln comm" d="M140 318 V400 H438" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <text class="lbl" x="230" y="394">Modbus / SunSpec</text>
+    <path class="ln comm" d="M990 318 V392 H692" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <text class="lbl" x="870" y="386">Modbus</text>
+    <path class="ln comm" d="M878 508 H866 V408 H692" marker-end="url(#hc)"/>
+    <path class="ln comm" d="M878 628 H850 V428 H692" marker-start="url(#hc)" marker-end="url(#hc)"/>
+    <path class="ln comm" d="M202 590 H316" marker-end="url(#hc)"/>
+    <text class="lbl" x="214" y="582">setpoints</text>
+
+    <!-- legend -->
+    <path class="ln comm" d="M60 748 H100"/><text class="lbl" x="108" y="752">communication</text>
+    <path class="ln dc" d="M250 748 H290"/><text class="lbl" x="298" y="752">DC power</text>
+    <path class="ln ac" d="M410 748 H450"/><text class="lbl" x="458" y="752">AC power</text>
+    <path class="ln two" d="M570 748 H610"/><text class="lbl" x="618" y="752">two-way power flow</text>
+  </svg>
+  </figure>
+  <div class="prose">
+    <h3>How gateways plan today, and where they fall short</h3>
+    <ul class="tight">
+      <li><strong>Devices do not speak one language.</strong> A market study for ElaadNL counted 26 protocols and communication methods in home energy devices and concluded that there is no interoperability across the board; Modbus (a common protocol for reading and writing device values) dominates inside the home, with S2, EEBUS, Matter and OCPP (Open Charge Point Protocol) competing as common standards (<a href="https://elaad.nl/wp-content/uploads/downloads/Residential-Flexibility-march-2025.pdf" target="_blank" rel="noopener">ElaadNL, 2025</a>; <a href="https://www.aceee.org/sites/default/files/proceedings/ssb26/pdfs/323_0959_1434_001151.pdf" target="_blank" rel="noopener">ACEEE, 2026</a>). Many inverters, chargers and heat pumps are reachable only through their maker's cloud.</li>
+      <li><strong>Several controllers fight over one device.</strong> An EV charger can receive commands from the car's app, the charger's app, a smart-charging service, a flexibility service and the energy supplier at the same time (<a href="https://es.catapult.org.uk/insight/making-home-energy-management-work-for-consumers/" target="_blank" rel="noopener">Energy Systems Catapult, 2026</a>).</li>
+      <li><strong>The grid operator now sets limits too.</strong> In Germany, heat pumps and wallboxes above 4.2 kW installed since 2024 must accept power reductions from the grid operator through the smart meter gateway and a control box (§14a of the Energy Industry Act, EnWG), so the home's own plan has to fit inside an external limit (<a href="https://docs.evcc.io/en/docs/features/14a-enwg-steuve" target="_blank" rel="noopener">evcc documentation</a>; <a href="https://www.gridx.ai/knowledge/meter-box-14a-enwg-compliance-explained" target="_blank" rel="noopener">gridX</a>).</li>
+      <li><strong>Planning is mostly by fixed rules.</strong> Typical rules are "charge the car from PV surplus" or "charge the battery when the price is below X". Rules leave savings unused: model predictive control (MPC), which plans ahead with price and weather forecasts, cut the energy cost of a PV and battery home by 13.5 % against a rule-based strategy (<a href="https://arxiv.org/pdf/1912.06943" target="_blank" rel="noopener">Seal et al., 2019</a>), and stochastic MPC did best under realistic forecast errors (<a href="https://research-hub.nrel.gov/en/publications/home-energy-management-under-realistic-and-uncertain-conditions-a-2/" target="_blank" rel="noopener">NREL</a>).</li>
+      <li><strong>An optimiser needs an expert to set it up.</strong> MPC needs exact parameters: when the car leaves and how full it must be, the comfort band of each room, battery reserve, how far to trust the PV forecast. Households do not think in these parameters. Usability tests of smart heating controls found that none met the effectiveness and satisfaction benchmarks, schedule set-up being the main problem (<a href="https://www.aceee.org/files/proceedings/2012/data/papers/0193-000022.pdf" target="_blank" rel="noopener">ACEEE, 2012</a>), and Finnish households named too complicated systems as a barrier to adoption (<a href="https://oulurepo.oulu.fi/handle/10024/34035" target="_blank" rel="noopener">Tuomela et al., 2021</a>). Settings also go stale when the household's routine, the season or the tariff changes.</li>
+    </ul>
+
+    <h3>Where AI agents fit</h3>
+    <p>Recent work uses language-model agents as the interface between the household and the optimiser. They turn plain-language preferences into optimisation constraints (<a href="https://arxiv.org/html/2503.21360v1" target="_blank" rel="noopener">Sanguinetti et al., 2025</a>; <a href="https://www.qeios.com/read/EVPWM7/pdf" target="_blank" rel="noopener">Michelon et al., 2025</a>) or schedule appliances directly with ReAct (reasoning and acting) agents and tools (<a href="https://arxiv.org/abs/2510.26603v1" target="_blank" rel="noopener">El Makroum et al., 2025</a>; <a href="https://arxiv.org/abs/2607.04569" target="_blank" rel="noopener">Jonah et al., 2026</a>). The direct schedulers come close to the MILP (mixed-integer linear programming) optimum, but Jonah et al. report fabricated schedules and misstated deadlines and recommend a deterministic validator before any device is switched. Our own household thesis found the same: an optimiser plus checker was reliable, agents writing schedules were not.</p>
+    <p>This thesis therefore gives the agent the parts an optimiser cannot do: <strong>interpret</strong> the household's plans and changes into constraints, <strong>configure</strong> the MPC from the house's own history, and <strong>explain</strong> the plan. The MPC computes the schedule and a checker and control layer switch the devices. Our gateway pilot shows why the agent should not plan for cost itself: in 12 days (German prices, weather-driven forecasts) the agents closed more of the gap between rules and perfect foresight than default MPC, but MPC with one fixed setting (plan with 90 % of the PV forecast) closed more than either agent.</p>
   </div>
-  <p class="caption">Share of the cost gap between rules and perfect foresight closed, OPSD <span class="mono">residential4</span>, 12 days of 2016, adjusted cost. The tuned setting was chosen on the same days; 0.8 gives 45 % and 49 %.</p>
   <div class="shift">
     <div><div class="label">Agent role</div><div class="from">Plans and replans to save money</div><div class="to">Interprets the household, configures and explains the optimiser</div></div>
     <div><div class="label">Cost reference</div><div class="from">Default MPC</div><div class="to">Expert-tuned MPC, which the agent must match, not beat</div></div>
@@ -137,111 +298,332 @@ ul.tight li { margin: 4px 0; }
 <section>
   <h2>2. Research questions</h2>
   <div class="prose">
-    <p><strong>RQ.</strong> How can a language-model agent make a home energy gateway usable without expert configuration, by interpreting the household's plans and configuring and explaining an optimiser, while keeping control reliable?</p>
+    <p><strong>RQ.</strong> How can a language-model agent let a home energy gateway work from the household's plain-language plans without expert configuration, by interpreting the plans and configuring and explaining an optimiser, while keeping control reliable?</p>
+    <p>Usability is not measured with users: the claim is "without expert configuration, from plans written by people other than the author". A usability study is future work.</p>
   </div>
   <div class="scroll"><table>
-    <thead><tr><th>Sub-question</th><th>Measured by</th><th>Draft hypothesis</th></tr></thead>
+    <thead><tr><th>Sub-question</th><th>Measured by</th><th>Draft hypothesis (thresholds fixed at registration)</th></tr></thead>
     <tbody>
-      <tr><td><strong>SQ1 Interpretation.</strong> How accurately does the agent turn plain-language plans and changes into constraints, and are the requirements then met?</td><td>Precision and recall of constraints vs answer key; comfort, EV and away requirements met</td><td>H1 recall and precision ≥ 0.9 · H2 requirements met on ≥ 95 % of house-days · H3 cost no worse than the tuned MPC given exact parameters</td></tr>
-      <tr><td><strong>SQ2 Configuration.</strong> Can the agent configure the MPC from the house's history close to an expert-tuned MPC?</td><td>Share of the tuned MPC's saving over default MPC</td><td>H4 at least X % (set at registration)</td></tr>
-      <tr><td><strong>SQ3 Reliability and cost.</strong> How often do the checker and fallback intervene, and what does it cost locally and in the cloud?</td><td>Rejected plans, fallbacks, failed calls; tokens, USD, seconds, Wh</td><td>H5 local model within a margin of cloud on H1-H2 · H6 yearly saving exceeds the gateway's own energy use</td></tr>
+      <tr><td><strong>SQ1 Interpretation.</strong> How accurately does the agent turn plain-language plans and changes into constraints and a commit-or-ask decision, and are the requirements then met?</td><td>Item precision and recall vs answer key (cluster bootstrap over plans); clarification F1; decision accuracy; requirements met</td><td>H1 precision and recall ≥ 0.90, clarification F1 ≥ 0.85 · H2 answer-key requirements met on ≥ 95 % of feasible house-days · H3 cost non-inferior to the tuned MPC given exact parameters, margin 5 % of the rules-to-optimum gap</td></tr>
+      <tr><td><strong>SQ2 Configuration.</strong> Can the agent configure the MPC from the house's history close to an expert-tuned MPC, and better than a deterministic auto-tuner?</td><td>Share of the tuned MPC's saving over default MPC; difference to the auto-tuner</td><td>H4a at least X % (for example 70) of the default-to-tuned gap · H4b non-inferior to the auto-tuner with the same history</td></tr>
+      <tr><td><strong>SQ3 Reliability and cost.</strong> How often do the checker and fallback intervene, what does it cost locally and in the cloud, and does splitting the work into four agents help compared with one or two?</td><td>Rejected plans, fallbacks, failed calls, wrong figures in messages; tokens, USD, mean and p95 (95th-percentile) latency, Wh (watt-hours of energy); the same per agent design (descriptive)</td><td>H5 best local model within 0.10 of cloud recall and 5 points of its H2 rate, p95 latency under a stated limit · H6 yearly saving exceeds the gateway's cost with cloud inference and with a local inference box</td></tr>
       <tr><td><strong>SQ4 Conditions.</strong> Under which weather, prices, loads and plan types does it fail?</td><td>All metrics by factor level</td><td>Descriptive</td></tr>
     </tbody>
   </table></div>
+  <p class="caption">Grid and battery limits after the checker are reported as safety checks (expected zero violations), not as a hypothesis: they test the harness, not the agent. Holm within SQ1 and within SQ2. The held-out set is sized for H1 (roughly 150-200 constraint items).</p>
 </section>
 
 <section>
   <h2>3. System design</h2>
   <div class="prose">
-    <p>Three layers, and the language model sits in only one of them. The MPC replans every hour on its own; the agent is called only when something a model cannot handle happens: a new plan, a change, a plug-in, a large deviation, and once a week for configuration.</p>
+    <p>Three layers, and the language models sit in only one of them. The MPC replans every hour on its own; an agent is called only when something a model cannot handle happens: a message from the household, a commit to explain, an EV plug-in or a large deviation, and once a week for configuration. Each of these events has its own agent.</p>
   </div>
-  <div class="figure">
-  <svg viewBox="0 0 980 600" role="img" aria-label="System architecture of the home energy gateway">
+  <figure class="figure">
+  <svg viewBox="0 0 1130 800" role="img" aria-label="Four agents, each started by its own event, reach the gateway only through validated tools; the tuned MPC plans, the checker passes only valid plans to the control layer, and measurements flow into the history the Configurator learns from.">
     <defs>
-      <marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="hs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head sun" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="iag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="ias" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head sun" d="M0,0 L10,5 L0,10 z"/></marker>
     </defs>
-    <!-- household and external -->
-    <rect class="box" x="20" y="20" width="230" height="78" rx="6"/>
-    <text class="title" x="36" y="46">Household</text>
-    <text class="small" x="36" y="66">plan, changes, questions</text>
-    <text class="small" x="36" y="84">"car full by 7, away until 17"</text>
-    <rect class="box" x="730" y="20" width="230" height="78" rx="6"/>
-    <text class="title" x="746" y="46">Market and weather</text>
-    <text class="small" x="746" y="66">day-ahead prices, tariff</text>
-    <text class="small" x="746" y="84">DWD / FMI forecasts</text>
 
-    <!-- gateway zone -->
-    <rect class="zone" x="10" y="122" width="960" height="356" rx="10"/>
-    <text class="mono" x="24" y="142">GATEWAY (local device)</text>
+    <!-- row A: outside the gateway -->
+    <rect class="box" x="40" y="30" width="300" height="72" rx="8"/>
+    <g class="icon" transform="translate(58,53)"><path d="M3 13 L13 4 L23 13 M6 11 V23 H20 V11"/><path d="M11 23 V17 H15 V23"/></g>
+    <text class="title" x="98" y="61">Household</text>
+    <text class="sub" x="98" y="80">plans, changes, answers</text>
 
-    <!-- agent layer -->
-    <rect class="agentbox" x="40" y="156" width="420" height="96" rx="6"/>
-    <text class="title" x="56" y="180">Household Assistant agent</text>
-    <text class="small" x="56" y="200">event-driven · local model (gpt-oss-20b) · cloud optional</text>
-    <text class="small" x="56" y="218">interprets plans and changes → constraints</text>
-    <text class="small" x="56" y="236">explains committed plans, asks when unclear</text>
+    <rect class="sunbox" x="420" y="30" width="280" height="72" rx="8"/>
+    <g class="icon sun" transform="translate(438,53)"><circle cx="8" cy="8" r="3.5"/><path d="M8 1 V2.5 M8 13.5 V15 M1 8 H2.5 M13.5 8 H15 M3 3 L4 4 M12 12 L13 13 M13 3 L12 4 M3 13 L4 12"/><path d="M11 24 L15 19 L18 21 L25 13"/></g>
+    <text class="title" x="478" y="61">Market and weather</text>
+    <text class="sub" x="478" y="80">prices, tariff, DWD forecasts</text>
 
-    <rect class="agentbox" x="510" y="156" width="420" height="96" rx="6"/>
-    <text class="title" x="526" y="180">Configurator agent</text>
-    <text class="small" x="526" y="200">weekly, offline · larger or cloud model allowed</text>
-    <text class="small" x="526" y="218">reads the house's history → MPC settings</text>
-    <text class="small" x="526" y="236">forecast caution, reserve, flexible loads, comfort</text>
+    <rect class="box" x="780" y="30" width="280" height="72" rx="8" stroke-dasharray="6 5"/>
+    <g class="icon" transform="translate(798,53)"><path d="M7 21 H20 A5 5 0 0 0 20 11 A7 7 0 0 0 7 10 A5.5 5.5 0 0 0 7 21 Z"/></g>
+    <text class="title" x="838" y="61">Cloud model (optional)</text>
+    <text class="sub" x="838" y="80">receives summaries only</text>
 
-    <!-- harness -->
-    <rect class="detbox" x="40" y="282" width="890" height="80" rx="6"/>
-    <text class="title" x="56" y="306">Deterministic harness</text>
-    <text class="small" x="56" y="326">tools · history store · forecast models · tuned MPC (LP/MILP, hourly) · checker (comfort, EV energy by departure, battery, grid limit)</text>
-    <text class="small" x="56" y="344">the language model never computes a schedule or switches a device</text>
+    <!-- row B: four agents, each started by its own event -->
+    <rect class="zone" x="28" y="140" width="1044" height="100" rx="10"/>
+    <text class="mono" x="590" y="134">AGENT LAYER · one agent per event</text>
 
-    <!-- control layer -->
-    <rect class="detbox" x="40" y="390" width="890" height="70" rx="6"/>
-    <text class="title" x="56" y="414">Control layer (every 15 min)</text>
-    <text class="small" x="56" y="434">holds the planned grid exchange; battery absorbs forecast error; keeps comfort, EV deadline, battery limits</text>
-    <text class="small" x="56" y="451">fallback: tuned MPC with default constraints, or fixed rules</text>
+    <rect class="agentbox" x="40" y="150" width="234" height="80" rx="8"/>
+    <g class="icon agent" transform="translate(54,177)"><path d="M3 4 H23 V17 H12 L7 22 V17 H3 Z"/><path d="M8.5 10.5 H8.6 M13 10.5 H13.1 M17.5 10.5 H17.6"/></g>
+    <text class="title" x="92" y="180">Household Assistant</text>
+    <text class="sub" x="92" y="199">on each message</text>
+    <text class="sub" x="92" y="216">plan → constraints, asks</text>
 
-    <!-- devices -->
-    <rect class="sunbox" x="40" y="506" width="210" height="72" rx="6"/>
-    <text class="title" x="56" y="530">PV + battery</text>
-    <text class="mono" x="56" y="550">Modbus / SunSpec</text>
-    <rect class="box" x="290" y="506" width="190" height="72" rx="6"/>
-    <text class="title" x="306" y="530">Heat pump</text>
-    <text class="mono" x="306" y="550">SG Ready / EEBus</text>
-    <rect class="box" x="520" y="506" width="190" height="72" rx="6"/>
-    <text class="title" x="536" y="530">EV charger</text>
-    <text class="mono" x="536" y="550">OCPP</text>
-    <rect class="box" x="750" y="506" width="180" height="72" rx="6"/>
-    <text class="title" x="766" y="530">Home Assistant</text>
-    <text class="mono" x="766" y="550">meters, history</text>
+    <rect class="agentbox" x="302" y="150" width="234" height="80" rx="8"/>
+    <g class="icon agent" transform="translate(316,177)"><path d="M6 3 H16 L21 8 V23 H6 Z"/><path d="M16 3 V8 H21 M9.5 13 H17.5 M9.5 17 H17.5 M9.5 21 H14"/></g>
+    <text class="title" x="354" y="180">Explainer</text>
+    <text class="sub" x="354" y="199">after each commit, daily</text>
+    <text class="sub" x="354" y="216">plan → message, report</text>
 
-    <!-- arrows -->
-    <path class="arrow agent" d="M135,98 L135,156" marker-end="url(#ha)"/>
-    <path class="arrow agent" d="M185,156 L185,98" marker-end="url(#ha)"/>
-    <text class="small" x="194" y="130">message</text>
-    <path class="arrow" d="M845,98 L845,282" marker-end="url(#h)"/>
-    <text class="small" x="853" y="140">prices, forecasts</text>
-    <path class="arrow agent" d="M250,252 L250,282" marker-end="url(#ha)"/>
-    <text class="small" x="258" y="272">constraints</text>
-    <path class="arrow agent" d="M720,252 L720,282" marker-end="url(#ha)"/>
-    <text class="small" x="728" y="272">settings</text>
-    <path class="arrow" d="M485,362 L485,390" marker-end="url(#h)"/>
-    <text class="small" x="493" y="382">checked plan</text>
-    <path class="arrow sun" d="M145,460 L145,506" marker-end="url(#hs)"/>
-    <path class="arrow" d="M385,460 L385,506" marker-end="url(#h)"/>
-    <path class="arrow" d="M615,460 L615,506" marker-end="url(#h)"/>
-    <path class="arrow" d="M840,506 L840,460" marker-end="url(#h)"/>
-    <text class="small" x="848" y="490">measurements</text>
+    <rect class="agentbox" x="564" y="150" width="234" height="80" rx="8"/>
+    <g class="icon agent" transform="translate(578,177)"><path d="M2 14 H7 L10 7 L15 21 L18 14 H24"/></g>
+    <text class="title" x="616" y="180">Monitor</text>
+    <text class="sub" x="616" y="199">on plug-in or deviation</text>
+    <text class="sub" x="616" y="216">diagnoses, adjusts, alerts</text>
+
+    <rect class="agentbox" x="826" y="150" width="234" height="80" rx="8"/>
+    <g class="icon agent" transform="translate(840,177)"><circle cx="13" cy="13" r="8" stroke-width="3.2" stroke-dasharray="3 2.3"/><circle cx="13" cy="13" r="3"/></g>
+    <text class="title" x="878" y="180">Configurator</text>
+    <text class="sub" x="878" y="199">weekly, offline</text>
+    <text class="sub" x="878" y="216">history → MPC settings</text>
+
+    <!-- row C: the only way in: validated tools -->
+    <rect class="sunbox" x="40" y="270" width="1020" height="42" rx="8"/>
+    <g class="icon" transform="translate(54,278)"><path d="M17 3 A5.5 5.5 0 0 0 11.5 10.5 L3.5 18.5 L7.5 22.5 L15.5 14.5 A5.5 5.5 0 0 0 23 9 L19.5 12.5 L16 11.5 L15 8 L18.5 4.5"/></g>
+    <text class="title" x="92" y="296">Tools</text>
+    <text class="mono" x="150" y="296">propose_constraints · preview_plan · ask_household · get_situation · explain_plan · history_summary · backtest</text>
+
+    <!-- row D: deterministic harness -->
+    <text class="mono" x="40" y="342">DETERMINISTIC HARNESS</text>
+    <rect class="box" x="40" y="350" width="300" height="96" rx="8"/>
+    <g class="icon" transform="translate(56,385)"><path d="M3 3 V23 H24"/><path d="M6 19 H10 V13 H14 V16 H18 V8 H22"/></g>
+    <text class="title" x="94" y="386">Tuned MPC</text>
+    <text class="sub" x="94" y="406">LP / MILP</text>
+    <text class="sub" x="94" y="423">replans hourly on its own</text>
+
+    <rect class="box" x="400" y="350" width="300" height="96" rx="8"/>
+    <g class="icon" transform="translate(416,385)"><path d="M13 2 L22 6 V13 C22 18 18 22 13 24 C8 22 4 18 4 13 V6 Z"/><path d="M9 13 L12 16 L17.5 10"/></g>
+    <text class="title" x="454" y="386">Checker</text>
+    <text class="sub" x="454" y="406">comfort, EV by departure</text>
+    <text class="sub" x="454" y="423">battery, grid limit, feasibility</text>
+
+    <rect class="box" x="760" y="350" width="300" height="96" rx="8"/>
+    <g class="icon" transform="translate(776,385)"><path d="M5 6 C5 3 21 3 21 6 C21 9 5 9 5 6 Z"/><path d="M5 6 V20 C5 23 21 23 21 20 V6"/><path d="M5 13 C5 16 21 16 21 13"/></g>
+    <text class="title" x="814" y="386">History store</text>
+    <text class="sub" x="814" y="406">meters, weather, forecast errors</text>
+    <text class="sub" x="814" y="423">committed plans, events</text>
+
+    <!-- row E: control layer -->
+    <rect class="detbox" x="40" y="510" width="1020" height="72" rx="8"/>
+    <g class="icon" transform="translate(58,533)"><circle cx="13" cy="13" r="10"/><path d="M13 7 V13 L17.5 15.5"/></g>
+    <text class="title" x="98" y="540">Control layer · every 15 min</text>
+    <text class="sub" x="98" y="560">holds the planned grid exchange · battery absorbs forecast error · keeps comfort, EV deadline, battery limits · fallback rules · raises deviation events</text>
+
+    <!-- row F: devices -->
+    <rect class="sunbox" x="40" y="650" width="230" height="72" rx="8"/>
+    <g class="icon sun" transform="translate(56,673)"><path d="M2 17 L6 6 H22 L18 17 Z"/><path d="M4 11.5 H20 M11 6 L9 17 M16.5 6 L14.5 17"/><path d="M8 21 H16"/></g>
+    <text class="title" x="94" y="681">PV + battery</text>
+    <text class="mono" x="94" y="700">Modbus / SunSpec</text>
+
+    <rect class="box" x="300" y="650" width="230" height="72" rx="8"/>
+    <g class="icon" transform="translate(316,673)"><rect x="2" y="4" width="22" height="18" rx="2"/><circle cx="11" cy="13" r="5"/><path d="M11 8 V18 M6 13 H16"/><path d="M20 8 V18"/></g>
+    <text class="title" x="354" y="681">Heat pump</text>
+    <text class="mono" x="354" y="700">SG Ready / EEBus</text>
+
+    <rect class="box" x="560" y="650" width="230" height="72" rx="8"/>
+    <g class="icon" transform="translate(576,673)"><path d="M9 2 V7 M17 2 V7 M6 7 H20 V11 A7 7 0 0 1 6 11 Z"/><path d="M13 18 V24"/></g>
+    <text class="title" x="614" y="681">EV charger</text>
+    <text class="mono" x="614" y="700">OCPP</text>
+
+    <rect class="box" x="820" y="650" width="240" height="72" rx="8"/>
+    <g class="icon" transform="translate(836,673)"><path d="M3 13 L13 4 L23 13 M6 11 V23 H20 V11"/><circle cx="13" cy="16" r="2"/><path d="M13 14 V11 M11.3 17 L9 19 M14.7 17 L17 19"/></g>
+    <text class="title" x="874" y="681">Home Assistant</text>
+    <text class="mono" x="874" y="700">device integration</text>
+
+    <!-- household, market and cloud -->
+    <path class="arrow agent" d="M150,102 V150" marker-end="url(#iag)"/>
+    <text class="lbl agent" x="158" y="124">plans, changes</text>
+    <path class="arrow agent" d="M320,150 V102" marker-end="url(#iag)" stroke-dasharray="5 4"/>
+    <text class="lbl agent" x="350" y="124">messages, questions</text>
+    <path class="arrow sun" d="M550,102 V270" marker-end="url(#ias)"/>
+    <text class="lbl" x="558" y="258">prices, forecasts</text>
+    <path class="arrow" d="M920,102 V140" marker-end="url(#ia)" stroke-dasharray="5 4"/>
+    <text class="lbl" x="928" y="124">summaries only</text>
+
+    <!-- agents to the tools -->
+    <path class="arrow agent" d="M157,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
+    <text class="lbl agent" x="165" y="258">constraints</text>
+    <path class="arrow agent" d="M419,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
+    <text class="lbl agent" x="427" y="258">committed plan</text>
+    <path class="arrow agent" d="M681,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
+    <text class="lbl agent" x="689" y="258">situation, fixes</text>
+    <path class="arrow agent" d="M943,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
+    <text class="lbl agent" x="951" y="258">settings</text>
+
+    <!-- tools to the harness -->
+    <path class="arrow" d="M190,312 V350" marker-end="url(#ia)"/>
+    <text class="lbl" x="198" y="336">constraints, settings, forecasts</text>
+    <path class="arrow" d="M550,350 V312" marker-end="url(#ia)" stroke-dasharray="5 4"/>
+    <text class="lbl" x="558" y="336">violations, preview</text>
+    <path class="arrow" d="M910,350 V312" marker-end="url(#ia)"/>
+    <text class="lbl" x="918" y="336">history, backtest</text>
+
+    <!-- inside the harness -->
+    <path class="arrow" d="M340,398 H400" marker-end="url(#ia)"/>
+    <text class="lbl" x="370" y="390" text-anchor="middle">plan</text>
+    <path class="arrow" d="M700,398 H760" marker-end="url(#ia)"/>
+    <text class="lbl" x="730" y="390" text-anchor="middle">committed</text>
+    <path class="arrow" d="M550,446 V510" marker-end="url(#ia)"/>
+    <text class="lbl" x="558" y="482">checked plan only</text>
+
+    <!-- to and from the devices -->
+    <path class="arrow sun" d="M155,582 V650" marker-end="url(#ias)"/>
+    <path class="arrow" d="M415,582 V650" marker-end="url(#ia)"/>
+    <path class="arrow" d="M675,582 V650" marker-end="url(#ia)"/>
+    <text class="lbl" x="683" y="620">setpoints</text>
+    <path class="arrow" d="M1060,686 H1092 V398 H1060" marker-end="url(#ia)"/>
+    <text class="lbl" x="1106" y="540" transform="rotate(-90 1106 540)" text-anchor="middle">measurements, events</text>
+
+    <text class="lbl" x="550" y="772" text-anchor="middle">No agent computes a schedule or switches a device; every agent acts only through the validated tools.</text>
   </svg>
-  </div>
-  <p class="caption">Two agents with separate jobs and timing: the Assistant runs on events and must be fast and local; the Configurator runs weekly and may use a larger model. The harness and control layer are deterministic, as in the household thesis.</p>
+  <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. Dashed lines: optional cloud model (summaries only) and violations returned to the agents.</figcaption>
+  </figure>
 
-  <h3>Why two agents, not one or four</h3>
+  <h3>Four agents, one per event</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Agent</th><th>Started by</th><th>Job</th><th>Needs</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Household Assistant</strong></td><td>a message from the household</td><td>turns the plan or change into constraints, previews them, commits or asks</td><td>answer within about a minute; private, so a local model</td></tr>
+      <tr><td><strong>Explainer</strong></td><td>each commit; once a day</td><td>writes the message and the daily report from the committed plan's figures</td><td>numbers must match the plan (checked); short, cheap calls</td></tr>
+      <tr><td><strong>Monitor</strong></td><td>an EV plug-in; a large deviation from the plan (raised by the control layer)</td><td>finds the cause (forecast error, unexpected load, late car), adjusts constraints within what the household said, or alerts the household</td><td>runs during the day without a household message; must not override household requirements</td></tr>
+      <tr><td><strong>Configurator</strong></td><td>once a week</td><td>proposes MPC settings from the house's history and backtests them</td><td>analytical, may take minutes; can use a larger model</td></tr>
+    </tbody>
+  </table></div>
   <ul class="tight prose">
-    <li>The household thesis found that dividing one task between two agents added cost without reliability (SQ3). Here the two agents have <strong>different inputs, timing and model needs</strong>: interpretation is frequent and private, configuration is weekly and analytical.</li>
-    <li>The hourly replanning stays in the MPC. The pilot showed that putting the agent in that loop adds latency and cost without beating a tuned setting.</li>
-    <li>A single-agent variant (both roles in one agent) is kept as an ablation, so the split is tested, not assumed.</li>
+    <li><strong>Why more than two.</strong> Each agent has its own trigger, inputs, tools and output, so a prompt stays small and each output can be checked on its own: constraints by the checker, messages against the plan's figures, settings by backtest. The household thesis found that splitting <em>one</em> task between agents added cost without reliability; here the agents do different tasks at different times, so they rarely run together and the cost grows with the number of events, not with the number of agents.</li>
+    <li><strong>No orchestrator agent.</strong> Routing is by event type, which needs no language model; the harness does it. No agent calls another; they share state only through the harness (committed plan, history).</li>
+    <li><strong>Safety.</strong> The harness follows the Simplex pattern (Sha, 2001): the agents are unverified controllers inside a verified envelope (checker and control layer) with a safe fallback. The hourly replanning stays in the MPC; the pilot showed that putting an agent in that loop adds latency and cost without beating a tuned setting.</li>
+    <li><strong>Tested, not assumed.</strong> The number of agents is an SQ3 question: the four-agent design is compared with one agent holding all tools and with two agents (Assistant and Configurator, with the Explainer's and Monitor's jobs folded in), on the same events.</li>
   </ul>
+
+  <h3>How each agent decides</h3>
+  <figure class="figure">
+  <svg viewBox="0 0 1130 660" role="img" aria-label="Each event goes through the harness router to one agent, which uses its tools in a loop and ends at a deterministic gate: the checker, the figure check or the backtest decides what is committed; any failure keeps the current plan.">
+    <defs>
+      <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="fg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
+    </defs>
+    <rect class="detbox" x="206" y="30" width="62" height="540" rx="8"/>
+    <text class="title" transform="rotate(-90 242 300)" x="242" y="300" text-anchor="middle">Event router (harness, no model)</text>
+    <rect class="zone" x="296" y="30" width="520" height="120" rx="10"/>
+    <text class="lbl agent" x="310" y="46">Household Assistant (ReAct)</text>
+    <rect class="box" x="20" y="60" width="160" height="60" rx="8"/>
+    <text class="title" x="34" y="86">Household message</text>
+    <text class="sub" x="34" y="105">plan or change</text>
+    <path class="arrow" d="M180,90 H204" marker-end="url(#fa)"/>
+    <path class="arrow agent" d="M268,90 H322" marker-end="url(#fg)"/>
+    <rect class="agentbox" x="324" y="64" width="140" height="56" rx="8"/>
+    <text class="title" x="336" y="86">Interpret</text>
+    <text class="mono" x="336" y="105">propose_constraints</text>
+    <rect class="agentbox" x="484" y="64" width="140" height="56" rx="8"/>
+    <text class="title" x="496" y="86">Preview</text>
+    <text class="mono" x="496" y="105">preview_plan</text>
+    <path class="arrow agent" d="M464,92 H482" marker-end="url(#fg)"/>
+    <path class="arrow agent" d="M554,120 V134 H394 V122" marker-end="url(#fg)" stroke-dasharray="4 4"/>
+    <text class="lbl agent" x="474" y="146" text-anchor="middle">tool loop</text>
+    <path class="arrow" d="M624,92 H674" marker-end="url(#fa)"/>
+    <polygon class="detbox" points="732,50 794,92 732,134 670,92"/>
+    <text class="lbl" x="732" y="89" text-anchor="middle">valid and</text>
+    <text class="lbl" x="732" y="104" text-anchor="middle">complete?</text>
+    <path class="arrow" d="M794,92 H840 V60 H868" marker-end="url(#fa)"/>
+    <path class="arrow" d="M794,92 H840 V124 H868" marker-end="url(#fa)"/>
+    <text class="lbl" x="834" y="76" text-anchor="end">yes</text>
+    <text class="lbl" x="834" y="114" text-anchor="end">no</text>
+    <rect class="box" x="870" y="38" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="57">Commit constraints</text>
+    <text class="sub" x="884" y="74">to the MPC</text>
+    <rect class="box" x="870" y="102" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="121">Ask the household</text>
+    <text class="mono" x="884" y="138">ask_household</text>
+    <rect class="zone" x="296" y="170" width="520" height="120" rx="10"/>
+    <text class="lbl agent" x="310" y="186">Explainer (ReAct)</text>
+    <rect class="box" x="20" y="200" width="160" height="60" rx="8"/>
+    <text class="title" x="34" y="226">Commit, daily</text>
+    <text class="sub" x="34" y="245">after each commit</text>
+    <path class="arrow" d="M180,230 H204" marker-end="url(#fa)"/>
+    <path class="arrow agent" d="M268,230 H322" marker-end="url(#fg)"/>
+    <rect class="agentbox" x="324" y="204" width="140" height="56" rx="8"/>
+    <text class="title" x="336" y="226">Read figures</text>
+    <text class="mono" x="336" y="245">explain_plan</text>
+    <rect class="agentbox" x="484" y="204" width="140" height="56" rx="8"/>
+    <text class="title" x="496" y="226">Write message</text>
+    <text class="sub" x="496" y="245">cites the figures</text>
+    <path class="arrow agent" d="M464,232 H482" marker-end="url(#fg)"/>
+    <path class="arrow agent" d="M554,260 V274 H394 V262" marker-end="url(#fg)" stroke-dasharray="4 4"/>
+    <text class="lbl agent" x="474" y="286" text-anchor="middle">tool loop</text>
+    <path class="arrow" d="M624,232 H674" marker-end="url(#fa)"/>
+    <polygon class="detbox" points="732,190 794,232 732,274 670,232"/>
+    <text class="lbl" x="732" y="229" text-anchor="middle">figures</text>
+    <text class="lbl" x="732" y="244" text-anchor="middle">match plan?</text>
+    <path class="arrow" d="M794,232 H840 V200 H868" marker-end="url(#fa)"/>
+    <path class="arrow" d="M794,232 H840 V264 H868" marker-end="url(#fa)"/>
+    <text class="lbl" x="834" y="216" text-anchor="end">yes</text>
+    <text class="lbl" x="834" y="254" text-anchor="end">no</text>
+    <rect class="box" x="870" y="178" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="197">Send message</text>
+    <text class="sub" x="884" y="214">to the household</text>
+    <rect class="box" x="870" y="242" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="261">Send template</text>
+    <text class="sub" x="884" y="278">fixed wording</text>
+    <rect class="zone" x="296" y="310" width="520" height="120" rx="10"/>
+    <text class="lbl agent" x="310" y="326">Monitor (ReAct)</text>
+    <rect class="box" x="20" y="340" width="160" height="60" rx="8"/>
+    <text class="title" x="34" y="366">Plug-in, deviation</text>
+    <text class="sub" x="34" y="385">from the control layer</text>
+    <path class="arrow" d="M180,370 H204" marker-end="url(#fa)"/>
+    <path class="arrow agent" d="M268,370 H322" marker-end="url(#fg)"/>
+    <rect class="agentbox" x="324" y="344" width="140" height="56" rx="8"/>
+    <text class="title" x="336" y="366">Diagnose</text>
+    <text class="mono" x="336" y="385">get_situation</text>
+    <rect class="agentbox" x="484" y="344" width="140" height="56" rx="8"/>
+    <text class="title" x="496" y="366">Adjust or alert</text>
+    <text class="mono" x="496" y="385">propose → preview</text>
+    <path class="arrow agent" d="M464,372 H482" marker-end="url(#fg)"/>
+    <path class="arrow agent" d="M554,400 V414 H394 V402" marker-end="url(#fg)" stroke-dasharray="4 4"/>
+    <text class="lbl agent" x="474" y="426" text-anchor="middle">tool loop</text>
+    <path class="arrow" d="M624,372 H674" marker-end="url(#fa)"/>
+    <polygon class="detbox" points="732,330 794,372 732,414 670,372"/>
+    <text class="lbl" x="732" y="369" text-anchor="middle">action</text>
+    <text class="lbl" x="732" y="384" text-anchor="middle">needed?</text>
+    <path class="arrow" d="M794,372 H840 V340 H868" marker-end="url(#fa)"/>
+    <path class="arrow" d="M794,372 H840 V404 H868" marker-end="url(#fa)"/>
+    <text class="lbl" x="834" y="356" text-anchor="end">yes</text>
+    <text class="lbl" x="834" y="394" text-anchor="end">no</text>
+    <rect class="box" x="870" y="318" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="337">Commit or alert</text>
+    <text class="sub" x="884" y="354">within household limits</text>
+    <rect class="box" x="870" y="382" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="401">No action</text>
+    <text class="sub" x="884" y="418">plan stays</text>
+    <rect class="zone" x="296" y="450" width="520" height="120" rx="10"/>
+    <text class="lbl agent" x="310" y="466">Configurator (ReAct)</text>
+    <rect class="box" x="20" y="480" width="160" height="60" rx="8"/>
+    <text class="title" x="34" y="506">Weekly</text>
+    <text class="sub" x="34" y="525">once a week</text>
+    <path class="arrow" d="M180,510 H204" marker-end="url(#fa)"/>
+    <path class="arrow agent" d="M268,510 H322" marker-end="url(#fg)"/>
+    <rect class="agentbox" x="324" y="484" width="140" height="56" rx="8"/>
+    <text class="title" x="336" y="506">Summarise</text>
+    <text class="mono" x="336" y="525">history_summary</text>
+    <rect class="agentbox" x="484" y="484" width="140" height="56" rx="8"/>
+    <text class="title" x="496" y="506">Compare settings</text>
+    <text class="sub" x="496" y="525">backtest</text>
+    <path class="arrow agent" d="M464,512 H482" marker-end="url(#fg)"/>
+    <path class="arrow agent" d="M554,540 V554 H394 V542" marker-end="url(#fg)" stroke-dasharray="4 4"/>
+    <text class="lbl agent" x="474" y="566" text-anchor="middle">tool loop</text>
+    <path class="arrow" d="M624,512 H674" marker-end="url(#fa)"/>
+    <polygon class="detbox" points="732,470 794,512 732,554 670,512"/>
+    <text class="lbl" x="732" y="509" text-anchor="middle">beats current</text>
+    <text class="lbl" x="732" y="524" text-anchor="middle">settings?</text>
+    <path class="arrow" d="M794,512 H840 V480 H868" marker-end="url(#fa)"/>
+    <path class="arrow" d="M794,512 H840 V544 H868" marker-end="url(#fa)"/>
+    <text class="lbl" x="834" y="496" text-anchor="end">yes</text>
+    <text class="lbl" x="834" y="534" text-anchor="end">no</text>
+    <rect class="box" x="870" y="458" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="477">Apply next day</text>
+    <text class="sub" x="884" y="494">PV derating, reserve</text>
+    <rect class="box" x="870" y="522" width="240" height="44" rx="7"/>
+    <text class="title" x="884" y="541">Keep settings</text>
+    <text class="sub" x="884" y="558">current settings stay</text>
+    <rect class="sunbox" x="20" y="594" width="1090" height="44" rx="8"/>
+    <text class="title" x="36" y="614">Any failure (timeout, invalid answer, model or network down)</text>
+    <text class="sub" x="36" y="631">keep the current plan and settings; the MPC replans hourly and the control layer falls back to rules if needed</text>
+  </svg>
+  <figcaption>Every agent follows the same pattern: an event starts it, it uses its tools in a short loop, and a deterministic gate decides what happens: the checker (Assistant, Monitor), the figure check (Explainer) or the backtest (Configurator). Only a passed gate changes the plan, the message or the settings; anything else keeps what is already in force.</figcaption>
+  </figure>
 </section>
 
 <section>
@@ -266,11 +648,32 @@ ul.tight li { margin: 4px 0; }
     <tbody>
       <tr><td><code>read_plan()</code></td><td>→ plan text, changes since last call, time</td><td>Raw household words</td></tr>
       <tr><td><code>get_situation()</code></td><td>→ indoor °C, battery %, EV status, forecast error so far, active constraints</td><td>Pre-computed by the harness</td></tr>
-      <tr><td><code>get_forecast()</code></td><td>→ hourly PV, load, heat demand, prices; weather class and expected forecast error</td><td>Weather class from DWD radiation and temperature</td></tr>
+      <tr><td><code>get_forecast()</code></td><td>→ hourly PV, load, heat demand, prices; weather class and expected forecast error</td><td>Weather class from DWD (German Weather Service) radiation and temperature</td></tr>
       <tr><td><code>propose_constraints(items)</code></td><td>EV energy and departure, comfort bands by time, away periods, appliance windows → validation result</td><td>Ranges checked; unknown fields rejected</td></tr>
-      <tr><td><code>preview_plan()</code></td><td>→ tuned-MPC plan with the proposed constraints: cost, comfort, EV, peak, violations</td><td>Runs the MPC and the checker</td></tr>
-      <tr><td><code>ask_household(question)</code></td><td>→ queued question</td><td>Only for ambiguity or conflict; scored against the answer key</td></tr>
-      <tr><td>Final answer <code>AssistantDecision</code></td><td>commit or keep · constraints · message to household</td><td>Commit only if the checker passes</td></tr>
+      <tr><td><code>preview_plan()</code></td><td>→ tuned-MPC plan with the proposed constraints: cost, comfort, EV, peak, violations</td><td>Runs the MPC and the checker; infeasible requests are found here, not by the language model</td></tr>
+      <tr><td><code>ask_household(question)</code></td><td>→ queued question</td><td>Only for ambiguity, conflict or infeasibility; scored against the answer key</td></tr>
+      <tr><td>Final answer <code>AssistantDecision</code></td><td><code>commit</code> true or false · candidate constraints · questions</td><td>Commit only if the checker passes; clear parts of an ambiguous plan are still listed and scored</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Explainer agent</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Function</th><th>Input → output</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>explain_plan()</code></td><td>→ committed plan's figures: when each device runs, cost vs rules, EV energy by departure, comfort, what changed and why</td><td>Pre-computed by the harness; the agent only words them</td></tr>
+      <tr><td><code>get_situation()</code></td><td>→ the day so far, for the daily report</td><td>Shared with the other agents</td></tr>
+      <tr><td>Final answer <code>HouseholdMessage</code></td><td>text · the figures it cites</td><td>Every cited figure is compared with the plan; a mismatch sends a fixed template instead</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Monitor agent</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Function</th><th>Input → output</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>get_situation()</code></td><td>→ the event (plug-in, deviation), forecast error so far, battery and EV state, active constraints</td><td>The control layer raises a deviation when the grid exchange or a requirement drifts past a threshold</td></tr>
+      <tr><td><code>get_forecast()</code></td><td>→ updated PV, load and price forecasts</td><td>Weather class from DWD</td></tr>
+      <tr><td><code>propose_constraints(items)</code> · <code>preview_plan()</code></td><td>adjusted constraints → checked plan</td><td>Only within what the household asked (for example the EV target of a car that arrived early); never removes a household requirement</td></tr>
+      <tr><td>Final answer <code>MonitorDecision</code></td><td>no action · commit adjusted constraints · alert the household (with a reason)</td><td>Alerts go through the Explainer's checked message</td></tr>
     </tbody>
   </table></div>
 
@@ -280,7 +683,7 @@ ul.tight li { margin: 4px 0; }
     <tbody>
       <tr><td><code>history_summary(item)</code></td><td>loads · EV · comfort · PV vs weather · forecast error → weekly statistics</td><td>From the house's own meters and DWD weather</td></tr>
       <tr><td><code>backtest(settings, weeks)</code></td><td>→ adjusted cost, peaks, comfort and EV violations of the MPC on past weeks</td><td>The agent compares candidates on data, not by guessing</td></tr>
-      <tr><td>Final answer <code>MpcSettings</code></td><td>PV derating by weather class, battery reserve, grid limit, default comfort bands, flexible-load windows · reason</td><td>Applied from the next day if the backtest beats the current settings</td></tr>
+      <tr><td>Final answer <code>MpcSettings</code></td><td>PV derating by weather class and battery reserve (confirmatory); default comfort bands and flexible-load windows (exploratory) · reason</td><td>Starts from defaults, uses past weeks only; applied from the next day if the backtest beats the current settings</td></tr>
     </tbody>
   </table></div>
 
@@ -292,7 +695,7 @@ ul.tight li { margin: 4px 0; }
       <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
     </defs>
     <text class="title" x="40" y="30">Household</text>
-    <text class="title" x="225" y="30">Assistant agent</text>
+    <text class="title" x="225" y="30">Agents</text>
     <text class="title" x="440" y="30">Harness: MPC + checker</text>
     <text class="title" x="665" y="30">Control layer</text>
     <text class="title" x="850" y="30">Devices</text>
@@ -308,7 +711,7 @@ ul.tight li { margin: 4px 0; }
 
     <circle class="step" cx="30" cy="118" r="10"/><text class="stepnum" x="26" y="122">2</text>
     <path class="arrow agent" d="M285,118 L518,118" marker-end="url(#s2)"/>
-    <text class="small" x="297" y="110">propose_constraints → preview_plan</text>
+    <text class="small" x="297" y="110">Assistant: propose_constraints → preview</text>
 
     <circle class="step" cx="30" cy="164" r="10"/><text class="stepnum" x="26" y="168">3</text>
     <path class="arrow" d="M520,164 L287,164" marker-end="url(#s1)"/>
@@ -316,7 +719,7 @@ ul.tight li { margin: 4px 0; }
 
     <circle class="step" cx="30" cy="210" r="10"/><text class="stepnum" x="26" y="214">4</text>
     <path class="arrow agent" d="M285,210 L82,210" marker-end="url(#s2)"/>
-    <text class="small" x="96" y="202">commit + message: "charging 01-04, cheapest"</text>
+    <text class="small" x="96" y="202">Explainer: "charging 01-04, cheapest"</text>
     <path class="arrow" d="M520,210 L713,210" marker-end="url(#s1)"/>
     <text class="small" x="530" y="202">committed plan</text>
 
@@ -332,16 +735,18 @@ ul.tight li { margin: 4px 0; }
 
     <circle class="step" cx="30" cy="362" r="10"/><text class="stepnum" x="26" y="366">7</text>
     <path class="arrow agent" d="M285,362 L518,362" marker-end="url(#s2)"/>
-    <text class="small" x="297" y="354">update comfort band from 15:00</text>
+    <text class="small" x="297" y="354">Assistant: comfort band from 15:00</text>
     <path class="arrow" d="M520,362 L713,362" marker-end="url(#s1)"/>
     <text class="small" x="530" y="354">new checked plan</text>
 
     <circle class="step" cx="30" cy="414" r="10"/><text class="stepnum" x="26" y="418">8</text>
     <path class="arrow" d="M888,414 L717,414" marker-end="url(#s1)"/>
     <text class="small" x="728" y="406">measurements; fallback if no valid plan</text>
+    <path class="arrow agent" d="M715,436 L287,436" marker-end="url(#s2)" stroke-dasharray="5 4"/>
+    <text class="small" x="300" y="452">deviation event → Monitor (only if a threshold is passed)</text>
   </svg>
   </div>
-  <p class="caption">The agent appears at steps 1-4 and 6-7 only. Between them the MPC replans every hour and the control layer runs every 15 minutes without a language model.</p>
+  <p class="caption">Agents appear at steps 1-4 and 6-7, and after step 8 only if the control layer raises a deviation. Between them the MPC replans every hour and the control layer runs every 15 minutes without a language model.</p>
 
   <h3>Weekly configuration loop</h3>
   <div class="figure">
@@ -379,22 +784,22 @@ ul.tight li { margin: 4px 0; }
 
 <section>
   <h2>5. Datasets to evaluate</h2>
-  <div class="prose"><p>All core data are open (CC BY 4.0 unless noted), cover the same place (Konstanz) and the same dates (Oct 2015 to 2019), and are already downloaded except where marked.</p></div>
+  <div class="prose"><p>All core data are open (CC BY 4.0, Creative Commons Attribution, unless noted), cover the same place (Konstanz) and the same dates (Oct 2015 to 2019), and are already downloaded except where marked.</p></div>
   <div class="scroll"><table>
     <thead><tr><th>Dataset</th><th>What it provides</th><th>Period · resolution</th><th>Role</th><th>Checked</th></tr></thead>
     <tbody>
-      <tr><td><strong>OPSD Household data</strong>, <code>DE_KN_residential4</code></td><td>PV, grid import and export, heat pump, EV, dishwasher, washing machine, fridge, freezer</td><td class="num">Oct 2015 – Feb 2018 · 15 min</td><td><span class="tag core">core</span> main house</td><td>2016 complete; PV 11.0 MWh, HP 2.6 MWh, EV 1.0 MWh</td></tr>
-      <tr><td>OPSD <code>residential1</code>, <code>3</code>, <code>6</code></td><td>PV; heat pump (1); appliances; circulation pump (3, 6); export (3, 6)</td><td class="num">2014 – 2018 · 15 min</td><td><span class="tag core">core</span> more houses for configuration</td><td>Coverage listed; quality per day to check</td></tr>
-      <tr><td>OPSD <code>residential2</code>, <code>5</code></td><td>Appliances only, no PV</td><td class="num">2015 – 2019 · 15 min</td><td><span class="tag opt">optional</span> appliance plans</td><td>Coverage listed</td></tr>
-      <tr><td><strong>DWD station 02712 Konstanz</strong></td><td>Hourly air temperature, global radiation</td><td class="num">1971 – 2025 / 1977 – 2026 · 1 h</td><td><span class="tag core">core</span> weather classes, forecasts</td><td>0.2-0.3 % missing; radiation vs PV r = 0.95 hourly</td></tr>
-      <tr><td><strong>Energy-Charts day-ahead prices</strong> (SMARD)</td><td>DE-AT-LU, then DE-LU spot prices</td><td class="num">Oct 2015 – May 2019 · 1 h</td><td><span class="tag core">core</span> import and export price</td><td>2 hours missing; 97 negative hours in 2016</td></tr>
-      <tr><td><strong>BDEW price analysis</strong> (Dec 2023)</td><td>2016 household price components (28.80 ct/kWh)</td><td class="num">yearly</td><td><span class="tag core">core</span> dynamic tariff</td><td>Components read from the report</td></tr>
-      <tr><td>EEG feed-in tariff</td><td>12.31 ct/kWh, rooftop ≤ 10 kWp from Nov 2015</td><td class="num">monthly</td><td><span class="tag core">core</span> export price</td><td>Municipal tables; check Bundesnetzagentur</td></tr>
-      <tr><td><strong>When2Heat</strong>, Germany</td><td>Heat pump COP by source and sink</td><td class="num">2008 – 2022 · 1 h</td><td><span class="tag core">core</span> heat demand from HP electricity</td><td>Extracted 2015-2018</td></tr>
-      <tr><td><strong>Plan benchmark</strong> (to be written)</td><td>Plain-language plans, changes, ambiguous requests, with answer keys</td><td class="num">one per house-day</td><td><span class="tag core">core</span> SQ1 ground truth</td><td>Not yet written; second-person check</td></tr>
-      <tr><td>Norwegian residential EV sessions</td><td>Plug-in, plug-out, energy; 35,377 sessions</td><td class="num">2018 – 2021 · per session</td><td><span class="tag opt">optional</span> realistic departure times</td><td>Downloaded</td></tr>
-      <tr><td>REFIT</td><td>Appliance cycles of 18 UK homes</td><td class="num">2013 – 2015 · 8 s</td><td><span class="tag opt">optional</span> extra appliance runs</td><td>Used in the household thesis</td></tr>
-      <tr><td>Finnish prices (Elering, Sahkotin)</td><td>FI spot prices</td><td class="num">2015 – 2026 · 1 h / 15 min</td><td><span class="tag ref">comparison</span> link to household thesis</td><td>Downloaded</td></tr>
+      <tr><td><a href="https://data.open-power-system-data.org/household_data/2020-04-15/" target="_blank" rel="noopener"><strong>OPSD (Open Power System Data) Household data</strong></a>, <code>DE_KN_residential4</code></td><td>PV, grid import and export, heat pump, EV, dishwasher, washing machine, fridge, freezer</td><td class="num">Oct 2015 – Feb 2018 · 15 min</td><td><span class="tag core">core</span> main house</td><td>2016 complete; PV 11.0 MWh, HP 2.6 MWh, EV 1.0 MWh</td></tr>
+      <tr><td><a href="https://data.open-power-system-data.org/household_data/2020-04-15/" target="_blank" rel="noopener">OPSD</a> <code>residential1</code>, <code>3</code>, <code>6</code></td><td>PV; heat pump (1); appliances; circulation pump (3, 6); export (3, 6)</td><td class="num">2014 – 2018 · 15 min</td><td><span class="tag core">core</span> more houses for configuration</td><td>Coverage listed; quality per day to check</td></tr>
+      <tr><td><a href="https://data.open-power-system-data.org/household_data/2020-04-15/" target="_blank" rel="noopener">OPSD</a> <code>residential2</code>, <code>5</code></td><td>Appliances only, no PV</td><td class="num">2015 – 2019 · 15 min</td><td><span class="tag opt">optional</span> appliance plans</td><td>Coverage listed</td></tr>
+      <tr><td><a href="https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/" target="_blank" rel="noopener"><strong>DWD station 02712 Konstanz</strong></a></td><td>Hourly air temperature, global radiation</td><td class="num">1971 – 2025 / 1977 – 2026 · 1 h</td><td><span class="tag core">core</span> weather classes, forecasts</td><td>0.2-0.3 % missing; radiation vs PV r = 0.95 hourly</td></tr>
+      <tr><td><a href="https://www.energy-charts.info/charts/price_spot_market/chart.htm?l=en" target="_blank" rel="noopener"><strong>Energy-Charts day-ahead prices</strong></a> (<a href="https://www.smard.de/en" target="_blank" rel="noopener">SMARD</a>, the Federal Network Agency's market data)</td><td>DE-AT-LU, then DE-LU spot prices</td><td class="num">Oct 2015 – May 2019 · 1 h</td><td><span class="tag core">core</span> import and export price</td><td>2 hours missing; 97 negative hours in 2016</td></tr>
+      <tr><td><a href="https://www.bdew.de/media/original_images/2023/12/12/231212_bdew-strompreisanalyse_dezember_2023_12122023.pdf" target="_blank" rel="noopener"><strong>BDEW (German Association of Energy and Water Industries) price analysis</strong></a> (Dec 2023)</td><td>2016 household price components (28.80 ct/kWh)</td><td class="num">yearly</td><td><span class="tag core">core</span> dynamic tariff</td><td>Components read from the report</td></tr>
+      <tr><td><a href="https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/ErneuerbareEnergien/EEG_Foerderung/Archiv_VergSaetze/start.html" target="_blank" rel="noopener">EEG (Renewable Energy Sources Act) feed-in tariff</a></td><td>12.31 ct/kWh, rooftop ≤ 10 kWp from Nov 2015</td><td class="num">monthly</td><td><span class="tag core">core</span> export price</td><td>Municipal tables; check Bundesnetzagentur</td></tr>
+      <tr><td><a href="https://data.open-power-system-data.org/when2heat/2023-07-27/" target="_blank" rel="noopener"><strong>When2Heat</strong></a>, Germany</td><td>Heat pump COP (coefficient of performance) by source and sink</td><td class="num">2008 – 2022 · 1 h</td><td><span class="tag core">core</span> heat demand from HP electricity</td><td>Extracted 2015-2018</td></tr>
+      <tr><td><strong>Plan benchmark</strong></td><td>Plain-language plans, changes, ambiguous, conflicting and infeasible requests, with answer keys, each bound to a real house-day</td><td class="num">one per house-day</td><td><span class="tag core">core</span> SQ1 ground truth</td><td>Edge-case pilot set of 22 plans drafted; held-out plans to be written by 3-5 people other than the author, second-person check</td></tr>
+      <tr><td><a href="https://zenodo.org/records/12730566" target="_blank" rel="noopener">Norwegian residential EV sessions</a></td><td>Plug-in, plug-out, energy; 35,377 sessions</td><td class="num">2018 – 2021 · per session</td><td><span class="tag opt">optional</span> realistic departure times</td><td>Downloaded</td></tr>
+      <tr><td><a href="https://doi.org/10.15129/9ab14b0e-19ac-4279-938f-27f643078cec" target="_blank" rel="noopener">REFIT</a></td><td>Appliance cycles of 18 UK homes</td><td class="num">2013 – 2015 · 8 s</td><td><span class="tag opt">optional</span> extra appliance runs</td><td>Used in the household thesis</td></tr>
+      <tr><td>Finnish prices (<a href="https://dashboard.elering.ee/" target="_blank" rel="noopener">Elering</a>, <a href="https://sahkotin.fi" target="_blank" rel="noopener">Sahkotin</a>)</td><td>FI spot prices</td><td class="num">2015 – 2026 · 1 h / 15 min</td><td><span class="tag ref">comparison</span> link to household thesis</td><td>Downloaded</td></tr>
       <tr><td>Product data sheets</td><td>Battery, charger, heat pump limits</td><td class="num">n/a</td><td><span class="tag core">core</span> model parameters</td><td>To be sourced</td></tr>
     </tbody>
   </table></div>
@@ -431,20 +836,21 @@ ul.tight li { margin: 4px 0; }
     <text class="small" x="484" y="80">recorded · rules · EMHASS</text>
     <text class="small" x="484" y="100">default MPC</text>
     <text class="small" x="484" y="120">tuned MPC (exact parameters)</text>
-    <text class="small" x="484" y="140">LLM without tools</text>
-    <text class="small" x="484" y="160">agents: cloud · local</text>
-    <text class="small" x="484" y="180">one-agent ablation</text>
-    <text class="small" x="484" y="200">perfect foresight</text>
+    <text class="small" x="484" y="140">auto-tuner (no LLM)</text>
+    <text class="small" x="484" y="160">LLM without tools</text>
+    <text class="small" x="484" y="180">agents: cloud · local</text>
+    <text class="small" x="484" y="200">ablations</text>
+    <text class="small" x="484" y="220">perfect foresight</text>
 
     <rect class="box" x="740" y="30" width="220" height="230" rx="6"/>
     <text class="title" x="754" y="56">Metrics and tests</text>
-    <text class="small" x="754" y="80">constraint precision, recall</text>
-    <text class="small" x="754" y="100">requirements met</text>
+    <text class="small" x="754" y="80">precision, recall, clarify F1</text>
+    <text class="small" x="754" y="100">requirements met (key)</text>
     <text class="small" x="754" y="120">adjusted cost, gap closed</text>
-    <text class="small" x="754" y="140">config vs tuned MPC</text>
-    <text class="small" x="754" y="160">checker, fallbacks</text>
-    <text class="small" x="754" y="180">tokens, USD, s, Wh</text>
-    <text class="small" x="754" y="210">Holm within SQ1</text>
+    <text class="small" x="754" y="140">config vs tuned, auto-tuner</text>
+    <text class="small" x="754" y="160">checker, fallbacks, safety</text>
+    <text class="small" x="754" y="180">tokens, USD, p95 s, Wh</text>
+    <text class="small" x="754" y="210">Holm within SQ1, SQ2</text>
 
     <path class="arrow" d="M190,145 L228,145" marker-end="url(#e1)"/>
     <path class="arrow" d="M430,145 L468,145" marker-end="url(#e1)"/>
@@ -454,7 +860,10 @@ ul.tight li { margin: 4px 0; }
   </div>
   <ul class="tight prose">
     <li>The <strong>tuned MPC with exact parameters</strong> is the cost reference. The agent is expected to match it while starting from plain language and no expert tuning.</li>
-    <li>Tuned settings are chosen on the exploratory set only, so the held-out comparison is fair.</li>
+    <li>Tuned settings are chosen once on the exploratory set and frozen; the Configurator and the auto-tuner start from defaults and use only the house's past weeks.</li>
+    <li>The <strong>auto-tuner</strong> (a deterministic weekly grid search with the same backtest) shows whether configuration needs a language model at all (H4b).</li>
+    <li>EMHASS (Energy Management for Home Assistant, an open-source optimiser) gets the shared forecasts (primary) and its own default forecasts (secondary, as deployed).</li>
+    <li>Ablations: one agent with all tools; two agents (Assistant and Configurator); agents without the checker (scored, never executed); no Monitor (deviations left to the MPC).</li>
     <li>Every system uses the same house-days, forecasts, plans and control layer, and the same valuation of energy left at midnight.</li>
   </ul>
 </section>
@@ -474,11 +883,11 @@ ul.tight li { margin: 4px 0; }
     <text x="20" y="48">Literature review</text><rect class="bar muted" x="300" y="36" width="100" height="16" rx="3"/>
     <text x="20" y="80">House-days, weather classes, tariffs</text><rect class="bar" x="333" y="68" width="100" height="16" rx="3"/>
     <text x="20" y="112">Plans and answer keys</text><rect class="bar" x="367" y="100" width="133" height="16" rx="3"/>
-    <text x="20" y="144">Systems, tuned MPC, EMHASS</text><rect class="bar" x="400" y="132" width="167" height="16" rx="3"/>
+    <text x="20" y="144">Systems, tuned MPC, auto-tuner</text><rect class="bar" x="400" y="132" width="167" height="16" rx="3"/>
     <text x="20" y="176">Agents, tools, iterations</text><rect class="bar sun" x="533" y="164" width="167" height="16" rx="3"/>
     <text x="20" y="208">Registration, held-out run</text><rect class="bar sun" x="667" y="196" width="67" height="16" rx="3"/>
     <text x="20" y="240">Year simulation, energy balance</text><rect class="bar" x="700" y="228" width="67" height="16" rx="3"/>
-    <text x="20" y="272">Home Assistant demo</text><rect class="bar" x="733" y="260" width="67" height="16" rx="3"/>
+    <text x="20" y="272">Home Assistant replay (optional)</text><rect class="bar" x="733" y="260" width="67" height="16" rx="3"/>
     <text x="20" y="304">Writing</text><rect class="bar muted" x="700" y="292" width="267" height="16" rx="3"/>
   </svg>
   </div>
@@ -490,14 +899,32 @@ ul.tight li { margin: 4px 0; }
   <div class="scroll"><table>
     <thead><tr><th>Risk</th><th>Handling</th></tr></thead>
     <tbody>
-      <tr><td>Interpretation is too easy for current models (ceiling effect)</td><td>Include changes during the day, ambiguous and conflicting requests; score clarifying questions</td></tr>
-      <tr><td>Configuration from history adds nothing over defaults</td><td>Report it; the tuned MPC remains the reference; the thesis then rests on SQ1 and SQ3</td></tr>
-      <tr><td>Local model too slow or unreliable</td><td>Assistant is event-driven; fallback to tuned MPC; cloud comparison</td></tr>
-      <tr><td>Gateway energy use cancels the savings</td><td>Measure idle and inference energy (H6)</td></tr>
-      <tr><td>Plans written by the author bias the result</td><td>Write and answer-key them before any run; second-person check; register them</td></tr>
-      <tr><td>Simulation only</td><td>Home Assistant demo with simulated devices; field study as future work</td></tr>
+      <tr><td>Interpretation is too easy for current models (ceiling effect)</td><td>Changes during the day, ambiguous, conflicting and infeasible requests; plans by other people; clarification F1</td></tr>
+      <tr><td>The agent configures no better than the auto-tuner</td><td>Report it (H4b); the thesis then rests on SQ1 and SQ3</td></tr>
+      <tr><td>Local model too slow or unreliable (pilot: recall 0.43, about 74 s per plan for gpt-oss-20b)</td><td>Compare 2-3 local models before registration; Assistant is event-driven; fallback to tuned MPC; cloud comparison</td></tr>
+      <tr><td>Gateway energy use cancels the savings</td><td>Measure idle and inference energy; two set-ups, cloud inference and local inference box (H6)</td></tr>
+      <tr><td>Plans written by the author or a language model bias the result</td><td>Held-out plans by 3-5 other people, keyed before any run, second-person check, registered; edge cases written by a large language model (LLM) exploratory only</td></tr>
+      <tr><td>Simulation only</td><td>Optional Home Assistant replay with simulated devices; field study as future work</td></tr>
     </tbody>
   </table></div>
-  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed.</p>
+  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed. Revised on 1 Nov 2026 after an external review: the changes are listed in section 15 of <span class="mono">docs/protocol_home_gateway.md</span>.</p>
+</section>
+
+<section>
+  <h2>9. Progress (3 Nov 2026)</h2>
+  <div class="prose"><p>Two pilots tested the two riskiest parts of the plan before the main build. Both are exploratory: one house, one run each, answer keys still drafts.</p></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Step</th><th>Status</th><th>What it showed</th></tr></thead>
+    <tbody>
+      <tr><td>1. Commit the revised plan and prototypes</td><td><span class="tag opt">author</span></td><td>Protocol, plan page, both pilots and the review files are uncommitted on <span class="mono">new-thesis/home-gateway</span></td></tr>
+      <tr><td>2. Check the 22 answer keys</td><td><span class="tag opt">author</span></td><td>X3 fixed (away period added); the rest are drafts, A3 and the change cases first</td></tr>
+      <tr><td>3. Plan pilot v2 (SQ1): 22 edge-case plans, commit-or-ask</td><td><span class="tag core">done</span></td><td>GPT-6 Luna: precision 1.00, recall 1.00, clarification F1 0.95, decision accuracy 0.95, 2.7 s, USD 0.003 for all; one error (A3: invented a departure time and committed). gpt-oss-20b: precision 0.63, recall 0.44, F1 0.75, decision 0.59, 116 s per plan. Luna is near the ceiling on these cases, so held-out plans written by other people matter. Newer local models (output capped at 8,000 tokens per call): Qwen3 8B precision 0.96, recall 1.00, F1 0.67, decision 0.68, 71 s; Gemma 4 E4B 1.00, 0.91, 0.78, 0.82, 7.7 s; Qwen3 30B-A3B (CPU only, too large for the 8 GB GPU) 1.00, 0.96, 0.84, 0.86, 150 s. All extract items well; they differ in when they ask. H5 candidates: Gemma 4 E4B (speed), Qwen3 30B-A3B (accuracy).</td></tr>
+      <tr><td>4. Configurator pilot (SQ2): agent vs auto-tuner, 8 weeks Mar-Apr 2016</td><td><span class="tag core">done</span></td><td>Saving vs default MPC: expert setting (tuned on 4 September weeks) 2.83 EUR, Configurator agent 2.82 EUR, deterministic auto-tuner 0.10 EUR, perfect foresight 14.45 EUR. The auto-tuner overfits two weeks of history; the agent chose stable settings (derate 0.75-0.9). USD 0.003, about 16 s per week. Supports keeping H4b.</td></tr>
+      <tr><td>5. Send the plan and both pilots to the supervisor</td><td><span class="tag ref">next</span></td><td>Agree scope: four agents, SQ2 size, plan writers, 20 weeks</td></tr>
+      <tr><td>6. Literature search; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Search protocol in section 13 of the protocol</td></tr>
+      <tr><td>Later: extra datasets (in notes); Home Assistant replay</td><td><span class="tag ref">later</span></td><td>After the supervisor agrees the scope</td></tr>
+    </tbody>
+  </table></div>
+  <p class="caption">One finding changed a number in this plan: the earlier "PV derating 0.9" setting was chosen on the same days it was scored on. A setting tuned on other weeks did worse than the default in one test week, so the tuned reference must always be chosen on separate weeks (as the protocol now requires).</p>
 </section>
 </div>

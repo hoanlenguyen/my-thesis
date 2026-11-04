@@ -17,6 +17,13 @@ class ModelSpec:
     # Input tokens the provider read from its prompt cache (a repeated prompt start of at least 1,024 tokens) cost
     # less; None = no discount known, priced as ordinary input
     usd_per_m_cached_input: float | None = None
+    # Ollama models: the ``think`` setting ("medium" for gpt-oss, True/False for models with an on/off reasoning
+    # phase, None to leave the model's default); unused by the other providers
+    ollama_think: bool | str | None = "medium"
+    # Ollama models: cap on generated tokens per call (``num_predict``); None = no cap
+    ollama_num_predict: int | None = None
+    # Ollama models: layers placed on the GPU (``num_gpu``; 0 = CPU only); None = Ollama decides
+    ollama_num_gpu: int | None = None
 
 
 MODELS: dict[str, ModelSpec] = {
@@ -38,15 +45,23 @@ MODELS: dict[str, ModelSpec] = {
     # variant is kept for comparison.
     "gpt-oss-20b": ModelSpec("ollama", "gpt-oss:20b", 0.0, 0.0),
     "gpt-oss-20b-groq": ModelSpec("groq", "openai/gpt-oss-20b", 0.075, 0.30),
+    # Local candidates for the follow-up thesis (exploratory; added 3 Nov 2026). Qwen3 runs with its reasoning
+    # phase on, like gpt-oss; Gemma 4 keeps its default. Output is capped at 8,000 tokens per call (4 Nov 2026):
+    # qwen3:8b looped in its reasoning phase for 37,000+ tokens on one plan; a capped call counts as a failed answer.
+    "qwen3-8b": ModelSpec("ollama", "qwen3:8b", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000),
+    # qwen3:30b-a3b fails to start on the 8 GB laptop GPU (CUDA out of memory, even with 24 layers), so it runs on
+    # the CPU only.
+    "qwen3-30b-a3b": ModelSpec("ollama", "qwen3:30b-a3b", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000,
+                               ollama_num_gpu=0),  # fmt: skip
+    "gemma4-e4b": ModelSpec("ollama", "gemma4:e4b", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
 }
 
 # The model new runs use unless another is named (CLI, LangGraph Studio, demo)
 DEFAULT_MODEL = "gpt-6-luna"
 
-# Local inference settings: the agents' conversations exceed Ollama's default context window, and
-# "medium" reasoning effort matches the gpt-oss default on hosted providers.
+# Local inference settings: the agents' conversations exceed Ollama's default context window. The reasoning
+# setting is per model (``ModelSpec.ollama_think``); "medium" matches the gpt-oss default on hosted providers.
 OLLAMA_NUM_CTX = 32768
-OLLAMA_REASONING = "medium"
 
 
 def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> BaseChatModel:
@@ -66,7 +81,8 @@ def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> 
 
         return ChatOllama(
             model=spec.model_id, temperature=temperature, seed=seed, num_ctx=OLLAMA_NUM_CTX,
-            reasoning=OLLAMA_REASONING, keep_alive="30m",
+            reasoning=spec.ollama_think, num_predict=spec.ollama_num_predict, num_gpu=spec.ollama_num_gpu,
+            keep_alive="30m",
         )  # fmt: skip
     raise ValueError(f"unknown provider {spec.provider}")
 

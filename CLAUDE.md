@@ -95,8 +95,28 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 This branch is the current thesis (merged from `claude/thesis-scope-expansion-47c694`, PR #1) plus exploratory
 work for a follow-up thesis: a language-model agent as the interface of a home energy gateway (PV, battery, heat
-pump, EV). Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026) and `docs/gateway_thesis_plan.html`
-(the published plan page with diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT).
+pump, EV). Working title (3 Nov 2026): "Design of a Multi-Agent Home Energy Gateway: Interpreting Household Plans
+and Configuring an Optimiser". Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026, revised 1 Nov 2026 after an
+external review; changes in its section 15) and `docs/gateway_thesis_plan.html` (the published plan page with
+diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT). The review: `docs/gemini_review_brief.md`
+(what Gemini was given), `docs/gemini_review.md` (its answer), `docs/gemini_review_response.md` (what was adopted, and why).
+**Thesis text of the follow-up (4 Nov 2026):** edit `gateway_body.tex` (citations as `\parencite{key}` /
+`\textcite{key}`, keys in `build_gateway_thesis.py`), then `uv run python build_gateway_thesis.py` writes
+`gateway_thesis.tex` (preamble of `main.tex` + body, citations as APA text) and `latexmk -xelatex gateway_thesis`.
+Never edit `gateway_thesis.tex` by hand. Figures in `attachments/gateway/` are exported from the plan page's SVG.
+Parts without results say "In process."; `main.tex` stays the finished thesis.
+**Agent design (author's decision, 1 Nov 2026): four agents, one per event** (Household Assistant, Explainer,
+Monitor, Configurator), routed by the harness, no orchestrator agent; one- and two-agent ablations answer the
+agent-count part of SQ3. The Gemini brief and response still describe the earlier two-agent design.
+
+- `prototypes/plan_pilot/`: plan-interpretation pilot. `pilot.py --self-test` must score 1.0 on every metric and
+  report no EV feasibility mismatch. Version 2 (22 edge-case plans bound to dates, commit-or-ask decision) ran on
+  3 Nov 2026 (`results.jsonl`); version 1 results are in `results_v1.jsonl` (and the buggy retry run in
+  `results_retry_bug.jsonl`). The local models qwen3-8b, gemma4-e4b and qwen3-30b-a3b have an 8,000-token output cap
+  per call (`ModelSpec.ollama_num_predict`, since 4 Nov 2026, after a reasoning loop); a capped call is a failed answer.
+- `prototypes/configurator_pilot/configurator.py`: SQ2 pilot, Configurator agent vs deterministic auto-tuner vs
+  expert-tuned and default MPC over weekly windows (`out/results.jsonl`); results in protocol section 14.
+  The answer keys are drafts: the author checks them before any result is used.
 
 - **Keep the two theses apart.** `main.tex`, `src/hems/` campaigns, `data/scenarios*` and `results/` belong to the
   current thesis; never cite prototype numbers in `main.tex`. Prototype code and outputs stay in `prototypes/`.
