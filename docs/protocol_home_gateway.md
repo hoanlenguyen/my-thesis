@@ -1,7 +1,9 @@
 # Protocol: a language-model agent as the interface of a home energy gateway
 
-**Working title (author's decision, 3 November 2026):** *Design of a Multi-Agent Home Energy Gateway: Interpreting
-Household Plans and Configuring an Optimiser*
+**Title (author's decision, 4 November 2026):** *Small Language Models for a Home Energy Gateway: Interpreting
+Household Plans and Configuring an Optimiser on Local Hardware* (working title of 3 November: *Design of a
+Multi-Agent Home Energy Gateway: Interpreting Household Plans and Configuring an Optimiser*). Research questions
+and hypotheses were redesigned around small language models on 4 November (section 2; changes in section 16).
 
 Draft, 1 November 2026 (revised after an external review; first reframed 30 October 2026 after the gateway pilot).
 Status: plan for discussion with the supervisor for a follow-up thesis; nothing in it is registered. The prototypes
@@ -49,32 +51,42 @@ study is future work.
 
 ## 2. Research questions and hypotheses (draft)
 
-- **RQ:** How can a language-model agent let a home energy gateway work from the household's plain-language plans
-  without expert configuration, by interpreting the plans and configuring and explaining an optimiser, while
-  keeping control reliable?
-- **SQ1 (interpretation):** How accurately does the agent turn plain-language daily plans and their changes into
-  constraints and a commit-or-ask decision, and how often are the household's requirements then met?
-- **SQ2 (configuration):** Can the agent configure the MPC from a house's history close to an expert-tuned MPC,
-  and does it do better than a deterministic auto-tuner with the same history?
-- **SQ3 (reliability and cost):** How often are its plans rejected or overridden by the checker and fallback, what
-  does it cost (tokens, time, energy) locally and in the cloud, and does splitting the work into four agents make
-  it more reliable, cheaper or faster than one or two agents? (the agent-count part descriptive)
-- **SQ4 (conditions):** Under which weather, price patterns, household loads and plan types does interpretation
-  or configuration fail? (descriptive)
+- **RQ:** How can a home energy gateway use small language models running on local hardware to interpret
+  households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud
+  large language model?
+- **SQ1 (interpretation):** How accurately do small language models turn plain-language plans and their changes
+  into constraints and a commit-or-ask decision, compared with a large language model, and how often are the
+  household's requirements then met?
+- **SQ2 (configuration):** Can a small language model configure the MPC from the house's history as well as a
+  large language model, and better than a deterministic auto-tuner that sees the same history?
+- **SQ3 (closing the gap):** How much of the gap between small and large models do the deterministic checker and
+  a cloud fallback close, and how often is the fallback needed?
+- **SQ4 (deployment):** What do local and cloud set-ups cost in latency, energy, money and privacy, and does the
+  gateway's saving outweigh these costs?
+
+The conditions in which interpretation or configuration fails (weather, price pattern, load, plan type) are
+reported descriptively under each SQ. If the small models allow it, one agent is compared with the four-agent
+design (exploratory: do narrow tasks help a small model more than a large one?).
+
+**Models.** SLM = open model below about 10 billion parameters (Belcak et al., 2025): Gemma 4 E4B (main
+candidate), Qwen3 8B, and one or two more of similar size. Larger local: Qwen3 30B-A3B, gpt-oss-20b. Cloud LLM:
+GPT-6 Luna. **Set-ups (SQ3):** SLM alone; SLM + checker; SLM + checker + cloud fallback; LLM alone.
+**Hardware:** laptop with RTX 4070 (8 GB) for all runs; an SQ4 subset on a Jetson Orin Nano if one is bought.
 
 **Draft hypotheses** (thresholds fixed only at registration, after the exploratory phase):
 
 | | Hypothesis | Test |
 |---|---|---|
-| H1 | On the held-out plans, constraint item precision and recall are each at least 0.90, and the clarification F1 (asking when, and only when, a question is needed) is at least 0.85 | lower 95 % bound of a cluster bootstrap over plans above the threshold |
-| H2 | In closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on at least 95 % of feasible house-days | one-sided exact binomial, p0 = 0.95 |
-| H3 | The adjusted cost of a plain-language plan through the agent is non-inferior to the same plan given as exact parameters to the tuned MPC, margin 5 % of the gap between rules and perfect foresight | paired one-sided Wilcoxon |
-| H4a | Starting from default settings and using only past weeks, the agent-configured MPC closes at least X % of the gap between default MPC and the tuned MPC (X, for example 70, set at registration) | paired bootstrap 95 % interval of the pooled ratio |
-| H4b | The agent-configured MPC is non-inferior to the deterministic auto-tuner (same history, same backtest), margin set at registration | paired one-sided Wilcoxon |
-| H5 | The best local model (chosen in the exploratory phase) is within 0.10 absolute of the cloud model's recall and within 5 percentage points of its H2 rate, with a 95th-percentile latency per event under a threshold stated with the hardware | paired McNemar (H2), cluster bootstrap (recall), descriptive latency |
-| H6 | The yearly saving over rules exceeds the gateway's own cost in each of two set-ups: (a) low-power gateway with cloud inference (idle power + API fees); (b) gateway plus local inference box (idle power of both + measured inference energy) | year simulation, descriptive with power bounds |
+| H1 (SQ1) | On the held-out plans, the best SLM is within 0.05 of the cloud LLM on constraint recall and decision accuracy (non-inferiority) | paired cluster bootstrap over plans; McNemar on decisions |
+| H2 (SQ1) | With the best SLM in closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on at least 95 % of feasible house-days | one-sided exact binomial, p0 = 0.95 |
+| H3 (SQ2) | The SLM-configured MPC is non-inferior to the deterministic auto-tuner (same history, same backtest) and within a registered margin of the LLM-configured MPC | paired one-sided Wilcoxon |
+| H4 (SQ3) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.05 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
+| H5 (SQ4) | The 95th-percentile latency per event on local hardware is below 60 s, and the yearly saving over rules exceeds the energy and cost of inference | descriptive with measured power; year simulation |
 
-Holm correction within SQ1 (H1-H3) and within SQ2 (H4a-b). The checker's invariants (grid limit, battery
+The earlier hypotheses (H1-H6 of 1 November) are replaced; the cost comparison of plain-language vs exact
+parameters (old H3) and the default-to-tuned share (old H4a) can be kept as descriptive results.
+
+Holm correction within each SQ. The checker's invariants (grid limit, battery
 limits) are reported separately as safety checks, expected to be zero violations by construction; they are not a
 hypothesis because they test the harness, not the agent.
 
@@ -412,3 +424,36 @@ times without dates; a dryer, which the main house does not have.
 agents: the Explainer (messages and daily report, checked against the plan's figures) and the Monitor (EV plug-ins
 and deviations raised by the control layer) were split out. Routing stays deterministic (no orchestrator agent).
 The agent count is part of SQ3, with one-agent and two-agent ablations on the same events.
+
+## 16. Redesign around small language models (4 November 2026)
+
+**Author's decisions.** New title (see the top), RQ and SQ1-SQ4 around small language models (section 2), with the
+cloud LLM as the reference and as a fallback. The one-agent vs four-agent comparison stays only if the SLMs allow
+it (exploratory, no hypothesis). Hardware: the laptop for all runs; an SQ4 subset on a Jetson Orin Nano if bought.
+Method: mixed, a systematic literature review (rigor cycle) inside Design Science Research (Hevner, 2007; Peffers
+et al., 2007; FEDS by Venable et al., 2016); review questions LQ1-LQ3 (roles, evaluation, frontier vs small models).
+
+**Design change.** A model layer in the harness runs the local SLM first and calls the cloud LLM only when the SLM's
+answer fails validation twice or the checker rejects its plan; the fallback can be switched off (the gateway then
+asks the household). New requirement R6: the household's plans stay in the house unless the fallback is needed,
+and plan interpretation works without an internet connection.
+
+**Evidence so far.** The plan pilot (section 14) is the "SLM alone" set-up: the small models read plans almost as
+well as GPT-6 Luna but are weaker at the commit-or-ask decision (Gemma 4 E4B 0.82, Qwen3 8B 0.68, Luna 0.95).
+**Checker rescoring (4 November 2026, `prototypes/plan_pilot/rescore_checker.py`, `out/rescore_checker.json`).** The
+stored answers were rescored without calling a model. Checker rules use only the model's output and the car's
+charge: an EV item without a target is incomplete; an EV item or appliance window is infeasible when the charger
+or cycle cannot meet it before the deadline; comfort min above max is invalid. A flagged answer that the model
+would commit becomes a question; with the fallback, GPT-6 Luna's stored answer replaces a flagged or failed answer
+and is checked in turn. Decision accuracy (clarification F1), alone / + checker / + checker + fallback, fallback
+share: Gemma 4 E4B 0.82 (0.78) / 0.91 (0.90) / 0.91 (0.90), 9 %; Qwen3 8B 0.68 / 0.73 / 0.73, 5 %; gpt-oss-20b
+0.59 / 0.46 / 0.77, 36 %; Qwen3 30B-A3B 0.86 / 0.91 / 0.86, 5 %; Luna 0.95 throughout. Gemma's two remaining errors
+(X2 away vs comfort, X5 no grid at night) cannot be expressed in the output schema. The fallback can hurt: for
+Qwen3 30B-A3B it replaced a failed answer (which would have become a question) with Luna's wrong commit on A3.
+Exploratory: the rules were written from the gateway's constraints, not the keys, but tested on the same 22 plans.
+**Configurator pilot with SLMs (4-7 November 2026, `out/results_slm.jsonl`; same 8 weeks, settings and gate as the
+GPT-6 Luna run; resumed for the last week with `--resume` after the machine slept).** Saving vs default MPC, gap
+closed, seconds per week: Gemma 4 E4B 2.85 EUR, 48 %, 44 s (derate 0.8 from week 2; one proposal rejected by the
+backtest gate); Qwen3 8B 2.42 EUR, 46 %, about 300 s (derate 0.75-0.9, mostly 20 % reserve; two rejected); GPT-6
+Luna 2.82 EUR, 48 %, 16 s; expert setting 2.83 EUR; auto-tuner 0.10 EUR. No failed calls. One run on one house:
+the small model can configure the MPC; the cents between Gemma, Luna and the expert cannot rank them.

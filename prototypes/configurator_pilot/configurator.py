@@ -93,6 +93,11 @@ def label(s: Settings) -> str:
     return f"derate {s.pv_derate:.2f}, reserve {'none' if s.battery_reserve_pct is None else f'{s.battery_reserve_pct:.0f} %'}"
 
 
+def unlabel(text: str) -> Settings:
+    derate, reserve = text.removeprefix("derate ").split(", reserve ")
+    return Settings(float(derate), None if reserve == "none" else float(reserve.removesuffix(" %")))
+
+
 # ── The Configurator agent ───────────────────────────────────────────────────
 SYSTEM_PROMPT = """You are the Configurator of a home energy gateway in Konstanz, Germany. The home has rooftop PV, \
 a 10 kWh home battery, a heat pump and an EV charger. An MPC plans the devices at 00, 06, 12 and 18 h and at each \
@@ -200,6 +205,8 @@ def main() -> None:
     parser.add_argument("--tune-start", default="2016-09-05", help="exploratory period for the tuned reference")
     parser.add_argument("--tune-weeks", type=int, default=4)
     parser.add_argument("--out", type=Path, default=HERE / "out" / "results.jsonl")
+    parser.add_argument("--resume", action="store_true",
+                        help="keep the weeks already in --out and continue from the settings they end with")  # fmt: skip
     args = parser.parse_args()
     load_dotenv()
     home = Home()
@@ -219,9 +226,21 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     current = {"auto_tuner": Settings(), **{f"agent:{m}": Settings() for m in args.models}}
-    with args.out.open("w") as out:
+    done: set[str] = set()
+    if args.resume and args.out.exists():  # a week counts as done once its "optimum" row was written
+        records = [json.loads(line) for line in args.out.read_text().splitlines()]
+        done = {r["week"] for r in records if r["system"] == "optimum"}
+        records = [r for r in records if r["week"] in done]
+        args.out.write_text("".join(json.dumps(r) + "\n" for r in records))
+        for r in records:
+            if r["system"] in current:
+                current[r["system"]] = unlabel(r["settings"])
+        print(f"resuming after {len(done)} weeks: {', '.join(f'{k} {label(v)}' for k, v in current.items())}")
+    with args.out.open("a" if args.resume else "w") as out:
         for w in range(args.weeks):
             start = date.fromisoformat(args.start) + timedelta(weeks=w)
+            if start.isoformat() in done:
+                continue
             week = available(week_dates(start))
             history = available([d for k in range(args.history, 0, -1) for d in week_dates(start - timedelta(weeks=k))])
             chosen: dict[str, tuple[Settings, dict]] = {

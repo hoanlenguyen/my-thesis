@@ -95,8 +95,22 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 This branch is the current thesis (merged from `claude/thesis-scope-expansion-47c694`, PR #1) plus exploratory
 work for a follow-up thesis: a language-model agent as the interface of a home energy gateway (PV, battery, heat
-pump, EV). Working title (3 Nov 2026): "Design of a Multi-Agent Home Energy Gateway: Interpreting Household Plans
-and Configuring an Optimiser". Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026, revised 1 Nov 2026 after an
+pump, EV). **Title (author's decision, 4 Nov 2026): "Small Language Models for a Home Energy Gateway: Interpreting
+Household Plans and Configuring an Optimiser on Local Hardware"** (earlier working title, 3 Nov: "Design of a
+Multi-Agent Home Energy Gateway: ..."). Supervisors: Yueqiang Xu, PhD, Docent, Adjunct Professor; Paula Alavesa, PhD.
+**Research questions (4 Nov 2026, drafts until registration):** RQ "How can a home energy gateway use small language
+models running on local hardware to interpret households' plain-language plans and configure an optimiser
+reliably, and how close do they come to a cloud large language model?" SQ1 interpretation (SLM vs LLM; H1 best
+SLM within 0.05 of the LLM on recall and decision accuracy, H2 requirements met on >= 95 % of feasible days),
+SQ2 configuration (SLM Configurator vs LLM Configurator vs auto-tuner; H3), SQ3 closing the gap (four set-ups:
+SLM alone, SLM + checker, SLM + checker + cloud fallback, LLM alone; H4 within 0.05 with fallback on <= 20 % of
+plans), SQ4 deployment (latency, energy, cost, privacy; H5 p95 < 60 s locally, saving > inference cost).
+Conditions (weather, price, load, plan type) are descriptive under each SQ. SLM = open model below about 10B
+parameters (Gemma 4 E4B is the main candidate, Qwen3 8B; Qwen3 30B-A3B and gpt-oss-20b are "larger local";
+GPT-6 Luna the cloud LLM). Hardware: laptop RTX 4070 8 GB for all runs; an SQ4 subset on a Jetson Orin Nano if
+the author buys one. The one-agent vs four-agent comparison is kept only if the SLMs allow it (exploratory).
+**Method (4 Nov 2026):** mixed method, SLR (Kitchenham; review questions LQ1-LQ3 in thesis section 2.1) as the
+rigor cycle of DSR (Hevner 2007 three cycles, Peffers activities, FEDS evaluation strategy). Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026, revised 1 Nov 2026 after an
 external review; changes in its section 15) and `docs/gateway_thesis_plan.html` (the published plan page with
 diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT). The review: `docs/gemini_review_brief.md`
 (what Gemini was given), `docs/gemini_review.md` (its answer), `docs/gemini_review_response.md` (what was adopted, and why).
@@ -104,18 +118,36 @@ diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT). 
 `\textcite{key}`, keys in `build_gateway_thesis.py`), then `uv run python build_gateway_thesis.py` writes
 `gateway_thesis.tex` (preamble of `main.tex` + body, citations as APA text) and `latexmk -xelatex gateway_thesis`.
 Never edit `gateway_thesis.tex` by hand. Figures in `attachments/gateway/` are exported from the plan page's SVG.
-Parts without results say "In process."; `main.tex` stays the finished thesis.
+Parts without results say "In process."; only verified references are cited; `main.tex` stays the finished thesis.
+Compile gotcha: the `.aux` was repeatedly corrupted in the worktree (likely another compiler writing at the same
+time); compiling with `latexmk -xelatex -outdir=<scratchpad>/texbuild gateway_thesis` and copying the PDF works.
+Thesis structure (4 Nov 2026): Ch. 2 = 2.1 SLR (LQ1-LQ3, stages "in process"), 2.2 optimisation and safe control,
+2.3 language models in HEMS, 2.4 frontier vs small models, 2.5 gap; Ch. 3 = 3.1 research design (figure of the
+three cycles), 3.2 SLR protocol, 3.3 DSR, 3.4 data, 3.5 evaluation design, 3.6 threats to validity.
 **Agent design (author's decision, 1 Nov 2026): four agents, one per event** (Household Assistant, Explainer,
-Monitor, Configurator), routed by the harness, no orchestrator agent; one- and two-agent ablations answer the
-agent-count part of SQ3. The Gemini brief and response still describe the earlier two-agent design.
+Monitor, Configurator), routed by the harness, no orchestrator agent. Since 4 Nov a model layer runs a local SLM
+first and a cloud LLM only when the SLM's answer fails validation twice or the checker rejects its plan
+(requirement R6: plans stay in the house; works offline). The Gemini brief and response still describe the
+earlier two-agent design.
 
 - `prototypes/plan_pilot/`: plan-interpretation pilot. `pilot.py --self-test` must score 1.0 on every metric and
   report no EV feasibility mismatch. Version 2 (22 edge-case plans bound to dates, commit-or-ask decision) ran on
   3 Nov 2026 (`results.jsonl`); version 1 results are in `results_v1.jsonl` (and the buggy retry run in
   `results_retry_bug.jsonl`). The local models qwen3-8b, gemma4-e4b and qwen3-30b-a3b have an 8,000-token output cap
   per call (`ModelSpec.ollama_num_predict`, since 4 Nov 2026, after a reasoning loop); a capped call is a failed answer.
+  qwen3-30b-a3b runs CPU-only (`ModelSpec.ollama_num_gpu=0`; it fails to start on the 8 GB GPU; the failed rows are
+  in `results_qwen30b_oom.jsonl`). Results 4 Nov (precision, recall, clarification F1, decision, s per plan):
+  gemma4-e4b 1.00/0.91/0.78/0.82/7.7; qwen3-8b 0.96/1.00/0.67/0.68/71; qwen3-30b-a3b 1.00/0.96/0.84/0.86/150;
+  gpt-6-luna 1.00/1.00/0.95/0.95/2.7; gpt-oss-20b 0.63/0.44/0.75/0.59/116. These are the "SLM alone" set-up.
+  `rescore_checker.py` rescores the stored answers (no model calls) with a deterministic checker and the cloud
+  fallback (SQ3; `out/rescore_checker.json`, thesis Table 5.3): decision accuracy alone / + checker / + fallback:
+  gemma4-e4b 0.82 / 0.91 / 0.91 (fallback 9 %), qwen3-8b 0.68 / 0.73 / 0.73, gpt-oss-20b 0.59 / 0.46 / 0.77 (36 %),
+  qwen3-30b-a3b 0.86 / 0.91 / 0.86, luna 0.95. The checker gates only answers the model would commit.
 - `prototypes/configurator_pilot/configurator.py`: SQ2 pilot, Configurator agent vs deterministic auto-tuner vs
-  expert-tuned and default MPC over weekly windows (`out/results.jsonl`); results in protocol section 14.
+  expert-tuned and default MPC over weekly windows (`out/results.jsonl` = GPT-6 Luna; `out/results_slm.jsonl` =
+  gemma4-e4b and qwen3-8b, 7 Nov 2026); results in protocol sections 14 and 16. `--resume` continues an interrupted
+  run from the weeks already written. Saving vs default: gemma4-e4b 2.85 EUR (44 s/week), qwen3-8b 2.42 (about
+  300 s/week), luna 2.82, expert 2.83, auto-tuner 0.10.
   The answer keys are drafts: the author checks them before any result is used.
 
 - **Keep the two theses apart.** `main.tex`, `src/hems/` campaigns, `data/scenarios*` and `results/` belong to the

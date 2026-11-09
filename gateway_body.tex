@@ -8,8 +8,8 @@
 \includegraphics[width=3.76cm, keepaspectratio]{attachments/uni_logo.jpeg}\par
 \vspace{3.53cm}
 {\sffamily\fontsize{20}{24}\bfseries
-Design of a Multi-Agent Home Energy Gateway: Interpreting Household
-Plans and Configuring an Optimiser\par}
+Small Language Models for a Home Energy Gateway: Interpreting Household
+Plans and Configuring an Optimiser on Local Hardware\par}
 \vfill
 {\raggedright\leftskip=10.16cm\rmfamily\normalsize
 University of Oulu\\
@@ -32,15 +32,17 @@ In process.
 {\sffamily\itshape Keywords}
 
 \vspace{4pt}
-home energy management, energy gateway, multi-agent system, ReAct, large
-language model, model predictive control, plan interpretation, Design
+home energy management, energy gateway, small language model, large
+language model, edge computing, multi-agent system, model predictive
+control, plan interpretation, systematic literature review, Design
 Science Research
 
 \vspace{12pt}
-{\sffamily\itshape Supervisor}
+{\sffamily\itshape Supervisors}
 
 \vspace{4pt}
-Yueqiang Xu, PhD, Postdoctoral Researcher
+Yueqiang Xu, PhD, Docent, Adjunct Professor\\
+Paula Alavesa, PhD
 
 % ── FOREWORD ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Foreword}
@@ -69,6 +71,7 @@ In process.
 \item[OPSD] Open Power System Data
 \item[PV] Photovoltaic (rooftop solar panels)
 \item[ReAct] Reasoning and Acting
+\item[SLM] Small Language Model
 \item[SLR] Systematic Literature Review
 \item[SoC] State of Charge (of a battery)
 \item[SQ] Sub-question
@@ -150,61 +153,90 @@ conclusion for appliance scheduling: reliability and savings came from
 the solver and the deterministic checks, not from the language model or
 the number of agents \parencite{le2026}.
 
-This thesis therefore gives the agents the work an optimiser cannot do:
-interpreting the household's plans and changes, configuring the
-optimiser from the house's own history, reacting to events and
-explaining the plan. The optimiser computes the schedule, and a
-deterministic checker and control layer switch the devices.
+Where the language model runs is a second, open problem. The studies
+above call large language models (LLMs) in the cloud. A gateway that
+sends the household's plans to a cloud service reveals when the family
+is at home or away, stops interpreting plans when the internet
+connection fails, and pays for every call for as long as it operates.
+Small language models (SLMs) are compact enough to run on the gateway or
+on a small box beside it, and they now run on edge boards such as the
+Raspberry Pi and the Jetson Orin Nano \parencite{islam2025,spaias2027}.
+They are, however, less capable: in the agentic scheduler of
+\textcite{elmakroum2026}, only the largest of three open models
+coordinated several appliances at once. Whether a small model is
+accurate enough to interpret a household's plans and configure an
+optimiser, and what a deterministic harness or a cloud fallback adds,
+has not been tested.
+
+This thesis therefore gives small language models the work an optimiser
+cannot do: interpreting the household's plans and changes, configuring
+the optimiser from the house's own history, reacting to events and
+explaining the plan. The optimiser computes the schedule, a
+deterministic checker and control layer switch the devices, and a cloud
+LLM serves as the reference and, where needed, as a fallback.
 
 \section{Research questions}
 \label{sec:rq}
 
 The main research question is:
 
-\textbf{RQ:} How can a language-model agent let a home energy gateway
-work from the household's plain-language plans without expert
-configuration, by interpreting the plans and configuring and explaining
-an optimiser, while keeping control reliable?
+\textbf{RQ:} How can a home energy gateway use small language models
+running on local hardware to interpret households' plain-language plans
+and configure an optimiser reliably, and how close do they come to a
+cloud large language model?
 
 Four sub-questions (SQ) divide it:
 
 \begin{description}[leftmargin=1.4cm, style=sameline, font=\normalfont\bfseries]
-\item[SQ1] \textit{Interpretation.} How accurately does the agent turn
-plain-language plans and their changes into constraints and a
-commit-or-ask decision, and how often are the household's requirements
-then met?
-\item[SQ2] \textit{Configuration.} Can the agent configure the MPC from
-the house's history close to an expert-tuned MPC, and better than a
-deterministic auto-tuner that sees the same history?
-\item[SQ3] \textit{Reliability and cost.} How often do the checker and
-the fallback intervene, what does the agent cost locally and in the
-cloud, and does splitting the work into four agents help compared with
-one or two?
-\item[SQ4] \textit{Conditions.} Under which weather, price patterns,
-household loads and plan types does interpretation or configuration
-fail?
+\item[SQ1] \textit{Interpretation.} How accurately do small language
+models turn plain-language plans and their changes into constraints and
+a commit-or-ask decision, compared with a large language model, and how
+often are the household's requirements then met?
+\item[SQ2] \textit{Configuration.} Can a small language model configure
+the MPC from the house's history as well as a large language model, and
+better than a deterministic auto-tuner that sees the same history?
+\item[SQ3] \textit{Closing the gap.} How much of the gap between small
+and large models do the deterministic checker and a cloud fallback
+close, and how often is the fallback needed?
+\item[SQ4] \textit{Deployment.} What do local and cloud set-ups cost in
+latency, energy, money and privacy, and does the gateway's saving
+outweigh these costs?
 \end{description}
+
+Under each sub-question, the conditions in which interpretation or
+configuration fails (weather, price pattern, household load and plan
+type) are reported descriptively. If the small models allow it, the
+design iterations also compare one agent with the four-agent design, to
+see whether narrow tasks help a small model more than a large one; this
+comparison is exploratory.
 
 The thesis does not measure usability with users. Its claim is that the
 gateway works without expert configuration from plans written by people
 other than the author; a usability study is left for future work.
 
 \section{Research approach and scope}
+\label{sec:approach}
 
-The thesis follows Design Science Research (DSR)
-\parencite{hevner2004,peffers2007}: an artifact is designed, built,
-demonstrated and evaluated, with design iterations on an exploratory set
-and a registered confirmation on a held-out set
+The thesis combines a systematic literature review (SLR)
+\parencite{kitchenham2007} with Design Science Research (DSR)
+\parencite{hevner2004,peffers2007}. The SLR establishes what is known
+about language models in home energy management and forms the rigor
+cycle of the DSR \parencite{hevner2007}; the DSR designs, builds,
+demonstrates and evaluates the gateway, with design iterations on an
+exploratory set and a registered confirmation on a held-out set
 (Chapter~\ref{ch:method}). The evaluation is limited to households: one
 home with PV, a battery, a heat pump and an EV charger is simulated
 with measured data, real weather and real prices
-(Section~\ref{sec:data}). Transferability to industrial energy
+(Section~\ref{sec:data}). The small models run on a laptop with an
+8\,GB consumer GPU; for SQ4, a subset is repeated on a gateway-class
+edge board (Jetson Orin Nano). Transferability to industrial energy
 management is discussed in Section~\ref{sec:industry}.
 
 \section{Structure of the thesis}
 
-Chapter~\ref{ch:lit} reviews related work. Chapter~\ref{ch:method}
-describes the research method, the data and the evaluation design.
+Chapter~\ref{ch:lit} presents the literature review. Chapter~\ref{ch:method}
+describes the combined research method, the data, the evaluation design
+and the threats to validity.
 Chapter~\ref{ch:design} presents the artifact. Chapter~\ref{ch:results}
 reports the exploratory pilots; the registered evaluation is in process.
 Chapters~\ref{ch:discussion} and~\ref{ch:conclusions} discuss and
@@ -214,11 +246,54 @@ conclude.
 \chapter{Literature Review}
 \label{ch:lit}
 
-The systematic literature review (SLR) defined in
-Section~\ref{sec:slr} is in process. This chapter summarises the
-studies already read, grouped by the parts of the design they inform.
+This chapter starts with the systematic literature review (SLR), which
+is in process, and then summarises the studies already read, grouped by
+the parts of the design they inform.
 
-\section{Home energy management and optimisation}
+\section{Systematic literature review}
+\label{sec:slrreview}
+
+The SLR asks what is known about language models that interpret
+household requirements, configure optimisers or schedule loads behind
+the meter. It has three review questions:
+
+\begin{description}
+\item[LQ1] Which roles do language models take in home energy
+management: interface to an optimiser, configurator, scheduler or
+direct controller?
+\item[LQ2] How are these systems evaluated: against which baselines,
+with which metrics and on which data?
+\item[LQ3] Which models are used, frontier models in the cloud or small
+models on local hardware, and how reliable and costly are they?
+\end{description}
+
+The protocol (databases, search string, inclusion and exclusion
+criteria) is described in Section~\ref{sec:slr}. Table~\ref{tab:slrstages}
+lists its stages.
+
+\begin{table}[htbp]
+\caption{Stages of the systematic literature review.}
+\label{tab:slrstages}
+\small
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+Stage & Activity & Studies \\
+\midrule
+Identification & database search (Scopus, Web of Science, arXiv, Google Scholar) & in process \\
+Screening & titles and abstracts against the inclusion criteria & in process \\
+Eligibility & full texts & in process \\
+Snowballing & backward and forward from the included studies & in process \\
+Included & data extraction for LQ1--LQ3 & in process \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The studies discussed in Sections~\ref{sec:lithems} to~\ref{sec:llmslm}
+were read before the search. They are candidates for inclusion and will
+be merged with the review results.
+
+\section{Optimisation and safe control in home energy management}
+\label{sec:lithems}
 
 Home energy management systems (HEMS) schedule household loads, storage
 and generation against prices and comfort requirements; reviews classify
@@ -236,7 +311,16 @@ configuration: the optimiser must be told the household's requirements
 and parameters, and the systems that require it are perceived as too
 complicated \parencite{tuomela2021}.
 
-\section{Language-model agents in home energy management}
+An optimiser that is configured by someone else, or by a language model,
+needs a guard against bad settings. The Simplex architecture runs a
+high-performance but unverified controller inside an envelope of a
+simple, verified controller that takes over when the unverified one
+would leave the safe region \parencite{sha2001}. The deterministic
+checker and control layer of the gateway play the role of the verified
+envelope around the language-model agents.
+
+\section{Language models in home energy management}
+\label{sec:litlm}
 
 Language models are used in home energy management in two roles.
 \textit{As an interface}, they translate what a user says into the
@@ -258,10 +342,9 @@ earlier thesis evaluated a hierarchical ReAct pipeline for appliance
 recommendations and found that the solver and the deterministic checks,
 not the agents, produced the savings and the validity \parencite{le2026}.
 
-\section{From natural language to optimisation models}
-
-Outside the energy domain, the NL4Opt competition defined the task of
-turning a word problem into an optimisation model
+The interface role has a counterpart outside the energy domain, where
+language models write whole optimisation models. The NL4Opt competition
+defined the task of turning a word problem into an optimisation model
 \parencite{ramamonjison2023}. OptiMUS formulates and solves
 mixed-integer linear programmes from natural-language descriptions with
 a language-model agent that writes and debugs solver code
@@ -270,14 +353,48 @@ formulation among cooperating expert agents \parencite{xiao2024}. These
 works generate the whole model; this thesis keeps a fixed, verified
 model and lets the agent set only its constraints and parameters.
 
-\section{Safety envelopes for unverified controllers}
+\section{Frontier models and small language models in energy management}
+\label{sec:llmslm}
 
-The Simplex architecture runs a high-performance but unverified
-controller inside an envelope of a simple, verified controller that
-takes over when the unverified one would leave the safe region
-\parencite{sha2001}. The deterministic checker and control layer of the
-gateway play the role of the verified envelope around the language-model
-agents.
+The studies above mostly use frontier models: the largest and most
+capable language models of the time, served by their providers through a
+cloud API. A small language model (SLM) is one compact enough to run on
+the user's own hardware. The boundary moves as hardware improves: one
+survey covers models of 100 million to 5 billion parameters
+\parencite{lu2024}, while \textcite{belcak2025} count most models below
+10 billion parameters as small. For a home energy gateway, the choice
+between the two matters for four reasons. Privacy: a household's plans
+and consumption reveal when it is at home, which a local model keeps in
+the house. Availability: a local model keeps working when the internet
+connection fails. Cost: a local model has no per-call price, while a
+cloud model charges for each token it reads and writes. Capability:
+frontier models remain more accurate on harder reasoning.
+
+Evidence from home energy management suggests that model size matters
+most when the task is open-ended. In the agentic scheduler of
+\textcite{elmakroum2026}, three open-weight models scheduled single
+appliances perfectly, but only the largest, Llama-3.3-70B, coordinated
+all appliances in every scenario. \textcite{spaias2027} take the
+opposite approach for edge hardware: deterministic functions retrieve
+and analyse the energy data, and a small model on a Raspberry-Pi-class
+device only phrases the grounded result as an answer, which keeps the
+system auditable and limits hallucination. Its role is advisory; it
+controls no devices. On the cost side, \textcite{islam2025} measured
+the energy footprint of small models such as Llama 3.2, Phi-3 Mini and
+Gemma 2 on edge boards and found that GPU acceleration and memory
+bandwidth decide efficiency, and that the most accurate model was the
+least energy-efficient.
+
+\textcite{belcak2025} argue that small models are sufficient and more
+economical for most calls in agentic systems, which repeat a few narrow
+tasks, and that agents should call a larger model only where
+general-purpose conversation is needed. This matches the gateway's
+design: the MPC and the checker do the optimisation and the safety
+checks, so each agent has a narrow task (turning a plan into
+constraints, or choosing settings from a backtest). Whether a local
+model is accurate enough for these tasks is an empirical question that
+the thesis tests (SQ1 to SQ3; Section~\ref{sec:planpilot} reports a
+pilot).
 
 \section{Research gap}
 
@@ -287,18 +404,159 @@ None was found that (1) lets agents configure an MPC from a house's own
 history and compares them with a deterministic auto-tuner, (2) handles
 plans and changes during the day for PV, battery, heat pump and EV
 together, checked before execution, and (3) evaluates against a tuned
-rather than a default optimiser. Whether this gap holds is part of the
-SLR, which is in process.
+rather than a default optimiser. Above all, no study was found that
+tests whether small language models on local hardware can do these
+tasks, how far they fall behind a cloud LLM, and how much a
+deterministic harness or a cloud fallback closes that distance. Whether
+this gap holds is part of the SLR, which is in process.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Research Methodology}
 \label{ch:method}
 
+The thesis combines two methods: a systematic literature review (SLR)
+and Design Science Research (DSR). The SLR establishes what is known
+about language models in home energy management; DSR builds and
+evaluates the gateway that answers the research question. This chapter
+explains how the two fit together (Section~\ref{sec:design}), describes
+each method (Sections~\ref{sec:slr} and~\ref{sec:dsr}), and then the
+data, the evaluation design and the threats to validity.
+
+\section{Research design}
+\label{sec:design}
+
+The two methods answer different kinds of question. The review questions
+LQ1 to LQ3 (Section~\ref{sec:slrreview}) ask what others have built and
+how they evaluated it; an SLR answers them in a traceable and repeatable
+way \parencite{kitchenham2007}. The research question and SQ1 to SQ4
+ask whether a new artifact works; DSR answers them by building the
+artifact and evaluating it against the problem it addresses
+\parencite{hevner2004,peffers2007}.
+
+The combination follows the three cycles of DSR \parencite{hevner2007}
+(Figure~\ref{fig:method}). The \textit{relevance cycle} brings the
+problem and the acceptance criteria from the environment: households
+with PV, batteries, heat pumps and EVs, the gateways that control them
+and the rules for controllable loads (Chapter~\ref{ch:intro}). The
+\textit{rigor cycle} brings knowledge from the literature; in this
+thesis it is the SLR, so the design draws on a systematic rather than
+a convenience sample of prior work. The \textit{design cycle} builds and
+evaluates the gateway in iterations. The SLR feeds the design in three
+places: the roles found for LQ1 inform the requirements and the agent
+roles (Chapter~\ref{ch:design}), the baselines and metrics found for LQ2
+inform the evaluation design (Section~\ref{sec:evaldesign}), and the
+evidence on frontier and small models for LQ3 informs the model choice
+and hypothesis H5. In return, the thesis adds its design knowledge and
+results to the knowledge base. Table~\ref{tab:phases} summarises the
+phases.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=2.2cm,
+    text width=2.9cm, font=\small},
+  arr/.style={-{Stealth[length=2.2mm]}, thick},
+  lab/.style={font=\footnotesize, align=center}]
+\node[box] (env) {\textbf{Environment}\\households, gateways, controllable-load rules};
+\node[box, right=2.6cm of env] (dsr) {\textbf{Design cycle}\\(DSR): build and evaluate the gateway, Cycles 1 to 3};
+\node[box, right=2.6cm of dsr] (kb) {\textbf{Knowledge base}\\SLR: LQ1 to LQ3, methods, data};
+\draw[arr] ([yshift=4mm]env.east) -- node[lab, above] {problem,\\criteria} ([yshift=4mm]dsr.west);
+\draw[arr] ([yshift=-4mm]dsr.west) -- node[lab, below] {artifact,\\results} ([yshift=-4mm]env.east);
+\draw[arr] ([yshift=4mm]kb.west) -- node[lab, above] {roles, baselines,\\models} ([yshift=4mm]dsr.east);
+\draw[arr] ([yshift=-4mm]dsr.east) -- node[lab, below] {design\\knowledge} ([yshift=-4mm]kb.west);
+\node[lab, font=\footnotesize\itshape] at ($(env.south east)!0.5!(dsr.south west)+(0,-0.45)$) {relevance cycle};
+\node[lab, font=\footnotesize\itshape] at ($(dsr.south east)!0.5!(kb.south west)+(0,-0.45)$) {rigor cycle};
+\end{tikzpicture}
+\caption{Research design: the SLR forms the rigor cycle of the design
+science research. Cycles after \textcite{hevner2007}.}
+\label{fig:method}
+\end{figure}
+
+\begin{table}[htbp]
+\caption{Phases of the research.}
+\label{tab:phases}
+\small
+\begin{tabularx}{\textwidth}{@{}p{2.6cm}p{2.4cm}Xp{1.6cm}p{1.6cm}@{}}
+\toprule
+Phase & Method & Output & Chapter & Status \\
+\midrule
+1 Literature & SLR & answers to LQ1 to LQ3, research gap & 2 & in process \\
+2 Exploration & DSR, Cycle 1 & pilots of the gateway, plan interpretation and Configurator & 5.1 to 5.3 & done \\
+3 Design & DSR, Cycle 2 & four-agent gateway, tools, exploratory set & 4 & in process \\
+4 Confirmation & DSR, Cycle 3 & registered evaluation, year simulation & 5.4 & in process \\
+5 Synthesis & both & answers to RQ and SQ1 to SQ4, design knowledge & 6, 7 & in process \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Systematic literature review}
+\label{sec:slr}
+
+The review follows the guidelines of \textcite{kitchenham2007} in three
+stages: planning, conducting and reporting.
+
+\textit{Sources and search.} Scopus and Web of Science are searched for
+peer-reviewed work, and arXiv and Google Scholar for 2025 and 2026
+preprints, because the field moves faster than journals publish. The
+search string combines three blocks: home energy management terms
+(``home energy management'', ``residential demand response'', ``home
+energy gateway''), language-model terms (``large language model*'',
+``small language model*'', ``LLM-based'', ``agentic'', ``ReAct'') and,
+in a second run, optimisation terms (``model predictive control'',
+``MILP'', ``scheduling''). Backward and forward snowballing from the
+included studies follows the database search \parencite{wohlin2014}.
+
+\textit{Inclusion and exclusion.} Included are studies from 2022 to
+2026, in English, on behind-the-meter assets (appliances, PV, batteries,
+heat pumps, EV chargers or whole homes and buildings), in which a
+language model interprets requirements, generates constraints, tunes
+parameters, schedules loads or controls devices, and which evaluate the
+system with data. Excluded are studies that use language models only for
+forecasting or text analysis, studies of grid-level operation without a
+household or building, and position papers without an evaluation; these
+may still be cited as background.
+
+\textit{Screening and quality.} Titles and abstracts are screened
+first, then full texts. The author screens all records; a random sample
+of the decisions is checked by a supervisor, and disagreements refine
+the criteria. Each included study is rated on whether it states the
+model and its version, the data, a baseline, and whether its code or
+data are available.
+
+\textit{Extraction and synthesis.} A fixed form records, for each study,
+the role of the language model and the assets (LQ1), the baselines,
+metrics and data (LQ2), and the model, its size, where it runs, its
+reliability and its cost (LQ3). The results are synthesised in tables by
+review question and in a narrative that ends in the research gap
+(Section~\ref{sec:slrreview}). The search results are in process.
+
 \section{Design Science Research}
+\label{sec:dsr}
 
 The artifact is one home energy gateway with an agent layer of four
-agents and a deterministic harness (Chapter~\ref{ch:design}). Following
-\textcite{peffers2007}, the work runs in three cycles:
+agents and a deterministic harness (Chapter~\ref{ch:design}).
+Table~\ref{tab:dsrsteps} maps the six activities of the DSR process of
+\textcite{peffers2007} to this thesis.
+
+\begin{table}[htbp]
+\caption{Activities of the design science process in this thesis.}
+\label{tab:dsrsteps}
+\small
+\begin{tabularx}{\textwidth}{@{}p{3.6cm}Xp{1.8cm}@{}}
+\toprule
+Activity & In this thesis & Chapter \\
+\midrule
+Problem identification & gateways need expert configuration; households state plans in plain language & 1 \\
+Objectives of a solution & requirements R1 to R6; research question and hypotheses & 1, 3, 4 \\
+Design and development & four agents, tools, deterministic checker and control layer & 4 \\
+Demonstration & simulated house-days with measured data, weather and prices & 5 \\
+Evaluation & pilots, then a registered evaluation on held-out plans & 5 \\
+Communication & this thesis, code and data & all \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The design cycle runs three times:
 
 \begin{enumerate}[nosep]
 \item \textit{Cycle 1 (done):} exploratory prototypes: a digital twin
@@ -311,21 +569,13 @@ four-agent design, iterated on an exploratory set of house-days.
 held-out set and a year simulation.
 \end{enumerate}
 
-\section{Systematic literature review}
-\label{sec:slr}
-
-The review follows \textcite{kitchenham2007} with backward and forward
-snowballing \parencite{wohlin2014}. Scopus and Web of Science are
-searched for peer-reviewed work and arXiv and Google Scholar for 2025
-and 2026 preprints. The search string combines three blocks: home
-energy management terms (``home energy management'', ``residential
-demand response'', ``home energy gateway''), language-model terms
-(``large language model*'', ``LLM-based'', ``agentic'', ``ReAct'') and,
-in a second run, optimisation terms (``model predictive control'',
-``MILP'', ``scheduling''). Included are studies from 2022 to 2026 on
-behind-the-meter assets in which a language model generates
-constraints, tunes parameters, schedules loads or controls devices, and
-which evaluate the system. The search results are in process.
+The evaluation strategy follows the framework of
+\textcite{venable2016}. Cycles 1 and 2 are formative and artificial:
+they test the design on simulated house-days to improve it. Cycle 3 is
+summative and still artificial: the hypotheses are registered before the
+run, and the held-out plans are written by other people and keyed in
+advance, so the design cannot be tuned to them. A naturalistic
+evaluation in real homes is left for future work.
 
 \section{Data}
 \label{sec:data}
@@ -365,6 +615,7 @@ reproduces the house's PV with a correlation of 0.96 hourly and 0.98
 daily.
 
 \section{Evaluation design}
+\label{sec:evaldesign}
 
 \textit{Benchmark.} The unit is a house-day of 96 fifteen-minute slots
 with a plain-language plan and, where the design calls for it, a change
@@ -378,38 +629,55 @@ any run and checked by a second person.
 and control layer: the recorded operation; rules; EMHASS; default MPC;
 an expert-tuned MPC (settings chosen once on exploratory weeks and
 frozen); a deterministic auto-tuner (weekly grid search over past weeks);
-a language model without tools; the four-agent gateway with a cloud
-and a local model; ablations with one and two agents; and perfect
-foresight as the upper bound.
+a language model without tools; and perfect foresight as the upper
+bound. The gateway runs in four set-ups: a small model alone, a small
+model with the checker, a small model with the checker and a cloud
+fallback, and a cloud LLM alone. The small models are open models below
+about 10 billion parameters (Gemma 4 E4B, Qwen3 8B and one or two
+others of similar size); GPT-6 Luna is the cloud LLM, and larger local
+models (Qwen3 30B-A3B, gpt-oss-20b) mark the space between them. A
+one-agent variant is compared with the four agents if the small models
+allow it.
 
 \textit{Metrics.} Constraint precision and recall against the answer
 key, clarification F1 and decision accuracy (SQ1); household
 requirements met; adjusted cost, which subtracts the value of battery
 charge and stored heat left at midnight; the share of the gap between
 rules and perfect foresight that a system closes; rejected plans,
-fallbacks and failed calls; tokens, cost, mean and 95th-percentile
-latency and energy per event.
+fallbacks and failed calls and the share of plans sent to the cloud
+fallback (SQ3); tokens, cost, mean and 95th-percentile latency, energy
+per event and the share of household data that leaves the house (SQ4).
 
-\textit{Hypotheses (draft, to be registered).} H1: constraint precision
-and recall of at least 0.90 and a clarification F1 of at least 0.85;
-H2: household requirements met on at least 95\,\% of feasible
-house-days; H3: plain-language plans cost no more than the same plans
-given as exact parameters to the tuned MPC, within 5\,\% of the
-rules-to-optimum gap; H4a and H4b: the agent-configured MPC closes a
-registered share of the gap between default and tuned MPC and is
-non-inferior to the auto-tuner; H5: the best local model is within 0.10
-of the cloud model's recall; H6: the yearly saving exceeds the gateway's
-own cost with cloud inference and with a local inference box. The
-analysis uses cluster bootstrap intervals over plans, exact binomial and
-paired Wilcoxon tests, and Holm correction within SQ1 and within SQ2.
+\textit{Hypotheses (draft, to be registered).} H1 (SQ1): the best small
+model is within 0.05 of the cloud LLM on constraint recall and decision
+accuracy. H2 (SQ1): with the best small model, household requirements
+are met on at least 95\,\% of feasible house-days. H3 (SQ2): the
+MPC configured by the small model is non-inferior to the auto-tuner and
+within a registered margin of the MPC configured by the LLM. H4 (SQ3):
+with the checker and the cloud fallback, the small model's decision
+accuracy is within 0.05 of the LLM's, with the fallback used on at most
+20\,\% of plans. H5 (SQ4): the 95th-percentile latency per event on
+local hardware is below 60 seconds, and the yearly saving exceeds the
+energy and cost of inference. The analysis uses cluster bootstrap
+intervals over plans, exact binomial and paired Wilcoxon or McNemar
+tests, and Holm correction within each sub-question.
 
-\textit{Validity.} The main threats and their handling are author-written
-plans (other writers, second-person check), tuning on evaluation days
-(tuning only on exploratory weeks), a harness that passes H2 by
-construction (scoring against the answer key, with grid and battery
-limits reported separately as safety checks), mixed data sources (same
-place and dates, the dynamic tariff stated as counterfactual) and
-simulation only (a field study as future work).
+\section{Threats to validity}
+\label{sec:validity}
+
+\textit{Literature review.} One reviewer may screen inconsistently; a
+supervisor's check of a sample and the written criteria limit this.
+Recent work is often unpublished, so preprints are included and marked
+as such. Studies with negative results are less likely to be published,
+which may make language models look more capable than they are.
+
+\textit{Design and evaluation.} The main threats and their handling are
+author-written plans (other writers, second-person check), tuning on
+evaluation days (tuning only on exploratory weeks), a harness that
+passes H2 by construction (scoring against the answer key, with grid
+and battery limits reported separately as safety checks), mixed data
+sources (same place and dates, the dynamic tariff stated as
+counterfactual) and simulation only (a field study as future work).
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{System Design and Implementation}
@@ -417,12 +685,14 @@ simulation only (a field study as future work).
 
 \section{Requirements}
 
-From the problem (Section~\ref{sec:problem}) follow five requirements:
+From the problem (Section~\ref{sec:problem}) follow six requirements:
 (R1) the household states its plans in plain language; (R2) the gateway
 is configured without an expert; (R3) no language model computes a
 schedule or switches a device; (R4) every plan passes a deterministic
 check before it takes effect; (R5) the house stays within its limits
-when an agent, a model or the network fails.
+when an agent, a model or the network fails; (R6) the household's plans
+stay in the house unless a cloud fallback is needed, and the gateway
+keeps interpreting plans without an internet connection.
 
 \section{Architecture}
 
@@ -435,6 +705,14 @@ exchange so that the battery absorbs forecast errors, keeps comfort,
 the EV deadline and the battery limits, and falls back to rules. The
 harness follows the Simplex pattern \parencite{sha2001}: the agents are
 unverified controllers inside a verified envelope.
+
+The agents run on a small language model on local hardware by default.
+A \textit{model layer} in the harness decides which model answers: the
+local small model first, and a cloud LLM only when the small model's
+answer fails validation twice or the checker rejects its plan. The
+fallback can be switched off, in which case the gateway asks the
+household instead. Every fallback is logged, so the share of plans that
+leave the house is measured (SQ3, SQ4).
 
 \begin{figure}[htbp]
 \centering
@@ -453,7 +731,9 @@ state only through the harness. Splitting by event keeps each prompt
 small and lets each output be checked on its own. The earlier thesis
 found that splitting \textit{one} task between agents added cost
 without reliability \parencite{le2026}; here the agents do different
-tasks at different times, and the agent count is tested as part of SQ3.
+tasks at different times, and narrow tasks with short prompts suit a
+small model. Whether this helps is compared with one agent if the small
+models allow it.
 
 \begin{table}[htbp]
 \caption{The four agents.}
@@ -519,8 +799,9 @@ and energy left at midnight is valued in the same way in the optimiser
 and in the score. The agents use LangChain and LangGraph ReAct agents
 with structured outputs and a recovery step that returns invalid
 answers with the validation errors. Models are GPT-6 Luna through the
-OpenAI API and local models through Ollama. The implementation of the
-full four-agent design is in process.
+OpenAI API and local models through Ollama, quantised to 4 bits, with
+output capped at 8,000 tokens per call. The implementation of the full
+four-agent design and the model layer is in process.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Evaluation and Results}
@@ -575,7 +856,8 @@ instead of the planned battery power.
 \section{Plan-interpretation pilot}
 \label{sec:planpilot}
 
-The second pilot tested SQ1 on 22 edge-case plans for the main house
+The second pilot compared small and large models on SQ1, using 22
+edge-case plans for the main house
 (Appendix~\ref{app:plans}): six simple plans, five changes during the
 day, six ambiguous and five conflicting or infeasible requests, each
 bound to a date of 2016 and the car's charge. The model returned the
@@ -592,11 +874,14 @@ of EV charge or 1\,kWh.
 \toprule
 Model & Precision & Recall & Clarif.\ F1 & Decision & s per plan \\
 \midrule
-GPT-6 Luna (cloud) & 1.00 & 1.00 & 0.95 & 0.95 & 2.7 \\
-gpt-oss-20b (local) & 0.63 & 0.44 & 0.75 & 0.59 & 116 \\
-Qwen3 8B (local) & 0.96 & 1.00 & 0.67 & 0.68 & 71 \\
-Gemma 4 E4B (local) & 1.00 & 0.91 & 0.78 & 0.82 & 7.7 \\
-Qwen3 30B-A3B (local, CPU) & 1.00 & 0.96 & 0.84 & 0.86 & 150 \\
+\multicolumn{6}{@{}l}{\textit{Small language models, local}} \\
+Gemma 4 E4B & 1.00 & 0.91 & 0.78 & 0.82 & 7.7 \\
+Qwen3 8B & 0.96 & 1.00 & 0.67 & 0.68 & 71 \\
+\multicolumn{6}{@{}l}{\textit{Larger open models, local}} \\
+gpt-oss-20b & 0.63 & 0.44 & 0.75 & 0.59 & 116 \\
+Qwen3 30B-A3B (CPU) & 1.00 & 0.96 & 0.84 & 0.86 & 150 \\
+\multicolumn{6}{@{}l}{\textit{Large language model, cloud}} \\
+GPT-6 Luna & 1.00 & 1.00 & 0.95 & 0.95 & 2.7 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -604,18 +889,69 @@ Qwen3 30B-A3B (local, CPU) & 1.00 & 0.96 & 0.84 & 0.86 & 150 \\
 GPT-6 Luna made one error: for ``charge the car to 90\,\% before I head
 out'' it assumed a departure time and committed instead of asking.
 gpt-oss-20b often left numbers such as the EV target out and asked
-questions that simple plans did not need. Three newer open-weight models
-ran on the same laptop (RTX 4070, 8\,GB), with output capped at 8,000
+questions that simple plans did not need. Three newer open models ran
+on the same laptop (RTX 4070, 8\,GB), with output capped at 8,000
 tokens per call after Qwen3 8B looped in its reasoning phase on one
 plan. All three extracted items almost as well as the cloud model; they
-differed in when they asked. Qwen3 8B committed on almost half of the plans
-that needed a question, Gemma 4 E4B missed most conflicts but answered
-in under 8 seconds, and Qwen3 30B-A3B came closest to the cloud model
-but had to run on the CPU and took two and a half minutes per plan. The
+differed in when they asked. Qwen3 8B committed on almost half of the
+plans that needed a question, Gemma 4 E4B missed most conflicts but
+answered in under 8 seconds, and Qwen3 30B-A3B came closest to the
+cloud model but had to run on the CPU and took two and a half minutes
+per plan. For the small models the gap to the LLM lies in the
+commit-or-ask decision, not in reading the plan. Whether the checker
+catches the infeasible requests they committed is what SQ3 tests. The
 cloud model is close to the ceiling on these cases, which is why the
-held-out plans are written by other people. No local model yet meets
-H5 on both accuracy and latency; Gemma 4 E4B and Qwen3 30B-A3B are the
-candidates for the exploratory phase.
+held-out plans are written by other people. These numbers come without
+the checker and the fallback, so they are the ``small model alone''
+set-up.
+
+The stored answers were then rescored with a deterministic checker,
+without calling any model again (Table~\ref{tab:planchecker}). The
+checker looks only at the model's output and the car's charge: an EV
+requirement without a target is incomplete, and an EV requirement or an
+appliance window is infeasible when the charger or the cycle cannot
+meet it before the deadline. When it flags an answer the model would
+commit, the gateway asks the household instead; with the fallback, the
+cloud model's answer to the same plan replaces the flagged or failed
+answer and is checked in turn.
+
+\begin{table}[htbp]
+\caption{Plan-interpretation pilot with the checker and the cloud
+fallback: decision accuracy (clarification F1) and the share of plans
+sent to the cloud.}
+\label{tab:planchecker}
+\small
+\begin{tabularx}{\textwidth}{@{}Xllll@{}}
+\toprule
+Model & Alone & + checker & + checker + fallback & Fallback \\
+\midrule
+Gemma 4 E4B & 0.82 (0.78) & 0.91 (0.90) & 0.91 (0.90) & 9\,\% \\
+Qwen3 8B & 0.68 (0.67) & 0.73 (0.67) & 0.73 (0.74) & 5\,\% \\
+gpt-oss-20b & 0.59 (0.75) & 0.46 (0.58) & 0.77 (0.80) & 36\,\% \\
+Qwen3 30B-A3B (CPU) & 0.86 (0.84) & 0.91 (0.84) & 0.86 (0.84) & 5\,\% \\
+GPT-6 Luna & 0.95 (0.95) & 0.95 (0.95) & 0.95 (0.95) & none \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The checker closed most of the distance between Gemma 4 E4B and the
+cloud model: it stopped two infeasible EV requests that Gemma would have
+committed (25\,kWh in five and a half hours, and a charge between 11:00
+and 15:00 while the car is away), raising its decision accuracy from
+0.82 to 0.91, against 0.95 for the cloud model. Its two remaining errors
+are conflicts the output schema cannot express: an away period that
+contradicts a comfort band, and a ban on grid power at night. The
+fallback added nothing for Gemma, because the checker already asked
+where the cloud model would have asked. It can also make things worse:
+for Qwen3 30B-A3B it replaced a failed answer, which the gateway would
+have turned into a question, with the cloud model's one wrong commit.
+For gpt-oss-20b the checker lowered decision accuracy, because the model
+left EV targets out of simple plans and the gateway then asked
+needlessly; the fallback then went to the cloud for a third of the
+plans. Gemma 4 E4B with the checker is the main small-model candidate.
+The checker rules were written from the gateway's constraints, not from
+the answer keys, but they were tested on the same 22 plans, so these
+numbers are exploratory.
 
 \section{Configurator pilot}
 \label{sec:configpilot}
@@ -635,26 +971,44 @@ weeks (derating 0.7).
 default MPC.}
 \label{tab:configpilot}
 \small
-\begin{tabularx}{\textwidth}{@{}Xrr@{}}
+\begin{tabularx}{\textwidth}{@{}Xrrr@{}}
 \toprule
-System & Saving vs default (EUR) & Rules-to-optimum gap closed \\
+System & Saving vs default (EUR) & Gap closed & s per week \\
 \midrule
-Default MPC & 0.00 & 36\,\% \\
-Auto-tuner (two weeks of history) & 0.10 & 36\,\% \\
-Configurator agent, GPT-6 Luna & 2.82 & 48\,\% \\
-Expert setting (tuned on September) & 2.83 & 48\,\% \\
-Perfect foresight & 14.45 & 100\,\% \\
+Default MPC & 0.00 & 36\,\% & \\
+Auto-tuner (two weeks of history) & 0.10 & 36\,\% & \\
+Configurator, Gemma 4 E4B (local) & 2.85 & 48\,\% & 44 \\
+Configurator, Qwen3 8B (local) & 2.42 & 46\,\% & 300 \\
+Configurator, GPT-6 Luna (cloud) & 2.82 & 48\,\% & 16 \\
+Expert setting (tuned on September) & 2.83 & 48\,\% & \\
+Perfect foresight & 14.45 & 100\,\% & \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The agent matched the expert setting; the auto-tuner, which switched
+With GPT-6 Luna, the Configurator matched the expert setting; the
+auto-tuner, which switched
 between deratings of 0.6 and 0.9, overfitted two weeks of history, while
 the agent kept stable settings between 0.75 and 0.9. The agent cost USD
 0.003 in total and took about 16\,s and five tool calls a week. In a
 one-week test, a setting tuned on another single week did worse than
 the default, so the tuned reference must always be chosen on separate
 weeks.
+
+The same eight weeks were then run with two small models as
+Configurator, on the laptop. Gemma 4 E4B saved as much as the cloud
+model and the expert setting (2.85 EUR against 2.82 and 2.83); it kept
+a derating of 0.8 from the second week on and took about 44 seconds and
+five tool calls a week. Qwen3 8B saved 2.42 EUR, still far more than
+the auto-tuner, with deratings between 0.75 and 0.9 from the second week
+on, mostly with a 20\,\% battery reserve; with its reasoning phase it
+took about five minutes a week. The backtest gate rejected one proposal from Gemma and
+two from Qwen3, and no call failed. A weekly task that may take minutes
+suits a small local model. Each system ran once on one house, and the
+differences of a few cents between Gemma, the cloud model and the
+expert setting are too small to rank them from one run, so the pilot
+shows that a small model can configure the MPC, not that it does so
+better.
 
 \section{Registered evaluation}
 
@@ -746,6 +1100,11 @@ review of modelling and complexity. \textit{Renewable and Sustainable
 Energy Reviews, 45}, 318--335.
 \url{https://doi.org/10.1016/j.rser.2015.01.046}
 
+Belcak, P., Heinrich, G., Diao, S., Fu, Y., Dong, X., Muralidharan, S.,
+Lin, Y. C., \& Molchanov, P. (2025). \textit{Small language models are
+the future of agentic AI} [Preprint]. arXiv:2506.02153.
+\url{https://doi.org/10.48550/arXiv.2506.02153}
+
 Bischof, S., Trittenbach, H., Vollmer, M., Werle, D., Blank, T., \&
 Böhm, K. (2018). HIPE: An energy-status-data set from industrial
 production. In \textit{Proceedings of the Ninth International
@@ -788,9 +1147,20 @@ Fraunhofer ISE. (n.d.). \textit{Energy-Charts: Day-ahead spot market
 prices} [Data set]. Retrieved 30 October 2026, from
 \url{https://www.energy-charts.info}
 
+Hevner, A. R. (2007). A three cycle view of design science research.
+\textit{Scandinavian Journal of Information Systems, 19}(2), 87--92.
+\url{https://aisel.aisnet.org/sjis/vol19/iss2/4}
+
 Hevner, A. R., March, S. T., Park, J., \& Ram, S. (2004). Design
 science in information systems research. \textit{MIS Quarterly, 28}(1),
 75--105.
+
+Islam, M. R., Deng, B., Dhar, N., Nguyen, T. N., He, S., Shi, Y., \&
+Suo, K. (2025). Characterizing and understanding energy footprint and
+efficiency of small language model on edges. In \textit{2025 IEEE
+International Conference on Mobile Ad-Hoc and Smart Systems (MASS)}.
+IEEE. Preprint arXiv:2511.11624.
+\url{https://doi.org/10.48550/arXiv.2511.11624}
 
 Jonah, S., Moses, Q., Babatunde, A., Ajao-Olarinoye, M., \& Bammeke, D.
 (2026). LLMs for agentic home energy management [Preprint].
@@ -814,6 +1184,11 @@ Liu, S., Hu, R., Yang, Y., Zhang, H., Ding, X., Sun, H., \& Sun, L.
 energy management. In \textit{2025 IEEE 26th China Conference on System
 Simulation Technology and its Applications (CCSSTA)} (pp. 69--74). IEEE.
 \url{https://doi.org/10.1109/IEEECONF65522.2025.11137227}
+
+Lu, Z., Li, X., Cai, D., Yi, R., Liu, F., Zhang, X., Lane, N. D., \&
+Xu, M. (2024). \textit{Small language models: Survey, measurements, and
+insights} [Preprint]. arXiv:2409.15790.
+\url{https://doi.org/10.48550/arXiv.2409.15790}
 
 Michelon, F., Zhou, Y., \& Morstyn, T. (2025). Large language model
 interface for home energy management systems. In \textit{Proceedings of
@@ -869,11 +1244,24 @@ Electric vehicle charging dataset with 35,000 charging sessions from 12
 residential locations in Norway. \textit{Data in Brief, 57}, 110883.
 \url{https://doi.org/10.1016/j.dib.2024.110883}
 
+Spaias, G., Naserentin, V. A., Papaioannou, A., Dimara, A., Krinidis,
+S., \& Logg, A. (2027). Language at the edge: A privacy-preserving
+natural-language interface for home energy management systems. In
+\textit{Artificial Intelligence Applications and Innovations (AIAI
+2026)} (IFIP Advances in Information and Communication Technology, Vol.
+797, pp. 217--230). Springer.
+\url{https://doi.org/10.1007/978-3-032-30511-4_16}
+
 Tuomela, S., Iivari, N., \& Svento, R. (2021). Drivers and barriers to
 the adoption of smart home energy management systems: Users'
 perspective. In \textit{Proceedings of the Australasian Conference on
 Information Systems (ACIS 2021)}.
 \url{https://aisel.aisnet.org/acis2021/71}
+
+Venable, J., Pries-Heje, J., \& Baskerville, R. (2016). FEDS: A
+framework for evaluation in design science research. \textit{European
+Journal of Information Systems, 25}(1), 77--89.
+\url{https://doi.org/10.1057/ejis.2014.36}
 
 Wohlin, C. (2014). Guidelines for snowballing in systematic literature
 studies and a replication in software engineering. In

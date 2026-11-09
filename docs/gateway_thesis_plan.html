@@ -127,15 +127,15 @@ ul.tight li { margin: 4px 0; }
 
 <div class="wrap">
 <header class="prose">
-  <div class="eyebrow">Master's thesis plan · Design Science Research · 3 Nov 2026</div>
-  <h1>Design of a Multi-Agent Home Energy Gateway: Interpreting Household Plans and Configuring an Optimiser</h1>
-  <p class="lede">A home energy gateway controls rooftop PV (photovoltaic solar panels), a home battery, a heat pump and an EV (electric vehicle) charger. A tuned optimiser, MPC (model predictive control), plans them; four language-model agents handle what an optimiser cannot: they turn the household's plain-language plans into constraints, explain the plan, react to plug-ins and deviations, and configure the optimiser from the house's own history. A deterministic checker and control layer keep every plan safe.</p>
+  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · 4 Nov 2026</div>
+  <h1>Small Language Models for a Home Energy Gateway: Interpreting Household Plans and Configuring an Optimiser on Local Hardware</h1>
+  <p class="lede">A home energy gateway controls rooftop PV (photovoltaic solar panels), a home battery, a heat pump and an EV (electric vehicle) charger. A tuned optimiser, MPC (model predictive control), plans them; four language-model agents handle what an optimiser cannot: they turn the household's plain-language plans into constraints, explain the plan, react to plug-ins and deviations, and configure the optimiser from the house's own history. The agents run on a small language model (SLM) on local hardware, so the household's plans stay in the house; a cloud large language model (LLM) is the reference and, when needed, a fallback. A deterministic checker and control layer keep every plan safe.</p>
   <ul class="tight">
-    <li><strong>Problem:</strong> optimisers save more than fixed rules, but need expert set-up that households cannot provide (section 1).</li>
-    <li><strong>Questions:</strong> four sub-questions (SQ): interpretation (SQ1), configuration (SQ2), reliability and cost (SQ3), conditions (SQ4) (section 2).</li>
+    <li><strong>Problem:</strong> optimisers save more than fixed rules, but need expert set-up that households cannot provide; cloud language models could provide it, but send the household's plans out of the house (section 1).</li>
+    <li><strong>Questions:</strong> can small local models interpret plans (SQ1) and configure the optimiser (SQ2) as well as a cloud LLM, how much a checker and a cloud fallback close the gap (SQ3), and what local and cloud set-ups cost (SQ4) (section 2).</li>
     <li><strong>Design:</strong> four agents, one per event, inside a verified harness (sections 3-4).</li>
     <li><strong>Evaluation:</strong> one house with PV, heat pump and EV, real weather and prices, against a tuned MPC and an auto-tuner (sections 5-6). The house comes from the OPSD Household dataset: measured 15-minute energy data of six homes in Konstanz, Germany (2015-2019); other homes of the same dataset test the Configurator across houses.</li>
-    <li><strong>Progress:</strong> two pilots done; plan interpretation is near the ceiling for a cloud model, and the Configurator matched an expert setting (section 9).</li>
+    <li><strong>Progress:</strong> two pilots done. Small local models read plans almost as well as the cloud LLM but are weaker at deciding when to ask; with a deterministic checker, Gemma 4 E4B comes within 0.04 of the cloud LLM, and as Configurator it saved as much as the cloud LLM and an expert setting (section 9).</li>
   </ul>
 </header>
 
@@ -287,36 +287,40 @@ ul.tight li { margin: 4px 0; }
     <h3>Where AI agents fit</h3>
     <p>Recent work uses language-model agents as the interface between the household and the optimiser. They turn plain-language preferences into optimisation constraints (<a href="https://arxiv.org/html/2503.21360v1" target="_blank" rel="noopener">Sanguinetti et al., 2025</a>; <a href="https://www.qeios.com/read/EVPWM7/pdf" target="_blank" rel="noopener">Michelon et al., 2025</a>) or schedule appliances directly with ReAct (reasoning and acting) agents and tools (<a href="https://arxiv.org/abs/2510.26603v1" target="_blank" rel="noopener">El Makroum et al., 2025</a>; <a href="https://arxiv.org/abs/2607.04569" target="_blank" rel="noopener">Jonah et al., 2026</a>). The direct schedulers come close to the MILP (mixed-integer linear programming) optimum, but Jonah et al. report fabricated schedules and misstated deadlines and recommend a deterministic validator before any device is switched. Our own household thesis found the same: an optimiser plus checker was reliable, agents writing schedules were not.</p>
     <p>This thesis therefore gives the agent the parts an optimiser cannot do: <strong>interpret</strong> the household's plans and changes into constraints, <strong>configure</strong> the MPC from the house's own history, and <strong>explain</strong> the plan. The MPC computes the schedule and a checker and control layer switch the devices. Our gateway pilot shows why the agent should not plan for cost itself: in 12 days (German prices, weather-driven forecasts) the agents closed more of the gap between rules and perfect foresight than default MPC, but MPC with one fixed setting (plan with 90 % of the PV forecast) closed more than either agent.</p>
+    <h3>Where the model runs</h3>
+    <p>These studies call large language models (LLMs) in the cloud. A gateway that sends the household's plans to a cloud service reveals when the family is home or away, stops interpreting plans when the internet fails, and pays for every call for as long as it runs. Small language models (SLMs, below about 10 billion parameters) now run on edge boards such as the Raspberry Pi 5 and the Jetson Orin Nano (<a href="https://arxiv.org/abs/2511.11624" target="_blank" rel="noopener">Islam et al., 2025</a>), and a small model on a Raspberry-Pi-class device can phrase grounded answers for a home energy advisor (<a href="https://doi.org/10.1007/978-3-032-30511-4_16" target="_blank" rel="noopener">Spaias et al., 2027</a>). They are less capable, though: in El Makroum et al.'s scheduler only the largest of three open models coordinated several appliances at once. Whether a small model can interpret plans and configure an optimiser, and how much a deterministic harness or a cloud fallback adds, has not been tested; that is this thesis.</p>
   </div>
   <div class="shift">
     <div><div class="label">Agent role</div><div class="from">Plans and replans to save money</div><div class="to">Interprets the household, configures and explains the optimiser</div></div>
     <div><div class="label">Cost reference</div><div class="from">Default MPC</div><div class="to">Expert-tuned MPC, which the agent must match, not beat</div></div>
     <div><div class="label">Main claim</div><div class="from">"The agent saves more"</div><div class="to">Usable without an expert, from plain language, safely</div></div>
+    <div><div class="label">Where the model runs</div><div class="from">Cloud LLM</div><div class="to">Small model on local hardware; cloud LLM as reference and fallback</div></div>
   </div>
 </section>
 
 <section>
   <h2>2. Research questions</h2>
   <div class="prose">
-    <p><strong>RQ.</strong> How can a language-model agent let a home energy gateway work from the household's plain-language plans without expert configuration, by interpreting the plans and configuring and explaining an optimiser, while keeping control reliable?</p>
+    <p><strong>RQ.</strong> How can a home energy gateway use small language models running on local hardware to interpret households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud large language model?</p>
+    <p>SLM here means an open model below about 10 billion parameters: Gemma 4 E4B (main candidate) and Qwen3 8B; Qwen3 30B-A3B and gpt-oss-20b are larger local models; GPT-6 Luna is the cloud LLM. All run on a laptop with an 8 GB GPU; part of SQ4 is repeated on a Jetson Orin Nano edge board if one is bought. If the small models allow it, one agent is compared with four (exploratory).</p>
     <p>Usability is not measured with users: the claim is "without expert configuration, from plans written by people other than the author". A usability study is future work.</p>
   </div>
   <div class="scroll"><table>
     <thead><tr><th>Sub-question</th><th>Measured by</th><th>Draft hypothesis (thresholds fixed at registration)</th></tr></thead>
     <tbody>
-      <tr><td><strong>SQ1 Interpretation.</strong> How accurately does the agent turn plain-language plans and changes into constraints and a commit-or-ask decision, and are the requirements then met?</td><td>Item precision and recall vs answer key (cluster bootstrap over plans); clarification F1; decision accuracy; requirements met</td><td>H1 precision and recall ≥ 0.90, clarification F1 ≥ 0.85 · H2 answer-key requirements met on ≥ 95 % of feasible house-days · H3 cost non-inferior to the tuned MPC given exact parameters, margin 5 % of the rules-to-optimum gap</td></tr>
-      <tr><td><strong>SQ2 Configuration.</strong> Can the agent configure the MPC from the house's history close to an expert-tuned MPC, and better than a deterministic auto-tuner?</td><td>Share of the tuned MPC's saving over default MPC; difference to the auto-tuner</td><td>H4a at least X % (for example 70) of the default-to-tuned gap · H4b non-inferior to the auto-tuner with the same history</td></tr>
-      <tr><td><strong>SQ3 Reliability and cost.</strong> How often do the checker and fallback intervene, what does it cost locally and in the cloud, and does splitting the work into four agents help compared with one or two?</td><td>Rejected plans, fallbacks, failed calls, wrong figures in messages; tokens, USD, mean and p95 (95th-percentile) latency, Wh (watt-hours of energy); the same per agent design (descriptive)</td><td>H5 best local model within 0.10 of cloud recall and 5 points of its H2 rate, p95 latency under a stated limit · H6 yearly saving exceeds the gateway's cost with cloud inference and with a local inference box</td></tr>
-      <tr><td><strong>SQ4 Conditions.</strong> Under which weather, prices, loads and plan types does it fail?</td><td>All metrics by factor level</td><td>Descriptive</td></tr>
+      <tr><td><strong>SQ1 Interpretation.</strong> How accurately do small language models turn plain-language plans and changes into constraints and a commit-or-ask decision, compared with a large language model, and are the requirements then met?</td><td>Item precision and recall vs answer key (cluster bootstrap over plans); clarification F1; decision accuracy; requirements met</td><td>H1 best SLM within 0.05 of the LLM on recall and decision accuracy · H2 with the best SLM, answer-key requirements met on ≥ 95 % of feasible house-days</td></tr>
+      <tr><td><strong>SQ2 Configuration.</strong> Can a small language model configure the MPC from the house's history as well as a large language model, and better than a deterministic auto-tuner?</td><td>Saving over default MPC; share of the default-to-tuned gap; difference to the auto-tuner and to the LLM Configurator</td><td>H3 SLM-configured MPC non-inferior to the auto-tuner and within a registered margin of the LLM-configured MPC</td></tr>
+      <tr><td><strong>SQ3 Closing the gap.</strong> How much of the gap between small and large models do the checker and a cloud fallback close, and how often is the fallback needed?</td><td>Four set-ups: SLM alone, SLM + checker, SLM + checker + cloud fallback, LLM alone; rejected plans, fallback share, failed calls</td><td>H4 with checker and fallback, SLM decision accuracy within 0.05 of the LLM, fallback on ≤ 20 % of plans</td></tr>
+      <tr><td><strong>SQ4 Deployment.</strong> What do local and cloud set-ups cost in latency, energy, money and privacy, and does the saving outweigh these costs?</td><td>Tokens, USD, mean and p95 (95th-percentile) latency, Wh (watt-hours) per event, share of household data that leaves the house</td><td>H5 p95 latency per event &lt; 60 s on local hardware; yearly saving exceeds the energy and cost of inference</td></tr>
     </tbody>
   </table></div>
-  <p class="caption">Grid and battery limits after the checker are reported as safety checks (expected zero violations), not as a hypothesis: they test the harness, not the agent. Holm within SQ1 and within SQ2. The held-out set is sized for H1 (roughly 150-200 constraint items).</p>
+  <p class="caption">Grid and battery limits after the checker are reported as safety checks (expected zero violations), not as a hypothesis: they test the harness, not the agent. When interpretation or configuration fails (weather, price pattern, load, plan type) is reported descriptively under each SQ. Holm within each SQ. The held-out set is sized for H1 (roughly 150-200 constraint items).</p>
 </section>
 
 <section>
   <h2>3. System design</h2>
   <div class="prose">
-    <p>Three layers, and the language models sit in only one of them. The MPC replans every hour on its own; an agent is called only when something a model cannot handle happens: a message from the household, a commit to explain, an EV plug-in or a large deviation, and once a week for configuration. Each of these events has its own agent.</p>
+    <p>Three layers, and the language models sit in only one of them. The MPC replans every hour on its own; an agent is called only when something a model cannot handle happens: a message from the household, a commit to explain, an EV plug-in or a large deviation, and once a week for configuration. Each of these events has its own agent. The agents run on a small language model on local hardware; a model layer in the harness calls a cloud LLM only when the small model's answer fails validation twice or the checker rejects its plan, and logs each such call.</p>
   </div>
   <figure class="figure">
   <svg viewBox="0 0 1130 800" role="img" aria-label="Four agents, each started by its own event, reach the gateway only through validated tools; the tuned MPC plans, the checker passes only valid plans to the control layer, and measurements flow into the history the Configurator learns from.">
@@ -339,12 +343,12 @@ ul.tight li { margin: 4px 0; }
 
     <rect class="box" x="780" y="30" width="280" height="72" rx="8" stroke-dasharray="6 5"/>
     <g class="icon" transform="translate(798,53)"><path d="M7 21 H20 A5 5 0 0 0 20 11 A7 7 0 0 0 7 10 A5.5 5.5 0 0 0 7 21 Z"/></g>
-    <text class="title" x="838" y="61">Cloud model (optional)</text>
-    <text class="sub" x="838" y="80">receives summaries only</text>
+    <text class="title" x="838" y="61">Cloud LLM (fallback)</text>
+    <text class="sub" x="838" y="80">only when the local SLM fails</text>
 
     <!-- row B: four agents, each started by its own event -->
     <rect class="zone" x="28" y="140" width="1044" height="100" rx="10"/>
-    <text class="mono" x="590" y="134">AGENT LAYER · one agent per event</text>
+    <text class="mono" x="590" y="134">AGENT LAYER · one agent per event · local SLM</text>
 
     <rect class="agentbox" x="40" y="150" width="234" height="80" rx="8"/>
     <g class="icon agent" transform="translate(54,177)"><path d="M3 4 H23 V17 H12 L7 22 V17 H3 Z"/><path d="M8.5 10.5 H8.6 M13 10.5 H13.1 M17.5 10.5 H17.6"/></g>
@@ -431,7 +435,7 @@ ul.tight li { margin: 4px 0; }
     <path class="arrow sun" d="M550,102 V270" marker-end="url(#ias)"/>
     <text class="lbl" x="558" y="258">prices, forecasts</text>
     <path class="arrow" d="M920,102 V140" marker-end="url(#ia)" stroke-dasharray="5 4"/>
-    <text class="lbl" x="928" y="124">summaries only</text>
+    <text class="lbl" x="928" y="124">fallback only</text>
 
     <!-- agents to the tools -->
     <path class="arrow agent" d="M157,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
@@ -469,24 +473,25 @@ ul.tight li { margin: 4px 0; }
 
     <text class="lbl" x="550" y="772" text-anchor="middle">No agent computes a schedule or switches a device; every agent acts only through the validated tools.</text>
   </svg>
-  <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. Dashed lines: optional cloud model (summaries only) and violations returned to the agents.</figcaption>
+  <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. The agents run on a small language model on local hardware. Dashed lines: the cloud LLM, called only as a fallback when the small model's answer fails validation twice or the checker rejects its plan, and violations returned to the agents.</figcaption>
   </figure>
 
   <h3>Four agents, one per event</h3>
   <div class="scroll"><table>
     <thead><tr><th>Agent</th><th>Started by</th><th>Job</th><th>Needs</th></tr></thead>
     <tbody>
-      <tr><td><strong>Household Assistant</strong></td><td>a message from the household</td><td>turns the plan or change into constraints, previews them, commits or asks</td><td>answer within about a minute; private, so a local model</td></tr>
+      <tr><td><strong>Household Assistant</strong></td><td>a message from the household</td><td>turns the plan or change into constraints, previews them, commits or asks</td><td>answer within about a minute; private, so a local small model, with the cloud LLM as fallback</td></tr>
       <tr><td><strong>Explainer</strong></td><td>each commit; once a day</td><td>writes the message and the daily report from the committed plan's figures</td><td>numbers must match the plan (checked); short, cheap calls</td></tr>
       <tr><td><strong>Monitor</strong></td><td>an EV plug-in; a large deviation from the plan (raised by the control layer)</td><td>finds the cause (forecast error, unexpected load, late car), adjusts constraints within what the household said, or alerts the household</td><td>runs during the day without a household message; must not override household requirements</td></tr>
-      <tr><td><strong>Configurator</strong></td><td>once a week</td><td>proposes MPC settings from the house's history and backtests them</td><td>analytical, may take minutes; can use a larger model</td></tr>
+      <tr><td><strong>Configurator</strong></td><td>once a week</td><td>proposes MPC settings from the house's history and backtests them</td><td>analytical, may take minutes; small model compared with the cloud LLM (SQ2)</td></tr>
     </tbody>
   </table></div>
   <ul class="tight prose">
     <li><strong>Why more than two.</strong> Each agent has its own trigger, inputs, tools and output, so a prompt stays small and each output can be checked on its own: constraints by the checker, messages against the plan's figures, settings by backtest. The household thesis found that splitting <em>one</em> task between agents added cost without reliability; here the agents do different tasks at different times, so they rarely run together and the cost grows with the number of events, not with the number of agents.</li>
     <li><strong>No orchestrator agent.</strong> Routing is by event type, which needs no language model; the harness does it. No agent calls another; they share state only through the harness (committed plan, history).</li>
     <li><strong>Safety.</strong> The harness follows the Simplex pattern (Sha, 2001): the agents are unverified controllers inside a verified envelope (checker and control layer) with a safe fallback. The hourly replanning stays in the MPC; the pilot showed that putting an agent in that loop adds latency and cost without beating a tuned setting.</li>
-    <li><strong>Tested, not assumed.</strong> The number of agents is an SQ3 question: the four-agent design is compared with one agent holding all tools and with two agents (Assistant and Configurator, with the Explainer's and Monitor's jobs folded in), on the same events.</li>
+    <li><strong>Model layer.</strong> Local small model first; the cloud LLM only as a fallback, which can be switched off (the gateway then asks the household). The fallback share and the data that leave the house are measured (SQ3, SQ4). New requirement: plans stay in the house unless the fallback is needed, and plan interpretation works offline.</li>
+    <li><strong>Agent count, if the small models allow it.</strong> Narrow tasks with short prompts should suit a small model. If time and the models allow, the four-agent design is compared with one agent holding all tools (exploratory, no hypothesis).</li>
   </ul>
 
   <h3>How each agent decides</h3>
@@ -838,8 +843,8 @@ ul.tight li { margin: 4px 0; }
     <text class="small" x="484" y="120">tuned MPC (exact parameters)</text>
     <text class="small" x="484" y="140">auto-tuner (no LLM)</text>
     <text class="small" x="484" y="160">LLM without tools</text>
-    <text class="small" x="484" y="180">agents: cloud · local</text>
-    <text class="small" x="484" y="200">ablations</text>
+    <text class="small" x="484" y="180">SLM alone · SLM + checker</text>
+    <text class="small" x="484" y="200">SLM + checker + cloud · LLM</text>
     <text class="small" x="484" y="220">perfect foresight</text>
 
     <rect class="box" x="740" y="30" width="220" height="230" rx="6"/>
@@ -850,7 +855,8 @@ ul.tight li { margin: 4px 0; }
     <text class="small" x="754" y="140">config vs tuned, auto-tuner</text>
     <text class="small" x="754" y="160">checker, fallbacks, safety</text>
     <text class="small" x="754" y="180">tokens, USD, p95 s, Wh</text>
-    <text class="small" x="754" y="210">Holm within SQ1, SQ2</text>
+    <text class="small" x="754" y="200">fallback share, data out</text>
+    <text class="small" x="754" y="226">Holm within each SQ</text>
 
     <path class="arrow" d="M190,145 L228,145" marker-end="url(#e1)"/>
     <path class="arrow" d="M430,145 L468,145" marker-end="url(#e1)"/>
@@ -861,9 +867,10 @@ ul.tight li { margin: 4px 0; }
   <ul class="tight prose">
     <li>The <strong>tuned MPC with exact parameters</strong> is the cost reference. The agent is expected to match it while starting from plain language and no expert tuning.</li>
     <li>Tuned settings are chosen once on the exploratory set and frozen; the Configurator and the auto-tuner start from defaults and use only the house's past weeks.</li>
-    <li>The <strong>auto-tuner</strong> (a deterministic weekly grid search with the same backtest) shows whether configuration needs a language model at all (H4b).</li>
+    <li>The <strong>auto-tuner</strong> (a deterministic weekly grid search with the same backtest) shows whether configuration needs a language model at all (H3).</li>
+    <li><strong>Models:</strong> small models (Gemma 4 E4B, Qwen3 8B, one or two more below 10B), larger local models (Qwen3 30B-A3B, gpt-oss-20b) and the cloud LLM (GPT-6 Luna), each in the four set-ups of SQ3. All run on the laptop (RTX 4070, 8 GB); an SQ4 subset is repeated on a Jetson Orin Nano if one is bought.</li>
     <li>EMHASS (Energy Management for Home Assistant, an open-source optimiser) gets the shared forecasts (primary) and its own default forecasts (secondary, as deployed).</li>
-    <li>Ablations: one agent with all tools; two agents (Assistant and Configurator); agents without the checker (scored, never executed); no Monitor (deviations left to the MPC).</li>
+    <li>Set-ups: the small model alone and with the checker are scored but never executed without the checker; with the fallback, every cloud call is logged. One agent vs four is compared only if the small models allow it.</li>
     <li>Every system uses the same house-days, forecasts, plans and control layer, and the same valuation of energy left at midnight.</li>
   </ul>
 </section>
@@ -884,9 +891,9 @@ ul.tight li { margin: 4px 0; }
     <text x="20" y="80">House-days, weather classes, tariffs</text><rect class="bar" x="333" y="68" width="100" height="16" rx="3"/>
     <text x="20" y="112">Plans and answer keys</text><rect class="bar" x="367" y="100" width="133" height="16" rx="3"/>
     <text x="20" y="144">Systems, tuned MPC, auto-tuner</text><rect class="bar" x="400" y="132" width="167" height="16" rx="3"/>
-    <text x="20" y="176">Agents, tools, iterations</text><rect class="bar sun" x="533" y="164" width="167" height="16" rx="3"/>
+    <text x="20" y="176">Agents, model layer, SLM iterations</text><rect class="bar sun" x="533" y="164" width="167" height="16" rx="3"/>
     <text x="20" y="208">Registration, held-out run</text><rect class="bar sun" x="667" y="196" width="67" height="16" rx="3"/>
-    <text x="20" y="240">Year simulation, energy balance</text><rect class="bar" x="700" y="228" width="67" height="16" rx="3"/>
+    <text x="20" y="240">Year simulation, edge-board runs</text><rect class="bar" x="700" y="228" width="67" height="16" rx="3"/>
     <text x="20" y="272">Home Assistant replay (optional)</text><rect class="bar" x="733" y="260" width="67" height="16" rx="3"/>
     <text x="20" y="304">Writing</text><rect class="bar muted" x="700" y="292" width="267" height="16" rx="3"/>
   </svg>
@@ -900,28 +907,32 @@ ul.tight li { margin: 4px 0; }
     <thead><tr><th>Risk</th><th>Handling</th></tr></thead>
     <tbody>
       <tr><td>Interpretation is too easy for current models (ceiling effect)</td><td>Changes during the day, ambiguous, conflicting and infeasible requests; plans by other people; clarification F1</td></tr>
-      <tr><td>The agent configures no better than the auto-tuner</td><td>Report it (H4b); the thesis then rests on SQ1 and SQ3</td></tr>
-      <tr><td>Local model too slow or unreliable (pilot: recall 0.43, about 74 s per plan for gpt-oss-20b)</td><td>Compare 2-3 local models before registration; Assistant is event-driven; fallback to tuned MPC; cloud comparison</td></tr>
-      <tr><td>Gateway energy use cancels the savings</td><td>Measure idle and inference energy; two set-ups, cloud inference and local inference box (H6)</td></tr>
+      <tr><td>The small model configures no better than the auto-tuner</td><td>Report it (H3); the thesis then rests on SQ1, SQ3 and SQ4</td></tr>
+      <tr><td>Small model too weak at deciding when to ask (pilot: decision accuracy 0.82 for Gemma 4 E4B vs 0.95 for the cloud LLM)</td><td>The checker catches infeasible plans; the cloud fallback handles what is left (SQ3); report the gap as it is</td></tr>
+      <tr><td>Small model too slow on gateway hardware (pilot: Qwen3 8B 71 s per plan with reasoning on)</td><td>Gemma 4 E4B as main candidate (7.7 s); 8k context instead of 32k; reasoning on and off compared; Assistant is event-driven</td></tr>
+      <tr><td>Gateway energy use cancels the savings</td><td>Measure idle and inference energy on the laptop and, if bought, an edge board (H5)</td></tr>
       <tr><td>Plans written by the author or a language model bias the result</td><td>Held-out plans by 3-5 other people, keyed before any run, second-person check, registered; edge cases written by a large language model (LLM) exploratory only</td></tr>
       <tr><td>Simulation only</td><td>Optional Home Assistant replay with simulated devices; field study as future work</td></tr>
     </tbody>
   </table></div>
-  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed. Revised on 1 Nov 2026 after an external review: the changes are listed in section 15 of <span class="mono">docs/protocol_home_gateway.md</span>.</p>
+  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed. Revised on 1 Nov 2026 after an external review (section 15 of <span class="mono">docs/protocol_home_gateway.md</span>) and on 4 Nov 2026 around small language models (section 16).</p>
 </section>
 
 <section>
-  <h2>9. Progress (3 Nov 2026)</h2>
-  <div class="prose"><p>Two pilots tested the two riskiest parts of the plan before the main build. Both are exploratory: one house, one run each, answer keys still drafts.</p></div>
+  <h2>9. Progress (7 Nov 2026)</h2>
+  <div class="prose"><p>Two pilots tested the two riskiest parts of the plan before the main build, and the plan pilot already compares small and large models. Both are exploratory: one house, one run each, answer keys still drafts.</p></div>
   <div class="scroll"><table>
     <thead><tr><th>Step</th><th>Status</th><th>What it showed</th></tr></thead>
     <tbody>
       <tr><td>1. Commit the revised plan and prototypes</td><td><span class="tag opt">author</span></td><td>Protocol, plan page, both pilots and the review files are uncommitted on <span class="mono">new-thesis/home-gateway</span></td></tr>
       <tr><td>2. Check the 22 answer keys</td><td><span class="tag opt">author</span></td><td>X3 fixed (away period added); the rest are drafts, A3 and the change cases first</td></tr>
-      <tr><td>3. Plan pilot v2 (SQ1): 22 edge-case plans, commit-or-ask</td><td><span class="tag core">done</span></td><td>GPT-6 Luna: precision 1.00, recall 1.00, clarification F1 0.95, decision accuracy 0.95, 2.7 s, USD 0.003 for all; one error (A3: invented a departure time and committed). gpt-oss-20b: precision 0.63, recall 0.44, F1 0.75, decision 0.59, 116 s per plan. Luna is near the ceiling on these cases, so held-out plans written by other people matter. Newer local models (output capped at 8,000 tokens per call): Qwen3 8B precision 0.96, recall 1.00, F1 0.67, decision 0.68, 71 s; Gemma 4 E4B 1.00, 0.91, 0.78, 0.82, 7.7 s; Qwen3 30B-A3B (CPU only, too large for the 8 GB GPU) 1.00, 0.96, 0.84, 0.86, 150 s. All extract items well; they differ in when they ask. H5 candidates: Gemma 4 E4B (speed), Qwen3 30B-A3B (accuracy).</td></tr>
-      <tr><td>4. Configurator pilot (SQ2): agent vs auto-tuner, 8 weeks Mar-Apr 2016</td><td><span class="tag core">done</span></td><td>Saving vs default MPC: expert setting (tuned on 4 September weeks) 2.83 EUR, Configurator agent 2.82 EUR, deterministic auto-tuner 0.10 EUR, perfect foresight 14.45 EUR. The auto-tuner overfits two weeks of history; the agent chose stable settings (derate 0.75-0.9). USD 0.003, about 16 s per week. Supports keeping H4b.</td></tr>
-      <tr><td>5. Send the plan and both pilots to the supervisor</td><td><span class="tag ref">next</span></td><td>Agree scope: four agents, SQ2 size, plan writers, 20 weeks</td></tr>
-      <tr><td>6. Literature search; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Search protocol in section 13 of the protocol</td></tr>
+      <tr><td>3. Plan pilot v2 (SQ1): 22 edge-case plans, commit-or-ask</td><td><span class="tag core">done</span></td><td>GPT-6 Luna: precision 1.00, recall 1.00, clarification F1 0.95, decision accuracy 0.95, 2.7 s, USD 0.003 for all; one error (A3: invented a departure time and committed). gpt-oss-20b: precision 0.63, recall 0.44, F1 0.75, decision 0.59, 116 s per plan. Luna is near the ceiling on these cases, so held-out plans written by other people matter. Newer local models (output capped at 8,000 tokens per call): Qwen3 8B precision 0.96, recall 1.00, F1 0.67, decision 0.68, 71 s; Gemma 4 E4B 1.00, 0.91, 0.78, 0.82, 7.7 s; Qwen3 30B-A3B (CPU only, too large for the 8 GB GPU) 1.00, 0.96, 0.84, 0.86, 150 s. All extract items well; they differ in when they ask. This is the "SLM alone" set-up; Gemma 4 E4B is the main small-model candidate.</td></tr>
+      <tr><td>4. Configurator pilot (SQ2): agent vs auto-tuner, 8 weeks Mar-Apr 2016</td><td><span class="tag core">done</span></td><td>Saving vs default MPC: expert setting (tuned on 4 September weeks) 2.83 EUR, Configurator agent 2.82 EUR, deterministic auto-tuner 0.10 EUR, perfect foresight 14.45 EUR. The auto-tuner overfits two weeks of history; the agent chose stable settings (derate 0.75-0.9). USD 0.003, about 16 s per week. Cloud LLM only so far.</td></tr>
+      <tr><td>5. Redesign around small language models</td><td><span class="tag core">done</span></td><td>New title, RQ, SQ1-SQ4 and draft H1-H5; mixed method (SLR inside DSR); model layer with cloud fallback; thesis draft <span class="mono">gateway_thesis.tex</span> updated</td></tr>
+      <tr><td>6. Rescore the plan pilot with the checker (SQ3)</td><td><span class="tag core">done</span></td><td>Stored answers rescored, no new model calls. Decision accuracy alone → with checker → with checker and cloud fallback: Gemma 4 E4B 0.82 → 0.91 → 0.91 (fallback on 9 % of plans), Qwen3 8B 0.68 → 0.73 → 0.73, Qwen3 30B-A3B 0.86 → 0.91 → 0.86, gpt-oss-20b 0.59 → 0.46 → 0.77 (36 %); GPT-6 Luna 0.95. The checker stopped two infeasible EV requests Gemma would have committed; its two remaining errors (away vs comfort, no grid at night) cannot be expressed in the output schema. The fallback can hurt: it replaced a failed answer, which would have become a question, with the cloud model's one wrong commit. Gemma 4 E4B with the checker is the main candidate.</td></tr>
+      <tr><td>7. Configurator pilot with a small model (SQ2)</td><td><span class="tag core">done</span></td><td>Same 8 weeks on the laptop. Saving vs default MPC: Gemma 4 E4B 2.85 EUR (about 44 s and 5 tool calls a week, derate 0.8 from week 2), Qwen3 8B 2.42 EUR (about 5 min a week with reasoning), against GPT-6 Luna 2.82, the expert setting 2.83 and the auto-tuner 0.10. No failed calls; the backtest gate rejected one proposal from Gemma and two from Qwen3. One run on one house: a small model can configure the MPC; the cents between Gemma, Luna and the expert do not rank them.</td></tr>
+      <tr><td>8. Send the plan and the pilots to the supervisors</td><td><span class="tag ref">next</span></td><td>Agree scope: SLM framing, hardware, plan writers, 20 weeks</td></tr>
+      <tr><td>9. Literature search; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Search protocol in section 13 of the protocol</td></tr>
       <tr><td>Later: extra datasets (in notes); Home Assistant replay</td><td><span class="tag ref">later</span></td><td>After the supervisor agrees the scope</td></tr>
     </tbody>
   </table></div>
