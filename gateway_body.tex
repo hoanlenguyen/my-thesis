@@ -1010,6 +1010,66 @@ expert setting are too small to rank them from one run, so the pilot
 shows that a small model can configure the MPC, not that it does so
 better.
 
+\section{Closed-loop pilot}
+\label{sec:looppilot}
+
+The two pilots above tested interpretation and configuration on their
+own. The fourth pilot closed the loop on the real house-days: the
+stored answers of the plan pilot went through the checker, an MPC
+re-solved every hour on the weather forecasts, and the control layer,
+from the household's last message to the end of the next day. The
+household's requirements in the answer key were then checked on what
+the control layer actually did: the car's energy by departure (within
+1\,kWh), each appliance run inside its window, and less than
+0.5\,degree-hours outside the comfort band. Only the 11 plans whose key
+says \textit{commit} were run, because for the others the household's
+answer to the question is unknown; no model was called again. The MPC
+with the key's constraints is the reference (``exact parameters''); the
+rules charge the car at full power to the key's target, start
+appliances at once and keep the set point. The dishwasher and the
+washing machine were assumed to draw 1.0\,kWh over 2.5\,h and 0.9\,kWh
+over 2\,h.
+
+\begin{table}[htbp]
+\caption{Closed-loop pilot, 11 commit plans: plans executed, household
+requirements met, plans turned into a question, and adjusted cost
+against the exact parameters over the executed plans.}
+\label{tab:looppilot}
+\small
+\begin{tabularx}{\textwidth}{@{}Xrrrr@{}}
+\toprule
+System & Executed & Met & Asked & Extra cost (EUR) \\
+\midrule
+Rules (exact targets, no optimiser) & 11 & 8 & 0 & $+5.56$ \\
+MPC with exact parameters & 11 & 10 & 0 & 0 \\
+Gemma 4 E4B + checker & 11 & 10 & 0 & 0.00 \\
+Qwen3 8B + checker & 10 & 9 & 1 & $+1.46$ \\
+Qwen3 30B-A3B + checker & 11 & 10 & 0 & 0.00 \\
+gpt-oss-20b + checker & 0 & 0 & 11 & none \\
+GPT-6 Luna + checker & 11 & 10 & 0 & 0.00 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+With Gemma 4 E4B, the gateway met the household's requirements and cost
+exactly what the exact parameters cost on every plan; the same holds for
+the cloud model and Qwen3 30B-A3B (Table~\ref{tab:looppilot}). The one
+plan every system missed is S5, ``lower the heating to 18--20\,\textdegree C
+from midnight'', sent at 22:30: the house cannot cool by one degree in
+an hour and a half, so it stayed slightly too warm after midnight (about
+2\,degree-hours) whatever the constraints said. Qwen3 8B met the
+requirements but cost 1.46\,EUR more on S2: it turned ``we will be
+away'' into a comfort band of exactly 17\,\textdegree C, so the MPC
+cooled the house to 17 and heated it back, a mistake that the item
+scores of the plan pilot did not count. Besides S5, the rules missed
+the two plans that asked for extra warmth, and they cost 5.56\,EUR more
+over the 11 plans, about 0.50\,EUR a plan. gpt-oss-20b executed nothing:
+on every plan it asked, failed to answer, or left out the EV target, so
+the checker turned its answer into a question. The plans are the 11 easy cases of the pilot set, keyed by
+the author, so this pilot shows that the loop works end to end; whether
+the requirements are met on plans written by other people is the
+registered evaluation's question.
+
 \section{Registered evaluation}
 
 In process.

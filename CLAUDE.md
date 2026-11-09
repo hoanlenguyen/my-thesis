@@ -148,6 +148,11 @@ earlier two-agent design.
   gemma4-e4b and qwen3-8b, 7 Nov 2026); results in protocol sections 14 and 16. `--resume` continues an interrupted
   run from the weeks already written. Saving vs default: gemma4-e4b 2.85 EUR (44 s/week), qwen3-8b 2.42 (about
   300 s/week), luna 2.82, expert 2.83, auto-tuner 0.10.
+- `prototypes/closed_loop/closed_loop.py` (9 Nov 2026, Cycle 2): stored plan-pilot answers -> checker -> hourly MPC
+  (MILP with comfort per slot, EV by departure, appliance runs) -> control layer on the real house-days; the key's
+  requirements are judged on what was executed (H2). 11 "commit" plans, no model calls (`out/results.jsonl`, thesis
+  section 5.4, Table 5.5). Gemma 4 E4B, Qwen3 30B-A3B and Luna: 10 of 11 met at exactly the exact-parameter cost;
+  qwen3-8b +1.46 EUR (S2); gpt-oss-20b executed nothing; rules +5.56 EUR, 8 met. S5 is physically unmeetable.
   The answer keys are drafts: the author checks them before any result is used.
 
 - **Keep the two theses apart.** `main.tex`, `src/hems/` campaigns, `data/scenarios*` and `results/` belong to the

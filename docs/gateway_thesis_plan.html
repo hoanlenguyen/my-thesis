@@ -919,7 +919,7 @@ ul.tight li { margin: 4px 0; }
 </section>
 
 <section>
-  <h2>9. Progress (7 Nov 2026)</h2>
+  <h2>9. Progress (9 Nov 2026)</h2>
   <div class="prose"><p>Two pilots tested the two riskiest parts of the plan before the main build, and the plan pilot already compares small and large models. Both are exploratory: one house, one run each, answer keys still drafts.</p></div>
   <div class="scroll"><table>
     <thead><tr><th>Step</th><th>Status</th><th>What it showed</th></tr></thead>
@@ -931,8 +931,9 @@ ul.tight li { margin: 4px 0; }
       <tr><td>5. Redesign around small language models</td><td><span class="tag core">done</span></td><td>New title, RQ, SQ1-SQ4 and draft H1-H5; mixed method (SLR inside DSR); model layer with cloud fallback; thesis draft <span class="mono">gateway_thesis.tex</span> updated</td></tr>
       <tr><td>6. Rescore the plan pilot with the checker (SQ3)</td><td><span class="tag core">done</span></td><td>Stored answers rescored, no new model calls. Decision accuracy alone → with checker → with checker and cloud fallback: Gemma 4 E4B 0.82 → 0.91 → 0.91 (fallback on 9 % of plans), Qwen3 8B 0.68 → 0.73 → 0.73, Qwen3 30B-A3B 0.86 → 0.91 → 0.86, gpt-oss-20b 0.59 → 0.46 → 0.77 (36 %); GPT-6 Luna 0.95. The checker stopped two infeasible EV requests Gemma would have committed; its two remaining errors (away vs comfort, no grid at night) cannot be expressed in the output schema. The fallback can hurt: it replaced a failed answer, which would have become a question, with the cloud model's one wrong commit. Gemma 4 E4B with the checker is the main candidate.</td></tr>
       <tr><td>7. Configurator pilot with a small model (SQ2)</td><td><span class="tag core">done</span></td><td>Same 8 weeks on the laptop. Saving vs default MPC: Gemma 4 E4B 2.85 EUR (about 44 s and 5 tool calls a week, derate 0.8 from week 2), Qwen3 8B 2.42 EUR (about 5 min a week with reasoning), against GPT-6 Luna 2.82, the expert setting 2.83 and the auto-tuner 0.10. No failed calls; the backtest gate rejected one proposal from Gemma and two from Qwen3. One run on one house: a small model can configure the MPC; the cents between Gemma, Luna and the expert do not rank them.</td></tr>
-      <tr><td>8. Send the plan and the pilots to the supervisors</td><td><span class="tag ref">next</span></td><td>Agree scope: SLM framing, hardware, plan writers, 20 weeks</td></tr>
-      <tr><td>9. Literature search; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Search protocol in section 13 of the protocol</td></tr>
+      <tr><td>8. Closed-loop pilot (Cycle 2): plan → checker → MPC → control layer</td><td><span class="tag core">done</span></td><td>The stored answers ran through the whole gateway on the real house-days (11 commit plans, no new model calls); the household's requirements were checked on what was executed. Gemma 4 E4B, Qwen3 30B-A3B and GPT-6 Luna met 10 of 11 at exactly the cost of the exact parameters; the miss (S5, "cool to 18-20 °C from midnight", sent at 22:30) is physically impossible for every system. Qwen3 8B cost 1.46 EUR more on one plan (it turned "away" into a 17 °C band, so the house was cooled and reheated). Rules met 8 and cost 5.56 EUR more. gpt-oss-20b executed nothing (all answers became questions).</td></tr>
+      <tr><td>9. Send the plan and the pilots to the supervisors</td><td><span class="tag ref">next</span></td><td>Agree scope: SLM framing, hardware, plan writers, 20 weeks</td></tr>
+      <tr><td>10. Literature search; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Search protocol in section 13 of the protocol</td></tr>
       <tr><td>Later: extra datasets (in notes); Home Assistant replay</td><td><span class="tag ref">later</span></td><td>After the supervisor agrees the scope</td></tr>
     </tbody>
   </table></div>

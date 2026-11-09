@@ -457,3 +457,14 @@ closed, seconds per week: Gemma 4 E4B 2.85 EUR, 48 %, 44 s (derate 0.8 from week
 backtest gate); Qwen3 8B 2.42 EUR, 46 %, about 300 s (derate 0.75-0.9, mostly 20 % reserve; two rejected); GPT-6
 Luna 2.82 EUR, 48 %, 16 s; expert setting 2.83 EUR; auto-tuner 0.10 EUR. No failed calls. One run on one house:
 the small model can configure the MPC; the cents between Gemma, Luna and the expert cannot rank them.
+
+**Closed-loop pilot (9 November 2026, `prototypes/closed_loop/closed_loop.py`, `out/results.jsonl`; Cycle 2).** The
+stored plan-pilot answers go through the checker, an hourly MPC (MILP: comfort band per slot, EV energy by
+departure, non-interruptible appliance runs; shortfalls at a penalty) on the weather forecasts, and the control
+layer, from the last message to the end of the next day on the real house-days; the key's requirements are judged
+on what was executed (EV within 1 kWh by departure, appliance inside its window, < 0.5 degree-hours outside the
+band). The 11 "commit" plans only; no model calls. Assumed appliances: dishwasher 1.0 kWh / 2.5 h, washing machine
+0.9 kWh / 2 h. Executed / met / asked / extra cost vs exact parameters: exact parameters 11/10/0/0; Gemma 4 E4B,
+Qwen3 30B-A3B and GPT-6 Luna 11/10/0/0.00 (identical to the exact parameters on every plan); Qwen3 8B 10/9/1/+1.46
+(S2: away turned into a 17-17 C band, cooled and reheated); gpt-oss-20b 0/0/11; rules 11/8/0/+5.56. S5 is missed by
+every system: the house cannot cool 1 K in the 1.5 h before midnight (about 2 degree-hours too warm).
