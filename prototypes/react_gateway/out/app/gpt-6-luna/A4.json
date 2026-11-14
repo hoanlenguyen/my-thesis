@@ -1,0 +1,79 @@
+{
+ "plan": "A4",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "I haven\u2019t scheduled the car or heating yet because I need a specific temperature and time window for \u201cextra warm.\u201d",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature would you like the house to reach tonight, and during what hours? \u201cExtra warm\u201d is too vague to schedule."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'extra warm' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 5.45,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"extra warm\"], \"ev\": [{\"departure\": \"2016-11-23\", \"target_pct\": null, \"energy_kwh\": null, \"earliest\": null}], \"appliances\": [], \"away\": [], \"comfort\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"topic\": \"comfort\", \"text\": \"What temperature would you like the house to reach tonight, and during what hours? \u201cExtra warm\u201d is too vague to schedule.\"}], \"explanation\": \"I haven\u2019t scheduled the car or heating yet because I need a specific temperature and time window"
+  }
+ ]
+}

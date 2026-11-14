@@ -1,0 +1,66 @@
+{
+ "plan": "X3",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-07-25 21:00",
+  "text": "Taking the car to work tomorrow, 8 to 5. Charge it to 90% from the solar panels at midday.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will charge the car to its current level (~40%) by tomorrow 07:30, as usual. If you want to charge it to 90% from solar, we need to do it before you leave tomorrow morning.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Should we charge the car to 90% before your trip tomorrow morning?"
+  },
+  {
+   "topic": "other",
+   "text": "Would you like to adjust the charge target or delay charging?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Mon 21:00):\n- car 90 % by Tue 07:30 (morning, in 10.5 h), not before Wed 12:00 (afternoon, in 61359.0 h)\n- away from Tue 20:00 (evening, in 61343.0 h) to Wed 05:00 (morning, in 61352.0 h)",
+  "Car time not given: used the usual ready-by time Tue 07:30.",
+  "Time rule: '08:00' read as Tue 20:00, the next occurrence of that clock time (the household wrote it without am/pm).",
+  "Time rule: '17:00' read as Wed 05:00, the next occurrence of that clock time (the household wrote it without am/pm)."
+ ],
+ "warnings": [
+  "the car cannot get the full 20.0 kWh by 07-26 07:30; the charger adds at most -61.1 kWh in that time, so the car will be at about 40 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-07-26 07:30",
+   "status": "partly"
+  },
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-07-26 08:00",
+    "end": "2016-07-26 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 5.26,
+  "tool_calls": 5
+ }
+}

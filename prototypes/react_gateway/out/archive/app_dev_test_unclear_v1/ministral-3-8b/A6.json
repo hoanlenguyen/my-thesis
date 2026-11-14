@@ -1,0 +1,51 @@
+{
+ "plan": "A6",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-06-10 17:00",
+  "text": "Away for the weekend.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will set the house to away mode from now until midnight Sunday, letting the indoor temperature drop to 17 \u00b0C.",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "Is the whole weekend (from now until midnight Sunday) correct?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 5.85,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway will set the house to away mode from now until midnight Sunday, letting the indoor temperature drop to 17 \u00b0C.\", \"questions\": [{\"text\": \"Is the whole weekend (from now until midnight Sunday) correct?\", \"topic\": \"away\"}]}"
+  }
+ ]
+}

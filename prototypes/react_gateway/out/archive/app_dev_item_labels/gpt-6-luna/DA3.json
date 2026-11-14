@@ -1,0 +1,41 @@
+{
+ "plan": "DA3",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-06-21 12:00",
+  "text": "Car full for my trip, leaving early tomorrow.",
+  "car_pct": 60
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ve noted that you want the car charged to 100%, but I need a specific ready-by time to plan it. What time tomorrow should it be ready?",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time tomorrow must the car be ready? \u201cEarly\u201d is too vague to schedule."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household gave no clear time for the car; ask when it must be ready"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 10.75,
+  "tool_calls": 3
+ }
+}

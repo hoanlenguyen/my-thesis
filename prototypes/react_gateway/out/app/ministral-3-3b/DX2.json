@@ -1,0 +1,70 @@
+{
+ "plan": "DX2",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-12-19 07:00",
+  "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway tried to plan your holiday settings but couldn\u2019t meet your request for keeping the house at exactly 22\u00b0C while you\u2019re away. The heat pump would need to work harder than usual to maintain that temperature, which conflicts with the home battery\u2019s limited capacity and the car\u2019s charger constraints.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "Would you like to adjust the temperature band or confirm the current settings for your holiday?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Mon 07:00):\n- away from Mon 07:00 (morning, in 0.0 h) to Fri 18:00 (evening, in 107.0 h)\n- 22.0-None C from Mon 07:00 (morning, in 0.0 h) to Fri 18:00 (evening, in 107.0 h)"
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "not met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-19 07:00",
+    "end": "2016-12-23 18:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.89,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"away\": [{\"end\": \"2016-12-23 18:00\", \"start\": \"2016-12-19 07:00\"}], \"comfort\": [{\"end\": \"2016-12-23 18:00\", \"min_c\": 22, \"start\": \"2016-12-19 07:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway tried to plan your holiday settings but couldn\u2019t meet your request for keeping the house at exactly 22\u00b0C while you\u2019re away. The heat pump would need to work harder than usual to maintain that temperature, which conflicts with the home battery\u2019s limited c"
+  }
+ ]
+}

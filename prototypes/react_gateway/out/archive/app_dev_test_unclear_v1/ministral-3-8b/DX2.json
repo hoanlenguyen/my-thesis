@@ -1,0 +1,58 @@
+{
+ "plan": "DX2",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-12-19 07:00",
+  "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway cannot plan yet because the weather forecast is not available until later today. Once I have it, I will check whether the heat pump can keep the house at 22 \u00b0C all day without running into problems.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "The gateway usually keeps the house at 20\u201322 \u00b0C when you are home, and at 17 \u00b0C when you are away. You asked to keep it at 22 \u00b0C the whole time while you are on holiday. Is that correct?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-19 07:00",
+    "end": "2016-12-23 18:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 10.91,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway cannot plan yet because the weather forecast is not available until later today. Once I have it, I will check whether the heat pump can keep the house at 22 \u00b0C all day without running into problems.\", \"questions\": [{\"text\": \"The gateway usually keeps the"
+  }
+ ]
+}

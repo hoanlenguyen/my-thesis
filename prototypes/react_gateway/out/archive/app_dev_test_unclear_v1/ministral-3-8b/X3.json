@@ -1,0 +1,62 @@
+{
+ "plan": "X3",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-07-25 21:00",
+  "text": "Taking the car to work tomorrow, 8 to 5. Charge it to 90% from the solar panels at midday.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "The car is already charging at 3.7 kW. I will wait until tomorrow midday to charge it to 90 % from the solar panels. The usual ready-by time is 07:30, which is fine for your trip from 08:00 to 17:00.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Should I keep charging the car now to reach 90 % by tomorrow midday, or wait until then?"
+  },
+  {
+   "topic": "ev",
+   "text": "Is 90 % still the charge target?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-07-26 08:00",
+    "end": "2016-07-26 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 9.79,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The car is already charging at 3.7 kW. I will wait until tomorrow midday to charge it to 90 % from the solar panels. The usual ready-by time is 07:30, which is fine for your trip from 08:00 to 17:00.\", \"questions\": [{\"text\": \"Should I keep charging the car now to re"
+  }
+ ]
+}

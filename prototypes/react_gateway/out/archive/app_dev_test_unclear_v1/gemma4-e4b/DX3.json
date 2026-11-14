@@ -1,0 +1,64 @@
+{
+ "plan": "DX3",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I am currently checking the best time to run your appliances.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The washing machine cycle is longer than the time available to finish by 09:00 tomorrow. Would you like to change the deadline or the appliance settings?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 2,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 5.26,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [{\"appliance\": \"dishwasher\", \"deadline\": \"2016-08-03 09:00\"}, {\"appliance\": \"washing_machine\", \"deadline\": \"2016-08-03 09:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I am currently checking the best time to run your appliances.\", \"questions\": [{\"text\": \"The washing machine cycle is longer than the time available to finish by 09:00 tomorrow. Would you like to change the deadline or the appliance settings?\", \"topic\": \"conflict\"}]}"
+  }
+ ]
+}

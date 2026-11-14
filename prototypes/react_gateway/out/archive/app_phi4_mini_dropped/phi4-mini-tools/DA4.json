@@ -1,0 +1,36 @@
+{
+ "plan": "DA4",
+ "model": "phi4-mini-tools",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "To create a cosy atmosphere for your guests tonight, I will set the indoor temperature to a comfortable 21\u00b0C. This setting is different from your usual comfort band. Please confirm if this is what you would like, or provide specific times and temperatures for the comfort band.",
+ "questions": [],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "no requirement given"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 3.59,
+  "tool_calls": 2
+ }
+}

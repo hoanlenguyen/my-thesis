@@ -1,0 +1,61 @@
+{
+ "plan": "A5",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-08-09 07:00",
+  "text": "Need the car charged by lunchtime, and a load of washing today.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I need to know when the washing machine must be done by today and whether \u201cby lunchtime\u201d means 12:00 today for the car charge.",
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "When must the washing machine be done by today? (For example: \"by 12\", \"by 16:30\", \"before dinner\", \"tomorrow morning\")"
+  },
+  {
+   "topic": "ev",
+   "text": "Is \"by lunchtime\" 12:00 today for the car charge? If not, please specify the exact time."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-10 00:00"
+   }
+  ],
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 8.69,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I need to know when the washing machine must be done by today and whether \u201cby lunchtime\u201d means 12:00 today for the car charge.\", \"questions\": [{\"text\": \"When must the washing machine be done by today? (For example: \\\"by 12\\\", \\\"by 16:30\\\", \\\"before dinner\\\", \\\"tomor"
+  }
+ ]
+}

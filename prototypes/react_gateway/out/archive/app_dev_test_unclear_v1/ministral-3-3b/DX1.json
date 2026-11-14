@@ -1,0 +1,74 @@
+{
+ "plan": "DX1",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-05-17 22:00",
+  "text": "Charge it full for 5:30.",
+  "car_pct": 15
+ },
+ "decision": "ask",
+ "message_to_household": "I will charge the car **full by 5:30 tomorrow evening** (Wed 17:30) to meet your request. Since this is after the day-ahead price update, I\u2019ll plan it when prices are available.",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "Did you mean to charge it **full by 5:30 tomorrow evening** (Wed 17:30) instead of the usual 80% by 7:30?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 22:00):\n- car 100 % by Wed 17:30 (evening, in 61339.5 h)",
+  "Time rule: '05:30' read as Wed 17:30, the next occurrence of that clock time (the household wrote it without am/pm).",
+  "Car: 100.0 % by 2023-05-17 17:30 is after the last known day-ahead price (Thu 00:00); the gateway plans this charge when the prices for that night are published."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car by 2023-05-17 17:30",
+   "status": "later"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-05-18 05:30",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 4.54,
+  "tool_calls": 4
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"target_pct\": \"100\"}, {\"departure\": \"2023-05-17 05:30\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2023-05-18 05:30\", \"target_pct\": 100}]}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I will charge the car **full by 5:30 tomorrow evening** (Wed 17:30) to meet your request. Since this is after the day-ahead price update, I\u2019ll plan it when prices are available.\", \"questions\": [{\"text\": \"Did you mean to charge it **full by 5:30 tomorrow evening** (W"
+  }
+ ]
+}

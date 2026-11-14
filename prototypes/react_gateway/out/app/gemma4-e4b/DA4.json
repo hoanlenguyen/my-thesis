@@ -1,0 +1,54 @@
+{
+ "plan": "DA4",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I need a specific temperature to make the house cosy for your guests tonight.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature range would you like for the house tonight (from 16:00 to 00:00)?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'cosy' is too vague to plan: ask what they mean",
+  "comfort band 2016-01-25 16:00 to 2016-01-26 00:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 4.08,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"comfort\": [{\"end\": \"2016-01-26 00:00\", \"start\": \"2016-01-25 16:00\"}], \"unclear\": [\"cosy\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I need a specific temperature to make the house cosy for your guests tonight.\", \"questions\": [{\"text\": \"What temperature range would you like for the house tonight (from 16:00 to 00:00)?\", \"topic\": \"comfort\"}]}"
+  }
+ ]
+}

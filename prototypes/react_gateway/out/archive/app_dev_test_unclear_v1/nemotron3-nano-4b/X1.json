@@ -1,0 +1,44 @@
+{
+ "plan": "X1",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-02-11 23:30",
+  "text": "Just got home, need it full for 5am.",
+  "car_pct": 20
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-02-12 05:00",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 144.37,
+  "tool_calls": 0
+ },
+ "actions": []
+}

@@ -1,0 +1,74 @@
+{
+ "plan": "DX3",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 2,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 4.04,
+  "tool_calls": 4
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [{\"appliance\": \"dishwasher\", \"deadline\": \"2016-08-03 09:00\"}, {\"appliance\": \"washing_machine\", \"deadline\": \"2016-08-03 09:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "get_home_state",
+   "args": "{}"
+  }
+ ]
+}

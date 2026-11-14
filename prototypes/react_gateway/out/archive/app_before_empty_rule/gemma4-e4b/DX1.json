@@ -1,0 +1,19 @@
+{
+ "plan": "DX1",
+ "model": "gemma4-e4b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The charger can only provide 27.8 kWh, but reaching 100% by 05:30 requires 34.0 kWh. Would you like to adjust the target percentage or the departure time?"
+  }
+ ],
+ "explanation": "I checked your request to charge the car to 100% by 05:30 tomorrow.",
+ "requirements_check": null,
+ "problems": [
+  "EV needs 34.0 kWh, charger gives 27.8 kWh"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-05-17 22:00",
+ "timeline": null
+}

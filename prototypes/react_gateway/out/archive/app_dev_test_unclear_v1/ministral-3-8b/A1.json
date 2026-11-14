@@ -1,0 +1,55 @@
+{
+ "plan": "A1",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-03-14 20:00",
+  "text": "Long trip tomorrow, leaving really early. Make sure the car is full.",
+  "car_pct": 35
+ },
+ "decision": "ask",
+ "message_to_household": "I will plan the car charge for tomorrow morning when you confirm the time and whether you really need a full charge.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time will you leave tomorrow? (for example \"06:00\" or \"on my way at 07:00\")"
+  },
+  {
+   "topic": "ev",
+   "text": "Is \"full\" really needed, or is 80 % enough for the trip?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.22,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I will plan the car charge for tomorrow morning when you confirm the time and whether you really need a full charge.\", \"questions\": [{\"text\": \"What time will you leave tomorrow? (for example \\\"06:00\\\" or \\\"on my way at 07:00\\\")\", \"topic\": \"ev\"}, {\"text\": \"Is \\\"full\\"
+  }
+ ]
+}

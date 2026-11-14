@@ -1,0 +1,75 @@
+{
+ "plan": "A3",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-05-24 07:00",
+  "text": "Charge the car before I head out, and the dishwasher by 6pm.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "The car will be charged to about 45% by 07:30, using 1.9 kWh from solar and grid at the low price. The dishwasher will run 14:30-15:30, using solar. Total cost 0.63 EUR.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "The car charger can only add 1.9 kWh by 07:30, which would bring it to ~45% (from 40%). Is that okay, or should we wait longer?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 07:00):\n- car 80 % by Tue 07:30 (morning, in 0.5 h), not before Tue 07:00 (morning, in 0.0 h)\n- dishwasher done by Tue 18:00 (evening, in 11.0 h)"
+ ],
+ "warnings": [
+  "the car cannot get the full 16.0 kWh by 05-24 07:30; the charger adds at most 1.9 kWh in that time, so the car will be at about 45 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +16.0 kWh by 2016-05-24 07:30",
+   "status": "partly"
+  },
+  {
+   "requirement": "dishwasher done by 2016-05-24 18:00",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-05-24 18:00"
+   }
+  ],
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 21.01,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-05-24 07:30\", \"earliest\": \"2016-05-24 07:00\", \"energy_kwh\": 16, \"target_energy\": 16, \"target_pct\": 80}], \"appliances\": [{\"appliance\": \"dishwasher\", \"deadline\": \"2016-05-24 18:00\"}], \"unclear\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"The car charger can only add 1.9 kWh by 07:30, which would bring it to ~45% (from 40%). Is that okay, or should we wait longer?\", \"topic\": \"ev\"}], \"explanation\": \"The car will be charged to about 45% by 07:30, using 1.9 kWh from solar and grid at the low pri"
+  }
+ ]
+}

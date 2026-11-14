@@ -1,0 +1,12 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [],
+ "explanation": "Tonight from 18:00 the heat pump will run at 22 \u00b0C (3.2 kW) until midnight, using solar power and the battery. This will cost you 0.02 EUR. The battery will not be used for charging the car or appliances.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-01-25 16:00",
+ "timeline": null
+}

@@ -1,7 +1,8 @@
 # Protocol: a language-model agent as the interface of a home energy gateway
 
-**Title (author's decision, 4 November 2026):** *Small Language Models for a Home Energy Gateway: Interpreting
-Household Plans and Configuring an Optimiser on Local Hardware* (working title of 3 November: *Design of a
+**Title (author's decision, 12 November 2026):** *Small Language Models for Smart Home Energy Management:
+Interpreting Household Plans and Configuring an Optimiser on Local Hardware* (4 November: *Small Language Models for
+a Home Energy Gateway: ...*) (working title of 3 November: *Design of a
 Multi-Agent Home Energy Gateway: Interpreting Household Plans and Configuring an Optimiser*). Research questions
 and hypotheses were redesigned around small language models on 4 November (section 2; changes in section 16).
 
@@ -51,18 +52,20 @@ study is future work.
 
 ## 2. Research questions and hypotheses (draft)
 
-- **RQ:** How can a home energy gateway use small language models running on local hardware to interpret
+- **RQ:** How can a smart home energy management system use small language models running on local hardware, the home's energy gateway, to interpret
   households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud
   large language model?
-- **SQ1 (interpretation):** How accurately do small language models turn plain-language plans and their changes
-  into constraints and a commit-or-ask decision, compared with a large language model, and how often are the
-  household's requirements then met?
-- **SQ2 (configuration):** Can a small language model configure the MPC from the house's history as well as a
-  large language model, and better than a deterministic auto-tuner that sees the same history?
-- **SQ3 (closing the gap):** How much of the gap between small and large models do the deterministic checker and
-  a cloud fallback close, and how often is the fallback needed?
-- **SQ4 (deployment):** What do local and cloud set-ups cost in latency, energy, money and privacy, and does the
-  gateway's saving outweigh these costs?
+Three sub-questions, one per part of the title (reduced from four on 12 November 2026: the old SQ3, checker and
+fallback, is now the last part of SQ1; the old SQ4, deployment, is now SQ3):
+
+- **SQ1 (interpreting household plans):** How accurately do small language models turn plain-language plans and
+  their changes into constraints and a commit-or-ask decision, compared with a cloud large language model, how
+  often are the household's requirements then met, and how much of the remaining gap do the deterministic checker
+  and a cloud fallback close?
+- **SQ2 (configuring an optimiser):** Can a small language model configure the MPC from the house's history as
+  well as a large language model, and better than a deterministic auto-tuner that sees the same history?
+- **SQ3 (on local hardware):** What does running the small models on household hardware cost in latency, energy,
+  money and privacy compared with the cloud model, and does the HEMS's saving outweigh these costs?
 
 The conditions in which interpretation or configuration fails (weather, price pattern, load, plan type) are
 reported descriptively under each SQ. If the small models allow it, one agent is compared with the four-agent
@@ -70,8 +73,12 @@ design (exploratory: do narrow tasks help a small model more than a large one?).
 
 **Models.** SLM = open model below about 10 billion parameters (Belcak et al., 2025): Gemma 4 E4B (main
 candidate), Qwen3 8B, and one or two more of similar size. Larger local: Qwen3 30B-A3B, gpt-oss-20b. Cloud LLM:
-GPT-6 Luna. **Set-ups (SQ3):** SLM alone; SLM + checker; SLM + checker + cloud fallback; LLM alone.
-**Hardware:** laptop with RTX 4070 (8 GB) for all runs; an SQ4 subset on a Jetson Orin Nano if one is bought.
+GPT-6 Luna. **Set-ups (SQ1):** SLM alone; SLM + checker; SLM + checker + cloud fallback; LLM alone.
+**Prompts (author's decision, 13 November 2026):** the local models use prompt v3 (`pilot.py --prompt v3`, tuned only
+on `plans_dev.json`), the cloud LLM keeps prompt v2, on which it did better (0.95 against 0.86 on the pilot plans).
+The cloud fallback therefore answers with v2. Both prompts are frozen from here until the held-out run; any further
+change is a new design iteration on the development plans only.
+**Hardware (author's decision, 11 November 2026, "plan A"):** laptop with RTX 4070 (8 GB) for all runs; for SQ3 the plan benchmark (`prototypes/edge_bench/bench.py`) and the optimiser timing (`mpc_time.py`) are repeated on a Raspberry Pi 5 with 16 GB (low end, comparable with Islam et al., 2025) and a Ryzen 7 mini PC with 32 GB (middle). A 4 GB board (e.g. Arduino UNO Q) can host the control layer, checker and MPC, with the language model on another device.
 
 **Draft hypotheses** (thresholds fixed only at registration, after the exploratory phase):
 
@@ -79,9 +86,9 @@ GPT-6 Luna. **Set-ups (SQ3):** SLM alone; SLM + checker; SLM + checker + cloud f
 |---|---|---|
 | H1 (SQ1) | On the held-out plans, the best SLM is within 0.05 of the cloud LLM on constraint recall and decision accuracy (non-inferiority) | paired cluster bootstrap over plans; McNemar on decisions |
 | H2 (SQ1) | With the best SLM in closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on at least 95 % of feasible house-days | one-sided exact binomial, p0 = 0.95 |
-| H3 (SQ2) | The SLM-configured MPC is non-inferior to the deterministic auto-tuner (same history, same backtest) and within a registered margin of the LLM-configured MPC | paired one-sided Wilcoxon |
-| H4 (SQ3) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.05 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
-| H5 (SQ4) | The 95th-percentile latency per event on local hardware is below 60 s, and the yearly saving over rules exceeds the energy and cost of inference | descriptive with measured power; year simulation |
+| H3 (SQ1) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.05 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
+| H4 (SQ2) | The SLM-configured MPC is non-inferior to the deterministic auto-tuner (same history, same backtest) and within a registered margin of the LLM-configured MPC | paired one-sided Wilcoxon |
+| H5 (SQ3) | On each device the gateway commits a plan within a registered time (p95 of the time per plan; the limit in minutes set from the exploratory runs), plans due sooner go to the fallback, and the yearly saving over rules exceeds the energy and cost of inference | descriptive with measured power; year simulation |
 
 The earlier hypotheses (H1-H6 of 1 November) are replaced; the cost comparison of plain-language vs exact
 parameters (old H3) and the default-to-tuned share (old H4a) can be kept as descriptive results.
@@ -136,7 +143,7 @@ Why more than two: each agent has its own trigger, inputs, tools and output, so 
 is checked on its own (constraints by the checker, messages against the plan's figures, settings by backtest). The
 household thesis found that splitting *one* task between agents added cost without reliability; here the agents do
 different tasks at different times, so cost grows with the number of events, not agents. The agent count is tested
-as part of SQ3: four agents against one agent with all tools and against two (Assistant and Configurator).
+(exploratory) as part of SQ1: four agents against one agent with all tools and against two (Assistant and Configurator).
 
 **Household Assistant tools:**
 
@@ -277,7 +284,8 @@ it may exceed the reference tuned on other house-days; H4a allows that.
 
 Cluster bootstrap over plans for H1 (items within a plan are not independent); one-sided exact binomial for H2;
 paired one-sided Wilcoxon non-inferiority for H3 and H4b; paired bootstrap for H4a; McNemar and cluster bootstrap
-for H5; Holm within SQ1 and within SQ2. SQ4 descriptive per factor level. Sensitivity: battery size, forecast
+for H5; Holm within SQ1 and within SQ2. SQ3 descriptive per factor level. (This paragraph predates the
+12 November renumbering; the current mapping is the table in section 2: H1-H3 under SQ1, H4 under SQ2, H5 under SQ3.) Sensitivity: battery size, forecast
 error, tariff with and without a power charge, charging losses.
 
 ## 10. Validity
@@ -313,7 +321,7 @@ error, tariff with and without a power charge, charging losses.
 | Risk | Mitigation |
 |---|---|
 | Interpretation is easy for modern models (ceiling effect) | changes during the day, ambiguous, conflicting and infeasible requests; plans by other people; measure clarification F1 |
-| Configuration by the agent gives no gain over the auto-tuner | report it (H4b); the thesis then rests on SQ1 and SQ3 |
+| Configuration by the agent gives no gain over the auto-tuner | report it (H4); the thesis then rests on SQ1 and SQ3 |
 | Local model unreliable or slow (pilot: recall 0.43, about 74 s per plan for gpt-oss-20b) | compare 2-3 local models before registration; fallback to the tuned MPC; compare with cloud |
 | Gateway energy use cancels the savings | measure idle and inference energy; two H6 set-ups |
 | Plan writers not found in time | start recruiting in week 3; fall back to the author plus a second person, stated as a limitation |
@@ -323,27 +331,101 @@ error, tariff with and without a power charge, charging losses.
 
 Guidelines: Kitchenham and Charters (2007), with backward and forward snowballing (Wohlin, 2014).
 
-**Sources:** Scopus and Web of Science (peer-reviewed), plus arXiv and Google Scholar for 2025-2026 preprints, which
-Scopus indexes poorly.
+**Sources (revised 11 November 2026 for the SLM framing):** Scopus, Web of Science Core Collection, IEEE Xplore and
+ScienceDirect (peer-reviewed); arXiv for 2025-2026 preprints, which the databases index poorly; Google Scholar only
+for snowballing and grey literature. Years 2022-2026; articles, conference papers and reviews; English.
 
-**Search string** (`TITLE-ABS-KEY`, Scopus syntax):
+**Two runs.** Run A (LQ1, LQ2): language models of any size AND home or building energy management. Run B (LQ3):
+small or locally run language models AND energy management in general, because studies of small models on edge
+hardware rarely name a home energy system. `LLM*` is used only inside a block that is ANDed with an energy block
+(alone it also matches law degrees); bare `HEMS` is not used (it also matches helicopter emergency medical services).
+
+Scopus (Advanced search):
 
 ```text
-( "home energy management" OR "smart home energy" OR "residential demand response"
-  OR "building energy management" OR "home energy gateway" OR ( "HEMS" AND ( energy OR electricity ) ) )
-AND
-( "large language model*" OR "LLM-based" OR "language model agent*" OR "agentic" OR "ReAct"
-  OR "natural language interface*" OR "foundation model*" )
-[ AND ( "model predictive control" OR "MILP" OR "linear programming" OR "optimi*ation" OR "scheduling" ) ]
+Run A
+TITLE-ABS-KEY ( ( "large language model*" OR "small language model*" OR LLM* OR "language model agent*"
+  OR "language agent*" OR "agentic AI" OR "natural language interface*" )
+  AND ( "home energy management" OR "home energy gateway" OR "energy gateway*" OR "smart home*"
+  OR "demand response" OR "building energy management" OR "household energy"
+  OR ( ( appliance* OR "electric vehicle*" OR "heat pump*" OR batter* OR load* ) W/3 ( schedul* OR control* OR optimi* ) ) ) )
+AND PUBYEAR > 2021 AND PUBYEAR < 2027
+AND ( LIMIT-TO ( DOCTYPE , "ar" ) OR LIMIT-TO ( DOCTYPE , "cp" ) OR LIMIT-TO ( DOCTYPE , "re" ) )
+AND ( LIMIT-TO ( LANGUAGE , "English" ) )
+
+Run B
+TITLE-ABS-KEY ( ( "small language model*"
+  OR ( ( edge OR "on-device" OR local* OR embedded OR quanti?ed ) W/3 ( "language model*" OR LLM* ) ) )
+  AND ( ( ( energy OR electricity OR power ) W/3 ( management OR gateway* OR control* OR system* ) )
+  OR "smart home*" OR "smart grid*" ) )
+AND PUBYEAR > 2021 AND PUBYEAR < 2027 (same document-type and language limits as run A)
 ```
 
-Run with and without the bracketed third block and report both counts (the third block may drop papers that use
-an LLM as an interface without naming the solver). `"HEMS"` alone also matches helicopter emergency medical
-services; `"LLM*"` alone also matches law degrees.
+Web of Science Core Collection (Advanced Search; then Refine: years 2022-2026, Article, Proceedings Paper, Review
+Article, English):
 
-**Inclusion:** I1 2022-2026; I2 residential or behind-the-meter assets (PV, battery, EV, heat pump, appliances);
-I3 the LLM generates constraints, tunes parameters, schedules loads or controls devices; I4 the system is
-evaluated. **Exclusion:** E1 grid-scale unit commitment; E2 question answering or bill summaries without control;
+```text
+Run A
+TS=(("large language model*" OR "small language model*" OR LLM* OR "language model agent*" OR "language agent*"
+  OR "agentic AI" OR "natural language interface*")
+  AND ("home energy management" OR "home energy gateway" OR "energy gateway*" OR "smart home*" OR "demand response"
+  OR "building energy management" OR "household energy"
+  OR ((appliance* OR "electric vehicle*" OR "heat pump*" OR batter* OR load*) NEAR/3 (schedul* OR control* OR optimi*))))
+
+Run B
+TS=(("small language model*" OR ((edge OR "on-device" OR local* OR embedded OR quanti?ed) NEAR/3 ("language model*" OR LLM*)))
+  AND (((energy OR electricity OR power) NEAR/3 (management OR gateway* OR control* OR system*))
+  OR "smart home*" OR "smart grid*"))
+```
+
+IEEE Xplore (Command Search; filter years 2022-2026):
+
+```text
+Run A
+("All Metadata":"large language model*" OR "All Metadata":"small language model*" OR "All Metadata":LLM*
+  OR "All Metadata":"agentic AI" OR "All Metadata":"language agent*")
+AND ("All Metadata":"home energy management" OR "All Metadata":"energy gateway" OR "All Metadata":"smart home*"
+  OR "All Metadata":"demand response" OR "All Metadata":"appliance scheduling"
+  OR "All Metadata":"building energy management" OR "All Metadata":"electric vehicle charging")
+
+Run B
+("All Metadata":"small language model*" OR "All Metadata":"edge LLM*" OR "All Metadata":"on-device LLM*"
+  OR "All Metadata":"local LLM*" OR "All Metadata":"quantized language model*")
+AND ("All Metadata":"energy management" OR "All Metadata":"smart home*" OR "All Metadata":"smart grid*")
+```
+
+ScienceDirect (field "Title, abstract or author-specified keywords"; years 2022-2026; research and review articles).
+The field allows at most eight Boolean operators and no wildcards (plurals are matched), so run A is split in two:
+
+```text
+Run A1  ("large language model" OR "small language model" OR "LLM agent" OR "agentic AI")
+        AND ("home energy management" OR "demand response" OR "smart home" OR "energy gateway")
+Run A2  ("large language model" OR "small language model" OR "LLM agent" OR "agentic AI")
+        AND ("appliance scheduling" OR "electric vehicle charging" OR "heat pump" OR "building energy management")
+Run B   ("small language model" OR "on-device language model" OR "edge LLM" OR "local LLM")
+        AND ("energy management" OR "smart home" OR "smart grid")
+```
+
+arXiv (Advanced Search, abstracts, 2022-2026; cs, eess and math.OC): run A `"language model"` AND (`"home energy"` OR
+`"demand response"` OR `"smart home"` OR `"energy gateway"`); run B `"small language model"` AND `energy`.
+
+Google Scholar (snowballing and grey literature only; first 100 results of each, by relevance):
+
+```text
+"small language model" "home energy management"
+"large language model" "home energy management" gateway
+"language model" "model predictive control" household OR residential
+"on-device" OR "edge" "language model" "energy management"
+```
+
+**Optional narrowing block** (Scopus and WoS, run A only): `AND ( "model predictive control" OR MPC OR MILP OR
+"linear programming" OR optimi?ation OR schedul* )`. Report the counts with and without it; it may drop papers that
+use a language model as an interface without naming the solver.
+
+**Inclusion:** I1 2022-2026; I2 residential or behind-the-meter assets (PV, battery, EV, heat pump, appliances), or,
+for run B, any energy management system in which a small or locally run language model is evaluated; I3 the
+language model interprets requirements, generates constraints, tunes parameters, schedules loads or controls
+devices; I4 the system is evaluated. **Exclusion:** E1 grid-scale unit commitment; E2 question answering or bill summaries without control;
 E3 non-English. Preprints are included and quality-assessed separately.
 
 **Related streams to cover:**
@@ -468,3 +550,143 @@ band). The 11 "commit" plans only; no model calls. Assumed appliances: dishwashe
 Qwen3 30B-A3B and GPT-6 Luna 11/10/0/0.00 (identical to the exact parameters on every plan); Qwen3 8B 10/9/1/+1.46
 (S2: away turned into a 17-17 C band, cooled and reheated); gpt-oss-20b 0/0/11; rules 11/8/0/+5.56. S5 is missed by
 every system: the house cannot cool 1 K in the 1.5 h before midnight (about 2 degree-hours too warm).
+
+**Models for a 4 GB gateway board (10 November 2026).** Gemma 4 E4B (6.6 GB) and Qwen3 8B (5.2 GB) do not fit a 4 GB
+board such as the Arduino UNO Q, so three models of 1.4-2.5 GB were run in the plan pilot (laptop GPU, same
+settings, 8,000-token cap) and rescored with the checker. Precision / recall / clarification F1 / decision, mean
+output tokens and s per plan: Qwen3 4B with reasoning 0.95 / 0.87 / 0.95 / 0.95, about 4,800 tokens, 126 s;
+Qwen3 4B instruct (no reasoning) 0.82 / 0.78 / 0.46 / 0.41, about 110 tokens, 2.9 s; Llama 3.2 3B 0.25 / 0.13 /
+0.30 / 0.18 (11 of 22 answers failed validation); Qwen3 1.7B 0.52 / 0.52 / 0.29 / 0.32. The checker does not change
+Qwen3 4B (0.95). In the closed loop Qwen3 4B met 10 of 11 at zero extra cost (as Gemma); the instruct build, 1.7B
+and Llama asked on 9-11 of the 11 plans. Finding: at 4B, commit-or-ask accuracy comes from the reasoning phase,
+which costs tens of minutes per plan on a board generating a few tokens a second. Ollama's `qwen3:4b` is the 2507
+thinking build: with think=False it still reasons in its answer, so that run was discarded
+(`plan_pilot/results_qwen3_4b_think_false_ignored.jsonl`) and `qwen3:4b-instruct` was used instead.
+
+**Edge benchmark set-up (11 November 2026, `prototypes/edge_bench/`).** `bench.py` sends the 22 pilot plans to an
+Ollama server on a device (`--host`) and records Ollama's timings per call (load, prefill and generation tokens/s)
+plus time per plan, and scores the answers; power is read from a meter (`--idle-w`, `--load-w`). `mpc_time.py`
+times the closed-loop MPC on the device. Laptop results: Gemma 4 E4B on the GPU 140 tokens/s, 3.3 s per plan
+(3 plans); CPU only, 4 threads, 18 tokens/s, 39 s mean, 72 s p95 (22 plans); MPC 0.08 s mean, 0.12 s p95, 0.49 s
+max over 363 solves. The CPU run's decision accuracy was 0.64 against 0.82 on the GPU with nothing else changed:
+single runs are noisy, so the registered evaluation repeats each run three times. Raspberry Pi 5 16 GB and Ryzen
+mini PC: in process (devices to be bought).
+
+**Search run (11 November 2026; records in `prototypes/slr/out/`, merged by `prototypes/slr/merge.py`).** Scopus
+A 543, B 129 (CSV exports with abstracts, via the author's Chrome); ScienceDirect A1 29, A2 34, B 1 (public result
+pages); arXiv A 126, B 1 (`prototypes/slr/arxiv_search.py`; search B uses energy-management phrases, because
+`energy` alone matched the models' own energy use). Total 863, 732 unique after de-duplication by DOI and title
+(`screening.csv`, with empty decision and reason columns). IEEE Xplore was searched (A 301, B 35) but could not be
+exported without institutional access; Web of Science could not be searched (personal profile only, no
+subscription in the browser). Both are reported as a limitation; Scopus covers most IEEE venues and overlaps with
+WoS. Known noise: in Scopus A, `load*` W/3 `control*` matches "cognitive load"; left unchanged and screened out.
+Known studies found (sensitivity check): Michelon et al., El Makroum et al., Jonah et al., HEMA, Zhang and Chen,
+LLM-MAC; missed: Sanguinetti et al. (abstract says "energy community"), to be caught by snowballing.
+
+**Pre-screening (11 November 2026, `prototypes/slr/prescreen.py`, decisions in `out/screening.csv`).** First pass by
+Claude, for the author to check: keyword triage (no language-model and energy terms together: 285 excluded), then
+title screening of the remaining records (abstract where unclear). Result: 53 include, 69 unsure (16 of them "LQ3
+background": small or local models controlling smart-home devices without an energy objective, e.g. LUMI, AdaHome,
+SLB, LLMSwitchBench), 610 exclude (177 outside scope, 58 language-model computing or energy use, 48 grid or market
+level, 26 forecasting only, 16 reviews kept as background). Declared in thesis 3.2 (AI-assisted first pass, author
+checks every decision, supervisor checks a sample). Next: author's check, then full texts of include and unsure.
+
+**Sub-questions reduced to three (12 November 2026, author's request).** One SQ per part of the title: SQ1
+interpreting household plans (now including the checker and the cloud fallback, the old SQ3), SQ2 configuring an
+optimiser, SQ3 on local hardware (the old SQ4). Hypotheses keep their content; H3 and H4 swap numbers so they run in
+SQ order: H1-H3 under SQ1 (H3 = checker and fallback), H4 under SQ2 (Configurator), H5 under SQ3. Entries above
+this note that cite SQ3 or SQ4 use the old numbering.
+
+**Review questions aligned with the sub-questions (12 November 2026, author's request).** LQ1 interpreting household
+plans (incl. scheduling and the checks, clarifications and fallbacks around the model; SQ1), LQ2 configuring an
+optimiser (SQ2), LQ3 language models on local hardware vs cloud (accuracy, latency, energy, cost, privacy; SQ3).
+Evaluation (baselines, metrics, data) is extracted for every study instead of being its own LQ. Searches unchanged:
+run A answers LQ1 and LQ2, run B LQ3. Pre-screen reasons written before this date use "LQ2" for evaluation studies.
+
+**Ministral 3 8B (12 November 2026, exploratory, laptop RTX 4070).** `ministral-3:8b` via Ollama (`llm.py` key
+`ministral-3-8b`, instruct, no reasoning, cap 8000), plan pilot with function calling and 2 retries: item precision
+0.82, recall 0.96, clarification F1 0.57, decision accuracy 0.50, about 7 s and 120 output tokens per plan, no failed
+call. It asked on 9 of the 13 commit plans (mostly to confirm the car's charge, which the plan states) and committed
+2 ambiguous plans (A2, A6). The checker and fallback change nothing (it never commits a flagged plan). Closed loop: 2
+executed and met, 9 asked. All earlier closed-loop rows reproduce exactly. Not yet in the thesis text.
+
+**Prompt v3 (12 November 2026, design iteration, exploratory).** Tuned only on 14 new development plans
+(`plans_dev.json`, draft keys); `pilot.py --prompt v3` adds commit-or-ask rules (no EV item unless charge is asked,
+never ask about the stated car charge or given values, ask on vague numbers, the EV and appliance feasibility
+arithmetic, conflicts) and three worked examples written for the prompt. Dev set, decision accuracy v2 -> v3: Gemma
+0.86 -> 0.93, Ministral 0.50 -> 0.79. Tested once on the 22 pilot plans (`results_v3.jsonl`; `rescore_v3.py`, fallback
+= Luna's v2 answers). Decision alone / with checker, v2 -> v3: Gemma 4 E4B 0.82/0.91 -> 0.86/0.95 (2 failed calls,
+recall 0.91 -> 0.87); Qwen3 8B 0.68/0.73 -> 0.95/1.00 (85 s per plan); Ministral 3 8B 0.50 -> 0.68 (precision 0.81 ->
+0.91); Qwen3 4B instruct 0.41 -> 0.50; Llama 3.2 3B worse (19 failed calls); GPT-6 Luna worse, 0.95 -> 0.86 (asks
+needlessly on S3, S5, C2). v2 results unchanged in `results.jsonl`; the thesis still reports v2. A prompt per model
+family, or v3 for the local models only, would need registering before the held-out run.
+
+**Closed loop with prompt v3 (13 November 2026).** `closed_loop.py --answers results_v3.jsonl --out
+out/results_v3.jsonl` (rows for models without v3 answers count as asked and are ignored): Gemma 4 E4B 11 executed,
+10 met, +0.00 EUR; Qwen3 8B 11/10, -0.03 (the S2 misreading is gone); Ministral 3 8B 6 executed, 6 met, 5 asked;
+Qwen3 4B instruct 2/2; GPT-6 Luna with v3 8/8, 3 asked (not used: the cloud model keeps v2). In thesis 5.4.
+
+**Prompt v3, remaining four models (13 November 2026).** Same command with `--models qwen3-1.7b qwen3-4b gpt-oss-20b
+qwen3-30b-a3b --prompt v3`. Precision v2 -> v3 and decision with checker (with fallback): gpt-oss-20b 0.62 -> 0.95,
+0.45 -> 0.91 (0.95), 116 -> 65 s per plan; Qwen3 4B 0.95 -> 0.95, 0.95 -> 1.00 (0.95; the fallback replaced one correct
+question), 176 s; Qwen3 30B-A3B 1.00 -> 1.00, 0.91 -> 0.91 (0.91), recall 0.96 -> 0.78, 198 s on the CPU; Qwen3 1.7B
+0.52 -> 0.76, 0.50 -> 0.64 (0.68), 21 s. Closed loop (`out/results_v3.jsonl`, all ten models): Qwen3 4B 11 executed /
+10 met; Qwen3 30B-A3B 10/9, 1 asked (its miss is S5, which the key misses too); gpt-oss-20b 10/7, 1 asked (S4: dropped
+the washing machine's earliest start; C2: comfort band without temperatures; both pass the checker); Qwen3 1.7B 8/6,
+3 asked, +1.14 EUR. In thesis Table 5.4 and 5.4 text.
+
+**Speed pilot (13 November 2026, development plans only).** `prototypes/plan_pilot/speed_pilot.py` runs prompt v3 on
+the 14 dev plans with Ollama overrides (registry unchanged) -> `results_speed.jsonl`. Median s per plan, decision
+accuracy. Smaller context window (`num_ctx` 8k/16k instead of 32k; the KV cache no longer pushes layers to the CPU):
+Ministral 6.7 -> 3.7 s (outputs identical), Qwen3 8B 46 -> 25 s, Qwen3 4B 101 -> 43 s, gpt-oss-20b 34 -> 30 s, Gemma
+4.6 -> 4.6 s (fits already; outputs identical). Reasoning models' outputs differ on 5-7 of 14 plans between the two
+settings (decision 0.71 -> 0.86 Qwen3 8B, 0.71 -> 0.93 gpt-oss, 0.79 -> 0.86 Qwen3 4B): run-to-run variation, not a
+gain. Reasoning off or low: much faster but worse decisions: Gemma 0.7 s, decision 0.93 -> 0.64; Qwen3 8B 2.2 s, 0.57;
+Qwen3 1.7B 1.2 s, precision 0.85 -> 0.48; gpt-oss low 11 s, 0.71. Conclusion: a smaller context is a free speed-up,
+the reasoning phase is what buys the decision accuracy. Not adopted; adopting it changes the frozen settings.
+
+**ReAct gateway (13 November 2026, exploratory; status at the end of the day).** Author's decisions of the day:
+- Plan calls use a plan-sized Ollama context (8k, 16k with reasoning; `pilot.plan_num_ctx`). One prompt only (no
+  v2/v3 versions in code); earlier results archived in `prototypes/plan_pilot/archive/` (README there).
+- Model set: Gemma 4 E4B and E2B, Ministral 3 8B and 3B, Nemotron 3 Nano 4B (`nemotron-3-nano:4b`), GPT-6 Luna
+  (cloud, fallback). Dropped: Llama 4 (Scout 109B; licence excludes EU-domiciled users of multimodal models), Qwen3
+  and gpt-oss, Phi-4-mini and SmolLM3 (no tool calls with the stock Ollama templates; with custom templates,
+  `prototypes/react_gateway/*-tools.Modelfile`, they called tools but never planned a schedule on the dev plans).
+- New design `prototypes/react_gateway/agent.py`: a ReAct agent reads the household's message and calls tools
+  (`get_home_state`, `get_prices`, `get_weather_forecast`, `get_appliances` = measured OPSD cycles from
+  `appliance_cycles.py`, `plan_schedule` = deterministic checks + MPC). The model never writes the schedule; the app
+  output (one JSON per plan in `out/app/<model>/<plan>.json`: message, decision, message to household, schedule
+  with a reason per device, cost and saving, warnings, requirements, hourly timeline, answer key, check, actions)
+  shows the last `plan_schedule` result. Rules in code: empty plan refused; usual car settings (80 %, 07:30) fill a
+  missing target/time; a car charge that cannot be reached is committed with a warning; a charge allowed to start
+  only after its deadline is a conflict; "too warm" counts only while the heat pump heats; clock times without
+  am/pm get their next occurrence (`Gateway.next_occurrence`, tested on all 36 keys); vague words are copied into
+  `unclear` by the model and become a question; a comfort band without a temperature is a problem.
+- Plans rewritten in everyday wording with usual settings (`prototypes/plan_pilot/rewrite_plans.py`; exact-wording
+  plans archived). Key changes: X1, X4, DX1 commit with warning; DA1 ("trip on Saturday") commit at 07:30 Saturday;
+  DA2 ("washing sometime when cheap") commit within the known prices. Keys are DRAFTS for the author to check.
+- Last complete results (before the X3/S5 bug fixes and the `unclear` list; archived in
+  `prototypes/react_gateway/out/archive/results_dev_test_before_bugfixes.jsonl`): test plans, decisions right: Luna
+  17/22, Gemma 4 E4B 16, E2B 15, Ministral 3B 12, Ministral 8B 10. The 22 test plans have now been inspected in
+  detail; changes since then were developed on the dev plans only.
+- Interrupted run (laptop off): six models on the dev plans, then the test plans, current code; 39 dev rows saved in
+  `prototypes/react_gateway/out/results.jsonl`. Resume (skips finished plans):
+  `uv run python prototypes/react_gateway/agent.py --raw-dir D:/Study/my-thesis/data/raw --loop --plans prototypes/plan_pilot/plans_dev.json`
+  then the same with `--plans prototypes/plan_pilot/plans.json`; tables with
+  `uv run python prototypes/react_gateway/summary.py --plans <plans file>`. Thesis text not yet updated.
+
+**ReAct gateway, final run (14 November 2026, exploratory).** Rules added after the entry above, developed on the dev
+plans: one `unclear` list (the model copies vague words, the code asks) instead of a label per item; an appliance
+without a deadline runs at the cheapest time within the known prices; prompt rules saying what is NOT unclear (car
+request with only a day or no time, appliance without a deadline, vague word made precise with numbers); a provider
+`ResponseError` (Ollama's tool-call parser) counts as a failed answer, not a crash. Nemotron 3 Nano 4B added
+(reasoning on; turning it off was rejected by the author). Results in `prototypes/react_gateway/out/results.jsonl`,
+one run per model. Decisions right, dev / test; test precision / recall, s per plan, met on the real day, failed:
+GPT-6 Luna 14/14, 21/22, 1.00/1.00, 6.9 s, 9/12, 0 (USD 0.008 for 22 plans); Gemma 4 E4B 14/14, 19/22, 0.86/0.83,
+9.9 s, 9/12, 0; Gemma 4 E2B 13/14, 17/22, 0.67/0.61, 6.8 s, 8/13, 0; Ministral 3 3B 11/14, 15/22, 0.33/0.30, 3.7 s,
+4/12, 0; Nemotron 3 Nano 4B 10/14, 12/22, 0.50/0.52, 26.5 s, 2/4, 7 (4 without final answer, 3 parser rejections);
+Ministral 3 8B 4/14, 9/22, never called `plan_schedule` on the test plans. Real-day misses of Gemma E4B and Luna: X1,
+X4 (warning) and S5 (physics); extra cost vs the key's exact parameters +0.05 EUR (Gemma) and 0.00 (Luna). Two rules
+came from test-plan errors (X3 conflict, S5 "too warm" only while heating), so the 22 plans are no longer a clean
+test. In thesis Section 5.5 (`sec:reactpilot`, Tables 5.7-5.8); appendix A notes the everyday wording; Abstract,
+1.3, 6.1 (SQ1, SQ3, RQ) and Conclusions cite it.

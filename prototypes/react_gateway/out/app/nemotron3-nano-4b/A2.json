@@ -1,0 +1,47 @@
+{
+ "plan": "A2",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "We need the exact start and end times for your away period and the temperature you want the heat set to. Once you provide those, we can plan the comfort band and away schedule.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "When exactly will you be away? What temperature should the heat be set to?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 6.89,
+  "tool_calls": 1
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"When exactly will you be away? What temperature should the heat be set to?\", \"topic\": \"comfort\"}], \"explanation\": \"We need the exact start and end times for your away period and the temperature you want the heat set to. Once you provide those, we can plan th"
+  }
+ ]
+}

@@ -1,0 +1,75 @@
+{
+ "plan": "A2",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I need your departure and return times to schedule the away period and lower the heat while you\u2019re out.",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "What time will you leave and return? \u201cA few hours this afternoon\u201d is too vague to schedule."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'a few hours' is too vague to plan: ask what they mean",
+  "the household's 'this afternoon' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 5.71,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"a few hours\", \"this afternoon\"], \"ev\": [], \"appliances\": [], \"away\": [], \"comfort\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"topic\": \"away\", \"text\": \"What time will you leave and return? \u201cA few hours this afternoon\u201d is too vague to schedule.\"}], \"explanation\": \"I need your departure and return times to schedule the away period and lower the heat while you\u2019re out.\"}"
+  }
+ ]
+}

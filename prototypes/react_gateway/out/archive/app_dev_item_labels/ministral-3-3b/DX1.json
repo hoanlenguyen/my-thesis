@@ -1,0 +1,45 @@
+{
+ "plan": "DX1",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-05-17 22:00",
+  "text": "Charge it full for 5:30.",
+  "car_pct": 15
+ },
+ "decision": "ask",
+ "message_to_household": "I will charge the car to full (100 %) by 5:30 tomorrow morning.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Did you mean to charge the car full before you left tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "EV departure missing or already passed"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-05-18 05:30",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 1.58,
+  "tool_calls": 3
+ }
+}

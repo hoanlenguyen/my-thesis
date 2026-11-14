@@ -1,0 +1,39 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "Tonight the gateway will keep the house at 20 \u00b0C from now until midnight, then at 21 \u00b0C until tomorrow morning.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "Tonight you asked for a cosy temperature. What should it be, and until when?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 5.08,
+  "tool_calls": 2
+ }
+}

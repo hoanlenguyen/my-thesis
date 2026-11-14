@@ -1,0 +1,22 @@
+{
+ "plan": "DX2",
+ "model": "gemma4-e2b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "The plan could not meet the indoor temperature requirement. Should I keep the house at 22\u00b0C during the away period?"
+  }
+ ],
+ "explanation": "I have planned the away mode from 2016-12-19 07:00 to 2016-12-23 18:00 and set the comfort level to 22\u00b0C. However, the plan could not meet the indoor temperature requirement.",
+ "requirements_check": [
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "met": false
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-12-19 07:00",
+ "timeline": null
+}

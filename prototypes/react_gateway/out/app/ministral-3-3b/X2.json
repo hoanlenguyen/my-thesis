@@ -1,0 +1,70 @@
+{
+ "plan": "X2",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-12-13 07:00",
+  "text": "We're out 9 to 5, put the heating on away mode. But keep it at 23 all day, 8 to 6.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway cannot meet your comfort request of keeping the house at 23\u00b0C all day while everyone is away. The heat pump cannot sustain that temperature for the full 12 hours without exceeding the battery\u2019s discharge limits or running at inefficiently high power.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Would you like to adjust the comfort band or the away period to allow the gateway to plan a feasible schedule?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 07:00):\n- away from Tue 09:00 (morning, in 2.0 h) to Tue 17:00 (evening, in 10.0 h)\n- 23.0-None C from Tue 08:00 (morning, in 1.0 h) to Tue 18:00 (evening, in 11.0 h)"
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "not met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-13 09:00",
+    "end": "2016-12-13 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 3.03,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"away\": [{\"end\": \"2016-12-13 17:00\", \"start\": \"2016-12-13 09:00\"}], \"comfort\": [{\"end\": \"2016-12-13 18:00\", \"min_c\": 23, \"start\": \"2016-12-13 08:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway cannot meet your comfort request of keeping the house at 23\u00b0C all day while everyone is away. The heat pump cannot sustain that temperature for the full 12 hours without exceeding the battery\u2019s discharge limits or running at inefficiently high power.\", \""
+  }
+ ]
+}

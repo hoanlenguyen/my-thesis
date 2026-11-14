@@ -4,74 +4,129 @@
 {"id": "S1", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
 {"id": "S1", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
 {"id": "S1", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
-{"id": "S1", "system": "gpt-oss-20b", "asked": true}
+{"id": "S1", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
+{"id": "S1", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
+{"id": "S1", "system": "qwen3-4b-instruct", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
+{"id": "S1", "system": "qwen3-1.7b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
+{"id": "S1", "system": "llama3.2-3b", "asked": true}
+{"id": "S1", "system": "ministral-3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.126}
 {"id": "S2", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 5.3}
 {"id": "S2", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
 {"id": "S2", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
 {"id": "S2", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
-{"id": "S2", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.48, "adjusted_cost_eur": 6.125}
+{"id": "S2", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
 {"id": "S2", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
-{"id": "S2", "system": "gpt-oss-20b", "asked": true}
+{"id": "S2", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
+{"id": "S2", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 4.666}
+{"id": "S2", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "S2", "system": "qwen3-1.7b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.48, "adjusted_cost_eur": 6.053}
+{"id": "S2", "system": "llama3.2-3b", "asked": true}
+{"id": "S2", "system": "ministral-3-8b", "asked": true}
 {"id": "S3", "system": "rules", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 2.0, "adjusted_cost_eur": 14.912}
 {"id": "S3", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
-{"id": "S3", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
+{"id": "S3", "system": "gpt-6-luna", "asked": true}
 {"id": "S3", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
 {"id": "S3", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
 {"id": "S3", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
 {"id": "S3", "system": "gpt-oss-20b", "asked": true}
+{"id": "S3", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
+{"id": "S3", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "S3", "system": "qwen3-1.7b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 14.377}
+{"id": "S3", "system": "llama3.2-3b", "asked": true}
+{"id": "S3", "system": "ministral-3-8b", "asked": true}
 {"id": "S4", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.119}
 {"id": "S4", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
 {"id": "S4", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
 {"id": "S4", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
 {"id": "S4", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
-{"id": "S4", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
-{"id": "S4", "system": "gpt-oss-20b", "asked": true}
+{"id": "S4", "system": "qwen3-30b-a3b", "asked": true}
+{"id": "S4", "system": "gpt-oss-20b", "met": false, "ev_ok": true, "appliances_ok": false, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
+{"id": "S4", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
+{"id": "S4", "system": "qwen3-4b-instruct", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
+{"id": "S4", "system": "qwen3-1.7b", "asked": true}
+{"id": "S4", "system": "llama3.2-3b", "asked": true}
+{"id": "S4", "system": "ministral-3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -7.205}
 {"id": "S5", "system": "rules", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 6.0, "adjusted_cost_eur": 10.542}
 {"id": "S5", "system": "key", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
-{"id": "S5", "system": "gpt-6-luna", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
+{"id": "S5", "system": "gpt-6-luna", "asked": true}
 {"id": "S5", "system": "gemma4-e4b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
-{"id": "S5", "system": "qwen3-8b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
+{"id": "S5", "system": "qwen3-8b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 3.25, "adjusted_cost_eur": 10.147}
 {"id": "S5", "system": "qwen3-30b-a3b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
-{"id": "S5", "system": "gpt-oss-20b", "asked": true}
+{"id": "S5", "system": "gpt-oss-20b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 3.25, "adjusted_cost_eur": 10.147}
+{"id": "S5", "system": "qwen3-4b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
+{"id": "S5", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "S5", "system": "qwen3-1.7b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 1.9, "adjusted_cost_eur": 10.178}
+{"id": "S5", "system": "llama3.2-3b", "asked": true}
+{"id": "S5", "system": "ministral-3-8b", "asked": true}
 {"id": "S6", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -3.746}
 {"id": "S6", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
 {"id": "S6", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
 {"id": "S6", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
 {"id": "S6", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
 {"id": "S6", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
-{"id": "S6", "system": "gpt-oss-20b", "asked": true}
+{"id": "S6", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
+{"id": "S6", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
+{"id": "S6", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "S6", "system": "qwen3-1.7b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.336}
+{"id": "S6", "system": "llama3.2-3b", "asked": true}
+{"id": "S6", "system": "ministral-3-8b", "asked": true}
 {"id": "C1", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 3.461}
 {"id": "C1", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
 {"id": "C1", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
 {"id": "C1", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
 {"id": "C1", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
 {"id": "C1", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
-{"id": "C1", "system": "gpt-oss-20b", "asked": true}
+{"id": "C1", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
+{"id": "C1", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
+{"id": "C1", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "C1", "system": "qwen3-1.7b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 2.046}
+{"id": "C1", "system": "llama3.2-3b", "asked": true}
+{"id": "C1", "system": "ministral-3-8b", "asked": true}
 {"id": "C2", "system": "rules", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 6.5, "adjusted_cost_eur": 9.408}
 {"id": "C2", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
-{"id": "C2", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
+{"id": "C2", "system": "gpt-6-luna", "asked": true}
 {"id": "C2", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
-{"id": "C2", "system": "qwen3-8b", "asked": true}
+{"id": "C2", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
 {"id": "C2", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
-{"id": "C2", "system": "gpt-oss-20b", "asked": true}
+{"id": "C2", "system": "gpt-oss-20b", "met": false, "ev_ok": true, "appliances_ok": true, "comfort_kh": 6.89, "adjusted_cost_eur": 8.598}
+{"id": "C2", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
+{"id": "C2", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "C2", "system": "qwen3-1.7b", "asked": true}
+{"id": "C2", "system": "llama3.2-3b", "asked": true}
+{"id": "C2", "system": "ministral-3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 8.987}
 {"id": "C3", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.557}
 {"id": "C3", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
 {"id": "C3", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
 {"id": "C3", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
 {"id": "C3", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
 {"id": "C3", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
-{"id": "C3", "system": "gpt-oss-20b", "asked": true}
+{"id": "C3", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
+{"id": "C3", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
+{"id": "C3", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "C3", "system": "qwen3-1.7b", "asked": true}
+{"id": "C3", "system": "llama3.2-3b", "asked": true}
+{"id": "C3", "system": "ministral-3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -1.756}
 {"id": "C4", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": 0.19}
 {"id": "C4", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
 {"id": "C4", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
 {"id": "C4", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
 {"id": "C4", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
 {"id": "C4", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
-{"id": "C4", "system": "gpt-oss-20b", "asked": true}
+{"id": "C4", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
+{"id": "C4", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
+{"id": "C4", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "C4", "system": "qwen3-1.7b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
+{"id": "C4", "system": "llama3.2-3b", "asked": true}
+{"id": "C4", "system": "ministral-3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -0.047}
 {"id": "C5", "system": "rules", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.016}
 {"id": "C5", "system": "key", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
 {"id": "C5", "system": "gpt-6-luna", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
 {"id": "C5", "system": "gemma4-e4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
 {"id": "C5", "system": "qwen3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
 {"id": "C5", "system": "qwen3-30b-a3b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
-{"id": "C5", "system": "gpt-oss-20b", "asked": true}
+{"id": "C5", "system": "gpt-oss-20b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
+{"id": "C5", "system": "qwen3-4b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}
+{"id": "C5", "system": "qwen3-4b-instruct", "asked": true}
+{"id": "C5", "system": "qwen3-1.7b", "met": false, "ev_ok": true, "appliances_ok": false, "comfort_kh": 0.0, "adjusted_cost_eur": -4.713}
+{"id": "C5", "system": "llama3.2-3b", "asked": true}
+{"id": "C5", "system": "ministral-3-8b", "met": true, "ev_ok": true, "appliances_ok": true, "comfort_kh": 0.0, "adjusted_cost_eur": -4.467}

@@ -1,0 +1,40 @@
+{
+ "dishwasher": {
+  "cycles_found": 205,
+  "energy_kwh_median": 0.76,
+  "energy_kwh_p10_p90": [
+   0.27,
+   0.86
+  ],
+  "duration_h_median": 1.0,
+  "typical_profile_kw": [
+   0.196,
+   1.344,
+   0.576,
+   0.908
+  ],
+  "typical_energy_kwh": 0.76
+ },
+ "washing_machine": {
+  "cycles_found": 179,
+  "energy_kwh_median": 0.85,
+  "energy_kwh_p10_p90": [
+   0.57,
+   1.1
+  ],
+  "duration_h_median": 2.25,
+  "typical_profile_kw": [
+   1.2,
+   1.144,
+   0.1,
+   0.092,
+   0.072,
+   0.088,
+   0.096,
+   0.104,
+   0.108
+  ],
+  "typical_energy_kwh": 0.75
+ },
+ "source": "OPSD household data, DE_KN_residential4, 2014-12-11 to 2019-05-01; cycle = slots above 0.05 kW with gaps up to 2 slots"
+}

@@ -1,0 +1,80 @@
+{
+ "plan": "X3",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-07-25 21:00",
+  "text": "Taking the car to work tomorrow, 8 to 5. Charge it to 90% from the solar panels at midday.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ve noted that you\u2019ll be away from 2016-07-26 08:00 to 2016-07-26 17:00 and that the car should reach 90% by 2016-07-26 08:00. \u201cAt midday\u201d conflicts with that deadline, so please clarify the charging time.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time range do you mean by \u201cfrom the solar panels at midday\u201d? The car needs to reach 90% by 2016-07-26 08:00, before you leave for work."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'from the solar panels at midday' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-07-26 08:00",
+    "end": "2016-07-26 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 6.15,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"from the solar panels at midday\"], \"ev\": [{\"departure\": \"2016-07-26 08:00\", \"target_pct\": 90, \"energy_kwh\": null, \"earliest\": null}], \"appliances\": [], \"away\": [{\"start\": \"2016-07-26 08:00\", \"end\": \"2016-07-26 17:00\"}], \"comfort\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"topic\": \"ev\", \"text\": \"What time range do you mean by \u201cfrom the solar panels at midday\u201d? The car needs to reach 90% by 2016-07-26 08:00, before you leave for work.\"}], \"explanation\": \"I\u2019ve noted that you\u2019ll be away from 2016-07-26 08:00 to 2016-07-26 17:00 and that "
+  }
+ ]
+}

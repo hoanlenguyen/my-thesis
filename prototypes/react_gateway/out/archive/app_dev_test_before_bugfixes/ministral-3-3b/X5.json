@@ -1,0 +1,58 @@
+{
+ "plan": "X5",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-01-12 20:00",
+  "text": "Usual charge for tomorrow, but no power from the grid tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "The car will charge as much as possible until 00:00 tomorrow, but it cannot reach the full 80 % charge due to the charger\u2019s time limit. The gateway will charge until the car reaches about 67 % (14.8 kWh).\n\nThe charge happens tonight at the lowest grid price (0.282 EUR/kWh).\n\nNo savings compared to now, since the feed-in price is low but the car cannot be fully charged in time.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The car cannot be fully charged in time. Should we adjust the target or the departure time?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 20:00):\n- car 80 % by Wed 00:00 (night, in 4.0 h)",
+  "Car target not given: used the usual 80 %."
+ ],
+ "warnings": [
+  "the car cannot get the full 20.0 kWh by 01-13 00:00; the charger adds at most 14.8 kWh in that time, so the car will be at about 67 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-01-13 00:00",
+   "status": "partly"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-01-13 07:30",
+    "target_pct": 80,
+    "feasible": false,
+    "infeasible_because": "no grid at night: 20 kWh needed, the home battery holds 10 kWh and there is no PV in a January night"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 3.22,
+  "tool_calls": 5
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "plan": "DA3",
+ "model": "phi4-mini-tools",
+ "household_message": {
+  "sent": "2016-06-21 12:00",
+  "text": "Car full for my trip, leaving early tomorrow.",
+  "car_pct": 60
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "no requirement given"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.48,
+  "tool_calls": 1
+ }
+}

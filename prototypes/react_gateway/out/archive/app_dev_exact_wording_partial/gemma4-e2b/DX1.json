@@ -1,0 +1,19 @@
+{
+ "plan": "DX1",
+ "model": "gemma4-e2b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "The car needs 34.0 kWh to reach 100% by 05:30 tomorrow, but the charger can only provide 27.8 kWh. Would you like to proceed with the available charge, or should I ask for more energy?"
+  }
+ ],
+ "explanation": "I found a conflict with your car charging request. To reach 100% by 05:30 tomorrow, you need 34.0 kWh, but the charger can only provide 27.8 kWh.",
+ "requirements_check": null,
+ "problems": [
+  "EV needs 34.0 kWh, charger gives 27.8 kWh"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-05-17 22:00",
+ "timeline": null
+}

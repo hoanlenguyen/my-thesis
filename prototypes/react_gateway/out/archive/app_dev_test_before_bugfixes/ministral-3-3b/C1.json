@@ -1,0 +1,48 @@
+{
+ "plan": "C1",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-03-15 06:00",
+  "text": "Car for 8 please.",
+  "car_pct": 30,
+  "later": {
+   "sent": "2016-03-15 10:00",
+   "text": "Back home and plugged in. I need it again at half four, the usual charge is fine."
+  }
+ },
+ "decision": "ask",
+ "message_to_household": "The car was already charged to 80 % before you left. I will charge it again to 80 % by half four tomorrow morning.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "You asked to charge the car again at half four tomorrow, but the usual ready-by time for charging is 7:30 tomorrow morning. Which time should I use? Or should I charge it to 80 % at the usual time?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "EV departure missing or already passed"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-03-15 16:30",
+    "target_pct": 80
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 2.32,
+  "tool_calls": 3
+ }
+}

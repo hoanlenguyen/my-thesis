@@ -1,0 +1,52 @@
+{
+ "plan": "DX3",
+ "model": "smollm3-tools",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "no requirement given"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 2,
+  "met_on_real_day": null,
+  "seconds": 433.49,
+  "tool_calls": 101
+ }
+}

@@ -1,0 +1,70 @@
+{
+ "plan": "S6",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-09-20 08:00",
+  "text": "Going out tonight from 6 to 10. Car at 70% by 6 and the washing finished by half five.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I will plan the car charge to 70 % by 20:00 and the washing machine to finish by 05:30 tomorrow.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "You asked for 70 % by 20:00 today. Is that correct?"
+  },
+  {
+   "topic": "appliance",
+   "text": "You asked for the washing machine to finish by 05:30 tomorrow. Is that correct?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-09-20 18:00",
+    "target_pct": 70
+   }
+  ],
+  "appliances": [
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-09-20 17:30"
+   }
+  ],
+  "away": [
+   {
+    "start": "2016-09-20 18:00",
+    "end": "2016-09-20 22:00"
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 3,
+  "met_on_real_day": null,
+  "seconds": 7.03,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I will plan the car charge to 70 % by 20:00 and the washing machine to finish by 05:30 tomorrow.\", \"questions\": [{\"text\": \"You asked for 70 % by 20:00 today. Is that correct?\", \"topic\": \"ev\"}, {\"text\": \"You asked for the washing machine to finish by 05:30 tomorrow. "
+  }
+ ]
+}

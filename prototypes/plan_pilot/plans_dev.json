@@ -1,0 +1,329 @@
+{
+ "note": "Development set for prompt tuning (12 Nov 2026), written fresh: none of these plans is one of the 22 pilot plans or the held-out plans. DRAFT keys by Claude, to be checked by the author. Same household as plans.json.",
+ "household": {
+  "place": "detached house in Konstanz with rooftop PV, a 10 kWh home battery, a heat pump and an EV charger",
+  "car_battery_kwh": 40,
+  "charger_kw": 3.7,
+  "car_arrival": "the car usually arrives at about 18:00 with about 30 % charge; the current charge is given with each message",
+  "default_comfort_c": [
+   20,
+   22
+  ],
+  "away_setback_c": 17,
+  "appliances": {
+   "dishwasher": "measured cycle about 1 h, 0.76 kWh",
+   "washing_machine": "measured cycle about 2.25 h, 0.85 kWh"
+  },
+  "usual": {
+   "car_target_pct": 80,
+   "car_ready_by": "07:30",
+   "car_ready_days": "every day",
+   "note": "set once in the app; used when a message gives no target or no time"
+  }
+ },
+ "plans": [
+  {
+   "id": "DS1",
+   "kind": "simple",
+   "sent": "2016-04-05 21:00",
+   "state": {
+    "ev_pct": 35
+   },
+   "text": "Usual charge for tomorrow, and run the dishwasher overnight, done by 7.",
+   "key": {
+    "decision": "commit",
+    "ev": [
+     {
+      "departure": "2016-04-06 07:30",
+      "target_pct": 80
+     }
+    ],
+    "appliances": [
+     {
+      "appliance": "dishwasher",
+      "deadline": "2016-04-06 07:00"
+     }
+    ]
+   }
+  },
+  {
+   "id": "DS2",
+   "kind": "simple",
+   "sent": "2016-10-21 08:00",
+   "state": {
+    "ev_pct": 55
+   },
+   "text": "Washing done by noon please, and we're out 1 to 4.",
+   "key": {
+    "decision": "commit",
+    "appliances": [
+     {
+      "appliance": "washing_machine",
+      "deadline": "2016-10-21 12:00"
+     }
+    ],
+    "away": [
+     {
+      "start": "2016-10-21 13:00",
+      "end": "2016-10-21 16:00"
+     }
+    ]
+   }
+  },
+  {
+   "id": "DS3",
+   "kind": "simple",
+   "sent": "2016-12-01 20:00",
+   "state": {
+    "ev_pct": 25
+   },
+   "text": "Add 10 kWh to the car for quarter past seven tomorrow, and 21-22 in the house from 6 to 8.",
+   "key": {
+    "decision": "commit",
+    "ev": [
+     {
+      "departure": "2016-12-02 07:15",
+      "energy_kwh": 10
+     }
+    ],
+    "comfort": [
+     {
+      "start": "2016-12-02 06:00",
+      "end": "2016-12-02 08:00",
+      "min_c": 21,
+      "max_c": 22
+     }
+    ]
+   }
+  },
+  {
+   "id": "DS4",
+   "kind": "simple",
+   "sent": "2016-08-15 09:00",
+   "state": {
+    "ev_pct": 80
+   },
+   "text": "No car today. Washing and dishwasher, both done by 6pm.",
+   "key": {
+    "decision": "commit",
+    "appliances": [
+     {
+      "appliance": "washing_machine",
+      "deadline": "2016-08-15 18:00"
+     },
+     {
+      "appliance": "dishwasher",
+      "deadline": "2016-08-15 18:00"
+     }
+    ]
+   }
+  },
+  {
+   "id": "DC1",
+   "kind": "change",
+   "sent": "2016-05-03 07:00",
+   "state": {
+    "ev_pct": 40
+   },
+   "text": "Car at 70% by 5.",
+   "change": {
+    "sent": "2016-05-03 11:00",
+    "text": "Plans changed, leaving at 3 instead, same charge."
+   },
+   "key": {
+    "decision": "commit",
+    "ev": [
+     {
+      "departure": "2016-05-03 15:00",
+      "target_pct": 70
+     }
+    ]
+   }
+  },
+  {
+   "id": "DC2",
+   "kind": "change",
+   "sent": "2016-02-20 08:00",
+   "state": {
+    "ev_pct": 60
+   },
+   "text": "Out skiing 9 to 7.",
+   "change": {
+    "sent": "2016-02-20 15:00",
+    "text": "Back at 5 instead, warm it up to 22-23 until 10."
+   },
+   "key": {
+    "decision": "commit",
+    "away": [
+     {
+      "start": "2016-02-20 09:00",
+      "end": "2016-02-20 17:00"
+     }
+    ],
+    "comfort": [
+     {
+      "start": "2016-02-20 17:00",
+      "end": "2016-02-20 22:00",
+      "min_c": 22,
+      "max_c": 23
+     }
+    ]
+   }
+  },
+  {
+   "id": "DC3",
+   "kind": "change",
+   "sent": "2016-09-07 19:00",
+   "state": {
+    "ev_pct": 50
+   },
+   "text": "Dishwasher done by 10 please.",
+   "change": {
+    "sent": "2016-09-07 20:00",
+    "text": "Forget the dishwasher. Charge the car full for tomorrow though."
+   },
+   "key": {
+    "decision": "commit",
+    "ev": [
+     {
+      "departure": "2016-09-08 07:30",
+      "target_pct": 100
+     }
+    ]
+   }
+  },
+  {
+   "id": "DA1",
+   "kind": "ambiguous",
+   "sent": "2016-03-29 18:00",
+   "state": {
+    "ev_pct": 30
+   },
+   "text": "Charge the car for my trip on Saturday.",
+   "key": {
+    "decision": "commit",
+    "ev": [
+     {
+      "departure": "2016-04-02 07:30",
+      "target_pct": 80
+     }
+    ]
+   }
+  },
+  {
+   "id": "DA2",
+   "kind": "ambiguous",
+   "sent": "2016-11-02 07:30",
+   "state": {
+    "ev_pct": 50
+   },
+   "text": "Run the washing sometime when it's cheap.",
+   "key": {
+    "decision": "commit",
+    "appliances": [
+     {
+      "appliance": "washing_machine",
+      "deadline": "2016-11-04 00:00"
+     }
+    ]
+   }
+  },
+  {
+   "id": "DA3",
+   "kind": "ambiguous",
+   "sent": "2016-06-21 12:00",
+   "state": {
+    "ev_pct": 60
+   },
+   "text": "Car full for my trip, leaving early tomorrow.",
+   "key": {
+    "decision": "ask",
+    "clarify": [
+     "ev"
+    ]
+   }
+  },
+  {
+   "id": "DA4",
+   "kind": "ambiguous",
+   "sent": "2016-01-25 16:00",
+   "state": {
+    "ev_pct": 45
+   },
+   "text": "Guests tonight, make it cosy.",
+   "key": {
+    "decision": "ask",
+    "clarify": [
+     "comfort"
+    ]
+   }
+  },
+  {
+   "id": "DX1",
+   "kind": "conflict",
+   "sent": "2016-05-17 22:00",
+   "state": {
+    "ev_pct": 15
+   },
+   "text": "Charge it full for 5:30.",
+   "key": {
+    "decision": "commit",
+    "ev": [
+     {
+      "departure": "2016-05-18 05:30",
+      "target_pct": 100,
+      "feasible": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "DX2",
+   "kind": "conflict",
+   "sent": "2016-12-19 07:00",
+   "state": {
+    "ev_pct": 50
+   },
+   "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+   "key": {
+    "decision": "ask",
+    "away": [
+     {
+      "start": "2016-12-19 07:00",
+      "end": "2016-12-23 18:00"
+     }
+    ],
+    "clarify": [
+     "conflict",
+     "comfort"
+    ]
+   }
+  },
+  {
+   "id": "DX3",
+   "kind": "conflict",
+   "sent": "2016-08-02 20:00",
+   "state": {
+    "ev_pct": 40
+   },
+   "text": "Dishwasher and washing, both done by 9.",
+   "key": {
+    "decision": "ask",
+    "appliances": [
+     {
+      "appliance": "dishwasher",
+      "deadline": "2016-08-02 21:00"
+     },
+     {
+      "appliance": "washing_machine",
+      "deadline": "2016-08-02 21:00"
+     }
+    ],
+    "clarify": [
+     "conflict",
+     "appliance"
+    ]
+   }
+  }
+ ]
+}

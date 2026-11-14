@@ -1,0 +1,54 @@
+{
+ "plan": "X1",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-02-11 23:30",
+  "text": "Just got home, need it full for 5am.",
+  "car_pct": 20
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Thu 23:30):\n- car 80 % by Fri 05:00 (morning, in 5.5 h)",
+  "Car target not given: used the usual 80 %."
+ ],
+ "warnings": [
+  "the car cannot get the full 24.0 kWh by 02-12 05:00; the charger adds at most 20.4 kWh in that time, so the car will be at about 71 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +24.0 kWh by 2016-02-12 05:00",
+   "status": "partly"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-02-12 05:00",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 27.77,
+  "tool_calls": 0
+ },
+ "actions": []
+}

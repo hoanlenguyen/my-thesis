@@ -1,0 +1,53 @@
+{
+ "plan": "DX2",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-12-19 07:00",
+  "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ve recorded your holiday away period from 2016-12-19 07:00 to 2016-12-23 18:00 and your request for 22\u00b0C throughout. The planner cannot meet that temperature band, so I haven\u2019t applied a schedule; please tell me which requirement to prioritize.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Away mode lowers the heating target to 17\u00b0C, which conflicts with keeping the house at 22\u00b0C; the planner also says 22\u00b0C cannot be maintained for the whole period. Should I prioritize away mode or the 22\u00b0C target, and may I use a lower temperature if needed?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Mon 07:00):\n- away from Mon 07:00 (morning, in 0.0 h) to Fri 18:00 (evening, in 107.0 h)\n- 22.0-22.0 C from Mon 07:00 (morning, in 0.0 h) to Fri 18:00 (evening, in 107.0 h)"
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "not met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-19 07:00",
+    "end": "2016-12-23 18:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 8.96,
+  "tool_calls": 4
+ }
+}

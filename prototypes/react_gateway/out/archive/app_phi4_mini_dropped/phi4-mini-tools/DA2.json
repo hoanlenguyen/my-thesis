@@ -1,0 +1,41 @@
+{
+ "plan": "DA2",
+ "model": "phi4-mini-tools",
+ "household_message": {
+  "sent": "2016-11-02 07:30",
+  "text": "Run the washing sometime when it's cheap.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "no requirement given"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 3.19,
+  "tool_calls": 1
+ }
+}

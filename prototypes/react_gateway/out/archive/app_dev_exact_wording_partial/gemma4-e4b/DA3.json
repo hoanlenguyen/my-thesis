@@ -1,0 +1,17 @@
+{
+ "plan": "DA3",
+ "model": "gemma4-e4b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time tomorrow are you planning to leave?"
+  }
+ ],
+ "explanation": "I need a specific time to plan the car charging schedule.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-06-21 12:00",
+ "timeline": null
+}

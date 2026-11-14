@@ -1,0 +1,51 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "Guests tonight: I\u2019ll set the indoor temperature to 22 C from 18:00 to 23:00 to make it cosy. Outside that, the heat pump will follow the usual comfort band of 20\u201322 C.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "Do you want the cosy temperature to start earlier or last longer than 18:00\u201323:00 tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 6.72,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"Guests tonight: I\u2019ll set the indoor temperature to 22 C from 18:00 to 23:00 to make it cosy. Outside that, the heat pump will follow the usual comfort band of 20\u201322 C.\", \"questions\": [{\"text\": \"Do you want the cosy temperature to start earlier or last longer than 18"
+  }
+ ]
+}

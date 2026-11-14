@@ -1,0 +1,19 @@
+{
+ "plan": "DX3",
+ "model": "gemma4-e4b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The washing machine cycle is longer than the available time slot to finish by 21:00. Would you like to adjust the deadline or the appliance?"
+  }
+ ],
+ "explanation": "I have checked your request to run the dishwasher and washing machine by 21:00.",
+ "requirements_check": null,
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-08-02 20:00",
+ "timeline": null
+}

@@ -1,0 +1,52 @@
+{
+ "plan": "A2",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will turn the heat down to 17 \u00b0C while you are away.",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "When will you be back? For example, 'back at 17:00' or 'back at 16:30 for dinner'."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 6.03,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway will turn the heat down to 17 \u00b0C while you are away.\", \"questions\": [{\"text\": \"When will you be back? For example, 'back at 17:00' or 'back at 16:30 for dinner'.\", \"topic\": \"away\"}]}"
+  }
+ ]
+}

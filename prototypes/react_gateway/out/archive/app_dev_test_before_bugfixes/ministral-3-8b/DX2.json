@@ -1,0 +1,46 @@
+{
+ "plan": "DX2",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-12-19 07:00",
+  "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway cannot set both away mode (17 \u00b0C) and a fixed temperature (22 \u00b0C) at the same time. Please choose one.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Conflict: Away mode and a fixed temperature cannot both be true. Which should take priority?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-19 07:00",
+    "end": "2016-12-23 18:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 6.06,
+  "tool_calls": 2
+ }
+}

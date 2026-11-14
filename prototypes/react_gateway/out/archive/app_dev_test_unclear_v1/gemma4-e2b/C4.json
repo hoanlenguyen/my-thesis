@@ -1,0 +1,434 @@
+{
+ "plan": "C4",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-10-04 12:00",
+  "text": "Car for the gym at 6.",
+  "car_pct": 40,
+  "later": {
+   "sent": "2016-10-04 15:00",
+   "text": "Skipping the gym. Just the usual for tomorrow then."
+  }
+ },
+ "decision": "commit",
+ "message_to_household": "I have updated your car charging plan to the usual setting for tomorrow. The car will charge to 80% by 07:30 on 2016-10-05, utilizing solar energy when available and taking advantage of low grid prices. This plan ensures you have a full charge for your usual routine.",
+ "questions": [],
+ "notes": [
+  "Read back (message sent Tue 15:00):\n- car 80 % by Wed 07:30 (morning, in 16.5 h)"
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car +16.0 kWh by 2016-10-05 07:30",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": [
+  {
+   "device": "car",
+   "start": "2016-10-04 15:00",
+   "end": "2016-10-05 04:00",
+   "ready_by": "2016-10-05 07:30",
+   "energy_kwh": 16.0,
+   "charge_pct": [
+    40,
+    80
+   ],
+   "why": "45% of its 16.00 kWh from solar (PV forecast up to 6.4 kW spare then); grid price then 0.287 EUR/kWh; in its window the grid price ranges 0.280-0.304, lowest from 03:00.",
+   "warning": null
+  },
+  {
+   "device": "home_battery",
+   "charge_hours": 4.5,
+   "discharge_hours": 14.5,
+   "mostly_charges_at": "2016-10-04 15:00"
+  },
+  {
+   "device": "heat_pump",
+   "energy_kwh": 6.63,
+   "indoor_c": [
+    20.0,
+    22.0
+   ]
+  }
+ ],
+ "cost_eur": {
+  "planned": 3.38,
+  "if_started_now": 3.5,
+  "saving": 0.12,
+  "solar_valued_at_eur_kwh": 0.123
+ },
+ "timeline_hourly": [
+  {
+   "hour": "10-04 15:00",
+   "price_eur_kwh": 0.291,
+   "pv_forecast_kw": 5.597,
+   "car_kw": 3.7,
+   "appliances_kw": 0.0,
+   "battery_kw": 1.53,
+   "heat_pump_kw": 0.096,
+   "indoor_c": 21.01
+  },
+  {
+   "hour": "10-04 16:00",
+   "price_eur_kwh": 0.29,
+   "pv_forecast_kw": 2.971,
+   "car_kw": 3.7,
+   "appliances_kw": 0.0,
+   "battery_kw": -1.041,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.036
+  },
+  {
+   "hour": "10-04 17:00",
+   "price_eur_kwh": 0.296,
+   "pv_forecast_kw": 1.27,
+   "car_kw": 2.075,
+   "appliances_kw": 0.0,
+   "battery_kw": -1.228,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.03
+  },
+  {
+   "hour": "10-04 18:00",
+   "price_eur_kwh": 0.299,
+   "pv_forecast_kw": 0.324,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.062,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.011
+  },
+  {
+   "hour": "10-04 19:00",
+   "price_eur_kwh": 0.3,
+   "pv_forecast_kw": 0.052,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.316,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.976
+  },
+  {
+   "hour": "10-04 20:00",
+   "price_eur_kwh": 0.289,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.339,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.926
+  },
+  {
+   "hour": "10-04 21:00",
+   "price_eur_kwh": 0.285,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.302,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.862
+  },
+  {
+   "hour": "10-04 22:00",
+   "price_eur_kwh": 0.283,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.297,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.795
+  },
+  {
+   "hour": "10-04 23:00",
+   "price_eur_kwh": 0.283,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.252,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.726
+  },
+  {
+   "hour": "10-05 00:00",
+   "price_eur_kwh": 0.283,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.221,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.65
+  },
+  {
+   "hour": "10-05 01:00",
+   "price_eur_kwh": 0.282,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.207,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.571
+  },
+  {
+   "hour": "10-05 02:00",
+   "price_eur_kwh": 0.28,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 2.825,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.486
+  },
+  {
+   "hour": "10-05 03:00",
+   "price_eur_kwh": 0.28,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 3.7,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.401
+  },
+  {
+   "hour": "10-05 04:00",
+   "price_eur_kwh": 0.281,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.179,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.318
+  },
+  {
+   "hour": "10-05 05:00",
+   "price_eur_kwh": 0.282,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.272,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.238
+  },
+  {
+   "hour": "10-05 06:00",
+   "price_eur_kwh": 0.291,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.239,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.148
+  },
+  {
+   "hour": "10-05 07:00",
+   "price_eur_kwh": 0.304,
+   "pv_forecast_kw": 0.09,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.225,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 20.055
+  },
+  {
+   "hour": "10-05 08:00",
+   "price_eur_kwh": 0.303,
+   "pv_forecast_kw": 0.979,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.175,
+   "indoor_c": 20.0
+  },
+  {
+   "hour": "10-05 09:00",
+   "price_eur_kwh": 0.289,
+   "pv_forecast_kw": 3.296,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.203,
+   "indoor_c": 20.0
+  },
+  {
+   "hour": "10-05 10:00",
+   "price_eur_kwh": 0.286,
+   "pv_forecast_kw": 4.379,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.206,
+   "indoor_c": 20.0
+  },
+  {
+   "hour": "10-05 11:00",
+   "price_eur_kwh": 0.286,
+   "pv_forecast_kw": 5.263,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.099,
+   "indoor_c": 20.0
+  },
+  {
+   "hour": "10-05 12:00",
+   "price_eur_kwh": 0.285,
+   "pv_forecast_kw": 6.134,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.003,
+   "indoor_c": 20.0
+  },
+  {
+   "hour": "10-05 13:00",
+   "price_eur_kwh": 0.286,
+   "pv_forecast_kw": 5.595,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.027,
+   "indoor_c": 20.0
+  },
+  {
+   "hour": "10-05 14:00",
+   "price_eur_kwh": 0.287,
+   "pv_forecast_kw": 7.069,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.437,
+   "heat_pump_kw": 1.587,
+   "indoor_c": 20.217
+  },
+  {
+   "hour": "10-05 15:00",
+   "price_eur_kwh": 0.287,
+   "pv_forecast_kw": 4.983,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 1.187,
+   "heat_pump_kw": 2.4,
+   "indoor_c": 21.01
+  },
+  {
+   "hour": "10-05 16:00",
+   "price_eur_kwh": 0.289,
+   "pv_forecast_kw": 5.709,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 3.523,
+   "heat_pump_kw": 1.6,
+   "indoor_c": 21.641
+  },
+  {
+   "hour": "10-05 17:00",
+   "price_eur_kwh": 0.295,
+   "pv_forecast_kw": 3.698,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 3.184,
+   "heat_pump_kw": 0.081,
+   "indoor_c": 21.991
+  },
+  {
+   "hour": "10-05 18:00",
+   "price_eur_kwh": 0.304,
+   "pv_forecast_kw": 1.689,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 1.142,
+   "heat_pump_kw": 0.157,
+   "indoor_c": 21.988
+  },
+  {
+   "hour": "10-05 19:00",
+   "price_eur_kwh": 0.302,
+   "pv_forecast_kw": 0.149,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.238,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.953
+  },
+  {
+   "hour": "10-05 20:00",
+   "price_eur_kwh": 0.293,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": -0.339,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.867
+  },
+  {
+   "hour": "10-05 21:00",
+   "price_eur_kwh": 0.286,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.775
+  },
+  {
+   "hour": "10-05 22:00",
+   "price_eur_kwh": 0.286,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.671
+  },
+  {
+   "hour": "10-05 23:00",
+   "price_eur_kwh": 0.283,
+   "pv_forecast_kw": 0.0,
+   "car_kw": 0.0,
+   "appliances_kw": 0.0,
+   "battery_kw": 0.0,
+   "heat_pump_kw": 0.0,
+   "indoor_c": 21.545
+  }
+ ],
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-10-05 07:30",
+    "target_pct": 80
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": true,
+  "seconds": 11.16,
+  "tool_calls": 4
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-10-05 07:30\", \"target_pct\": \"80\"}]}"
+  },
+  {
+   "turn": 3,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-10-05 07:30\", \"target_pct\": \"80\"}]}"
+  },
+  {
+   "turn": 4,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": true, \"explanation\": \"I have updated your car charging plan to the usual setting for tomorrow. The car will charge to 80% by 07:30 on 2016-10-05, utilizing solar energy when available and taking advantage of low grid prices. This plan ensures you have a full charge for your usual routine."
+  }
+ ]
+}

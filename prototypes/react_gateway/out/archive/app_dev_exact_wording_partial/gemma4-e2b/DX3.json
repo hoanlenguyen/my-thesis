@@ -1,0 +1,19 @@
+{
+ "plan": "DX3",
+ "model": "gemma4-e2b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "The washing machine window is shorter than its cycle. Can you clarify this issue?"
+  }
+ ],
+ "explanation": "I attempted to schedule the dishwasher and washing machine, but the system found a conflict with the washing machine cycle. I need clarification on this issue before I can finalize the schedule.",
+ "requirements_check": null,
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-08-02 20:00",
+ "timeline": null
+}

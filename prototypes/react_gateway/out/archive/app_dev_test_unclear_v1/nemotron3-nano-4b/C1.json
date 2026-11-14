@@ -1,0 +1,67 @@
+{
+ "plan": "C1",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-03-15 06:00",
+  "text": "Car for 8 please.",
+  "car_pct": 30,
+  "later": {
+   "sent": "2016-03-15 10:00",
+   "text": "Back home and plugged in. I need it again at half four, the usual charge is fine."
+  }
+ },
+ "decision": "ask",
+ "message_to_household": "The car will be charged to about 86% by 16:00 using solar and grid power, costing 4.73 EUR. The usual full charge cannot be met in time.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "You said 'Car for 8 please.' Does that mean you want the car charged to 8% or is that a typo? Also, you said 'the usual charge is fine.' Should we aim for a full charge at 16:00?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 10:00):\n- car 100 % by Tue 16:00 (afternoon, in 6.0 h)"
+ ],
+ "warnings": [
+  "the car cannot get the full 28.0 kWh by 03-15 16:00; the charger adds at most 22.2 kWh in that time, so the car will be at about 86 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +28.0 kWh by 2016-03-15 16:00",
+   "status": "partly"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-03-15 16:30",
+    "target_pct": 80
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 16.29,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-03-15 16:00\", \"target_energy\": 100, \"target_pct\": 100}], \"appliances\": [], \"away\": [], \"comfort\": [], \"unclear\": []}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"You said 'Car for 8 please.' Does that mean you want the car charged to 8% or is that a typo? Also, you said 'the usual charge is fine.' Should we aim for a full charge at 16:00?\", \"topic\": \"ev\"}], \"explanation\": \"The car will be charged to about 86% by 16:0"
+  }
+ ]
+}

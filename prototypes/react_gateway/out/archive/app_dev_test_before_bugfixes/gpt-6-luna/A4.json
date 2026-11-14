@@ -1,0 +1,47 @@
+{
+ "plan": "A4",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ve noted the car for tomorrow using your usual target of 80% and ready-by time of 07:30. I need a specific temperature and end time for the house\u2019s \u201cextra warm\u201d request before I can make the schedule.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature should I set for \u201cextra warm\u201d tonight, and until what time? The usual comfort range is 20\u201322 \u00b0C."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "comfort band 2016-11-22 18:30 to 2016-11-23 00:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.92,
+  "tool_calls": 6
+ }
+}

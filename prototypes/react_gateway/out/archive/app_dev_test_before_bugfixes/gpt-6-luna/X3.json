@@ -1,0 +1,59 @@
+{
+ "plan": "X3",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-07-25 21:00",
+  "text": "Taking the car to work tomorrow, 8 to 5. Charge it to 90% from the solar panels at midday.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ve treated your work hours as an away period and your requested charge as 90% by 17:00, starting no earlier than 12:00. The plan can add 18.5 kWh from solar between 12:00 and 17:00, reaching about 86%, so it cannot meet the 90% target by then.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "You asked to charge the car from solar at midday, but you\u2019ll be away from 08:00 to 17:00 and the car is currently plugged in. Will it remain plugged in and available for charging while you\u2019re at work?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Mon 21:00):\n- car 90 % by Tue 17:00 (evening, in 20.0 h), not before Tue 12:00 (afternoon, in 15.0 h)\n- away from Tue 08:00 (morning, in 11.0 h) to Tue 17:00 (evening, in 20.0 h)"
+ ],
+ "warnings": [
+  "the car cannot get the full 20.0 kWh by 07-26 17:00; the charger adds at most 18.5 kWh in that time, so the car will be at about 86 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-07-26 17:00",
+   "status": "partly"
+  },
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-07-26 08:00",
+    "end": "2016-07-26 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 12.34,
+  "tool_calls": 7
+ }
+}

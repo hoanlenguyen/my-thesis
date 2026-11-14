@@ -1,0 +1,62 @@
+{
+ "plan": "S5",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-02-02 22:30",
+  "text": "Charge it to 100%, and turn the heating down to 18-20 overnight, midnight to 6.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I will charge your car to 100 % overnight from midnight until 6 AM tomorrow, using the cheapest grid electricity available at that time. The car will finish charging by 7 AM tomorrow morning. The indoor temperature will be kept between 18 and 20 \u00b0C from midnight until 6 AM tomorrow, but the gateway cannot enforce the exact band because the heat pump\u2019s output is not flexible enough to maintain it precisely. The usual comfort band (20-22 \u00b0C) would be more reliable during this period.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "Should I try to adjust the heat pump settings to better meet the requested temperature band, or is the current plan acceptable?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 22:30):\n- car 100 % by Wed 07:30 (morning, in 9.0 h)\n- 18.0-20.0 C from Wed 00:00 (night, in 1.5 h) to Wed 06:00 (morning, in 7.5 h)",
+  "Car time not given: used the usual ready-by time Wed 07:30."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-02-03 07:30",
+   "status": "met"
+  },
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "not met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-02-03 07:30",
+    "target_pct": 100
+   }
+  ],
+  "comfort": [
+   {
+    "start": "2016-02-03 00:00",
+    "end": "2016-02-03 06:00",
+    "min_c": 18,
+    "max_c": 20
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 3.61,
+  "tool_calls": 3
+ }
+}

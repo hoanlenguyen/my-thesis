@@ -1,0 +1,52 @@
+{
+ "plan": "DX3",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I am trying to schedule the dishwasher and washing machine to finish by 09:00 tomorrow.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The washing machine cycle seems too long to finish by 09:00. Would you like to adjust the deadline or the washing machine settings?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 2,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 10.53,
+  "tool_calls": 4
+ }
+}

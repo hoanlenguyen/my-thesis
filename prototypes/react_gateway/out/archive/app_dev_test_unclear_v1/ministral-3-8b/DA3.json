@@ -1,0 +1,55 @@
+{
+ "plan": "DA3",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-06-21 12:00",
+  "text": "Car full for my trip, leaving early tomorrow.",
+  "car_pct": 60
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ll plan the car charge for your trip tomorrow, using the time and target you confirm.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time do you mean by \"leaving early tomorrow\"? (For example, 06:00, 07:00, or another time?)"
+  },
+  {
+   "topic": "ev",
+   "text": "Do you want to charge to full (100 %) or another amount?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 8.28,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I\u2019ll plan the car charge for your trip tomorrow, using the time and target you confirm.\", \"questions\": [{\"text\": \"What time do you mean by \\\"leaving early tomorrow\\\"? (For example, 06:00, 07:00, or another time?)\", \"topic\": \"ev\"}, {\"text\": \"Do you want to charge to "
+  }
+ ]
+}

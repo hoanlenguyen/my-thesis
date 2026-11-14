@@ -1,0 +1,90 @@
+{
+ "plan": "A5",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-08-09 07:00",
+  "text": "Need the car charged by lunchtime, and a load of washing today.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "\"The car will charge 18.5 kWh from 7:00 to 12:00, reaching 91% of its 40 kWh capacity. The washing machine will run from 14:15 to 16:30, using solar power and costing 5.02 EUR. The plan meets the washing deadline and the car charge is as close to full as possible within the 12:00 limit.\"",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "The car will be at about 91% charged by 12:00, not 100%. Is that acceptable?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 07:00):\n- car 100 % by Tue 12:00 (afternoon, in 5.0 h)\n- washing_machine done by Tue 23:00 (night, in 16.0 h), not before Tue 00:00 (night, PAST, 7.0 h)"
+ ],
+ "warnings": [
+  "the car cannot get the full 22.0 kWh by 08-09 12:00; the charger adds at most 18.5 kWh in that time, so the car will be at about 91 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +22.0 kWh by 2016-08-09 12:00",
+   "status": "partly"
+  },
+  {
+   "requirement": "washing_machine done by 2016-08-09 23:00",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-10 00:00"
+   }
+  ],
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 24.74,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 3,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 4,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 5,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-08-09 12:00\", \"target_energy_kwh\": 40, \"target_pct\": 100}], \"appliances\": [{\"appliance\": \"washing_machine\", \"deadline\": \"2016-08-09 23:00\", \"earliest\": \"2016-08-09 00:00\"}], \"unclear\": []}"
+  },
+  {
+   "turn": 6,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"The car will be at about 91% charged by 12:00, not 100%. Is that acceptable?\", \"topic\": \"ev\"}], \"explanation\": \"\\\"The car will charge 18.5 kWh from 7:00 to 12:00, reaching 91% of its 40 kWh capacity. The washing machine will run from 14:15 to 16:30, using so"
+  }
+ ]
+}

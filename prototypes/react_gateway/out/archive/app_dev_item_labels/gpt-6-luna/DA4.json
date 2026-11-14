@@ -1,0 +1,41 @@
+{
+ "plan": "DA4",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "Your usual comfort range is 20\u201322 \u00b0C, but \u201ccosy\u201d doesn\u2019t specify a temperature. What temperature should I use tonight?",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What indoor temperature would you like for \u201ccosy\u201d while your guests are over tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "comfort band 2016-01-25 16:00 to 2016-01-26 00:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.41,
+  "tool_calls": 3
+ }
+}

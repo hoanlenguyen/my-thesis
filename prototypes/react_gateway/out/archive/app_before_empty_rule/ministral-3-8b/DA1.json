@@ -1,0 +1,29 @@
+{
+ "plan": "DA1",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Please specify the target charge level for the car (e.g., 80% or a specific energy level in kWh)."
+  },
+  {
+   "topic": "ev",
+   "text": "What is the exact time you need the car charged by tomorrow?"
+  },
+  {
+   "topic": "away",
+   "text": "Are you planning to be away at any specific time tomorrow? If so, please provide the start and end times for the away period."
+  },
+  {
+   "topic": "comfort",
+   "text": "Do you want to adjust the indoor temperature for any specific time tomorrow? If so, please provide the start and end times and the desired temperature range (e.g., 21-23 C)."
+  }
+ ],
+ "explanation": "I need more details to plan the charging of your car for tomorrow.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-03-29 18:00",
+ "timeline": null
+}

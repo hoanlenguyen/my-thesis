@@ -5,8 +5,10 @@ constraints is hard enough to measure. A language model reads one plan (and, for
 message) and returns a ``HouseholdPlan``: EV requirements, appliance windows, away periods, comfort bands and
 clarifying questions. No tools, one structured call per plan (the extraction step only).
 
-Version 2 (1 Nov 2026): plans bound to dates with the car's charge at the last message, a commit-or-ask decision,
-and the answer-key rules of the protocol (section 5). Version 1 results are in ``results_v1.jsonl``.
+Plans are bound to dates with the car's charge at the last message; the model decides whether to commit or ask,
+following the answer-key rules of the protocol (section 5). The system prompt states those decision rules with
+three worked examples; they were developed on ``plans_dev.json`` only. ``results.jsonl`` holds the current results;
+earlier prompts, settings and models are in ``archive/``.
 
 Scoring against the answer keys in ``plans.json`` (DRAFT keys: the author checks them before any result is used):
 
@@ -23,8 +25,11 @@ Scoring against the answer keys in ``plans.json`` (DRAFT keys: the author checks
 
 The self-test also checks the keys' EV feasibility flags against the charger (energy needed vs hours x kW).
 
-    uv run python prototypes/plan_pilot/pilot.py --models gpt-6-luna gpt-oss-20b
-    uv run python prototypes/plan_pilot/pilot.py --self-test     # scores the answer keys against themselves
+    uv run python prototypes/plan_pilot/pilot.py                       # all pilot models, resumes where it stopped
+    uv run python prototypes/plan_pilot/pilot.py --models gemma4-e4b --plans prototypes/plan_pilot/plans_dev.json \
+        --out prototypes/plan_pilot/results_dev.jsonl
+    uv run python prototypes/plan_pilot/pilot.py --self-test           # scores the answer keys against themselves
+    uv run python prototypes/plan_pilot/rescore_checker.py             # checker and cloud fallback on results.jsonl
 """
 
 from __future__ import annotations
@@ -41,7 +46,7 @@ from langchain_core.callbacks import get_usage_metadata_callback
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
-from hems.agents.llm import make_model, usage_cost_usd
+from hems.agents.llm import MODELS, make_model, usage_cost_usd
 
 HERE = Path(__file__).parent
 FMT = "%Y-%m-%d %H:%M"
@@ -111,7 +116,30 @@ Rules:
   when the request cannot be met as stated; use topic "conflict" for a request that is impossible. Do not invent
   missing numbers.
 - Set commit to false when you ask a question that must be answered before the plan is applied, otherwise true.
-  Even when you ask, list every requirement that is already clear."""
+  Even when you ask, list every requirement that is already clear.
+
+Deciding whether to commit or ask:
+- Add an EV item only when the household asks for charge. Add an appliance only when the household asks for it.
+- The gateway status gives the car's current charge. Use it; never ask about it, and never ask the household to
+  confirm a number or time it has already given.
+- commit is true when every requirement has what it needs (EV: a departure time and a target % or kWh;
+  appliance: a deadline; away: a start and an end; comfort: times and a temperature) and nothing below applies.
+- Ask (commit false) when a needed number or time is missing or vague ("well charged", "early", "a few hours",
+  "extra warm", "sometime"): do not fill it with a guess.
+- Ask with topic "conflict" when requests contradict each other (for example away or saving mode and a warm house
+  at the same time, or charging with no grid power when there is not enough solar or battery), or when a request
+  cannot be met. Check EV charge: energy needed = (target % - current %) / 100 x battery kWh, and energy possible =
+  charger kW x hours from the last message (or the earliest time) to departure; ask when needed > possible. Check
+  appliances: ask when the cycle is longer than the time left before its deadline.
+
+Examples (the house above):
+1. Sent 2016-07-04 20:00, car at 40 %: "Car at 60% by 08:00 tomorrow." 8 kWh needed, 44 kWh possible.
+   -> ev [departure 2016-07-05 08:00, target_pct 60], no questions, commit true.
+2. Sent 2016-07-04 20:00, car at 40 %: "Make sure the car has enough for the weekend trip."
+   -> no EV item, question (topic ev) asking for the target and the departure time, commit false.
+3. Sent 2016-07-04 23:00, car at 10 %: "Car at 100% by 04:00." 36 kWh needed, 18.5 kWh possible.
+   -> ev [departure 2016-07-05 04:00, target_pct 100], question (topic conflict) saying it cannot reach 100 %
+      by 04:00 and asking for a later time or a lower target, commit false."""
 
 
 def now(plan: dict) -> str:
@@ -301,14 +329,44 @@ def retry_message(raw: object, problem: str) -> HumanMessage:
     )
 
 
-def extract(model_name: str, plan: dict, household: dict, method: str | None = None,
-            retries: int = 0) -> tuple[dict | None, dict]:  # fmt: skip
+def plan_num_ctx(model_name: str) -> int | None:
+    """Ollama context window for a plan call: 8,192 tokens, or 16,384 for a model with a reasoning phase (None for
+    cloud models). A plan needs a few thousand; the agents' 32,768 made the KV cache push the larger models' layers
+    off the 8 GB GPU (speed pilot on the dev plans: Ministral 3 8B 6.7 -> 3.7 s, Qwen3 8B 46 -> 25 s per plan, same
+    answers where the model is deterministic)."""
+    spec = MODELS[model_name]
+    if spec.provider != "ollama":
+        return None
+    reasons = spec.ollama_think not in (None, False) or model_name in REASONS_BY_DEFAULT
+    return 16384 if reasons else 8192
+
+
+REASONS_BY_DEFAULT = {"smollm3-3b"}  # reasoning phase on in the model's own template, not through Ollama's setting
+
+# Run settings, chosen to balance accuracy and time per plan (speed pilot on the dev plans, 13 Nov 2026):
+# - each model keeps its own reasoning setting: switching reasoning off made every model 5-20x faster but cost
+#   0.15-0.30 in decision accuracy (Gemma 4 E4B 0.93 -> 0.64), so it is not used;
+# - a context window sized for one plan (``plan_num_ctx``) keeps the models on the GPU, at no cost in accuracy;
+# - a tool call for the answer and two retries of an invalid answer (an answer that fails is a question to the
+#   household, so a retry of a few seconds is cheaper than a lost plan);
+# - output capped at 8,000 tokens per call (``ollama_num_predict`` in the registry), against reasoning loops.
+METHOD = "function_calling"
+RETRIES = 2
+# Models of the pilot (author's choice, 13 Nov 2026): Gemma 4, Ministral 3, Phi-4 and SmolLM3 at the sizes that
+# fit the household devices, and the cloud model (also the fallback).
+PILOT_MODELS = ("gemma4-e4b", "gemma4-e2b", "ministral-3-8b", "ministral-3-3b", "nemotron3-nano-4b",
+                "gpt-6-luna")  # fmt: skip
+
+
+def extract(model_name: str, plan: dict, household: dict, method: str | None = METHOD,
+            retries: int = RETRIES) -> tuple[dict | None, dict]:  # fmt: skip
     """``method``: LangChain structured-output method (None = the provider's default; "function_calling" = a tool
     call, as the thesis harness uses; with Ollama's default JSON-schema mode gpt-oss-20b returned empty plans).
     ``retries``: how often an answer that fails validation is sent back with the errors (as the thesis harness's
     recovery nudge; 0 = one attempt)."""
     kwargs = {"method": method} if method else {}
-    model = make_model(model_name).with_structured_output(HouseholdPlan, include_raw=True, **kwargs)
+    model = make_model(model_name, num_ctx=plan_num_ctx(model_name))
+    model = model.with_structured_output(HouseholdPlan, include_raw=True, **kwargs)
     messages = [SystemMessage(system_prompt(household)), HumanMessage(user_message(plan))]
     started = time.perf_counter()
     result, errors, attempts = None, [], 0
@@ -341,12 +399,9 @@ def extract(model_name: str, plan: dict, household: dict, method: str | None = N
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--models", nargs="*", default=["gpt-6-luna"])
+    parser.add_argument("--models", nargs="*", default=list(PILOT_MODELS))
     parser.add_argument("--plans", type=Path, default=HERE / "plans.json")
     parser.add_argument("--out", type=Path, default=HERE / "results.jsonl")
-    parser.add_argument("--method", choices=["function_calling", "json_schema", "json_mode"], default=None,
-                        help="structured-output method; recorded as model/method")  # fmt: skip
-    parser.add_argument("--retries", type=int, default=0, help="resend invalid answers with the errors (label +retryN)")
     parser.add_argument("--self-test", action="store_true", help="score the answer keys against themselves")
     args = parser.parse_args()
     data = json.loads(args.plans.read_text(encoding="utf-8"))
@@ -368,13 +423,11 @@ def main() -> None:
     if args.out.exists():
         done = {(r["model"], r["id"]) for r in map(json.loads, args.out.read_text(encoding="utf-8").splitlines())}
     with args.out.open("a", encoding="utf-8") as out:
-        for base_model in args.models:
-            model_name = (f"{base_model}/{args.method}" if args.method else base_model) + \
-                (f"+retry{args.retries}" if args.retries else "")
+        for model_name in args.models:
             for plan in plans:
                 if (model_name, plan["id"]) in done:
                     continue
-                got, meta = extract(base_model, plan, household, args.method, args.retries)
+                got, meta = extract(model_name, plan, household)
                 row = {"model": model_name, **score(plan, got or {}, household), **meta, "output": got}
                 out.write(json.dumps(row) + "\n")
                 out.flush()

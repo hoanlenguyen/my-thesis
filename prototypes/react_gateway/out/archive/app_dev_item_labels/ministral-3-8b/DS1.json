@@ -1,0 +1,52 @@
+{
+ "plan": "DS1",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-04-05 21:00",
+  "text": "Usual charge for tomorrow, and run the dishwasher overnight, done by 7.",
+  "car_pct": 35
+ },
+ "decision": "ask",
+ "message_to_household": "The usual charge for tomorrow would finish at 07:30, but the dishwasher needs to run by 07:00. The gateway cannot charge the car and run the dishwasher at the same time.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Which would you like to prioritize? Charge the car to 80 % by 07:30 tomorrow, or run the dishwasher by 07:00 tomorrow?"
+  },
+  {
+   "topic": "conflict",
+   "text": "If you want to keep both, please specify a later ready-by time for the car or an earlier deadline for the dishwasher."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-04-06 07:30",
+    "target_pct": 80
+   }
+  ],
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-04-06 07:00"
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 2,
+  "met_on_real_day": null,
+  "seconds": 23.39,
+  "tool_calls": 2
+ }
+}

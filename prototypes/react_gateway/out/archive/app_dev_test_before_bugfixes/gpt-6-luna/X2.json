@@ -1,0 +1,53 @@
+{
+ "plan": "X2",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-12-13 07:00",
+  "text": "We're out 9 to 5, put the heating on away mode. But keep it at 23 all day, 8 to 6.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ve recorded that you\u2019ll be away from 09:00 to 17:00 and requested 23\u00b0C from 08:00 to 18:00. The planner says the temperature request cannot be met, so I haven\u2019t applied a schedule; please tell me which request should take priority.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Away mode from 09:00 to 17:00 conflicts with keeping the house at 23\u00b0C from 08:00 to 18:00, and the requested temperature band cannot be met. Which should take priority: away mode or 23\u00b0C?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 07:00):\n- away from Tue 09:00 (morning, in 2.0 h) to Tue 17:00 (evening, in 10.0 h)\n- 23.0-23.0 C from Tue 08:00 (morning, in 1.0 h) to Tue 18:00 (evening, in 11.0 h)"
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "status": "not met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-13 09:00",
+    "end": "2016-12-13 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 9.27,
+  "tool_calls": 3
+ }
+}

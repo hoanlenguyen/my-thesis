@@ -1,0 +1,17 @@
+{
+ "plan": "DA2",
+ "model": "gemma4-e4b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "When must the washing machine be finished by?"
+  }
+ ],
+ "explanation": "I need a deadline to schedule the washing machine.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-11-02 07:30",
+ "timeline": null
+}

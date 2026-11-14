@@ -1,0 +1,22 @@
+{
+ "plan": "DX2",
+ "model": "gemma4-e4b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Do you want the house in away mode (lower temperature) or kept at 22\u00b0C during your holiday?"
+  }
+ ],
+ "explanation": "I have checked your request, but there seems to be a conflict between setting the house to away mode and keeping the temperature at 22\u00b0C during your holiday.",
+ "requirements_check": [
+  {
+   "requirement": "indoor temperature in the requested bands",
+   "met": false
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-12-19 07:00",
+ "timeline": null
+}

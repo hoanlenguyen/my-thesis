@@ -1,0 +1,54 @@
+{
+ "plan": "A2",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I can adjust the temperature for you, but I need to know exactly how long you will be visiting so I can plan the heat reduction accurately.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "How many hours will you be visiting friends this afternoon?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'a few hours this afternoon' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 4.88,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"comfort\": [{\"end\": \"2016-01-10 17:00\", \"max_c\": 21, \"min_c\": 18, \"start\": \"2016-01-10 12:00\"}], \"unclear\": [\"a few hours this afternoon\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I can adjust the temperature for you, but I need to know exactly how long you will be visiting so I can plan the heat reduction accurately.\", \"questions\": [{\"text\": \"How many hours will you be visiting friends this afternoon?\", \"topic\": \"comfort\"}]}"
+  }
+ ]
+}

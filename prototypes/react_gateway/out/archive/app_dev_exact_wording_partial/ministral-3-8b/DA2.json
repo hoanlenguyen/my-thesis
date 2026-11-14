@@ -1,0 +1,17 @@
+{
+ "plan": "DA2",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "When would you like the washing machine to finish by? (Choose a time between now and tomorrow evening.)"
+  }
+ ],
+ "explanation": "The washing machine will run at the cheapest time available.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-11-02 07:30",
+ "timeline": null
+}

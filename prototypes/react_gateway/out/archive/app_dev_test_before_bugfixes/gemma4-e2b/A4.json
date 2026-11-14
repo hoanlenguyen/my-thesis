@@ -1,0 +1,45 @@
+{
+ "plan": "A4",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 21.65,
+  "tool_calls": 3
+ }
+}

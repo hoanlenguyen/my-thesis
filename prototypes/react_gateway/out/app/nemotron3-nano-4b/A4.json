@@ -1,0 +1,60 @@
+{
+ "plan": "A4",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "The car will be charged as usual, reaching 80% by Wednesday morning. I need to know the temperature you want for the extra warm comfort band tonight.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature would you like for the extra warm comfort band tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'extra warm' is too vague to plan: ask what they mean",
+  "comfort band 2016-11-22 20:00 to 2016-11-22 23:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 14.78,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-11-23\"}], \"appliances\": [], \"away\": [], \"comfort\": [{\"end\": \"2016-11-22 23:00\", \"max_c\": null, \"min_c\": null, \"start\": \"2016-11-22 20:00\"}], \"unclear\": [\"extra warm\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"What temperature would you like for the extra warm comfort band tonight?\", \"topic\": \"comfort\"}], \"explanation\": \"The car will be charged as usual, reaching 80% by Wednesday morning. I need to know the temperature you want for the extra warm comfort band toni"
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "plan": "X5",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-01-12 20:00",
+  "text": "Usual charge for tomorrow, but no power from the grid tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "The usual setting is 80% by 2016-01-13 07:30, requiring 20.0 kWh. The schedule can meet it only by using grid power from 2016-01-13 00:00 to 06:00, so I need to clarify your no-grid request before applying a schedule.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "You asked for the usual car charge by 2016-01-13 07:30, but also said no grid power tonight. The plan needs grid power from 2016-01-13 00:00 to 06:00 to add the usual 20.0 kWh. Should I allow grid charging during that period, or should I leave the car uncharged tonight?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 20:00):\n- car 80 % by Wed 07:30 (morning, in 11.5 h)",
+  "Car target not given: used the usual 80 %.",
+  "Car time not given: used the usual ready-by time 07:30 on 2016-01-13."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-01-13 07:30",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-01-13 07:30",
+    "target_pct": 80,
+    "feasible": false,
+    "infeasible_because": "no grid at night: 20 kWh needed, the home battery holds 10 kWh and there is no PV in a January night"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 8.07,
+  "tool_calls": 6
+ }
+}

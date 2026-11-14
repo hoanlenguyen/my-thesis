@@ -95,21 +95,25 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 This branch is the current thesis (merged from `claude/thesis-scope-expansion-47c694`, PR #1) plus exploratory
 work for a follow-up thesis: a language-model agent as the interface of a home energy gateway (PV, battery, heat
-pump, EV). **Title (author's decision, 4 Nov 2026): "Small Language Models for a Home Energy Gateway: Interpreting
-Household Plans and Configuring an Optimiser on Local Hardware"** (earlier working title, 3 Nov: "Design of a
+pump, EV). **Title (author's decision, 12 Nov 2026): "Small Language Models for Smart Home Energy Management:
+Interpreting Household Plans and Configuring an Optimiser on Local Hardware"** (4 Nov: "... for a Home Energy
+Gateway: ..."; "gateway" stays the device term: the HEMS runs on the home energy gateway) (earlier working title, 3 Nov: "Design of a
 Multi-Agent Home Energy Gateway: ..."). Supervisors: Yueqiang Xu, PhD, Docent, Adjunct Professor; Paula Alavesa, PhD.
-**Research questions (4 Nov 2026, drafts until registration):** RQ "How can a home energy gateway use small language
-models running on local hardware to interpret households' plain-language plans and configure an optimiser
-reliably, and how close do they come to a cloud large language model?" SQ1 interpretation (SLM vs LLM; H1 best
-SLM within 0.05 of the LLM on recall and decision accuracy, H2 requirements met on >= 95 % of feasible days),
-SQ2 configuration (SLM Configurator vs LLM Configurator vs auto-tuner; H3), SQ3 closing the gap (four set-ups:
-SLM alone, SLM + checker, SLM + checker + cloud fallback, LLM alone; H4 within 0.05 with fallback on <= 20 % of
-plans), SQ4 deployment (latency, energy, cost, privacy; H5 p95 < 60 s locally, saving > inference cost).
+**Research questions (4 Nov 2026, drafts until registration; RQ reworded 12 Nov):** RQ "How can a smart home energy
+management system use small language models running on local hardware, the home's energy gateway, to interpret
+households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud large
+language model?" The thesis abstract (12 Nov) summarises the pilots; update it when results change. **Three SQs since 12 Nov 2026** (one per
+part of the title; old SQ3 merged into SQ1, old SQ4 is now SQ3, H3/H4 swapped numbers): SQ1 interpreting household
+plans (SLM vs LLM; H1 best SLM within 0.05 of the LLM on recall and decision accuracy, H2 requirements met on
+>= 95 % of feasible days; four set-ups SLM alone, + checker, + checker + cloud fallback, LLM alone; H3 within 0.05
+with fallback on <= 20 % of plans), SQ2 configuring an optimiser (SLM Configurator vs LLM Configurator vs
+auto-tuner; H4), SQ3 on local hardware (latency, energy, cost, privacy; H5 registered time per plan locally,
+saving > inference cost). Older notes below that cite SQ3/SQ4 use the old numbering.
 Conditions (weather, price, load, plan type) are descriptive under each SQ. SLM = open model below about 10B
 parameters (Gemma 4 E4B is the main candidate, Qwen3 8B; Qwen3 30B-A3B and gpt-oss-20b are "larger local";
-GPT-6 Luna the cloud LLM). Hardware: laptop RTX 4070 8 GB for all runs; an SQ4 subset on a Jetson Orin Nano if
-the author buys one. The one-agent vs four-agent comparison is kept only if the SLMs allow it (exploratory).
-**Method (4 Nov 2026):** mixed method, SLR (Kitchenham; review questions LQ1-LQ3 in thesis section 2.1) as the
+GPT-6 Luna the cloud LLM). Hardware (plan A, 11 Nov 2026): laptop RTX 4070 8 GB for all runs; SQ3 also on a Raspberry Pi 5 16 GB and a Ryzen 7 mini PC 32 GB (`prototypes/edge_bench/`, run once
+the author has bought them). The one-agent vs four-agent comparison is kept only if the SLMs allow it (exploratory).
+**Method (4 Nov 2026):** mixed method, SLR (Kitchenham; review questions LQ1-LQ3 in thesis section 2.1, since 12 Nov one per SQ: LQ1 plans + checks, LQ2 configuring, LQ3 local hardware) as the
 rigor cycle of DSR (Hevner 2007 three cycles, Peffers activities, FEDS evaluation strategy). Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026, revised 1 Nov 2026 after an
 external review; changes in its section 15) and `docs/gateway_thesis_plan.html` (the published plan page with
 diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT). The review: `docs/gemini_review_brief.md`
@@ -124,6 +128,9 @@ time); compiling with `latexmk -xelatex -outdir=<scratchpad>/texbuild gateway_th
 Thesis structure (4 Nov 2026): Ch. 2 = 2.1 SLR (LQ1-LQ3, stages "in process"), 2.2 optimisation and safe control,
 2.3 language models in HEMS, 2.4 frontier vs small models, 2.5 gap; Ch. 3 = 3.1 research design (figure of the
 three cycles), 3.2 SLR protocol, 3.3 DSR, 3.4 data, 3.5 evaluation design, 3.6 threats to validity.
+Ch. 4 section 4.5 (11 Nov 2026): user app (text and push-to-talk voice, energy dashboard), optional voice
+satellite and Wi-Fi link to the gateway; voice runs locally (wake word, Whisper, Piper), speech becomes text and
+follows the typed-message path; figure `attachments/gateway/user_app.png` exported from the plan page's SVG.
 **Agent design (author's decision, 1 Nov 2026): four agents, one per event** (Household Assistant, Explainer,
 Monitor, Configurator), routed by the harness, no orchestrator agent. Since 4 Nov a model layer runs a local SLM
 first and a cloud LLM only when the SLM's answer fails validation twice or the checker rejects its plan
@@ -140,9 +147,37 @@ earlier two-agent design.
   gemma4-e4b 1.00/0.91/0.78/0.82/7.7; qwen3-8b 0.96/1.00/0.67/0.68/71; qwen3-30b-a3b 1.00/0.96/0.84/0.86/150;
   gpt-6-luna 1.00/1.00/0.95/0.95/2.7; gpt-oss-20b 0.63/0.44/0.75/0.59/116. These are the "SLM alone" set-up.
   `rescore_checker.py` rescores the stored answers (no model calls) with a deterministic checker and the cloud
-  fallback (SQ3; `out/rescore_checker.json`, thesis Table 5.3): decision accuracy alone / + checker / + fallback:
+  fallback (SQ1; `out/rescore_checker.json`, thesis Table 5.3): decision accuracy alone / + checker / + fallback:
   gemma4-e4b 0.82 / 0.91 / 0.91 (fallback 9 %), qwen3-8b 0.68 / 0.73 / 0.73, gpt-oss-20b 0.59 / 0.46 / 0.77 (36 %),
   qwen3-30b-a3b 0.86 / 0.91 / 0.86, luna 0.95. The checker gates only answers the model would commit.
+  Tiny models for a 4 GB board (10 Nov 2026; `qwen3-1.7b`, `qwen3-4b`, `qwen3-4b-instruct`, `llama3.2-3b` in
+  `llm.MODELS`): qwen3-4b with reasoning reaches decision 0.95 but writes about 4,800 tokens per plan (126 s on the
+  laptop); qwen3-4b-instruct is fast (2.9 s) but 0.41; llama3.2-3b and qwen3-1.7b are too weak. Ollama's `qwen3:4b`
+  ignores think=False (2507 thinking build); that run is set aside in `results_qwen3_4b_think_false_ignored.jsonl`.
+  Ministral 3 8B (12 Nov 2026, `ministral-3-8b`, in thesis Tables 5.2, 5.3, 5.5): precision 0.82, recall 0.96, F1 0.57,
+  decision 0.50, 7.4 s per plan; asks needlessly (9 of 13 commit plans), so the checker cannot help; closed loop 2 of
+  11 executed. Used in the text as "size alone does not predict the commit-or-ask decision".
+  **Prompt v3 (author's decision 13 Nov 2026: local models use v3, the cloud model and fallback keep v2; both frozen
+  until the held-out run).** `pilot.py --prompt v3` (label `+p3`), tuned only on `plans_dev.json` (14 new plans, draft
+  keys to be checked); results `results_v3.jsonl`, `rescore_v3.py`, closed loop `closed_loop.py --answers
+  results_v3.jsonl` -> `out/results_v3.jsonl`. Decision with checker v2 -> v3: Gemma 0.91 -> 0.95, Qwen3 8B 0.73 ->
+  1.00 (85 s), Ministral 0.50 -> 0.68; Luna 0.95 -> 0.86 and Llama 3.2 3B broke (19 failed). Thesis Table 5.4
+  (`tab:planv3`); Gemma's 0.95 is quoted in the Abstract, 6.1 and 7. All ten models have v3 rows (13 Nov 2026): gpt-oss-20b
+  0.45 -> 0.91 (but met only 7 of 10 executed in closed loop), Qwen3 4B 0.95 -> 1.00, Qwen3 30B-A3B 0.91 -> 0.91,
+  Qwen3 1.7B 0.50 -> 0.64.
+  **Superseded in code (13 Nov 2026, evening):** the prompt files above are archived (`plan_pilot/archive/`,
+  README); the thesis text (Tables 5.2-5.5) still reports them until the author decides on the rewrite.
+- **ReAct gateway (13 Nov 2026, current design, exploratory)**: `prototypes/react_gateway/agent.py` (ReAct agent with
+  data tools + `plan_schedule` = checks + MPC; the model never writes the schedule), app JSON per plan in
+  `out/app/<model>/<plan>.json`, tables `summary.py`. Model set: Gemma 4 E4B/E2B, Ministral 3 8B/3B, Nemotron 3 Nano 4B,
+  GPT-6 Luna; dropped Llama 4, Qwen3, gpt-oss, Phi-4-mini, SmolLM3. Plans in everyday wording with usual car settings
+  (`plan_pilot/rewrite_plans.py`; DRAFT keys). Full decisions, rules and the resume commands for the interrupted run:
+  protocol log entry "ReAct gateway (13 November 2026)". Never tune on the 22 pilot plans; develop on `plans_dev.json`.
+  Final run (14 Nov 2026) in `out/results.jsonl` and thesis Section 5.5 (`sec:reactpilot`, Tables 5.7-5.8), also
+  cited in the Abstract (kept to one page), Ch. 1 structure, 6.1 (SQ1, SQ3, RQ) and Ch. 7.
+- Figure 1.1 (`attachments/gateway/home_energy_system.png`, 12 Nov 2026): Excalidraw, source
+  `attachments/gateway/home_energy_system.excalidraw`, redrawn by `tools/make_home_energy_system_fig.py <out.excalidraw>`
+  (renders with @excalidraw/utils 0.1.2 in headless Edge); the old figure is `home_energy_system_v1.png`.
 - `prototypes/configurator_pilot/configurator.py`: SQ2 pilot, Configurator agent vs deterministic auto-tuner vs
   expert-tuned and default MPC over weekly windows (`out/results.jsonl` = GPT-6 Luna; `out/results_slm.jsonl` =
   gemma4-e4b and qwen3-8b, 7 Nov 2026); results in protocol sections 14 and 16. `--resume` continues an interrupted
@@ -153,6 +188,18 @@ earlier two-agent design.
   requirements are judged on what was executed (H2). 11 "commit" plans, no model calls (`out/results.jsonl`, thesis
   section 5.4, Table 5.5). Gemma 4 E4B, Qwen3 30B-A3B and Luna: 10 of 11 met at exactly the exact-parameter cost;
   qwen3-8b +1.46 EUR (S2); gpt-oss-20b executed nothing; rules +5.56 EUR, 8 met. S5 is physically unmeetable.
+- `prototypes/slr/` (11 Nov 2026): SLR search records. `arxiv_search.py` (arXiv API), `merge.py` (merges
+  `out/scopus_*.csv`, `sciencedirect_*.tsv`, `arxiv_*.csv`, and `ieee_*.csv` / `wos_*.txt` if added, into
+  `out/screening.csv`, de-duplicated by DOI and title). Run: Scopus A 543 / B 129, ScienceDirect 63 / 1, arXiv 126 / 1;
+  732 unique. IEEE Xplore (301 / 35 hits) and Web of Science not exported (no institutional access in the browser);
+  reported as a limitation in thesis 3.2 and 3.6. `prescreen.py` (11 Nov) wrote a first-pass decision and reason
+  for every record (53 include, 69 unsure, 610 exclude); the author checks them, then full texts.
+- `prototypes/edge_bench/` (11 Nov 2026, SQ3): `bench.py --device <label> --host http://<device>:11434 --model
+  gemma4-e4b [--cpu-only --threads 4] [--idle-w W --load-w W]` runs the 22 plans against an Ollama server and records
+  Ollama's timings (prefill, generation tokens/s, s per plan) and scores; `mpc_time.py --device <label>` times the
+  closed-loop MPC on the device. Results in `edge_bench/out/` and thesis section 5.5. Laptop: GPU 140 tok/s, 3.3 s
+  per plan; CPU 4 threads 18 tok/s, 39 s mean, 72 s p95; MPC 0.08 s per solve. The CPU run's decision accuracy (0.64)
+  differed from the GPU pilot run (0.82): repeat runs are needed.
   The answer keys are drafts: the author checks them before any result is used.
 
 - **Keep the two theses apart.** `main.tex`, `src/hems/` campaigns, `data/scenarios*` and `results/` belong to the

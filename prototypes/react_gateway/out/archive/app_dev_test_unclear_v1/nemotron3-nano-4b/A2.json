@@ -1,0 +1,74 @@
+{
+ "plan": "A2",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "We will plan an away period and a comfort band once we know the exact times and temperature. The gateway will lower the heat to the requested temperature while you are away, using the heat pump.",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "When you say 'this afternoon', do you mean until 5pm?"
+  },
+  {
+   "topic": "other",
+   "text": "What temperature would you like the heat down to while you're out?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'Visiting friends for a few hours this afternoon' is too vague to plan: ask what they mean",
+  "the household's 'turn the heat down' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 16.42,
+  "tool_calls": 5
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 3,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 4,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"Visiting friends for a few hours this afternoon\", \"turn the heat down\"], \"ev\": [], \"appliances\": [], \"away\": [], \"comfort\": []}"
+  },
+  {
+   "turn": 5,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"When you say 'this afternoon', do you mean until 5pm?\", \"topic\": \"other\"}, {\"text\": \"What temperature would you like the heat down to while you're out?\", \"topic\": \"other\"}], \"explanation\": \"We will plan an away period and a comfort band once we know the exac"
+  }
+ ]
+}

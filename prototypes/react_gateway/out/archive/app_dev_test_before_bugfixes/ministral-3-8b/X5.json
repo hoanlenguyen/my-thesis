@@ -1,0 +1,48 @@
+{
+ "plan": "X5",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-01-12 20:00",
+  "text": "Usual charge for tomorrow, but no power from the grid tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "The usual charge for tomorrow would need 10 kWh, but the battery only has 5 kWh left. The car is already plugged in, so the gateway cannot charge it from the grid tonight.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Should the gateway charge the car from the battery tonight, or skip the usual charge for tomorrow?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-01-13 07:30",
+    "target_pct": 80,
+    "feasible": false,
+    "infeasible_because": "no grid at night: 20 kWh needed, the home battery holds 10 kWh and there is no PV in a January night"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 8.38,
+  "tool_calls": 2
+ }
+}

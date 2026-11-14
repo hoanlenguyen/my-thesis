@@ -1,0 +1,432 @@
+R0003 A Wi-Fi Evolution and IoT Interoperability Challenges: A Cloud-Based Agentic AI Framework for Intelligent Network Man
+R0006 A What You Know Does Not Show: Domain Knowledge and Occupant-AI Interaction in Building Energy Management
+R0007 A What LLM-Simulated Users Can and Cannot Tell Us About Conversational Energy Management Systems
+R0009 A WattCouncil: Context-Aware Household Energy Scenario Generation with Governed LLMs
+R0011 A Visual Interface Design for Informal Language Acquisition with Machine Translation and LLMs
+R0012 A VisionEV: multimodal large language models for spatially aware electric vehicle charging demand prediction using sa
+R0018 AB VCU-LLM: Prompt-efficient On-device Large Language Model for Vague Command Understanding in Smart Homes
+R0019 B Utah FORGE: A Decade of Innovation—Comprehensive Review of Field-Scale Advances (Part 1)
+R0021 A Using LLM-empowered virtual avatars in immersive virtual reality technology to enhance psychological perception and
+R0023 A Type-Aware Retrieval-Augmented Generation with Dependency Closure for Solver-Executable Industrial Optimization Mod
+R0024 A Two-Stage Active Distribution Network Voltage Control via LLM-RL Collaboration: A Hybrid Knowledge-Data-Driven Appr
+R0028 A Towards fully automated city operations: Integrating agentic AI with urban digital twins
+R0032 A Towards Agentic Virtual Power Plants for Grid-Interactive Energy Communities: A Review-Informed Reference Architect
+R0033 A Toward a Unified Architecture for Smart Home Energy Monitoring: Requirements, Design, and Use-Case Validation
+R0035 B Toward Agentic AI-Based Microgrids: Edge Agentic AI Architecture for Grid - Interactive Mobile Microgrids
+R0037 A Tidal Task Scheduling in IIoT-RMFS via LLM-Empowered Hierarchical Agentic Decision-Making
+R0038 B Think Fast: Real-Time IoT Intrusion Reasoning Using IDS and LLMs at the Edge Gateway
+R0039 A The Potential and Limits of LLMs as Evolutionary Operators for Electric Vehicle Charging Scheduling
+R0040 A The Intelligent Home: A Systematic Review of Technological Pillars, Emerging Paradigms, and Future Directions
+R0041 A The Cognitive Power Mini-Grid with Distributed AI, Semantic Control and Agentic Autonomy: Concepts, Applications, C
+R0042 B Testing Fine-Tuned Large Language Models for Power System Analysis
+R0044 A Target Recommendation for Home AI Device Control Commands
+R0046 A Talk to Your Data: An Agentic Artificial Intelligence-Driven Decision-Support Framework for Prosumer Energy Optimiz
+R0048 B TRACE: Unlocking the Potential of LLMs in Time Series Forecasting for Distributed Energy Resources
+R0050 A Synthetic survey data in renewable energy acceptance research: A validity audit using PLS-SEM
+R0052 B Substation-Level Carbon Emission Forecasting for EV-Rich Distribution Systems via Multimodal LLM-Embedded Neural Ne
+R0053 A Strategic Evaluation of Planning Strategies for LLM Agents in Cyber-Physical Systems
+R0054 A Spatiotemporal Prediction of Electric Vehicle Charging Load Based on Large Language Models
+R0055 A Spatio-temporal data fusion framework based on large language model for enhanced prediction of electric vehicle cha
+R0057 A SpBatch: Reclaiming Lost Sparsity for Batched Sparse FFN Execution
+R0064 A Smart Cities in the Agentic AI Era: Three Vectors of Urban Transformation
+R0065 A Single-Attention Large Language Model for Efficient Multi-Regional Electricity Demand and Generation Forecasting
+R0067 B Short-Term Load Forecasting in New Power Systems via Fine-Tuned Large Language Models
+R0070 A Semantic analysis and intervention generation for dialogue between teachers and young children using large language
+R0071 A Securing the Cognitive Layer: A Survey on Security Threats, Defenses, and Privacy-Preserving Architectures for LLM-
+R0072 A Secure Smart Home: Federated Learning with LLM-Based Recommendations and Differential Privacy
+R0074 A Scalable data centers – Power generation and delivery challenges and solutions
+R0075 A Sample-efficient LLM fault diagnosis for HVAC systems via active sampling and SHAP-guided evidence condensation
+R0077 A SMoLPU: An Energy-Efficient Sparse Mixture-of-Experts-Based Speculative Decoding Language Processing Unit
+R0078 A SMoLPU: 122.1μJ/Token Sparse MoE-Based Speculative Decoding Language Processing Unit with Adaptive-Offload NPU-CIM 
+R0080 B SLM, LLM, or Agentic AI? Toward Intelligent UAV-Enabled WPT Systems in Low-Altitude Economy Networks
+R0086 A S5-SHB Agent: Society 5.0 enabled Multi-model Agentic Blockchain Framework for Smart Home
+R0087 A S5-HES Agent: Society 5.0-driven Agentic Framework to Democratize Smart Home Environment Simulation
+R0089 B Runtime Prediction for Local Deployment of Large Language Models: A Case Study on Qwen Models Covering LoRA Fine-Tu
+R0090 A Risk-aware secure microgrid pricing mechanism validated with hybrid LLM-blockchain considering hybrid energy storag
+R0093 A Research on AI Data Security and Privacy Protection in Environmental Behavior
+R0094 B Reliability of Edge AI in XR-Based Health Data Capture: An Experimental Study on GPU Offloading and Semantic Stabil
+R0095 A Reliability Assurance for LLM-Assisted Energy-Control Software: Deterministic Verification and Reproducible Fault I
+R0096 B Regression-Based Small Language Models for DER Trust Metric Extraction from Structured and Semi-Structured Data
+R0098 B Prompt-guided large language model for estimating the state of charge of containerized lithium-ion battery energy s
+R0100 A Preference-conditioned reinforcement learning for balancing occupant comfort and energy efficiency in adaptive resi
+R0101 A PowerSlider: Exploiting Phase Asymmetry for LLM Serving under Demand Response
+R0102 A PowerMorph: Shaping LLM Training for Data Center Demand Response
+R0103 A Power hungry: How AI will drive energy demand
+R0105 A Personalized dynamic lighting via LLM-Empowered multi-Agent reinforcement learning: From user intent to photometric
+R0106 A Personalized Home Energy Management Using Non-Intrusive Load Monitoring and Human-in-the-Loop Reinforcement Learnin
+R0107 B Performance Analysis of a Modular Framework for Edge-Based Generative Conversational AI
+R0109 A PRECOG-Edge: A predictive–cognitive system from reactive scheduling to adaptive coordination in edge environments
+R0111 A Optimizing smart meter data acquisition for residential load forecasting: Minimum requirements for interval, precis
+R0112 A Optimizing Pricing and Inventory Decisions in Vendor-Buyer Supply Chains Through a Multi-agent Artificial Intellige
+R0113 B Optimizing Latency and Energy Efficiency in Edge-Native Large Language Models (LLMs) for Autonomous Mobile Agents
+R0114 B Optimizing Agentic AI Applications under Budget Constraints
+R0115 B Optimal Energy Management for EV-Edge Collaborative LLM Fine-Tuning
+R0117 A Ontology-driven energy management in smart buildings: A comprehensive review of methodologies, tools, and challenge
+R0119 AB Online Scheduling of Battery-Aware Speculative Decoding for Energy-Efficient Cloud-Edge Collaborative LLM Inference
+R0125 A OccuReward: LLM-Guided Occupant-Centric Reward Shaping for Demographic Equity in Grid-Interactive Buildings
+R0127 A Next-Token Block Diffusion: An LLM-Inspired Autoregressive Framework for Customer Electricity Demand in Power Syste
+R0131 A NUQLab at SimpleText 2026: Plan-Guided Biomedical Scientific Text Simplification
+R0133 A Multi-agent LLMs on the Cloud-Edge-IoT Continuum: A Systematic Mapping Study on Architectures, Deployment, and Eval
+R0134 A Multi-Stage Load Disaggregation with Physics-Constrained Verification and Language Model Post-Processing
+R0135 B Multi-Route Search and Adaptive Fusion for Power QA with Small Language Model Guidance
+R0137 A Multi-Agent-Based Smart-Home Energy Management with Adaptive Reasoning
+R0138 A Multi-Agent Home Energy Management Assistant
+R0140 A Meteorology-Driven Self-Correcting LLM Priors for Smart Grid Outage Prediction and Bayesian Fault-Chain Risk Analys
+R0141 A Message from Editors-in-Chief
+R0142 A MemSpec: Memory-Aware Runtime for Adaptive Draft Scheduling in Speculative Decoding on Edge Devices
+R0143 A Mechatronics-AI Collaboration: A Flexible Automated Testing Framework for Smart Home Devices Based on Multimodal La
+R0144 A MacroCarbon: A CVaR-Constrained Grid Resource Broker for Agentic LLM DAG Workflows on Geo-Distributed Heterogeneous
+R0145 A MaPL-LLM: Building energy forecasting with lightweight language models
+R0146 B Low-Cost Indoor Occupant Localization From Fixed Monocular Cameras Using Architectural Features
+R0147 B Low Carbon Scheduling of Integrated Energy System Based on Large Language Model-Embedded Multi-Agent Reinforcement 
+R0148 B Low Bit-Width LLM Acceleration via Symmetric Lookup Format and Compute-in-Decoding Paradigm
+R0149 A Load-Aware Adaptive Degradation Scheduling for Multi-User Concurrent Edge LLM Inference
+R0150 B Lit Silicon: A Case Where Thermal Imbalance Couples Concurrent Execution in Multiple GPUs
+R0151 A Lightweight large language models for intent recognition and action invocation in building energy management
+R0152 AB Lightweight and Secure Real-Time Sensor-Text Grounding for Consumer AIoT Devices via Small Language Models
+R0153 A Lightweight Large-Model Inference with Privacy Protection for Edge IoT Systems
+R0154 B LightLLM4FDD: Domain-specific lightweight large language models for fault detection and diagnosis in building HVAC 
+R0155 A Leveraging LLMs for Efficient and Personalized Smart Home Automation
+R0156 A Leveraging ChatGPT in academic writing: ChatGPT enhances students' writing quality, writing experience, and ownersh
+R0157 A Less stress, better scores, same learning: The dissociation of performance and learning in AI-supported programming
+R0158 B Large language models, ChatGPT, and beyond: A new paradigm for condition monitoring and prognosis in power and ener
+R0159 A Large language model-guided simulation optimization for balancing productivity, energy, and worker physical load in
+R0160 A Large language model-enhanced home energy management with dynamic user preference elicitation and hierarchical data
+R0161 A Large language model-driven rule synthesis for adaptive home energy management
+R0162 A Large language model-driven context-aware eco-feedback generation and evaluation
+R0163 AB Large Language Models in Home Energy and Comfort Management: Opportunities, Framework, and Challenges
+R0165 B Large Language Models for Detecting Cyberattacks on Smart Grid Protective Relays
+R0166 A Large Language Model-assisted Optimal Scheduling Method for Electric Vehicle Charging and Discharging Based on PER-
+R0167 A Large Language Model-Driven Spatio-Temporal Transformer for Cascade Hydropower Scheduling
+R0168 A Large Language Model Guided Reinforcement Learning for Heat Pump Control in Smart Buildings
+R0169 A Large Language Model Driven Two-Layer Demand Response Framework for Electric Vehicle and Aggregators
+R0170 A Large Language Model Assisted Peer-to-Peer Energy Trading System
+R0171 A Large Language Model Assisted Operational Monitoring for Battery Energy Storage System Integrated Power Distributio
+R0173 A LODAR: layered optimization for distributed adaptive LLM routing
+R0174 B LLMs for industrial databases: an agro-food production plant use case
+R0175 A LLMs for Agentic Home Energy Management
+R0177 A LLM-empowered multi-agent intelligent planning for PV-EV penetrated distribution networks
+R0178 A LLM-Powered Distributed Optimal Scheduling for Industrial Heat-Electricity Micro-Grids
+R0179 A LLM-Mediated Demand Response Coordination in Smart Microgrids
+R0180 A LLM-Enhanced Scenario-Aware Vehicle-to-Home Operation under Grid Resiliency
+R0182 A LLM-Driven Traffic–Communication–Energy Coordination to Enhance Demand Response of IoV Communication Infrastructure
+R0183 A LLM-Driven Multi-Source Event Perception and Dynamic Expert Fusion for Short-Term Multi-Building Load Forecasting
+R0184 B LLM-Driven Adaptive Security for the Internet of Energy (IoE)
+R0185 B LLM-Based Exploitation of Edge Data in Modern Power Systems
+R0186 A LLM-Based Agent Simulation Data Product for Counterfactual Evaluation of Hotel Dynamic Pricing
+R0187 AB LLM-Assisted Edge Intelligence Framework for Smart Home Energy Management
+R0188 A LLM-Assisted Carbon-Aware Coordinated EV Charging for Decarbonization
+R0189 A LICA: A multi-agent framework for household electricity scheduling under real-time pricing
+R0191 A LAMP: Long-Tailed Multi-modal Prompt Tuning for Vision-Language Models
+R0193 A KEN: An Execution Engine for Unstructured Database Systems
+R0194 A KAIROS: SLO-Aware Scheduling and a Benchmark for Multi-Tenant LLM Inference Serving under Bursty, Heterogeneous Loa
+R0196 A Iterative Demand Response Algorithm for Human-Computer Cooperation Integrating Knowledge of Large Language Model
+R0197 A Investigating and comparing user experiences at EV charging and petroleum fueling stations
+R0198 A Inter-Data-Center Workload Migration for Grid-Interactive Balancing Services: A Field Demonstration
+R0201 A Integrating large language models into Peer-to-Peer energy management for multi-tenant buildings: A guardrail appro
+R0202 A Integrating Large Language Models and Reinforcement Learning for Efficient Home Energy Management
+R0203 AB Integrating Edge AI and Distributed IoT Architectures for Privacy-Preserving Smart Home Automation
+R0204 B Instant Segmentation for IoT-Enabled Smart-Grid Networks with a Hybrid Small Language Model Policy Selection
+R0205 A Incremental Deployment of Containerized AI Services in Mobile Edge Networks
+R0207 A Improving Zero-shot ADL Recognition with Large Language Models through Event-based Context and Confidence
+R0208 A Improving Zero-shot ADL Recognition with Large Language Models through Event-based Context
+R0210 A Hybrid LLM fine-tuning and RAG algorithm for power communication: a weight optimisation model based on dynamic know
+R0211 A Hybrid AI framework for smart grid energy management using large language models and deep learning techniques
+R0213 A Human-AI Collaboration in Large Language Model-Integrated Building Energy Management Systems: The Role of User Doma
+R0214 AB How Energy is Consumed by LLM-enabled Smart Home Assistant Systems on Low-Cost Devices: An Empirical Study
+R0216 A Hierarchical Reinforcement Learning for Integrated Energy System Scheduling Based on Large Language Model Forecasti
+R0217 A HieraPower: A Hierarchical SAC-TD3 Framework for Task Scheduling in Computing Power Networks
+R0218 A Helios: A Foundational Language Model for Smart Energy Knowledge Reasoning and Application
+R0221 A HALO: Semantic-Aware Distributed LLM Inference in Lossy Edge Network
+R0222 B HALO: A heterogeneous accelerator for low-latency and energy-efficient edge LLM inference
+R0223 B GreenGuard: A neuro-symbolic edge-LLM controller for safe and energy-aware greenhouse microclimate regulation
+R0226 A Generative Recommendation for Large-Scale Advertising
+R0227 A Generative IoT: advancing IoT with generative AI and large language models
+R0228 A Generative AI and LLM applications in renewable energy and smart grids: a systematic review for the sustainable ene
+R0229 A Gated Decoupled Compositional Bandits: A Unified Theory of Contextual Bandits with Supervised-Calibrated Action Sca
+R0230 A GUIDE: A Conversational LLM Framework for Dynamic Deep Reinforcement Learning Based Building Energy Management
+R0231 B GAMING: A Green Computing Framework for Deploying LLM at the Edge
+R0232 A From perception to governance: Knowledge-enhanced intelligence for smart sustainable buildings
+R0233 A From Tokens to Energy Flexibility: Quantization-Enabled Demand Response for Data Centers with LLM Inference Workloa
+R0234 A From Static Surveys to Living Agents: A Generative LLM-Agent Workflow for Residential Energy Simulation
+R0235 A From Speech to Action: Home Automation Speech Ensemble (HASE) and an Open Pipeline for Smart-Home Control
+R0238 A From Outcome to Process: Optimizing MoE Load Balancing with MCTS
+R0239 A From Commands to Cognition: An LLM-Driven Satellite Agent for Autonomous Spectrum Sensing
+R0241 A Formal schedulability analysis for LLM inference: TTFT and TBT deadline guarantees via response-time theory
+R0242 B Finite Element Modeling and Correcting of Current Shunting Effect in SOT-MTJ for Edge AI
+R0243 A Fine-tuned large language models as surrogate schedulers for smart building energy management
+R0244 B Federated Learning and LLMs for Secure Peer-to-Peer Energy Trading
+R0245 AB FedCuraLM: Reliability-Calibrated and Resource-Aware Label Auditing with Small Language Models for Non-IID Federate
+R0246 A Exploiting the Flexibility of LLM Inference for Frequency Regulation Service
+R0247 A Expertise-guided LLM agent for autonomous optical power optimization in field-deployed optical networks
+R0250 A Evaluation of Agentic and Rule-Based Approaches for Smart Home Energy Optimisation
+R0251 A Evaluating the Use of LLMs for Automated DOM-Level Resolution of Web Performance Issues
+R0256 A Enhancing Information Sensing of Load Forecasting in Cyber-Physical-Social Systems: An Approach with Large Language
+R0257 A Enhanced resilience of demand response under hybrid disruptions in renewable- and storage-rich integrated energy sy
+R0259 A Energy-efficient HVAC control in residential buildings through occupant intention inference with multimodal large l
+R0260 B Energy-Aware Coordination of Autonomous Multi-Robot Systems via Small Language Model
+R0261 B Energy- and AoI-Aware Hierarchical Personalized Federated Learning for Distributed Edge Systems with Selective LLM 
+R0262 A Energy assistant for buildings: A knowledge-augmented multi-agent framework for market-integrated and occupant-cent
+R0264 A Enabling Memory-Disaggregated Cloud Infrastructure for LLMs: An Adaptive CXL-based KV Cache Scheduling Approach
+R0265 A Emission-Forecasting-Based Spatial-Temporal Carbon Response: A Multi-Agent Attention-Enhanced Deep Learning Framewo
+R0266 A Efficient MoE Inference on Single Consumer-grade GPU with Dynamic Expert Caching
+R0267 A Efficient Mixture-of-Experts Training With Pipelining Optimization
+R0268 B Efficient Attention Mechanisms for Scaling Large Language Models on Resource Constrained Devices
+R0269 A Edge-Optimized Battery SOH Estimation Using LLM-Based Feature Engineering and TinyELM
+R0270 B Eco-efficient task scheduling for MLLMs in edge-cloud continuum
+R0271 A Eco-Efficiency Profiling of Artificial Intelligence Models: A Cluster-Based Analysis of Energy Consumption, CO2 Emi
+R0272 A EV-STLLM: Electric vehicle charging forecasting based on spatio-temporal large language models with multi-frequency
+R0273 A Dynamic Pipeline Inference Optimization for LLMs: Load-Aware Partitioning, Updating, and Migration
+R0274 A DualPath: Accelerating Agentic LLM Inference by Harvesting Disaggregated KV-Cache Storage I/O
+R0279 B Distilling the Giant: A Lightweight Command Injection Detection Framework for Grid Edge Networks via LLM-Guided Con
+R0280 B Digital Twin-Driven Workflow with LLM Integration for Power Facility Inspection
+R0282 A Designing a Generative AI Video Engine for Scalable E-Learning Content Production
+R0283 A Designing Scaffolding Cards to Facilitate LLM-Based Socratic Instruction: An Exploratory Study of Response Strategi
+R0285 A Designing Data Centers for Demand Response Through a Construction-Phase Readiness Index
+R0287 A Design Optimization of Home Electric Vehicle Chargers Based on User Review Mining and Explainable Machine Learning
+R0288 A Decoding energy consumption patterns through integration of visual encoding techniques and vision large language mo
+R0289 A Decoding EV user preferences with large language model and charging infrastructure reviews
+R0290 A Debris flow disaster information representation and perception based on knowledge graphs and virtual geographic env
+R0291 A Data and Knowledge–Driven Approach for Energy Profiling in Smart Context-Aware Buildings
+R0292 A DSFRO: Dynamic Scheduling and Fine-Grained Resource Optimization for Distributed Large Model Training in Heterogene
+R0293 A DPServe: Dynamic-Precision LLM Serving for Multi-Tier SLO Preservation
+R0297 A Counterfactual load forecasting with LLM-structured events and representation learning
+R0298 A Cost-optimal residential energy scheduling via a zero-shot LLM agent and model predictive control
+R0299 A Conversational Demand Response: Bidirectional Aggregator-Prosumer Coordination through Agentic AI
+R0300 B Context-Aligned Large Language Models for Situational Awareness in Critical Grid Events
+R0302 B Communication-Lightweight Cooperative Energy Management of Networked Multienergy Microgrids
+R0303 A Collaborative Support for Software Product Line Modeling and Project Management: A Generative AI-Enhanced Approach 
+R0304 A CoLoRA: A Collaborative Scheduling Framework for Multi-Tenant LoRA LLM Inference
+R0306 A Cappuccino: Cost-Efficient Heterogeneous Lora Fine-Tuning Via Replica-Level Orchestration
+R0307 A BuildOcc: A large language model occupant agent platform for building energy research
+R0309 A Bidaw: Enhancing Key-Value Caching for Interactive LLM Serving via Bidirectional Computation–Storage Awareness
+R0311 A Benchmarking LLM Backends for Generative SSH Honeypots: Security, Fidelity, Hallucination, Latency, and Stability
+R0312 A BanaServe: Unified KV Cache and Dynamic Module Migration for Balancing Disaggregated LLM Serving in AI Infrastructu
+R0313 A Balancing comfort and Cost: A Multi-Agent framework for Human-Centric building energy management via Large language
+R0314 A Autonomy is not enough: why agentic AI in the built environment demands governance
+R0316 B Automatic Programming for the Optimal Power Flow in Distribution Networks: An Edge-side Adaptive Computing Approach
+R0317 A Augmenting medical data interpretation with Large Language Models (LLMs): a comparative analysis of patient empower
+R0319 A Artificial Intelligence-Driven Energy Distribution for Wireless Electric Vehicle Charging Systems with Hybrid Stora
+R0321 B An intelligent energy management method for the manufacturing systems using the knowledge graph and large language 
+R0322 A An extensible framework for energy community embedding business models and AI-generated code snippets
+R0323 A An enhanced explainable large language model-based framework for electric vehicle charging station occupancy predic
+R0324 A An asynchronous Chinese speller integrating eye tracking and large language models into a reactive BCI
+R0325 B An SLM-Based Agentic Federated Paradigm for Privacy-Preserving Energy Orchestration
+R0326 AB An LLM-driven adaptive scheduling framework for fuel cell cogeneration-based integrated energy systems under source
+R0328 A An LLM-Assisted AutoML Framework for Intrusion Detection in IoT Networks
+R0330 A An Infrastructure-Aware Evaluation Model for LLM Token Output and Data Center Power Consumption
+R0331 A An Eye-Tracking-Driven Evaluation Framework for Age-Friendly Smart Home Interface
+R0332 A An Autonomous Agent Framework for Feature-Label Extraction from Device Dialogues and Automatic Multi-Dimensional De
+R0333 A An Augmented Reality and AI-Based System for Contextual Appliance Guidance: Implications for Cognitive Accessibilit
+R0336 A An AI Agent Framework for Real-World Air Conditioning System Optimization with Long-Term Deployment: A Semantic Dat
+R0338 A AirWise: LLM-Powered Smart Air Quality Monitoring and Automated Appliance Control
+R0340 A Agents for Rule-Intensive Decision Making in Virtual Power Plant Operations
+R0341 A Agentic generation for urban building energy services: from resources to executable services
+R0342 A Agentic building energy management systems: adoption and design insights from surveys and interviews with building 
+R0343 A Agentic Workflow for the Modelling of Daily Activity Schedules of Individual Behaviour for the Generation of Utilit
+R0344 A Agentic Artificial Intelligence for Smart Grids: A Comprehensive Review of Autonomous, Safe, and Explainable Contro
+R0345 B Agentic AI-Enabled Adaptive Power Control for Ambient Backscatter Communications
+R0348 A Agentic AI as Process Scaffolding in Undergraduate ESL Instruction: Effects on Proficiency, Engagement, and Self-Re
+R0349 A AgentiControl-MPC: Automated model predictive control for buildings using large language model-based multi-agent sy
+R0352 A Advancing Generative Artificial Intelligence and Large Language Models for Demand Side Management With Internet of 
+R0353 A Addressing data sparsity in thermal comfort evaluation: A dynamic constraint relaxation framework using large langu
+R0354 A Adaptive home energy management to self-motivated user preferences via iterative LLM-augmented reinforcement learni
+R0355 A Adaptive Request Scheduling and Load Balancing for Edge Deployed Large Language Models
+R0356 A Adaptive Cognitive Stress Profiling for Reasoning and Recovery Evaluation in AI-Based Interviews
+R0358 A AdaGen: Workload-Adaptive Cluster Scheduler for Latency-Optimal LLM Inference Serving
+R0359 A Accelerating Model Loading in LLM Inference by Programmable Page Cache
+R0360 A Accelerating LLM Inference Throughput via Asynchronous KV Cache Prefetching
+R0362 A AIKitchen: A Rapid Prototyping Framework for Exploring Dynamic In-context Behavior of Smart Robotic Environments
+R0363 A AIDC Microgrid Vulnerability Assessment Under Computing-Power Coordinated Attacks
+R0364 A AI-driven household electricity load forecasting: challenges, methods, and future directions
+R0365 A AI-driven exploration and design of inorganic battery materials
+R0366 A AI-Powered Study Plan Generation Based on User Preferences: A Gemini-Driven Approach to Personalized Learning
+R0367 A AI-Enabled Energy Management Using Intelligent Operations Analytics, Agentic AI and Industry 4.0 Frameworks for Ind
+R0368 B AI-Empowered Communication Techniques for Power Distribution Network Protection Business
+R0369 B AI for the grid and AI on the grid: Implications, challenges and opportunities
+R0370 A AI Voice System: an LLM-driven, configurable voice agent platform for controlling everyday and rehabilitation IoT d
+R0371 B AGORA: Agentic Green Orchestration Architecture for Beyond 5G Networks
+R0373 A A systematic review of electricity demand for large language models: evaluations, challenges, and solutions
+R0374 A A systematic review of context-aware and AI-driven home energy and comfort management
+R0375 B A survey on memory-centric neural network accelerators for edge intelligence: Architectures, technologies, and emer
+R0376 A A smart home platform integrating an energy-aware digital twin and an LLM-enabled conversational agent
+R0380 A A framework for integrating large language models in secondary physics education: practical design, opportunities, 
+R0381 A A Systematic Review of Building Energy Management and Optimization Using the Artificial Intelligence of Things (AIo
+R0382 B A Survey on On-Device Small Language Models: Architectures, Compression, Applications, and Open Challenges
+R0383 A A Survey on Accelerated Technologies for Mixture-of-Experts Model Training Systems
+R0386 B A Small-Scale Large Language Model-Enhanced Deep Reinforcement Learning Approach for Prosumer Energy Management
+R0387 A A Semantic Risk-Aware Optimization Framework for Virtual Power Plant Dispatch Using Large Language Models
+R0389 A A Multi-Stage RLHF Pipeline for LLM-based Smart Building Optimization
+R0391 A A Method for Characterizing the Adjustable Potential Features of Air Conditioning Loads Based on LLM Agents
+R0392 A A Large Language Model-Based Agent Framework for Simulating Building Users’ Air-Conditioning Setpoint Adjustment Be
+R0394 A A Hierarchical Hardware-in-the-Loop Agentic Framework for Smart Home Automation
+R0395 A A Digital-Twin-Driven Framework for Traffic and Energy Management Leveraging Generative AI
+R0396 A A Comprehensive Evaluation Framework for Conversational Home Energy Management Systems
+R0397 A 3D-Learning: Diffusion-Augmented Distributionally Robust Decision-Focused Learning
+R0402 A WebANNS: Fast and Efficient Approximate Nearest Neighbor Search in Web Browsers
+R0404 A VoiceTalk: A No-Code Approach for Creating Voice-Controlled Smart Home Applications
+R0405 A Using Sentinels and Digital Twins to Secure Agentic AI in IoT Systems
+R0406 A Understanding public views on electric vehicle charging: A thematic analysis
+R0407 A Towards an LLM-Powered Smart Home for Efficient and Safe Living Environment
+R0411 A The role of integrating augmented reality and cognitive constructivism in enhancing sustainable education
+R0414 B The Immutable Tensor Architecture: A Pure Dataflow Approach for Secure, Energy-Efficient AI Inference
+R0415 A TensAllo: Adaptive Deployment of LLMs on Resource-Constrained Heterogeneous Edge Devices
+R0422 A Synergistic Interplay of Large Language Model and Digital Twin for Autonomous Optical Networks: Field Demonstration
+R0423 A SwarmChain: Collaborative LLM Inference for UAV Swarm Control
+R0424 A Swarm Intelligence for AI/ML Workload in Distributed Cloud Infrastructure
+R0425 A Sustainable, Situation-Aware Multi Objective Spatial Load Scheduling for Data Centers
+R0426 B Sustainable LLM Inference for Edge AI: Evaluating Quantized LLMs for Energy Efficiency, Output Accuracy, and Infere
+R0427 A Strategic Demand-Planning in Wireless Networks: Can Generative-AI Save Spectrum and Energy?
+R0432 B SmartGridAgent: An Educational Framework for Reliable Digital Twin-Based Smart Grid Workforce Training with Locally
+R0433 A Smart energy strategies: Leveraging LSTM and LLMs for advanced energy management
+R0434 A Smart Building Recommendations with LLMs: A Semantic Comparison Approach
+R0435 A Smart Building Operations and Virtual Assistants Using LLM
+R0441 A Scalable Fairness Shaping with LLM-Guided Multi-Agent Reinforcement Learning for Peer-to-Peer Electricity Markets
+R0443 A Sailing Toward Energy Efficiency by Wearable AI for Demand Response in Cruise Ship Passengers: A Conversational LLM
+R0446 A SP-MoE: Expediting Mixture-of-Experts Training with Optimized Pipelining Planning
+R0449 A SAL-YOLO-DeepSeek: a lightweight real-time detection and LLM-driven decision framework for intelligent escalator sa
+R0450 A Robustness Analysis of Power System considering Incubation Period for LLM Training Requirement
+R0451 A Review of optimization control methods for HVAC systems in Demand Response (DR): Transition from model-driven to mo
+R0454 A Resource Management and Security Challenges for Deploying and Adapting Large Language Models in Fog Computing
+R0455 A Research on storage optimization for efficient training of large language models
+R0456 A Research on a Two-Layer Demand Response Framework for Electric Vehicle Users and Aggregators Based on LLMs
+R0457 B Research and Application of Power Market Policy Question-Answering System based on Local Knowledge Base
+R0460 A RHEA: Residential Home Energy Advisor
+R0461 A QAEval: Mixture of Evaluators for Question-Answering Task Evaluation
+R0462 A PsychoLLAMA3-R1: A Large-Scale Adaptive Testing Model Based on LLAMA3 Large Language Model with CoT and DPO
+R0463 A Pre-training large language models based on Transformer architecture for building industry application: A review
+R0465 A Poster Abstract: Leveraging Large Language Models to Reveal Interpretable Cooling Behaviors from Smart Thermostat D
+R0466 A Performance of Confidential Computing GPUs
+R0467 A Performance and Cost Optimization of Federated LLM Agents in Edge Computing Environments
+R0468 A Past-Future Scheduler for LLM Serving under SLA Guarantees
+R0471 A Optimizing Deep-Space Operations: The Impact of LuzIA on Crew Communication and Productivity
+R0472 A Optimization and Management of Data Center Networks: A Scoping Review on Key Themes, Challenges, and Artificial Int
+R0473 A Ontology-driven LLM framework for knowledge graph in smart buildings
+R0477 A Navigating the digital landscape: A review of digitalization in smart grids with renewable energy sources
+R0480 A Make LLM Inference Affordable to Everyone: Augmenting GPU Memory with NDP-DIMM
+R0485 A LoRATEE: A Secure and Efficient Inference Framework for Multi-Tenant LoRA LLMs Based on TEE
+R0488 A Leveraging Large Language Model for Generalization in Building Energy Management
+R0490 B Large language models in the management of chronic ocular diseases: a scoping review
+R0491 A Large language model-assisted planning of electric vehicle charging infrastructure with real-world case study
+R0492 A Large language model enabled knowledge discovery of building-level electrification using permit data
+R0495 A Large Language Model-Guided SARSA Algorithm for Dynamic Task Scheduling in Cloud Computing
+R0496 A Large Language Model Interface for Home Energy Management Systems
+R0497 A Label Set Optimization via Activation Distribution Kurtosis for Zero-Shot Classification with Generative Models
+R0499 AB LLMSwitchBench: A New Edge-Cloud Routing Benchmark for Smart Home LLM Inference
+R0500 B LLMPi: Optimizing LLMs for High-Throughput on Raspberry Pi
+R0501 A LLM-MAC: LLM-Driven Multi-Agent Coordination for Generalizable Home Energy Management
+R0502 A LLM-Enhanced Online Estimation of Vehicle Load
+R0503 A LLM-BEM: Zero-shot LLM-Agent Scheduling for Smart Building Energy Management
+R0504 A LLM-BAS: Large Language Model-Based Battery Health-Aware Scheduling in Building Energy Systems
+R0507 A LARGE LANGUAGE MODELS AS TOOLS FOR PUBLIC BUILDING ENERGY MANAGEMENT: AN ASSESSMENT OF POSSIBILITIES AND BARRIERS
+R0513 A Intelligent HEMS Based on Transformer and Hybrid PSO Scheduling Algorithm
+R0514 A Intelligence of Things: A Spatial Context-Aware Control System for Smart Devices
+R0515 A Integrating Sociodemographics into Trip Chain Models for Residential Electric Vehicle Charging Schedule Simulation 
+R0517 A Integrating Data-Driven Insights with Domain Expertise Using Agentic Conversational Analytics for Well Completions 
+R0518 A Integrating AI and IoT for Smart Home Energy Management
+R0519 A Improving Load Forecasting With Feature Selection via XAI and Expert-Guided Prompting
+R0521 AB Implementing AI in Smart Buildings: A Modular, Proof-of-Concept Approach
+R0523 A Identification of machine parameters in battery cell production: A comparison of different methods and approaches f
+R0524 A HyLL: Hybrid LSTM and Large Language Model-Based Recommendation System for Energy Management and Consumption Optimi
+R0525 A Human-in-the-Loop Battery Scheduling in Buildings via Intent-Guided Rule-Reinforcement Learning
+R0530 A H2EAL: Hybrid-Bonding Architecture with Hybrid Sparse Attention for Efficient Long-Context LLM Inference
+R0531 A GridLLaMA: Domain-Adaptive Large Language Model for Intelligent Microgrid Operations
+R0532 A Generating HomeAssistant Automations Using an LLM-based Chatbot
+R0533 A GUIDE: A prescriptive hybrid AI framework for energy-efficient appliances usage through behavioral modeling and LLM
+R0534 AB GOLD: Green Optimization of Language Models Serving on Devices
+R0535 B GLALLM: Adapting LLMs for spatio-temporal wind speed forecasting via global–local aware modeling
+R0536 A FlowLoader: an efficient large language model loader via parallel transmissions and local multi-tier caching
+R0537 A FlexiDigital: A Comprehensive Approach to Energy Flexibility Services using Digital Twins and Large Language Models
+R0538 B FaultSeer: An Agentic Retrieval-Augmented Generation Framework for Defect Analysis and Diagnosis in Power Systems
+R0539 A FastLoader: Leveraging large language models to accelerate cargo loading optimization with numerous loading constra
+R0541 B FDI Attack Detection and LLM-Assisted Resource Allocation for 6G Edge Intelligence-Empowered Distribution Power Gri
+R0542 A Exploring the Potential of Large Language Models in Grid-Scale High-Voltage Transformer-Less Battery Energy Storage
+R0543 A Exploring the Cognitive Reconstruction Mechanism of Generative AI in Outcome-Based Design Education: A Study on Loa
+R0546 A Exploring Anthropomorphism in Conversational Agents for Environmental Sustainability
+R0548 A Explanation Modalities for a Recommender System Optimizing Energy Management in a Solar-Powered Smart Home
+R0550 A Evaluating Smart Building Features for Fire, Electrical, and Life Safety: A Rapid Human-LLM Framework for Literatur
+R0552 B Enhancing Security and Applicability of Local LLM-Based Document Retrieval Systems in Smart Grid Isolated Environme
+R0554 A Enhancing Digital Continuity and Interoperability in Building Energy Management: A Digital Twin Approach with Large
+R0556 A Engine-Agnostic Model Hot-Swapping for Cost-Effective LLM Inference
+R0557 B Energy-Aware Code Generation with LLMs: Benchmarking Small vs. Large Language Models for Sustainable AI Programming
+R0562 B Edge of excellence: JEC’s Scopus achievement, doors 2025 breakthroughs, and Volume 4 Issue 1 (2025) highlights
+R0563 A EMPOWERING USERS IN DIGITAL PRIVACY MANAGEMENT THROUGH INTERACTIVE LLM-BASED AGENTS
+R0564 A Dynamic Occupancy Measurement for Smart Buildings: A Few-shot Large Language Model Approach
+R0565 A Dynamic Incentive Strategies for Smart EV Charging Stations: An LLM-Driven User Digital Twin Approach
+R0566 A Dynamic Incentive Strategies for Smart EV Charging Stations: A LLM-Driven User Digital Twin Approach
+R0571 A DigitalLLaVA: Incorporating Digital Cognition Capability for Physical World Comprehension in Multimodal LLMs
+R0573 A Design of an edge computing otological disease diagnosis system based on deep learning and LLM
+R0574 A Design and Implementation of an AI-Enhanced IoT Energy Management System for a Self-Sustainable Rural Home Prototyp
+R0575 A DLUSEdge: Dynamic Load–Unload Scheduling for Localized LLMs on Resource-Constrained Edge
+R0577 A DBAR: Dynamic Bank Allocation and Renaming for NoC-aware Memory Management in NPUs
+R0578 A Cyclic Analysis of Collaborative Scheduling for Load Lock Modules in Cluster Tools with Equipment Front-End Module
+R0579 B CrowdShield: A Smartphone-Based AIoT Framework for Real-Time Women's Safety Using Emotion-Aware Voice Recognition a
+R0581 A Context-aware LLM-based AI Agents for Human-centered Energy Management Systems in Smart Buildings
+R0586 A Can Time-Series Foundation Models Perform Building Energy Management Tasks?
+R0587 A Can Large Language Models Be Used to Conduct Attacks on Smart Home Devices?
+R0588 A COMET: Towards Practical W4A4KV4 LLMs Serving
+R0589 A Building ontologies for 4-5GDHC: A critical evaluation and modeling experiments on building-side components
+R0590 A Building Energy Management Systems with LLM Agent Enhanced Natural Language Policy Explanation
+R0591 A Bridging Real and Virtual Worlds: A Blockchain-IoT-Agent Framework for the Metaverse
+R0592 A Breaking interdisciplinary barriers in solid-state battery research: BatteryAgent for multifaceted analysis
+R0593 AB BitRL-Light: 1-bit LLM Agents with Deep Reinforcement Learning for Energy-Efficient Smart Home Lighting Optimizatio
+R0594 B Beyond Test-Time Compute Strategies: Advocating Energy-per-Token in LLM Inference
+R0595 B Benchmarking Small Language Models in the Renewable Energy Domain
+R0596 B Bassa-Llama - Fine-Tuned Meta's Llama LLM, Blockchain and NFT Enabled Real-Time Network Attack Detection Platform f
+R0599 A Artificial Intelligence-Driven User Interaction with Smart Homes: Architecture Proposal and Case Study
+R0601 A An LLM-based Temporal-spatial Data Generation and Fusion Approach for Early Detection of Late Onset Alzheimer’s Dis
+R0602 A An LLM-assisted decision-making framework of rule-based control strategy for photovoltaic driven air conditioning s
+R0603 A An LLM Framework for Inferring Household Energy Consumption Through Behaviour Simulation
+R0606 B An Intelligent Monitoring Method for Power Marketing Systems Based on Large Language Models
+R0607 A An Empirically Validated Framework for Automated and Personalized Residential Energy-Management Integrating Large L
+R0608 B An Efficient Finetuning Method for LLM generated text detection in Power Grid
+R0609 A Agentic AI for Distributed Power Electronics: A Microservice-Based Framework for Scalable Monitoring and Optimizati
+R0610 A Agentic AI Home Energy Management System: A Large Language Model Framework for Residential Load Scheduling
+R0613 A Advanced scientific information mining using LLM-driven approaches in layered cathode materials for sodium-ion batt
+R0619 A AI-Driven Smart Home Energy Optimization: Integrating AI Agents with IoT for Adaptive Decision-Making
+R0621 A AI-Driven Multi-Agent Demand Response Framework for Residential Load Optimization Using CrewAi
+R0622 A AI-Based Application for Task Management and Scheduling Student Activity
+R0624 A A systematic review of building energy performance forecasting approaches
+R0625 A A large language model-based building operation and maintenance information query
+R0626 B A blockchain-based LLM-driven energy-efficient scheduling system towards distributed multi-agent manufacturing scen
+R0627 A A bi-level optimization framework for household distributed energy systems: Integrating multiple flexible loads
+R0629 A A Unified Model for Smart Meter Data Applications
+R0630 A A Survey on System and Architecture Optimization Techniques for Mixture-of-Experts Large Language Models; [混合专家大语言模
+R0633 A A Review on Machine Learning for Consumer IoT Security: A Case Study of LLMs
+R0634 A A Novel LLM-Powered Ant Colony Optimization Algorithm for Electric Vehicle Routing Problem
+R0635 B A Low-Rank Enhanced Lightweight Multimodal LLM Framework for Efficient Edge Power Visual Detection
+R0636 B A Generalized Framework of Large Language Models for Power System Operation: Implementations and Limitations
+R0638 A A Comprehensive Review on the Application of Large Language Models (LLMs) in Power Systems
+R0642 B Trustworthy Large Language Model Prompt Engineering for Risk-Free Smart Grid Management Education
+R0649 A ServerlessLLM: Low-Latency Serverless Inference for Large Language Models
+R0651 A SLoB: Suboptimal Load Balancing Scheduling in Local Heterogeneous GPU Clusters for Large Language Model Inference
+R0653 B Resource Allocation in Large Language Model Integrated 6G Vehicular Networks
+R0657 AB Privacy-Preserving Energy Recommendations Using Federated Learning and Local LLMs on the Edge
+R0658 A Predicting User Behavior in Smart Spaces with LLM-Enhanced Logs and Personalized Prompts
+R0661 A Older Generation: Self-Powered IoTs, Home-Life and “Ageing Well”
+R0662 A Office-in-the-Loop for Building HVAC Control with Multimodal Foundation Models
+R0667 A Large Language Models are Zero-Shot Recognizers for Activities of Daily Living
+R0668 A Large Language Model-Based Interpretable Machine Learning Control in Building Energy Systems
+R0669 A Large Language Model for Practical Evaluation in Cloud Computing with Applications of Real World Data
+R0670 B Large Language Model and Artificial Intelligence Based Human Conversation Agent
+R0671 A Large Foundation Models for Power Systems
+R0674 A LLM-Based Building Energy Management Assistants
+R0675 A Interpretable Machine Learning Control in Building Energy Systems
+R0681 B HALO: Communication-Aware Heterogeneous 2.5-D System for Energy-Efficient LLM Execution at Edge
+R0684 A GPT Prompt Engineering for Scheduling Appliances Usage for Energy Cost Optimization
+R0691 A Efficient Deployment of Large Language Model across Cloud-Device Systems
+R0692 A EVGPT - Fine-Tuned Large Language Model for Electric Vehicle Operational Assistance
+R0694 B DocBot Connect: A Conversational Search System Powered by Large Language Models
+R0695 A Designing Home Automation Routines Using an LLM-Based Chatbot
+R0696 A Democratizing Energy Management with LLM-Assisted Optimization Autoformalism
+R0698 A CoLLM: A Collaborative LLM Inference Framework for Resource-Constrained Devices
+R0699 A ChatEV: Predicting electric vehicle charging demand as natural language processing
+R0705 A An LLM-Based Modeling and Decision Optimization for User-Centric Electric Vehicle Charging
+R0707 A An Electricity Demand Forecasting Model Based on GCN and Transformer
+R0710 A A Redis Cache-Based Approach to High Concurrency Response in Applications of Large Language Models
+R0711 A A Recommendation System for Prosumers Based on Large Language Models
+R0713 B A New Prediction Paradigm for Nonprofessionals: Prompt-based Zero-code Wind Power Prediction
+R0714 B 20.5 C-Transformer: A 2.6-18.1μJ/Token Homogeneous DNN-Transformer/Spiking-Transformer Processor with Big-Little Ne
+R0718 A Solving Load Balancing Problems in Routing and Limiting Traffic at the Network Edge
+R0719 A Sasha: Creative Goal-Oriented Reasoning in Smart Homes with Large Language Models
+R0721 A Multi-Agent attention-based deep reinforcement learning for demand response in grid-responsive buildings

@@ -1,0 +1,19 @@
+{
+ "plan": "DX1",
+ "model": "gpt-6-luna",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The car needs 34.0 kWh to reach 100%, but only 27.8 kWh can be added before 2016-05-18 05:30. Would you like to lower the target or set a later departure?"
+  }
+ ],
+ "explanation": "I can\u2019t meet the 100% target by 2016-05-18 05:30: the charger can add only 27.8 kWh, while the car needs 34.0 kWh. What target or later departure would you prefer?",
+ "requirements_check": null,
+ "problems": [
+  "EV needs 34.0 kWh, charger gives 27.8 kWh"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-05-17 22:00",
+ "timeline": null
+}

@@ -1,0 +1,43 @@
+{
+ "plan": "A1",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-03-14 20:00",
+  "text": "Long trip tomorrow, leaving really early. Make sure the car is full.",
+  "car_pct": 35
+ },
+ "decision": "ask",
+ "message_to_household": "I will charge the car to 100 % by 07:30 tomorrow morning, using solar power and the battery when available. If the weather forecast shows enough solar, I will not need to use grid power at all.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Your usual ready-by time is 07:30 tomorrow. Is this still okay for your trip, or should I charge by a different time?"
+  },
+  {
+   "topic": "ev",
+   "text": "Your usual charge target is 80 %. Is \"full\" (100 %) really needed for your trip?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 8.51,
+  "tool_calls": 2
+ }
+}

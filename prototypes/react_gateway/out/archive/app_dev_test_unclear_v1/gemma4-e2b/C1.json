@@ -1,0 +1,65 @@
+{
+ "plan": "C1",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-03-15 06:00",
+  "text": "Car for 8 please.",
+  "car_pct": 30,
+  "later": {
+   "sent": "2016-03-15 10:00",
+   "text": "Back home and plugged in. I need it again at half four, the usual charge is fine."
+  }
+ },
+ "decision": "ask",
+ "message_to_household": "I couldn't fully schedule your car charge because the requested time conflicted with the current time. Could you please clarify when you need the car charged next?",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "When do you need the car charged next?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "EV departure missing or already passed"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-03-15 16:30",
+    "target_pct": 80
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 8.92,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-03-15 04:30\", \"target_pct\": 80}]}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I couldn't fully schedule your car charge because the requested time conflicted with the current time. Could you please clarify when you need the car charged next?\", \"questions\": [{\"text\": \"When do you need the car charged next?\", \"topic\": \"ev\"}]}"
+  }
+ ]
+}

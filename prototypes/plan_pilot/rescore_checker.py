@@ -35,8 +35,10 @@ from pathlib import Path
 
 from pilot import HERE, now, parse, score, summarize
 
-CYCLE_H = {"dishwasher": 2.5, "washing_machine": 2.0}
-LLM = "gpt-6-luna/function_calling+retry2"
+# Cycle lengths: the house's measured typical cycles (``react_gateway/appliance_cycles.py``)
+CYCLE_H = {name: v["duration_h_median"] for name, v in json.loads(
+    (HERE.parent / "react_gateway" / "appliances.json").read_text(encoding="utf-8")).items() if isinstance(v, dict)}
+LLM = "gpt-6-luna"
 
 
 def check(plan: dict, got: dict, household: dict) -> list[tuple[str, str]]:
@@ -113,10 +115,15 @@ def main() -> None:
             name: {k: (round(v, 3) if isinstance(v, float) else v) for k, v in summarize(r).items()
                    if k in ("item_precision", "item_recall", "clarify_f1", "decision_accuracy")}
             for name, r in sets.items()} | {"flagged": flagged_n, "fallback_share": round(fallbacks / len(answers), 3)}
+        report[model.split("/")[0]]["latency_s"] = round(sum(r["latency_s"] for r in answers.values()) / len(answers), 1)
     out = HERE / "out" / "rescore_checker.json"
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(report, indent=1), encoding="utf-8")
-    print(json.dumps(report, indent=1))
+    print(f"{'model':16s} precision recall  decision: alone checker fallback  fallback share  s per plan")
+    for model, r in report.items():
+        a, c, f = r["alone"], r["checker"], r["fallback"]
+        print(f"{model:16s} {a['item_precision'] or 0:9.2f} {a['item_recall'] or 0:6.2f}  {a['decision_accuracy']:15.2f}"
+              f" {c['decision_accuracy']:7.2f} {f['decision_accuracy']:8.2f}  {r['fallback_share']:14.0%}  {r['latency_s']:10.1f}")
     print("\nFlagged answers:\n" + "\n".join(details))
 
 

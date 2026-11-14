@@ -1,0 +1,17 @@
+{
+ "plan": "DX2",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "Is this correct?"
+  }
+ ],
+ "explanation": "The gateway will keep the house at 22 \u00b0C while you are away, as you asked.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-12-19 07:00",
+ "timeline": null
+}

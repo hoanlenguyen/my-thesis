@@ -1,0 +1,62 @@
+{
+ "plan": "A3",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-05-24 07:00",
+  "text": "Charge the car before I head out, and the dishwasher by 6pm.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "The car cannot be fully charged to 80 % by 07:30 today due to limited time and charger capacity. It will charge as much as possible (about 45 %) by then. The dishwasher will run from 14:30 to 15:30 today using solar power, saving on grid electricity.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Should I charge the car to about 45 % by 07:30 today, or would you prefer to adjust the target or time for charging?"
+  },
+  {
+   "topic": "appliance",
+   "text": "Is the dishwasher scheduled to run from 14:30 to 15:30 today acceptable?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 07:00):\n- car 80 % by Tue 07:30 (morning, in 0.5 h)\n- dishwasher done by Tue 18:00 (evening, in 11.0 h)"
+ ],
+ "warnings": [
+  "the car cannot get the full 16.0 kWh by 05-24 07:30; the charger adds at most 1.9 kWh in that time, so the car will be at about 45 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +16.0 kWh by 2016-05-24 07:30",
+   "status": "partly"
+  },
+  {
+   "requirement": "dishwasher done by 2016-05-24 18:00",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-05-24 18:00"
+   }
+  ],
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 16.59,
+  "tool_calls": 3
+ }
+}

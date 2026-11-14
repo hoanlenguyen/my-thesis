@@ -1,0 +1,87 @@
+{
+ "plan": "X5",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-01-12 20:00",
+  "text": "Usual charge for tomorrow, but no power from the grid tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "The usual setting is 80% by 2016-01-13 07:30. The schedule would charge the car from the grid overnight, which conflicts with your no-grid request, so I have not applied it.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "You asked for the usual car charge tomorrow, but also said there should be no grid power tonight. The planned charge needs 20.0 kWh from the grid between 2016-01-13 00:00 and 2016-01-13 06:00. Should I allow grid charging then, or should I keep the no-grid restriction and charge only from available solar or battery power?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 20:00):\n- car 80 % by Wed 07:30 (morning, in 11.5 h), not before Wed 00:00 (night, in 4.0 h)"
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-01-13 07:30",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-01-13 07:30",
+    "target_pct": 80,
+    "feasible": false,
+    "infeasible_because": "no grid at night: 20 kWh needed, the home battery holds 10 kWh and there is no PV in a January night"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 8.1,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [], \"ev\": [{\"departure\": \"2016-01-13 07:30\", \"target_pct\": 80, \"energy_kwh\": null, \"earliest\": \"2016-01-13 00:00\"}], \"appliances\": [], \"away\": [], \"comfort\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"topic\": \"conflict\", \"text\": \"You asked for the usual car charge tomorrow, but also said there should be no grid power tonight. The planned charge needs 20.0 kWh from the grid between 2016-01-13 00:00 and 2016-01-13 06:00. Should I allow grid charging then, or should"
+  }
+ ]
+}

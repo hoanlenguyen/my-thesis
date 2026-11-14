@@ -1,0 +1,49 @@
+{
+ "plan": "X5",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-01-12 20:00",
+  "text": "Usual charge for tomorrow, but no power from the grid tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-01-13 07:30",
+    "target_pct": 80,
+    "feasible": false,
+    "infeasible_because": "no grid at night: 20 kWh needed, the home battery holds 10 kWh and there is no PV in a January night"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 5.61,
+  "tool_calls": 0
+ },
+ "actions": []
+}

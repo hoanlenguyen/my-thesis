@@ -2,111 +2,70 @@
  "gpt-6-luna": {
   "alone": {
    "item_precision": 1.0,
-   "item_recall": 1.0,
-   "clarify_f1": 0.952,
-   "decision_accuracy": 0.955
+   "item_recall": 0.957,
+   "clarify_f1": 0.846,
+   "decision_accuracy": 0.864
   },
   "checker": {
    "item_precision": 1.0,
-   "item_recall": 1.0,
-   "clarify_f1": 0.952,
-   "decision_accuracy": 0.955
+   "item_recall": 0.957,
+   "clarify_f1": 0.846,
+   "decision_accuracy": 0.864
   },
   "fallback": {
    "item_precision": 1.0,
-   "item_recall": 1.0,
-   "clarify_f1": 0.952,
-   "decision_accuracy": 0.955
+   "item_recall": 0.957,
+   "clarify_f1": 0.846,
+   "decision_accuracy": 0.864
   },
   "flagged": 0,
-  "fallback_share": 0.0
- },
- "gpt-oss-20b": {
-  "alone": {
-   "item_precision": 0.625,
-   "item_recall": 0.435,
-   "clarify_f1": 0.75,
-   "decision_accuracy": 0.591
-  },
-  "checker": {
-   "item_precision": 0.625,
-   "item_recall": 0.435,
-   "clarify_f1": 0.581,
-   "decision_accuracy": 0.455
-  },
-  "fallback": {
-   "item_precision": 0.9,
-   "item_recall": 0.783,
-   "clarify_f1": 0.8,
-   "decision_accuracy": 0.773
-  },
-  "flagged": 8,
-  "fallback_share": 0.364
- },
- "qwen3-8b": {
-  "alone": {
-   "item_precision": 0.958,
-   "item_recall": 1.0,
-   "clarify_f1": 0.667,
-   "decision_accuracy": 0.682
-  },
-  "checker": {
-   "item_precision": 0.958,
-   "item_recall": 1.0,
-   "clarify_f1": 0.667,
-   "decision_accuracy": 0.727
-  },
-  "fallback": {
-   "item_precision": 0.958,
-   "item_recall": 1.0,
-   "clarify_f1": 0.737,
-   "decision_accuracy": 0.727
-  },
-  "flagged": 1,
-  "fallback_share": 0.045
+  "fallback_share": 0.0,
+  "latency_s": 2.8
  },
  "gemma4-e4b": {
   "alone": {
    "item_precision": 1.0,
-   "item_recall": 0.913,
-   "clarify_f1": 0.778,
-   "decision_accuracy": 0.818
+   "item_recall": 0.87,
+   "clarify_f1": 0.842,
+   "decision_accuracy": 0.864
   },
   "checker": {
    "item_precision": 1.0,
-   "item_recall": 0.913,
-   "clarify_f1": 0.9,
-   "decision_accuracy": 0.909
+   "item_recall": 0.87,
+   "clarify_f1": 0.842,
+   "decision_accuracy": 0.955
   },
   "fallback": {
    "item_precision": 1.0,
    "item_recall": 0.913,
-   "clarify_f1": 0.9,
-   "decision_accuracy": 0.909
+   "clarify_f1": 0.952,
+   "decision_accuracy": 0.955
   },
   "flagged": 2,
-  "fallback_share": 0.091
+  "fallback_share": 0.091,
+  "latency_s": 8.2
  },
- "qwen3-30b-a3b": {
+ "ministral-3-8b": {
   "alone": {
-   "item_precision": 1.0,
-   "item_recall": 0.957,
-   "clarify_f1": 0.842,
-   "decision_accuracy": 0.864
+   "item_precision": 0.955,
+   "item_recall": 0.913,
+   "clarify_f1": 0.667,
+   "decision_accuracy": 0.682
   },
   "checker": {
-   "item_precision": 1.0,
-   "item_recall": 0.957,
-   "clarify_f1": 0.842,
-   "decision_accuracy": 0.909
+   "item_precision": 0.955,
+   "item_recall": 0.913,
+   "clarify_f1": 0.667,
+   "decision_accuracy": 0.682
   },
   "fallback": {
-   "item_precision": 1.0,
-   "item_recall": 1.0,
-   "clarify_f1": 0.842,
-   "decision_accuracy": 0.864
+   "item_precision": 0.955,
+   "item_recall": 0.913,
+   "clarify_f1": 0.667,
+   "decision_accuracy": 0.682
   },
-  "flagged": 1,
-  "fallback_share": 0.045
+  "flagged": 0,
+  "fallback_share": 0.0,
+  "latency_s": 4.9
  }
 }

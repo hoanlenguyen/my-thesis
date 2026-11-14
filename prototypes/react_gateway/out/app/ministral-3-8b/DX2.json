@@ -1,0 +1,58 @@
+{
+ "plan": "DX2",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-12-19 07:00",
+  "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway cannot keep the house at 22 C the whole time while everyone is away (the default away temperature is 17 C).",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Which setting should take priority? Keep the house at 22 C the whole time (even when away), or use the default away temperature of 17 C when no one is home?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-19 07:00",
+    "end": "2016-12-23 18:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 7.48,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway cannot keep the house at 22 C the whole time while everyone is away (the default away temperature is 17 C).\", \"questions\": [{\"text\": \"Which setting should take priority? Keep the house at 22 C the whole time (even when away), or use the default away temp"
+  }
+ ]
+}

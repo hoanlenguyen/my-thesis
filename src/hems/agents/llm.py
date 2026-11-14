@@ -54,6 +54,35 @@ MODELS: dict[str, ModelSpec] = {
     "qwen3-30b-a3b": ModelSpec("ollama", "qwen3:30b-a3b", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000,
                                ollama_num_gpu=0),  # fmt: skip
     "gemma4-e4b": ModelSpec("ollama", "gemma4:e4b", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    # Tiny models that fit a 4 GB gateway board (10 Nov 2026): same settings as their larger relatives.
+    "qwen3-1.7b": ModelSpec("ollama", "qwen3:1.7b", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000),
+    "qwen3-4b": ModelSpec("ollama", "qwen3:4b", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000),
+    # qwen3:4b is the 2507 "thinking" build: with think=False it still reasons in its answer text (10 Nov 2026), so
+    # the run without reasoning uses the instruct build.
+    "qwen3-4b-instruct": ModelSpec("ollama", "qwen3:4b-instruct", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    "llama3.2-3b": ModelSpec("ollama", "llama3.2:3b", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    # Mistral's Ministral 3 8B (instruct, no reasoning phase), added 12 Nov 2026 as a third 8B-class family.
+    "ministral-3-8b": ModelSpec("ollama", "ministral-3:8b", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    # Model set chosen by the author on 13 Nov 2026 (Gemma 4, Ministral 3, Phi-4, SmolLM3; Llama 4 dropped: its
+    # smallest model, Scout, has 109B parameters, and its licence excludes EU-domiciled users of multimodal models).
+    # Small tier for a 4 GB gateway board, default reasoning settings of each model.
+    "gemma4-e2b": ModelSpec("ollama", "gemma4:e2b", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    "ministral-3-3b": ModelSpec("ollama", "ministral-3:3b", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    # NVIDIA Nemotron 3 Nano 4B (hybrid Mamba-Transformer, trained for tool calling; NVIDIA Open Model License),
+    # added 13 Nov 2026; reasoning on, parsed by Ollama.
+    "nemotron3-nano-4b": ModelSpec("ollama", "nemotron-3-nano:4b", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000),
+    # Phi-4-mini: dropped from the model set on 13 Nov 2026 (no usable tool calls); kept for its archived results.
+    "phi4-mini": ModelSpec("ollama", "phi4-mini", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    # Same weights with a tool-calling template (react_gateway/phi4-mini-tools.Modelfile): the stock template made
+    # no tool calls in the ReAct gateway (13 Nov 2026).
+    "phi4-mini-tools": ModelSpec("ollama", "phi4-mini-tools", 0.0, 0.0, ollama_think=None, ollama_num_predict=8000),
+    # No official Ollama build: the GGUF of ggml-org on Hugging Face (Q4_K_M); reasoning on by default (/think).
+    "smollm3-3b": ModelSpec("ollama", "hf.co/ggml-org/SmolLM3-3B-GGUF:Q4_K_M", 0.0, 0.0, ollama_think=None,
+                            ollama_num_predict=8000),  # fmt: skip
+    # The GGUF's template never passes the tools to the model (it reads a variable Ollama does not set); this build
+    # has a template in SmolLM3's documented tool format (react_gateway/smollm3-tools.Modelfile), reasoning on.
+    # Dropped from the model set on 13 Nov 2026 (never planned a schedule); kept for its archived results.
+    "smollm3-tools": ModelSpec("ollama", "smollm3-tools", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000),
 }
 
 # The model new runs use unless another is named (CLI, LangGraph Studio, demo)
@@ -64,7 +93,8 @@ DEFAULT_MODEL = "gpt-6-luna"
 OLLAMA_NUM_CTX = 32768
 
 
-def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> BaseChatModel:
+def make_model(name: str, temperature: float = 0.0, seed: int | None = None, num_ctx: int | None = None) -> BaseChatModel:
+    """``num_ctx``: Ollama context window for this call site (None = ``OLLAMA_NUM_CTX``, sized for the agents)."""
     spec = MODELS[name]
     if spec.provider == "openai":
         from langchain_openai import ChatOpenAI
@@ -80,7 +110,7 @@ def make_model(name: str, temperature: float = 0.0, seed: int | None = None) -> 
         from langchain_ollama import ChatOllama
 
         return ChatOllama(
-            model=spec.model_id, temperature=temperature, seed=seed, num_ctx=OLLAMA_NUM_CTX,
+            model=spec.model_id, temperature=temperature, seed=seed, num_ctx=num_ctx or OLLAMA_NUM_CTX,
             reasoning=spec.ollama_think, num_predict=spec.ollama_num_predict, num_gpu=spec.ollama_num_gpu,
             keep_alive="30m",
         )  # fmt: skip

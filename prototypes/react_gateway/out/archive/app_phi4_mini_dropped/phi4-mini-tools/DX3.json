@@ -1,0 +1,52 @@
+{
+ "plan": "DX3",
+ "model": "phi4-mini-tools",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I'm sorry, but I need more information to create a plan. Could you please specify the appliances you want to run and their respective deadlines?",
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "Please provide the details for the dishwasher and washing machine."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "no requirement given"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 2,
+  "met_on_real_day": null,
+  "seconds": 2.71,
+  "tool_calls": 3
+ }
+}

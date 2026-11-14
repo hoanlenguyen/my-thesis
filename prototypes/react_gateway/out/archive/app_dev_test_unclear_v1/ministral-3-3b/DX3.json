@@ -1,0 +1,90 @@
+{
+ "plan": "DX3",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ll schedule the dishwasher and washing machine to finish by 9 AM tomorrow, using solar energy to save costs. This avoids expensive grid power and maximizes savings.",
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "Should the dishwasher and washing machine finish by 9 AM tomorrow (2023-08-03 09:00) instead of the evening?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 20:00):\n- dishwasher done by Wed 21:00 (evening, in 61345.0 h)\n- washing_machine done by Wed 21:00 (evening, in 61345.0 h)",
+  "Time rule: '09:00' read as Wed 21:00, the next occurrence of that clock time (the household wrote it without am/pm).",
+  "Time rule: '09:00' read as Wed 21:00, the next occurrence of that clock time (the household wrote it without am/pm)."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "dishwasher done by 2016-08-04 00:00",
+   "status": "met"
+  },
+  {
+   "requirement": "washing_machine done by 2016-08-04 00:00",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 2,
+  "met_on_real_day": null,
+  "seconds": 3.92,
+  "tool_calls": 5
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [{\"appliance\": \"dishwasher\", \"deadline\": \"2023-08-03 09:00\"}, {\"appliance\": \"washing_machine\", \"deadline\": \"2023-08-03 09:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I\u2019ll schedule the dishwasher and washing machine to finish by 9 AM tomorrow, using solar energy to save costs. This avoids expensive grid power and maximizes savings.\", \"questions\": [{\"text\": \"Should the dishwasher and washing machine finish by 9 AM tomorrow (2023-0"
+  }
+ ]
+}

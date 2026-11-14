@@ -1,0 +1,21 @@
+{
+ "plan": "DA1",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Should the car be charged to a specific percentage (e.g., 80%) or to a certain energy level (e.g., 30 kWh) by tomorrow?"
+  },
+  {
+   "topic": "ev",
+   "text": "When do you plan to depart tomorrow?"
+  }
+ ],
+ "explanation": "The car will charge overnight using cheap electricity and solar power.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-03-29 18:00",
+ "timeline": null
+}

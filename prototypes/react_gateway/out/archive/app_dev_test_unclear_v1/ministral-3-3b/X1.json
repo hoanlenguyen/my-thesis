@@ -1,0 +1,62 @@
+{
+ "plan": "X1",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-02-11 23:30",
+  "text": "Just got home, need it full for 5am.",
+  "car_pct": 20
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ll charge your car to 80% as usual, but I need to confirm: you asked for a full charge by 5 AM tomorrow. Since you\u2019re already home, I\u2019ll prioritize that. Please confirm if you\u2019d like to adjust the target or departure time.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "You mentioned needing a full charge by 5 AM tomorrow. Should I adjust the usual 80% target or confirm this new requirement?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "EV departure missing or already passed"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-02-12 05:00",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 2.02,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-02-11 05:00\", \"target_pct\": null}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I\u2019ll charge your car to 80% as usual, but I need to confirm: you asked for a full charge by 5 AM tomorrow. Since you\u2019re already home, I\u2019ll prioritize that. Please confirm if you\u2019d like to adjust the target or departure time.\", \"questions\": [{\"text\": \"You mentioned n"
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+ "plan": "DX1",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-05-17 22:00",
+  "text": "Charge it full for 5:30.",
+  "car_pct": 15
+ },
+ "decision": "ask",
+ "message_to_household": "The car will charge as much as possible (~80%) at low-cost times to meet your request for full charge by 17:30 tomorrow evening. Since full charging isn\u2019t possible due to limited solar and battery capacity, this is the best we can do without extra cost.",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "Would you like to adjust the charge time or target, or should I proceed with this plan?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 22:00):\n- car 100 % by Tue 17:30 (evening, in 61315.5 h)",
+  "Time rule: '05:30' read as Tue 17:30, the next occurrence of that clock time (the household wrote it without am/pm).",
+  "Car: 100.0 % by 2023-05-16 17:30 is after the last known day-ahead price (Thu 00:00); the gateway plans this charge when the prices for that night are published."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car by 2023-05-16 17:30",
+   "status": "later"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-05-18 05:30",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 4.59,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2023-05-17 05:30\", \"target_pct\": 100}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The car will charge as much as possible (~80%) at low-cost times to meet your request for full charge by 17:30 tomorrow evening. Since full charging isn\u2019t possible due to limited solar and battery capacity, this is the best we can do without extra cost.\", \"questions"
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+ "plan": "C5",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-04-19 19:00",
+  "text": "Usual charge for tomorrow.",
+  "car_pct": 60,
+  "later": {
+   "sent": "2016-04-19 21:00",
+   "text": "Actually charge it full, long drive. And a wash overnight, done by 6."
+  }
+ },
+ "decision": "ask",
+ "message_to_household": "The car needs 20 kWh more to reach full charge, which would take until 09:30 tomorrow.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Is this okay for the full charge?"
+  },
+  {
+   "topic": "ev",
+   "text": "Does the car need to be ready by 07:30 or can it be later?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-04-20 07:30",
+    "target_pct": 100
+   }
+  ],
+  "appliances": [
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-04-20 06:00"
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 2,
+  "met_on_real_day": null,
+  "seconds": 7.9,
+  "tool_calls": 2
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "plan": "A6",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-06-10 17:00",
+  "text": "Away for the weekend.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will set away mode for the weekend and let the indoor temperature fall to 17 C.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "Should the car stop charging now, or keep charging until you return?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 5.15,
+  "tool_calls": 2
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "plan": "DX2",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-12-19 07:00",
+  "text": "On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "comfort band 2016-12-19 07:00 to 2016-12-20 18:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-12-19 07:00",
+    "end": "2016-12-23 18:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 25.29,
+  "tool_calls": 1
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"away\": [{\"end\": \"2016-12-20 18:00\", \"start\": \"2016-12-19 07:00\"}], \"comfort\": [{\"end\": \"2016-12-20 18:00\", \"max_22\": 22, \"min_22\": 22, \"start\": \"2016-12-19 07:00\"}]}"
+  }
+ ]
+}

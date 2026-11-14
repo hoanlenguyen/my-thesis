@@ -1,0 +1,42 @@
+{
+ "plan": "A2",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I can lower the heating to the away setting while you\u2019re visiting, but \u201ca few hours this afternoon\u201d doesn\u2019t specify exact start and end times. Please tell me when you\u2019ll leave and when you expect to be back.",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "What time will you leave and return this afternoon? I need both times to lower the heat while you\u2019re out."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "no requirement given"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.21,
+  "tool_calls": 5
+ }
+}

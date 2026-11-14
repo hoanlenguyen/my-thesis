@@ -1,0 +1,39 @@
+{
+ "plan": "DA4",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I need a temperature range and the times you want it maintained before I can plan the heating.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What indoor temperature range would you like for \u201ccosy\u201d while your guests are over, and what time should that comfort period start and end?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 4.03,
+  "tool_calls": 2
+ }
+}

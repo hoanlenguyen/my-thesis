@@ -1,0 +1,39 @@
+{
+ "plan": "DA2",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-11-02 07:30",
+  "text": "Run the washing sometime when it's cheap.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I need to know when you need the washing machine to be finished to schedule it at the cheapest time.",
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "By what time would you like the washing machine to be finished?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 9.28,
+  "tool_calls": 3
+ }
+}

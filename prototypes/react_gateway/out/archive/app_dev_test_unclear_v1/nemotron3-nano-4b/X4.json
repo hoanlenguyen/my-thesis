@@ -1,0 +1,75 @@
+{
+ "plan": "X4",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-10-18 18:00",
+  "text": "Charge it full before we go to dinner at 8.",
+  "car_pct": 10
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will charge the car to about 28% by 20:00, adding 7.4 kWh from solar and grid. It cannot reach 100% in the 2\u2011hour window because the charger is limited to 3.7 kW and solar output is low.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Is 8:00 dinner time okay for a full charge, or should we charge later?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 18:00):\n- car 80 % by Tue 20:00 (evening, in 2.0 h)",
+  "Car target not given: used the usual 80 %."
+ ],
+ "warnings": [
+  "the car cannot get the full 28.0 kWh by 10-18 20:00; the charger adds at most 7.4 kWh in that time, so the car will be at about 28 %. It charges at full power until then."
+ ],
+ "requirements": [
+  {
+   "requirement": "car +28.0 kWh by 2016-10-18 20:00",
+   "status": "partly"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-10-18 20:00",
+    "target_pct": 100,
+    "feasible": false
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 24.28,
+  "tool_calls": 4
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": \"[{\\\"departure\\\": \\\"2016-10-18 20:00\\\", \\\"energy_40\\\", \\\"target_100\\\"}]\", \"appliances\": [], \"away\": [], \"comfort\": [], \"unclear\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-10-18 20:00\", \"energy\": 40, \"target\": 100}], \"appliances\": [], \"away\": [], \"comfort\": [], \"unclear\": []}"
+  },
+  {
+   "turn": 4,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"Is 8:00 dinner time okay for a full charge, or should we charge later?\", \"topic\": \"ev\"}], \"explanation\": \"The gateway will charge the car to about 28% by 20:00, adding 7.4 kWh from solar and grid. It cannot reach 100% in the 2\u2011hour window because the charger"
+  }
+ ]
+}

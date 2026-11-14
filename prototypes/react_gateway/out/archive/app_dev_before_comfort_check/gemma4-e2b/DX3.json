@@ -1,0 +1,52 @@
+{
+ "plan": "DX3",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I have planned to run the dishwasher and washing machine by 21:00 today. However, the schedule found a conflict regarding the washing machine cycle length. Could you please clarify the washing machine issue?",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The schedule found a conflict regarding the washing machine cycle length. Could you please clarify the washing machine issue?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 2,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.87,
+  "tool_calls": 2
+ }
+}

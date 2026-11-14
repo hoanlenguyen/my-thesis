@@ -1,0 +1,56 @@
+{
+ "plan": "X5",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-01-12 20:00",
+  "text": "Usual charge for tomorrow, but no power from the grid tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "I have scheduled your car to charge to 80% by 07:30 tomorrow morning. This charging is planned to occur between 00:00 and 06:00.",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "You requested no grid power tonight, but the current plan uses grid power for tomorrow's charging. Should I prioritize charging without grid power, even if it means the car might not reach 80%?"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 20:00):\n- car 80 % by Wed 07:30 (morning, in 11.5 h)",
+  "Car time not given: used the usual ready-by time 07:30 on 2016-01-13."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car +20.0 kWh by 2016-01-13 07:30",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-01-13 07:30",
+    "target_pct": 80,
+    "feasible": false,
+    "infeasible_because": "no grid at night: 20 kWh needed, the home battery holds 10 kWh and there is no PV in a January night"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 16.16,
+  "tool_calls": 3
+ }
+}

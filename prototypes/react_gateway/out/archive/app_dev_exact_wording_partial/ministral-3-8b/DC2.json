@@ -1,0 +1,17 @@
+{
+ "plan": "DC2",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "We\u2019ll be back at 17:00 instead. Can we charge the car during our absence (15:00\u201317:00) to avoid using grid power when we return?"
+  }
+ ],
+ "explanation": "The gateway will set the house to 17 \u00b0C while you\u2019re away (15:00\u201317:00).",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-02-20 15:00",
+ "timeline": null
+}

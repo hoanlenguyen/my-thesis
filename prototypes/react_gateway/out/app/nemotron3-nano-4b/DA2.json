@@ -1,0 +1,57 @@
+{
+ "plan": "DA2",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-11-02 07:30",
+  "text": "Run the washing sometime when it's cheap.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [
+  "Read back (message sent Wed 07:30):\n- washing_machine done by Fri 00:00 (night, in 40.5 h)",
+  "Washing machine deadline not given: runs at the cheapest time before Fri 00:00, the end of the known prices."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "washing_machine done by 2016-11-04 00:00",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "appliances": [
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-11-04 00:00"
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 12.95,
+  "tool_calls": 1
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [{\"appliance\": \"washing_machine\"}], \"unclear\": []}"
+  }
+ ]
+}

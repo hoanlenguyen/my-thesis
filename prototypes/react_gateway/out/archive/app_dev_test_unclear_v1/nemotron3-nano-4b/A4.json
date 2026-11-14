@@ -1,0 +1,65 @@
+{
+ "plan": "A4",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "\"The car will be charged to the usual 80% by Wednesday 07:30. For the comfort band from 18:30 to 00:00, I need the desired temperature range to set the heating. Once you provide that, I can finalize the plan.\"",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature would you like for the extra warm comfort band tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'extra warm' is too vague to plan: ask what they mean",
+  "comfort band 2016-11-22 18:30 to 2016-11-23 00:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 1,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 17.25,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"extra warm\"], \"ev\": {\"departure\": null, \"target_energy\": null, \"target_pct\": null}, \"appliances\": [], \"away\": [], \"comfort\": [{\"end\": \"2016-11-23 00:00\", \"start\": \"2016-11-22 18:30\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"extra warm\"], \"ev\": [{\"departure\": null, \"target_energy\": null, \"target_pct\": null}], \"appliances\": [], \"away\": [], \"comfort\": [{\"end\": \"2016-11-23 00:00\", \"start\": \"2016-11-22 18:30\"}]}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"What temperature would you like for the extra warm comfort band tonight?\", \"topic\": \"comfort\"}], \"explanation\": \"\\\"The car will be charged to the usual 80% by Wednesday 07:30. For the comfort band from 18:30 to 00:00, I need the desired temperature range to "
+  }
+ ]
+}

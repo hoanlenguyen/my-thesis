@@ -1,0 +1,53 @@
+{
+ "plan": "A6",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-06-10 17:00",
+  "text": "Away for the weekend.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I need to know the exact start and end dates for your away period. Could you please specify which dates you mean by \"the weekend\"?",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "What are the start and end dates for your away period this weekend?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'the weekend' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.37,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"the weekend\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I need to know the exact start and end dates for your away period. Could you please specify which dates you mean by \\\"the weekend\\\"?\", \"questions\": [{\"text\": \"What are the start and end dates for your away period this weekend?\", \"topic\": \"away\"}]}"
+  }
+ ]
+}

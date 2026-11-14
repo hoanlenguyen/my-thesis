@@ -1,0 +1,55 @@
+{
+ "plan": "A1",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-03-14 20:00",
+  "text": "Long trip tomorrow, leaving really early. Make sure the car is full.",
+  "car_pct": 35
+ },
+ "decision": "ask",
+ "message_to_household": "I need a few more details to plan your trip.",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "When will your long trip end?"
+  },
+  {
+   "topic": "ev",
+   "text": "What time is \"really early\" for you to leave tomorrow?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 17.34,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"away\": [{\"start\": \"2016-03-15 00:00\"}], \"ev\": [{\"target_pct\": \"full\"}], \"unclear\": [\"leaving really early\", \"trip end time\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I need a few more details to plan your trip.\", \"questions\": [{\"text\": \"When will your long trip end?\", \"topic\": \"away\"}, {\"text\": \"What time is \\\"really early\\\" for you to leave tomorrow?\", \"topic\": \"ev\"}]}"
+  }
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "plan": "DA3",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-06-21 12:00",
+  "text": "Car full for my trip, leaving early tomorrow.",
+  "car_pct": 60
+ },
+ "decision": "ask",
+ "message_to_household": "I will plan the car charging for tomorrow morning to have it fully charged for your trip.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time do you mean by \"leaving early tomorrow\"? (For example, 06:00, 07:00, or another time?)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 6.04,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I will plan the car charging for tomorrow morning to have it fully charged for your trip.\", \"questions\": [{\"text\": \"What time do you mean by \\\"leaving early tomorrow\\\"? (For example, 06:00, 07:00, or another time?)\", \"topic\": \"ev\"}]}"
+  }
+ ]
+}

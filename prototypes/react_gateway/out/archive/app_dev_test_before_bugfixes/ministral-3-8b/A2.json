@@ -1,0 +1,40 @@
+{
+ "plan": "A2",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will lower the indoor temperature to 17 \u00b0C when you leave for your visit. It will return to the usual comfort band of 20\u201322 \u00b0C when you get back.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "When will you be back? (e.g., \"by 17:00\", \"back at 16:30\", or \"until 16:00\")"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 9.07,
+  "tool_calls": 2
+ }
+}

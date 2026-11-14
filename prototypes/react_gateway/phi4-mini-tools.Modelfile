@@ -1,0 +1,33 @@
+# Phi-4-mini with a tool-calling template (13 Nov 2026). Ollama's stock template for phi4-mini lists the tools but
+# never tells the model how to call them, and the model answered in prose ("I can't execute the tool directly").
+# Following Microsoft's guide for Phi-4-mini function calling in Ollama, this template states the call format in the
+# system block and renders earlier tool calls in the same "functools[...]" form, from which Ollama learns how to
+# parse the model's calls. Same weights as phi4-mini (Q4_K_M); Microsoft's guide used the fp16 build.
+#   ollama create phi4-mini-tools -f prototypes/react_gateway/phi4-mini-tools.Modelfile
+FROM phi4-mini
+TEMPLATE """{{- if or .System .Tools }}<|system|>{{ if .System }}{{ .System }}{{ end }}
+{{- if .Tools }}
+
+You can call the functions listed between <|tool|> and <|/tool|>. To call functions, answer with nothing but
+functools[{"name": "<function name>", "arguments": {<arguments as a JSON object>}}, ...]
+For example, to call a function named lookup with the argument city set to "Oulu", answer exactly:
+functools[{"name": "lookup", "arguments": {"city": "Oulu"}}]
+and to call a function without arguments named status, answer exactly:
+functools[{"name": "status", "arguments": {}}]
+Put every call you want to make now in that one JSON list. When you have all the information you need, call the
+function that gives the final answer.<|tool|>[{{ range $i, $t := .Tools }}{{ if $i }}, {{ end }}{{ $t.Function }}{{ end }}]<|/tool|>
+{{- end }}<|end|>
+{{- end }}
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 }}
+{{- if eq .Role "user" }}<|user|>{{ .Content }}<|end|>
+{{- else if eq .Role "assistant" }}<|assistant|>{{ if .Content }}{{ .Content }}{{ end }}
+{{- if .ToolCalls }}functools[{{ range $j, $c := .ToolCalls }}{{ if $j }}, {{ end }}{"name": "{{ $c.Function.Name }}", "arguments": {{ $c.Function.Arguments }}}{{ end }}]{{ end }}
+{{- if not $last }}<|end|>{{ end }}
+{{- else if eq .Role "tool" }}<|user|>Function result: {{ .Content }}<|end|>
+{{- end }}
+{{- if and $last (ne .Role "assistant") }}<|assistant|>{{ end }}
+{{- end }}"""
+PARAMETER stop <|end|>
+PARAMETER stop <|endoftext|>
+PARAMETER stop <|user|>

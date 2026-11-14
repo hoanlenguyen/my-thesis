@@ -1,0 +1,47 @@
+{
+ "plan": "DA3",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-06-21 12:00",
+  "text": "Car full for my trip, leaving early tomorrow.",
+  "car_pct": 60
+ },
+ "decision": "ask",
+ "message_to_household": "The car can reach 100% by 2016-06-22 07:30, using 16.0 kWh of solar energy. That plan saves \u20ac0.41 compared with charging now, but I need your departure time to check whether it will be ready for your trip.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "What time are you leaving tomorrow? \u201cEarly\u201d is unclear, and the usual 07:30 ready-by time may not be early enough."
+  }
+ ],
+ "notes": [
+  "Read back (message sent Tue 12:00):\n- car 100 % by Wed 07:30 (morning, in 19.5 h)",
+  "Car time not given: used the usual ready-by time Wed 07:30."
+ ],
+ "warnings": [],
+ "requirements": [
+  {
+   "requirement": "car +16.0 kWh by 2016-06-22 07:30",
+   "status": "met"
+  }
+ ],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.2,
+  "tool_calls": 3
+ }
+}

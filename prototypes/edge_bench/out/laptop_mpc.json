@@ -1,0 +1,8 @@
+{
+ "device": "laptop",
+ "host_os": "Windows-11-10.0.26200-SP0",
+ "solves": 363,
+ "mean_s": 0.081,
+ "p95_s": 0.12,
+ "max_s": 0.491
+}

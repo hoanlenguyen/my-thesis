@@ -1,0 +1,73 @@
+{
+ "plan": "A1",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-03-14 20:00",
+  "text": "Long trip tomorrow, leaving really early. Make sure the car is full.",
+  "car_pct": 35
+ },
+ "decision": "ask",
+ "message_to_household": "I can plan the car to be full by the usual ready-by time of 2016-03-15 07:30, but I need your departure time to make sure that is early enough.",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "What time are you leaving tomorrow? \u201cReally early\u201d is too vague to plan."
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'really early' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 6.27,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"really early\"], \"ev\": [{\"departure\": null, \"target_pct\": 100, \"energy_kwh\": null, \"earliest\": null}], \"appliances\": [], \"away\": [], \"comfort\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"topic\": \"other\", \"text\": \"What time are you leaving tomorrow? \u201cReally early\u201d is too vague to plan.\"}], \"explanation\": \"I can plan the car to be full by the usual ready-by time of 2016-03-15 07:30, but I need your departure time to make sure that is early enough.\"}"
+  }
+ ]
+}

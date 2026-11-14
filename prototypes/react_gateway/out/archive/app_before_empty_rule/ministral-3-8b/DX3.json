@@ -1,0 +1,19 @@
+{
+ "plan": "DX3",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "Should the washing machine start at 18:45 or can it finish later than 21:00?"
+  }
+ ],
+ "explanation": "The washing machine needs **2 hours and 15 minutes** to finish, but you asked it to be done by **21:00**. Should it start at **18:45** or can it finish later?",
+ "requirements_check": null,
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-08-02 20:00",
+ "timeline": null
+}

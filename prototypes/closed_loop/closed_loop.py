@@ -13,8 +13,8 @@ question is not executed and is reported as "asked".
 World (OPSD ``DE_KN_residential4``, German setup as in ``home_gateway``): from the time of the last message to
 the end of the next day, with the house's measured PV, load, heat demand and COP; the recorded EV sessions are
 replaced by the plan's car: plugged in from the last message with the stated charge and gone at the key's
-departure. Appliances (assumptions): dishwasher 1.0 kWh over 2.5 h, washing machine 0.9 kWh over 2 h, not
-interruptible.
+departure. Appliances: the house's measured typical cycles (``react_gateway/appliances.json``: dishwasher 0.76 kWh
+over 1 h, washing machine 0.75 kWh over 2.25 h), not interruptible.
 
 Gateway: an MPC (MILP) re-solved every hour on the weather forecasts of ``home_gateway`` from the measured
 state, with the committed constraints: comfort band per slot (away: down to the set-back), EV energy by
@@ -50,13 +50,14 @@ from twin import Day, Home, load_days  # noqa: E402
 from hems.core.models import SLOT_HOURS, SLOTS_PER_DAY  # noqa: E402
 
 HERE = Path(__file__).parent
-APPLIANCE = {"dishwasher": (10, 0.4), "washing_machine": (8, 0.45)}  # (slots, kW)
+# Measured typical cycles of the house (power per 15-min slot, ``react_gateway/appliance_cycles.py``)
+APPLIANCE = {name: np.array(v["typical_profile_kw"]) for name, v in json.loads(
+    (ROOT / "react_gateway" / "appliances.json").read_text(encoding="utf-8")).items() if isinstance(v, dict)}
 SETBACK_C = 17.0
 PENALTY_KWH, PENALTY_KSLOT, PENALTY_APPLIANCE = 5.0, 5.0, 20.0  # EUR per kWh short, per K x slot, per missed run
 REPLAN_SLOTS = 4
 COMFORT_TOL_KH = 0.5
 EV_TOL_KWH = 1.0
-SYSTEMS = ("gpt-6-luna", "gemma4-e4b", "qwen3-8b", "qwen3-30b-a3b", "gpt-oss-20b")
 
 
 # ── Constraints from a HouseholdPlan ─────────────────────────────────────────
@@ -148,10 +149,11 @@ def mpc(f: dict[str, np.ndarray], k: int, st: Status, c: Constraints, w: World, 
     app_power = {t: 0.0 for t in slots}
     missed = []
     for n, (name, a, b) in enumerate(c.appliances):
-        length, kw = APPLIANCE[name]
+        prof = APPLIANCE[name]
+        length = len(prof)
         if n in st.started:
             for t in range(max(k, st.started[n]), min(H, st.started[n] + length)):
-                app_power[t] = app_power[t] + kw
+                app_power[t] = app_power[t] + float(prof[t - st.started[n]])
             continue
         y = {s: pulp.LpVariable(f"y{n}_{s}", cat="Binary") for s in range(max(k, a), b - length + 1)}
         miss = pulp.LpVariable(f"miss{n}", cat="Binary")
@@ -159,7 +161,7 @@ def mpc(f: dict[str, np.ndarray], k: int, st: Status, c: Constraints, w: World, 
         missed.append(miss)
         for s, v in y.items():
             for t in range(s, s + length):
-                app_power[t] = app_power[t] + kw * v
+                app_power[t] = app_power[t] + float(prof[t - s]) * v
     price = float(f["import_price"].mean())
     m += (pulp.lpSum((f["import_price"][t] * imp[t] - f["export_price"][t] * exp[t]) * SLOT_HOURS for t in slots)
           - price * (home.efficiency * soc[H] + home.capacity_kwh_per_k * temp[H] / float(f["cop"].mean()))
@@ -194,7 +196,8 @@ def mpc(f: dict[str, np.ndarray], k: int, st: Status, c: Constraints, w: World, 
     ev_plan = np.zeros((len(c.ev), H))
     for (i, t), v in evv.items():
         ev_plan[i, t] = pulp.value(v) or 0.0
-    return {"hp": arr(hp), "grid": arr(imp) - arr(exp), "ev": ev_plan, "starts": starts}
+    return {"hp": arr(hp), "grid": arr(imp) - arr(exp), "ev": ev_plan, "starts": starts,
+            "battery": arr(ch) - arr(dis), "indoor": arr({t: temp[t + 1] for t in slots})}
 
 
 def run(w: World, home: Home, c: Constraints | None, ev_avail: tuple[int, int], rules_ev: float = 0.0,
@@ -224,13 +227,13 @@ def run(w: World, home: Home, c: Constraints | None, ev_avail: tuple[int, int], 
         for n, (name, a, b) in enumerate(apps):
             if n in st.started:
                 continue
-            due = plan["starts"].get(n) == t or t >= b - APPLIANCE[name][0] if c else t >= a
+            due = plan["starts"].get(n) == t or t >= b - len(APPLIANCE[name]) if c else t >= a
             if due:
                 st.started[n] = t
         for n, s in st.started.items():
-            length, kw = APPLIANCE[apps[n][0]]
-            if s <= t < s + length:
-                app[t] += kw
+            prof = APPLIANCE[apps[n][0]]
+            if s <= t < s + len(prof):
+                app[t] += prof[t - s]
         # EV: only while the car is there
         if ev_avail[0] <= t < ev_avail[1]:
             for i in range(n_ev):
@@ -263,7 +266,7 @@ def judge(w: World, home: Home, key: Constraints, r: dict, apps_started: dict[in
     comfort_kh = float((np.clip(low - t_mid, 0, None) + np.clip(t_mid - high, 0, None)).sum() * SLOT_HOURS)
     app_ok = True
     for name, a, b in key.appliances:
-        length = APPLIANCE[name][0]
+        length = len(APPLIANCE[name])
         starts = [s for n, s in (apps_started or {}).items() if app_names[n] == name]
         app_ok &= any(a <= s and s + length <= b for s in starts)
     imp_price, exp_price, cop = w.actual("import_price"), w.actual("export_price"), w.actual("cop")
@@ -279,6 +282,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--raw-dir", type=Path, default=Path("data/raw"))
     parser.add_argument("--out", type=Path, default=HERE / "out" / "results.jsonl")
+    parser.add_argument("--answers", default="results.jsonl", help="plan-pilot answers in plan_pilot/")
     args = parser.parse_args()
     home = Home()
     all_days = load_days(args.raw_dir, 2016, "de", "feedin")
@@ -288,9 +292,10 @@ def main() -> None:
     data = json.loads((pilot_dir / "plans.json").read_text(encoding="utf-8"))
     household, plans = data["household"], [p for p in data["plans"] if p["key"].get("decision") == "commit"]
     answers: dict[tuple[str, str], dict | None] = {}
-    for line in (pilot_dir / "results.jsonl").read_text(encoding="utf-8").splitlines():
+    for line in (pilot_dir / args.answers).read_text(encoding="utf-8").splitlines():
         row = json.loads(line)
         answers[(row["model"].split("/")[0], row["id"])] = row["output"]
+    systems = list(dict.fromkeys(model for model, _ in answers))  # every model in the answers, in run order
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w") as out:
         for plan in plans:
@@ -310,7 +315,7 @@ def main() -> None:
             rows = {"rules": judge(w, home, key, rules_r, rules_r["starts"], key_names)}
             ref = run(w, home, key, ev_avail)
             rows["key"] = judge(w, home, key, ref, ref["starts"], key_names)
-            for system in SYSTEMS:
+            for system in systems:
                 got = answers.get((system, plan["id"]))
                 after, _ = gated(plan, got, household)
                 if not after.get("commit"):

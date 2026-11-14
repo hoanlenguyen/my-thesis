@@ -1,0 +1,64 @@
+{
+ "plan": "A4",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "I need a bit more information to make the house extra warm for you. Could you please specify what temperature range you would like the indoor temperature to be between tonight?",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature range do you consider 'extra warm'?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'extra warm' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 8.68,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-11-23 00:00\", \"target_pct\": \"full\"}], \"unclear\": [\"extra warm\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-11-23 00:00\", \"target_pct\": 100}], \"unclear\": [\"extra warm\"]}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I need a bit more information to make the house extra warm for you. Could you please specify what temperature range you would like the indoor temperature to be between tonight?\", \"questions\": [{\"text\": \"What temperature range do you consider 'extra warm'?\", \"topic\":"
+  }
+ ]
+}

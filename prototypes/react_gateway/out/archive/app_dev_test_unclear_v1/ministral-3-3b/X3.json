@@ -1,0 +1,85 @@
+{
+ "plan": "X3",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-07-25 21:00",
+  "text": "Taking the car to work tomorrow, 8 to 5. Charge it to 90% from the solar panels at midday.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway cannot plan charging the car to **90%** at **midday** because that conflicts with your usual departure time of **17:00**.",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "Could you clarify what you mean by 'midday'? For example, is it 12:00 or another time?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'midday' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "away": [
+   {
+    "start": "2016-07-26 08:00",
+    "end": "2016-07-26 17:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 7.97,
+  "tool_calls": 7
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [], \"away\": [{\"end\": \"2023-07-26 17:00\", \"start\": \"2023-07-26 08:00\"}], \"comfort\": [], \"ev\": {\"departure\": \"2023-07-26 17:00\", \"target_pct\": 90}, \"unclear\": []}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [], \"away\": [{\"end\": \"2023-07-26 17:00\", \"start\": \"2023-07-26 08:00\"}], \"comfort\": [], \"ev\": [{\"departure\": \"2023-07-26 17:00\", \"target_pct\": 90}], \"unclear\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [], \"away\": [{\"end\": \"2023-07-26 17:00\", \"start\": \"2023-07-26 08:00\"}], \"comfort\": [], \"ev\": [{\"departure\": \"2023-07-26 17:00\", \"target_pct\": 90}], \"unclear\": [\"midday\"]}"
+  },
+  {
+   "turn": 4,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway cannot plan charging the car to **90%** at **midday** because that conflicts with your usual departure time of **17:00**.\", \"questions\": [{\"text\": \"Could you clarify what you mean by 'midday'? For example, is it 12:00 or another time?\", \"topic\": \"other\"}"
+  }
+ ]
+}

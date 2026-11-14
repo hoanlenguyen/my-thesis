@@ -1,0 +1,84 @@
+{
+ "plan": "DX3",
+ "model": "gpt-6-luna",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "I can\u2019t schedule both cycles to finish by 21:00: the washing machine needs 2.25 hours. What later deadline would work for the washing machine?",
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The washing machine\u2019s 2.25-hour cycle cannot finish by 21:00, given the 20:00 message time. What later finish time should I use?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 2,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.07,
+  "tool_calls": 6
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_prices",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_weather_forecast",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "get_appliances",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [], \"ev\": [], \"appliances\": [{\"appliance\": \"dishwasher\", \"earliest\": null, \"deadline\": \"2016-08-02 21:00\"}, {\"appliance\": \"washing_machine\", \"earliest\": null, \"deadline\": \"2016-08-02 21:00\"}], \"away\": [], \"comfort\": []}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"topic\": \"conflict\", \"text\": \"The washing machine\u2019s 2.25-hour cycle cannot finish by 21:00, given the 20:00 message time. What later finish time should I use?\"}], \"explanation\": \"I can\u2019t schedule both cycles to finish by 21:00: the washing machine needs 2.25 hours. W"
+  }
+ ]
+}

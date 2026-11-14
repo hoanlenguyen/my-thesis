@@ -1,0 +1,19 @@
+{
+ "plan": "DX3",
+ "model": "gpt-6-luna",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "conflict",
+   "text": "The washing machine\u2019s 2.25-hour cycle cannot finish by 21:00. What later finish time would you like for it?"
+  }
+ ],
+ "explanation": "The dishwasher can finish by 21:00, but the washing machine needs 2 hours 15 minutes, so both cannot meet the requested deadline. I haven\u2019t scheduled either appliance; please give a later washing-machine deadline.",
+ "requirements_check": null,
+ "problems": [
+  "washing_machine window shorter than its cycle"
+ ],
+ "schedule": null,
+ "timeline_start": "2016-08-02 20:00",
+ "timeline": null
+}

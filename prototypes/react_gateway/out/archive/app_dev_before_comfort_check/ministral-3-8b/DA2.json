@@ -1,0 +1,39 @@
+{
+ "plan": "DA2",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-11-02 07:30",
+  "text": "Run the washing sometime when it's cheap.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "The washing machine will run from 10:00 to 11:45 today, using 1.5 kWh at a cost of 0.45 EUR (saving 0.15 EUR vs. peak prices).",
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "Should I run the washing machine at 10:00\u201311:45 today, or would you prefer one of the cheaper hours (12:00, 13:00, or 14:00)?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 12.2,
+  "tool_calls": 3
+ }
+}

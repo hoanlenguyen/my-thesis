@@ -1,0 +1,60 @@
+# SmolLM3 3B with a tool-calling template (13 Nov 2026). The GGUF's own chat template (ggml-org/SmolLM3-3B-GGUF)
+# reads the tools from a variable named xml_tools, which Ollama never sets, so the model never saw its tools. This
+# template writes SmolLM3's documented format (from that chat template): tools inside <tools></tools> in the system
+# block, calls as <tool_call>{"name": ..., "arguments": ...}</tool_call>; earlier calls are rendered the same way so
+# Ollama learns how to parse them. Reasoning in <think></think> (on unless the request turns it off), so Ollama
+# separates the reasoning from the tool call. Same weights (Q4_K_M).
+#   ollama create smollm3-tools -f prototypes/react_gateway/smollm3-tools.Modelfile
+FROM hf.co/ggml-org/SmolLM3-3B-GGUF:Q4_K_M
+TEMPLATE """<|im_start|>system
+## Metadata
+
+Reasoning Mode: {{ if and .IsThinkSet (not .Think) }}/no_think{{ else }}/think{{ end }}
+
+## Custom Instructions
+
+{{ if .System }}{{ .System }}{{ else }}You are a helpful AI assistant named SmolLM, trained by Hugging Face.{{ end }}
+
+{{- if .Tools }}
+
+### Tools
+
+You may call one or more functions to assist with the user query.
+You are provided with function signatures within <tools></tools> XML tags:
+
+<tools>
+{{- range .Tools }}
+{{ .Function }}
+{{- end }}
+</tools>
+
+For each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:
+<tool_call>
+{"name": <function-name>, "arguments": <args-json-object>}
+</tool_call>
+{{- end }}<|im_end|>
+{{ range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 }}
+{{- if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{ else if eq .Role "assistant" }}<|im_start|>assistant
+{{ if .Thinking }}<think>
+{{ .Thinking }}
+</think>
+{{ end }}{{ if .Content }}{{ .Content }}
+{{- else if .ToolCalls }}<tool_call>
+{{ range .ToolCalls }}{"name": "{{ .Function.Name }}", "arguments": {{ .Function.Arguments }}}
+{{ end }}</tool_call>
+{{- end }}
+{{- if not $last }}<|im_end|>
+{{ end }}
+{{- else if eq .Role "tool" }}<|im_start|>user
+<tool_response>
+{{ .Content }}
+</tool_response><|im_end|>
+{{ end }}
+{{- if and $last (ne .Role "assistant") }}<|im_start|>assistant
+{{ end }}
+{{- end }}"""
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>

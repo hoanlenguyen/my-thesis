@@ -1,0 +1,66 @@
+{
+ "plan": "DX3",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-08-02 20:00",
+  "text": "Dishwasher and washing, both done by 9.",
+  "car_pct": 40
+ },
+ "decision": "ask",
+ "message_to_household": "Both appliances will run as you asked, finishing by 09:00 tomorrow.",
+ "questions": [
+  {
+   "topic": "appliance",
+   "text": "Both appliances must finish by 09:00 tomorrow. Is that correct?"
+  },
+  {
+   "topic": "appliance",
+   "text": "Should the washing machine start as early as possible, or do you prefer a later start time?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "appliances": [
+   {
+    "appliance": "dishwasher",
+    "deadline": "2016-08-02 21:00"
+   },
+   {
+    "appliance": "washing_machine",
+    "deadline": "2016-08-02 21:00"
+   }
+  ],
+  "clarify": [
+   "conflict",
+   "appliance"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 2,
+  "met_on_real_day": null,
+  "seconds": 6.75,
+  "tool_calls": 2
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"Both appliances will run as you asked, finishing by 09:00 tomorrow.\", \"questions\": [{\"text\": \"Both appliances must finish by 09:00 tomorrow. Is that correct?\", \"topic\": \"appliance\"}, {\"text\": \"Should the washing machine start as early as possible, or do you prefer a"
+  }
+ ]
+}

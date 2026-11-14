@@ -1,0 +1,64 @@
+{
+ "plan": "A4",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-11-22 18:30",
+  "text": "Car's plugged in for the commute tomorrow. Make the house extra warm tonight.",
+  "car_pct": 30
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway cannot plan the extra warm setting for tonight because it does not know the target temperature. Please specify the temperature for the extra warm period, e.g., '22 degrees from 5 to 7'.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature should the house be kept at from 20:30 tonight until midnight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "comfort band 2016-11-22 20:30 to 2016-11-22 00:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "ev": [
+   {
+    "departure": "2016-11-23 07:30",
+    "target_pct": 80
+   }
+  ],
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 2.46,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"appliances\": [], \"away\": [], \"comfort\": [{\"end\": \"2016-11-22 00:00\", \"start\": \"2016-11-22 20:30\"}], \"ev\": [], \"unclear\": []}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"The gateway cannot plan the extra warm setting for tonight because it does not know the target temperature. Please specify the temperature for the extra warm period, e.g., '22 degrees from 5 to 7'.\", \"questions\": [{\"text\": \"What temperature should the house be kept "
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "plan": "A2",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-01-10 09:00",
+  "text": "Visiting friends for a few hours this afternoon, turn the heat down while we're out.",
+  "car_pct": 50
+ },
+ "decision": "ask",
+ "message_to_household": "I need a bit more information to plan your request accurately. I need to know the exact time you will be away and the desired temperature setting for the heat.",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "What time will you be visiting friends for a few hours this afternoon?"
+  },
+  {
+   "topic": "other",
+   "text": "What temperature would you like to turn the heat down to?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'a few hours' is too vague to plan: ask what they mean",
+  "the household's 'turn the heat down' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "away",
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.42,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"a few hours\", \"turn the heat down\"]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"questions\": [{\"text\": \"What time will you be visiting friends for a few hours this afternoon?\", \"topic\": \"other\"}, {\"text\": \"What temperature would you like to turn the heat down to?\", \"topic\": \"other\"}]}"
+  },
+  {
+   "turn": 3,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I need a bit more information to plan your request accurately. I need to know the exact time you will be away and the desired temperature setting for the heat.\", \"questions\": [{\"text\": \"What time will you be visiting friends for a few hours this afternoon?\", \"topic\""
+  }
+ ]
+}

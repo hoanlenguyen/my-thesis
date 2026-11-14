@@ -1,0 +1,39 @@
+{
+ "plan": "DA4",
+ "model": "gemma4-e2b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "To make the house cosy for your guests tonight, I need to know what temperature range you would like. Could you please specify the minimum and maximum comfortable temperatures (in Celsius) for the evening?",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What are the desired minimum and maximum temperatures for the cosy comfort band tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.52,
+  "tool_calls": 1
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "plan": "DA3",
+ "model": "ministral-3-8b",
+ "household_message": {
+  "sent": "2016-06-21 12:00",
+  "text": "Car full for my trip, leaving early tomorrow.",
+  "car_pct": 60
+ },
+ "decision": "ask",
+ "message_to_household": "The gateway will charge your car to 100 % by 07:30 tomorrow morning, using solar power and the battery when available.",
+ "questions": [
+  {
+   "topic": "ev",
+   "text": "Your usual ready-by time is 07:30 tomorrow. Is that still good for your trip, or should I charge earlier?"
+  },
+  {
+   "topic": "ev",
+   "text": "Did you mean 80 % or really 100 % (full) for your trip?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": null,
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "ev"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 7.93,
+  "tool_calls": 2
+ }
+}

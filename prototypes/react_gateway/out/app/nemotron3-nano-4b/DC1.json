@@ -1,0 +1,56 @@
+{
+ "plan": "DC1",
+ "model": "nemotron3-nano-4b",
+ "household_message": {
+  "sent": "2016-05-03 07:00",
+  "text": "Car at 70% by 5.",
+  "car_pct": 40,
+  "later": {
+   "sent": "2016-05-03 11:00",
+   "text": "Plans changed, leaving at 3 instead, same charge."
+  }
+ },
+ "decision": "ask",
+ "message_to_household": null,
+ "questions": [
+  {
+   "topic": "other",
+   "text": "(no valid answer)"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the car must be ready at 2016-05-03 03:00 but may only charge from 2016-05-03 03:00",
+  "EV departure missing or already passed"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "commit",
+  "ev": [
+   {
+    "departure": "2016-05-03 15:00",
+    "target_pct": 70
+   }
+  ]
+ },
+ "check": {
+  "decision_ok": false,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 1,
+  "met_on_real_day": null,
+  "seconds": 21.94,
+  "tool_calls": 1
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"ev\": [{\"departure\": \"2016-05-03 03:00\", \"earliest\": \"2016-05-03 03:00\", \"target_energy_kwh\": null, \"target_pct\": 70}], \"appliances\": [], \"away\": [], \"comfort\": [], \"unclear\": []}"
+  }
+ ]
+}

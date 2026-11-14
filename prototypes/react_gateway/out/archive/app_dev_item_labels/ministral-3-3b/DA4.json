@@ -1,0 +1,41 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ll keep the house warm and cozy for you tonight as you have guests.",
+ "questions": [
+  {
+   "topic": "away",
+   "text": "Could you confirm when you\u2019ll be away tonight? For example, \u2018leave by 7\u2019 or \u2018back at 5\u2019 tomorrow morning?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household gave no clear times for being away; ask when they leave and return"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.4,
+  "tool_calls": 3
+ }
+}

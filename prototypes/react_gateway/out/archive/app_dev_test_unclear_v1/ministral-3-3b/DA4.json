@@ -1,0 +1,59 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I\u2019ll plan the house temperature for tonight\u2019s guests, but I need to know what \u2018cosy\u2019 means for you. Do you want the house to be warmer than usual, or a specific temperature?",
+ "questions": [
+  {
+   "topic": "other",
+   "text": "What does 'cosy' mean for you tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'cosy' is too vague to plan: ask what they mean",
+  "comfort band 2023-01-25 18:00 to 2023-01-26 00:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 0,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.53,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"unclear\": [\"cosy\"], \"comfort\": [{\"end\": \"2023-01-26 00:00\", \"start\": \"2023-01-25 18:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"I\u2019ll plan the house temperature for tonight\u2019s guests, but I need to know what \u2018cosy\u2019 means for you. Do you want the house to be warmer than usual, or a specific temperature?\", \"questions\": [{\"text\": \"What does 'cosy' mean for you tonight?\", \"topic\": \"other\"}]}"
+  }
+ ]
+}

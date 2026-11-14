@@ -1,0 +1,58 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-3b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "Tonight, the guests will be comfortable in the house.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature should the house be kept at from 18:00 tonight until 6:00 tomorrow morning?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "comfort band 2016-01-25 18:00 to 2016-01-26 06:00 has no temperature: give the one the household asked for, or ask them"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "expected": {
+  "decision": "ask",
+  "clarify": [
+   "comfort"
+  ]
+ },
+ "check": {
+  "decision_ok": true,
+  "items_right": 0,
+  "items_extra": 1,
+  "items_missed": 0,
+  "met_on_real_day": null,
+  "seconds": 2.21,
+  "tool_calls": 3
+ },
+ "actions": [
+  {
+   "turn": 1,
+   "tool": "get_home_state",
+   "args": "{}"
+  },
+  {
+   "turn": 1,
+   "tool": "plan_schedule",
+   "args": "{\"away\": [{\"end\": \"2016-01-26 06:00\", \"start\": \"2016-01-25 18:00\"}], \"comfort\": [{\"end\": \"2016-01-26 06:00\", \"max_c\": null, \"min_c\": null, \"start\": \"2016-01-25 18:00\"}]}"
+  },
+  {
+   "turn": 2,
+   "tool": "AppAnswer",
+   "args": "{\"commit\": false, \"explanation\": \"Tonight, the guests will be comfortable in the house.\", \"questions\": [{\"text\": \"What temperature should the house be kept at from 18:00 tonight until 6:00 tomorrow morning?\", \"topic\": \"comfort\"}]}"
+  }
+ ]
+}

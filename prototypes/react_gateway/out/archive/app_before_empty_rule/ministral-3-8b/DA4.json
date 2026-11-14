@@ -1,0 +1,21 @@
+{
+ "plan": "DA4",
+ "model": "ministral-3-8b",
+ "commit": false,
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "Should the indoor temperature be kept at 22 \u00b0C from 2016-01-25 18:00 until your guests leave (or until 2016-01-26 00:00 if you prefer)?"
+  },
+  {
+   "topic": "appliance",
+   "text": "When do you want the dishwasher and washing machine to finish by? (For example, before 18:00 or later?)"
+  }
+ ],
+ "explanation": "The gateway will keep the house at 22 \u00b0C from 18:00 tonight to make it cosy for your guests. It will use the cheapest hours (23:00\u201304:00) to charge the car and cover the heat demand with solar power where possible.",
+ "requirements_check": null,
+ "problems": null,
+ "schedule": null,
+ "timeline_start": "2016-01-25 16:00",
+ "timeline": null
+}
