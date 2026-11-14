@@ -48,13 +48,14 @@ devices, and a cloud model serves only as reference and optional
 fallback. It is evaluated on measured data of a German home with PV, a
 heat pump, an electric vehicle and a simulated battery.
 
-In exploratory pilots, the small model Gemma 4 E4B read plans as well
-as the cloud model; with the checker its commit-or-ask decision reached
-the cloud model's 0.95, and in closed loop it met the requirements on
-10 of 11 plans at the cost of exact parameters. As a ReAct agent with
-the home's data and the MPC as tools, it got 19 of 22
-plans in everyday words right, the cloud model 21. As configurator it
-matched the cloud model and an expert setting; a rule-based auto-tuner saved almost nothing. The MPC
+In exploratory pilots, the small model Gemma 4 E4B, as a ReAct agent
+with the home's data and the MPC as tools, got 19 of 22 plans in
+everyday words right, the cloud model 21, and its committed plans met
+the requirements as often as exact parameters did. In earlier
+iterations it read plans nearly as well as the cloud model but decided
+worse when to ask; a checker closed most of that gap. As
+configurator it matched the cloud model and an expert setting; a
+rule-based auto-tuner saved almost nothing. The MPC
 solves in a tenth of a second, the language model a plan in seconds on
 a GPU and 39 on a laptop CPU.
 
@@ -338,10 +339,11 @@ presents the literature review. Chapter~\ref{ch:method} describes the
 combined research method, the data, the evaluation design and the
 threats to validity. Chapter~\ref{ch:design} presents the artifact: the
 HEMS with its agents and tools, its harness and control layer, and the
-user app. Chapter~\ref{ch:results} reports the exploratory pilots: why
-the models do not plan the devices themselves, the two tasks of the
-title on their own and in closed loop, the Household Assistant as a
-ReAct agent on the gateway, and the speed on local hardware;
+parts that are designed but not yet built, among them the user app.
+Chapter~\ref{ch:results} reports the exploratory results: the design
+iterations that led to the present design, then the Household
+Assistant as a ReAct agent on the gateway (SQ1), the Configurator
+(SQ2) and the speed on local hardware (SQ3);
 the registered evaluation is in process. Chapter~\ref{ch:discussion}
 answers the research questions, discusses transferability to industry,
 the limitations and future research, and Chapter~\ref{ch:conclusions}
@@ -535,8 +537,8 @@ HEMS in this thesis: the MPC and the checker do the optimisation and the safety
 checks, so each agent has a narrow task (turning a plan into
 constraints, or choosing settings from a backtest). Whether a local
 model is accurate enough for these tasks is an empirical question that
-the thesis tests (SQ1 and SQ2; Section~\ref{sec:planpilot} reports a
-pilot).
+the thesis tests (SQ1 and SQ2; Sections~\ref{sec:reactpilot}
+and~\ref{sec:configpilot} report pilots).
 
 \section{Research gap}
 
@@ -650,9 +652,9 @@ science research. Cycles after \textcite{hevner2007}.}
 Phase & Method & Output & Chapter & Status \\
 \midrule
 1 Literature & SLR & answers to LQ1 to LQ3, research gap & 2 & in process \\
-2 Exploration & DSR, Cycle 1 & pilots of planning agents, plan interpretation, optimiser configuration, closed loop and speed on local hardware & 5.1 to 5.5 & done \\
-3 Design & DSR, Cycle 2 & four-agent HEMS with model layer, tools, user app, exploratory set & 4 & in process \\
-4 Confirmation & DSR, Cycle 3 & registered evaluation, year simulation & 5.6 & in process \\
+2 Exploration & DSR, Cycle 1 & design iterations of the Household Assistant; pilots of plan interpretation, optimiser configuration and speed on local hardware & 5.1 to 5.4 & done \\
+3 Design & DSR, Cycle 2 & Household Assistant and Configurator with tools, checker and control layer, frozen for the held-out run; exploratory set; Monitor, Explainer, model layer and user app as designed & 4 & in process \\
+4 Confirmation & DSR, Cycle 3 & registered evaluation, year simulation & 5.5 & in process \\
 5 Synthesis & both & answers to RQ and SQ1 to SQ3 (provisional, from the pilots), design principles, limitations & 6, 7 & in process \\
 \bottomrule
 \end{tabularx}
@@ -730,12 +732,15 @@ review question and in a narrative that ends in the research gap
 \label{sec:dsr}
 
 The artifact is a smart home energy management system that runs on a
-home energy gateway: four agents on a local small language model, with a
-cloud model only as an optional fallback, a deterministic harness with
-the MPC, the checker and the backtest gate, and a user app for text and
-voice (Chapter~\ref{ch:design}). The language models have only the two
+home energy gateway: agents on a local small language model, with a
+cloud model only as an optional fallback, and a deterministic harness
+with the MPC, the checker and the backtest gate
+(Chapter~\ref{ch:design}). The language models have only the two
 tasks of the title, interpreting household plans and configuring the
-optimiser; the schedule and the switching stay deterministic.
+optimiser; the schedule and the switching stay deterministic. The two
+agents for these tasks, the Household Assistant and the Configurator,
+are built and evaluated; two supporting agents and a user app for text
+and voice are designed but not built (Section~\ref{sec:envisioned}).
 Table~\ref{tab:dsrsteps} maps the six activities of the DSR process of
 \textcite{peffers2007} to this thesis.
 
@@ -749,7 +754,7 @@ Activity & In this thesis & Chapter \\
 \midrule
 Problem identification & optimisers in home energy management need expert configuration; households state plans in plain language; cloud language models expose the household's routine and fail offline & 1 \\
 Objectives of a solution & requirements R1 to R6; research question and hypotheses & 1, 3, 4 \\
-Design and development & four agents on a local small model, model layer with cloud fallback, tools, checker, control layer, user app & 4 \\
+Design and development & Household Assistant (a ReAct agent) and Configurator on a local small model, their tools, rules in code, checker, backtest gate and control layer; Monitor, Explainer, model layer and user app as designed & 4 \\
 Demonstration & simulated house-days with measured data, weather and prices, models run on local hardware & 5 \\
 Evaluation & pilots, then a registered evaluation on held-out plans & 5 \\
 Communication & this thesis, code and data & all \\
@@ -761,15 +766,17 @@ The design cycle runs three times:
 
 \begin{enumerate}[nosep]
 \item \textit{Cycle 1 (done):} exploratory prototypes: a digital twin
-of the house, a pilot with planning agents, a plan-interpretation pilot
-and a Configurator pilot with small and large models, a closed-loop
-pilot, and speed measurements on the laptop
-(Chapter~\ref{ch:results}). The planning pilot moved the agents out of
-the schedule and into the two tasks of the title; the other pilots gave
-the provisional answers of Section~\ref{sec:answers}.
-\item \textit{Cycle 2 (in process):} the tools, agents and model layer
-of the four-agent design, iterated on an exploratory set of house-days,
-and the measurements on the household devices.
+of the house, five design iterations of the Household Assistant, from
+an agent that planned the devices itself to a ReAct agent that plans
+through the MPC (Section~\ref{sec:iterations}), a Configurator pilot
+with small and large models, and speed measurements on the laptop
+(Chapter~\ref{ch:results}). The first iteration moved the agents out of
+the schedule and into the two tasks of the title; the last one and the
+Configurator pilot gave the provisional answers of
+Section~\ref{sec:answers}.
+\item \textit{Cycle 2 (in process):} the Household Assistant and the
+Configurator are frozen for the held-out run after a last check on an
+exploratory set of house-days, and the household devices are measured.
 \item \textit{Cycle 3 (in process):} a registered evaluation on a
 held-out set and a year simulation.
 \end{enumerate}
@@ -851,22 +858,23 @@ and control layer: the recorded operation; rules; EMHASS; default MPC;
 an expert-tuned MPC (settings chosen once on exploratory weeks and
 frozen); a deterministic auto-tuner (weekly grid search over past weeks);
 a language model without tools; and perfect foresight as the upper
-bound. The HEMS runs in four set-ups: a small model alone, a small
-model with the checker, a small model with the checker and a cloud
-fallback, and a cloud LLM alone; the differences between them measure
-what the deterministic checks and the fallback add. The small models are open models below
-about 10 billion parameters (Gemma 4 E4B, Qwen3 8B and one or two
-others of similar size); GPT-6 Luna is the cloud LLM, and larger local
-models (Qwen3 30B-A3B, gpt-oss-20b) mark the space between them. All
+bound. The Household Assistant is the ReAct agent of
+Section~\ref{sec:agents} and runs in four set-ups: a small model whose
+planning tool plans without the checks and the rules in code, a small
+model with them (the design), a small model with them and a cloud
+fallback, and a cloud LLM in the same agent; the differences between
+them measure what the deterministic checks and the fallback add. The
+small models are open models below about 10 billion parameters: Gemma 4
+E4B as the main candidate, and Gemma 4 E2B, Ministral 3 8B and 3B and
+Nemotron 3 Nano 4B for comparison; GPT-6 Luna is the cloud LLM. All
 runs use a laptop with an 8\,GB GPU; for SQ3 the plan benchmark and the
 optimiser are repeated on the local hardware a household could own, a
 Raspberry Pi~5 with 16\,GB and a Ryzen mini PC with 32\,GB. Each run is
 repeated three times, because single runs of a local model varied (a
 CPU run and a GPU run of the same model gave decision accuracies of 0.64
-and 0.82). The local models use the second version of the prompt (v3),
-developed on separate development plans, and the cloud model keeps the
-first (v2), on which it did better (Section~\ref{sec:planpilot}); both
-are frozen before the held-out run. A one-agent variant is compared
+and 0.82). All models use one prompt, developed on separate development
+plans (Section~\ref{sec:reactpilot}); the prompt, the tools and the
+rules in code are frozen before the held-out run. A one-agent variant is compared
 with the four agents if the small models allow it.
 
 \textit{Metrics.} Constraint precision and recall against the answer
@@ -946,9 +954,11 @@ evaluation tests and the Discussion returns to
 (Section~\ref{sec:answers}): narrow tasks for the language model,
 deterministic checks around it, and local inference first with the
 cloud only as a fallback. After the requirements and the architecture,
-the chapter describes the agents for the two tasks of the title,
-interpreting household plans and configuring the optimiser, with their
-tools, then the user app and the implementation.
+the chapter describes the two agents that are built and evaluated, the
+Household Assistant and the Configurator, with their tools and the
+rules kept in code. It then describes the parts that are designed but
+not yet built (the Monitor, the Explainer, the model layer and the user
+app with voice) and the implementation.
 
 \section{Requirements and architecture}
 
@@ -966,7 +976,8 @@ R6 makes it run locally first.
 To meet them, the HEMS runs on the home energy gateway and has three layers
 (Figure~\ref{fig:architecture}). The
 \textit{agent layer} holds four agents, each started by one kind of
-event. The \textit{harness} holds the tools, a tuned MPC that replans
+event; two of them, the Household Assistant and the Configurator, are
+built and evaluated in this thesis (Section~\ref{sec:agents}). The \textit{harness} holds the tools, a tuned MPC that replans
 every hour on its own, a checker and a history store. The
 \textit{control layer} runs every 15 minutes, holds the planned grid
 exchange so that the battery absorbs forecast errors, keeps comfort,
@@ -1009,8 +1020,12 @@ the checker passes only valid plans to the control layer.}
 \section{Agents and tools: interpreting plans and configuring the optimiser}
 \label{sec:agents}
 
-Table~\ref{tab:agents} lists the four agents, one per kind of event.
-Two of them do the tasks of the title; the other two support them. The harness routes each event
+Table~\ref{tab:agents} lists the four agents of the design, one per
+kind of event. Two of them do the tasks of the title, the Household
+Assistant and the Configurator; they are built and evaluated in this
+thesis (Chapter~\ref{ch:results}). The other two support them, the
+Monitor and the Explainer; they are designed but not yet built
+(Section~\ref{sec:envisioned}). The harness routes each event
 to one agent by its type; no agent calls another, and the agents share
 state only through the harness. Splitting by event keeps each prompt
 small and lets each output be checked on its own. The earlier thesis
@@ -1021,14 +1036,16 @@ small model. Whether this helps is compared with one agent if the small
 models allow it.
 
 \begin{table}[htbp]
-\caption{The four agents and the task each serves.}
+\caption{The four agents of the design and the task each serves. The
+Household Assistant and the Configurator are built and evaluated; the
+Monitor and the Explainer are designed.}
 \label{tab:agents}
 \small
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.9cm}X>{\raggedright\arraybackslash}p{2.4cm}@{}}
 \toprule
 Agent & Started by & Job & Task \\
 \midrule
-Household Assistant & a message from the household, typed or spoken & turns the plan or change into constraints, previews them, commits or asks & interpreting household plans \\
+Household Assistant & a message from the household, typed or spoken & turns the plan or change into constraints, plans through the MPC, commits or asks & interpreting household plans \\
 Configurator & once a week & proposes MPC settings from the house's history and backtests them & configuring the optimiser \\
 Monitor & an EV plug-in; a deviation raised by the control layer & finds the cause, adjusts constraints within what the household asked, or alerts & keeps the plan in force \\
 Explainer & each commit; once a day & writes the message and the daily report from the committed plan's figures & tells the household \\
@@ -1036,29 +1053,86 @@ Explainer & each commit; once a day & writes the message and the daily report fr
 \end{tabularx}
 \end{table}
 
-\textit{Interpreting household plans.} The Household Assistant receives
-a message such as ``car at 80\,\% by 07:30 tomorrow, and keep the house
-at normal temperature''. It turns the message into constraints for the
-MPC: EV energy and departure, comfort bands by time, away periods and
-appliance windows, each with absolute times. When a later message
-changes the plan, it returns the plan from that moment on. It commits a
-plan only when it is complete and feasible; when a number is missing,
-the request is ambiguous or the house cannot meet it, it asks the
-household instead. The checker, not the model, decides feasibility.
-The output schema fixes what the Assistant can express; conflicts
-outside it, such as an away period against a comfort band, are left to
-the household's answer, and a richer schema is future research
-(Section~\ref{sec:future}).
+\textit{Interpreting household plans.} The Household Assistant is a
+ReAct agent: it reasons about the household's message, looks at the
+home's data with its tools and acts by planning through the MPC. It
+receives a message such as ``Out at work from 8:30 till 5 today.
+Dishwasher done before we're home please.'' and turns it into the
+household's requirements: EV energy and departure, comfort bands by
+time, away periods and appliance windows, each with absolute times.
+When a later message changes the plan, it returns the plan from that
+moment on. It commits a plan only when it is complete and feasible;
+when a number is missing, the request is ambiguous or the house cannot
+meet it, it asks the household instead. Its answer is made for the
+household app: the decision to commit or ask, the questions, the
+schedule of every device with a reason, the expected cost and saving,
+warnings and an hourly timeline. The model never writes the schedule
+itself (R3); the app always shows the result of the planning tool.
+
+\textit{Tools.} The Assistant has five tools
+(Table~\ref{tab:reacttools}). Four of them read what the gateway knows
+at the time of the message: the home's state, the day-ahead prices, the
+weather forecast and the house's appliances. The appliance cycles are
+measured: the median cycle of the OPSD house's dishwasher uses
+0.76\,kWh in an hour and its washing machine 0.85\,kWh in 2.25 hours,
+with their power profiles per 15 minutes. The fifth tool,
+\texttt{plan\_schedule}, takes the household's requirements as
+constraints, checks them, and, if they pass, plans every device with
+the MPC on the forecasts. The checker, not the model, decides
+feasibility, for example more energy than the charger can deliver
+before departure (R4).
+
+\begin{table}[htbp]
+\caption{Tools of the Household Assistant.}
+\label{tab:reacttools}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.4cm}X@{}}
+\toprule
+Tool & What it returns \\
+\midrule
+\texttt{get\_home\_state} & time, home battery, car charge and charger, indoor temperature, comfort settings and the usual car settings \\
+\texttt{get\_prices} & day-ahead import price per hour to the end of the known prices, the cheapest hours and the feed-in price \\
+\texttt{get\_weather\_forecast} & PV output per hour and the heat pump's heat demand, from the weather-driven forecasts \\
+\texttt{get\_appliances} & the measured dishwasher and washing machine cycles: energy, length and power profile \\
+\texttt{plan\_schedule} & the requirements read back in words, then either the problems to ask about, or the MPC's schedule with a reason per device, the cost, the saving against starting at once and a check of each requirement \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textit{Rules in code.} Where a rule can be applied exactly, the code
+applies it, so that the model's task stays to read the message and
+decide. The household sets its usual car settings once in the app
+(80\,\% by 07:30 every day in the evaluation). A car request without a
+target or a time gets the usual settings, and a request with only a day
+gets the usual time on that day. A clock time written without am/pm
+(``from 6 to 8'') means its next occurrence after the message, because
+Gemma read such times twelve hours late on the development plans
+although the prompt stated the rule. A charge that the charger cannot
+finish is committed with a warning, and the explanation must pass it
+on; a charge allowed to start only after the car must be ready is a
+conflict. An appliance without a deadline runs at the cheapest time
+within the known prices. A plan with no requirement at all is refused,
+and a comfort band without a temperature is a problem to ask about. For
+vague words, the model copies the household's own words (``leaving
+early'', ``by lunchtime'') into one list, and the code turns each into
+a question; a label on every item had made the smallest model fail on 5
+of 14 development plans. Finally, the gateway commits only when the
+model commits and the last schedule met every requirement or carries a
+warning. The output schema fixes what the Assistant can express;
+conflicts outside it, such as an away period against a comfort band,
+are left to the household's answer, and a richer schema is future
+research (Section~\ref{sec:future}).
 
 \textit{Configuring the optimiser.} Once a week the Configurator
 chooses the MPC's settings for the coming week: how much of the PV
 forecast to plan with (a derating between 0.5 and 1.0) and how much
 battery charge to keep at midnight. It reads a summary of the past
-weeks, compares candidate settings by backtesting them on those weeks,
-and proposes one; the harness applies it only if its backtest is not
-worse than that of the current settings. Because a new setting must
-beat the current one, the gate favours stable settings over ones that
-chase the last two weeks, which is where a plain grid search fails
+weeks (\texttt{history\_summary}), compares candidate settings by
+backtesting them on those weeks (\texttt{backtest}), and proposes one;
+the harness applies it only if its backtest is not worse than that of
+the current settings. Because a new setting must beat the current one,
+the gate favours stable settings over ones that chase the last two
+weeks, which is where a plain grid search fails
 (Section~\ref{sec:configpilot}). It uses past weeks only, so it
 cannot tune to the week it is scored on. A weekly task may take minutes,
 so it suits a small local model even on slow hardware.
@@ -1070,7 +1144,10 @@ and a backtest gates the Configurator. Only a passed gate changes the
 plan, the message or the settings. These gates are the deterministic
 checks of the second design principle: in the pilots they, rather than
 the size of the model, closed most of the distance between a small and
-a large model (Section~\ref{sec:answers}).
+a large model (Section~\ref{sec:answers}). Each tool does its work
+deterministically and returns a short result, which keeps prompts small
+enough for a small model on local hardware. Figure~\ref{fig:day} shows
+one day at runtime.
 
 \begin{figure}[htbp]
 \centering
@@ -1078,26 +1155,6 @@ a large model (Section~\ref{sec:answers}).
 \caption{How each agent decides.}
 \label{fig:flow}
 \end{figure}
-
-\begin{sloppypar}
-The agents' tools are grouped by task. For interpreting plans, the Assistant reads the plan (\texttt{read\_plan}), the situation
-(\texttt{get\_situation}) and the forecast (\texttt{get\_forecast}),
-proposes constraints (\texttt{propose\_constraints}: EV energy and
-departure, comfort bands by time, away periods and appliance windows,
-validated against ranges), previews the plan with the MPC and the
-checker (\texttt{preview\_plan}), and asks the household only for
-ambiguity, conflict or infeasibility (\texttt{ask\_household}). For
-configuring the optimiser, the Configurator reads weekly statistics
-(\texttt{history\_summary}) and compares candidate settings on past
-weeks (\texttt{backtest}). The Explainer words pre-computed figures
-(\texttt{explain\_plan}); every figure it cites is compared with the
-plan. Each tool does its work deterministically and returns a short
-result, which keeps prompts small enough for a small model on local
-hardware. Feasibility, for example
-more energy than the charger can deliver before departure, is computed
-by the checker, not by the language model. Figure~\ref{fig:day} shows
-one day at runtime.
-\end{sloppypar}
 
 \begin{figure}[htbp]
 \centering
@@ -1108,8 +1165,24 @@ model.}
 \label{fig:day}
 \end{figure}
 
-\section{User app, voice and the Wi-Fi link}
+\section{Designed but not yet built: Monitor, Explainer, model layer and user app}
+\label{sec:envisioned}
 \label{sec:userapp}
+
+Four parts of the design are specified but not yet built, so they have
+no results in Chapter~\ref{ch:results} and no hypothesis. The
+\textit{Monitor} is started by an EV plug-in or by a deviation that the
+control layer raises; it finds the cause, adjusts the constraints
+within what the household asked, or alerts, and the checker gates it
+like the Assistant. The \textit{Explainer} words figures that the
+harness has computed (\texttt{explain\_plan}) into the message and the
+daily report, and every figure it cites is compared with the plan; in
+the built Assistant, the planning tool already returns a reason for
+each device. The \textit{model layer} with its cloud fallback has so
+far been applied only to stored answers
+(Section~\ref{sec:planpilot}), not as a running part. The
+\textit{user app}, with voice and the Wi-Fi link, is the intended
+interface and is described in the rest of this section.
 
 The household reaches the gateway through an app on a phone or tablet,
 by text or by voice, and an optional voice satellite in a room
@@ -1176,22 +1249,23 @@ PuLP and CBC from the measured state to the end of the horizon, and
 energy left at the end is valued in the same way in the optimiser and
 in the score. The agents use LangChain and LangGraph ReAct agents with
 structured outputs and a recovery step that returns invalid answers with
-the validation errors. The local models get a prompt with explicit
-commit-or-ask rules and three worked examples (v3); the cloud model
-gets the shorter first version (v2).
+the validation errors. The Household Assistant uses one prompt for
+every model; the two prompt versions of the earlier iterations
+(Section~\ref{sec:planpilot}) are no longer in the code.
 
 On local hardware the small models run through Ollama, quantised to 4
-bits, with output capped at 8,000 tokens per call: Gemma 4 E4B as the
-main candidate, and Qwen3 models of 1.7 to 30 billion parameters,
-Ministral 3 8B and Llama 3.2 3B for comparison in the first pilots. The
-ReAct gateway (Section~\ref{sec:reactpilot}) uses the model set chosen
-later: Gemma 4 E4B and E2B, Ministral 3 8B and 3B, and Nemotron 3 Nano
-4B, each with a context window sized for one plan. GPT-6 Luna, through
-the OpenAI API, is the cloud model. The same code talks to a local model on the laptop, on a
+bits, with output capped at 8,000 tokens per call and a context window
+sized for one plan: Gemma 4 E4B as the main candidate, and Gemma 4 E2B,
+Ministral 3 8B and 3B and Nemotron 3 Nano 4B for comparison
+(Section~\ref{sec:reactpilot}). The earlier iterations also ran Qwen3
+models of 1.7 to 30 billion parameters, gpt-oss-20b and Llama 3.2 3B.
+GPT-6 Luna, through the OpenAI API, is the cloud model. The same code
+talks to a local model on the laptop, on a
 Raspberry Pi~5 or on a mini PC by changing only the address of the
 Ollama server, which is how the household devices are measured
-(Section~\ref{sec:edgebench}). The implementation of the full
-four-agent design, the model layer and the user app is in process.
+(Section~\ref{sec:edgebench}). The Monitor, the Explainer, the running
+model layer and the user app are not implemented
+(Section~\ref{sec:envisioned}).
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Evaluation and Results}
@@ -1199,24 +1273,46 @@ four-agent design, the model layer and the user app is in process.
 
 All results in this chapter are exploratory: one house, one run per
 configuration and draft answer keys. They guided the design and are not
-tests of the hypotheses. The chapter follows the title. The first pilot
-shows why the language models in this HEMS do not plan the devices
-themselves (Section~\ref{sec:gatewaypilot}). The next pilots test the
-two tasks they do instead, interpreting household plans
-(Section~\ref{sec:planpilot}, SQ1) and configuring the optimiser
-(Section~\ref{sec:configpilot}, SQ2), each with small models against a
-cloud model, and then both together in closed loop
-(Section~\ref{sec:looppilot}). The fifth pilot builds the Household
-Assistant as a ReAct agent that reads the home's data and plans through
-the MPC, on plans in everyday wording (Section~\ref{sec:reactpilot}).
-The last pilot measures speed on local
-hardware (Section~\ref{sec:edgebench}, SQ3), and the chapter closes with
-the plan of the registered evaluation (Section~\ref{sec:registered}).
-Each pilot ends with what it suggests for the design principles of
+tests of the hypotheses. The chapter first summarises the design
+iterations that led to the design of Chapter~\ref{ch:design}
+(Section~\ref{sec:iterations}). It then follows the sub-questions with
+that design: interpreting household plans with the Household Assistant
+as a ReAct agent (Section~\ref{sec:reactpilot}, SQ1), configuring the
+optimiser (Section~\ref{sec:configpilot}, SQ2) and speed on local
+hardware (Section~\ref{sec:edgebench}, SQ3). It closes with the plan of
+the registered evaluation (Section~\ref{sec:registered}). Each section
+ends with what it suggests for the design principles of
 Chapter~\ref{ch:design}; Section~\ref{sec:answers} draws the
 provisional answers from them.
 
-\section{Planning pilot: why the models do not plan}
+\section{Design iterations}
+\label{sec:iterations}
+
+The Household Assistant reached its present form in five iterations
+(Table~\ref{tab:iterations}). The first four used earlier versions of
+the design, the plans in their first, exact wording and partly other
+models, so their numbers cannot be compared with those of
+Section~\ref{sec:reactpilot}. They are reported for what each changed
+in the design.
+
+\begin{table}[htbp]
+\caption{Design iterations of the Household Assistant.}
+\label{tab:iterations}
+\small
+\begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+ & Version tested & What it showed & Change \\
+\midrule
+1 & A ReAct agent plans the devices with an MPC tool whose settings it chooses & The agents gained less than one fixed setting of the MPC & The agent no longer plans; the MPC replans hourly on its own; the agents interpret plans and choose settings \\[3pt]
+2 & The model returns the plan and a commit-or-ask decision in one structured call & Small models read the plans almost as well as the cloud model; their errors were in the decision, mostly infeasible requests they committed & A deterministic checker decides feasibility \\[3pt]
+3 & A second prompt with explicit decision rules, developed on separate plans & The rules helped most local models, but the cloud model and Llama 3.2 3B did worse & Rules that can be applied exactly are moved from the prompt into code \\[3pt]
+4 & The stored answers run through the checker, the MPC and the control layer on the real days & A plan that is read correctly is delivered at the cost of the exact parameters; fewer questions do not guarantee a better result & Every committed plan is run on the real day and its requirements are checked on what was executed \\[3pt]
+5 & A ReAct agent reads the home's data and plans through the MPC, on plans in everyday wording & Section~\ref{sec:reactpilot} & The present design (Section~\ref{sec:agents}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Planning pilot: why the models do not plan}
 \label{sec:gatewaypilot}
 
 The first pilot let a ReAct agent plan the home's devices at four
@@ -1258,441 +1354,162 @@ pilot changed the design: the agent no longer plans, the MPC replans
 hourly without it, and the control layer holds the planned grid exchange
 instead of the planned battery power. What the agents could add was
 what the MPC cannot do itself: read the household's plans and choose
-the MPC's settings. The next two pilots test exactly these tasks.
+the MPC's settings.
 
-\section{Interpreting household plans}
+\subsection{The structured-call reader, the checker and the closed loop}
 \label{sec:planpilot}
+\label{sec:looppilot}
 
-The second pilot compared small and large models on interpreting
-household plans (SQ1), using 22
-edge-case plans for the main house
+Iterations 2 to 4 used 22 edge-case plans for the main house
 (Appendix~\ref{app:plans}): six simple plans, five changes during the
 day, six ambiguous and five conflicting or infeasible requests, each
-bound to a date of 2016 and the car's charge. The model returned the
-plan as a structured \texttt{HouseholdPlan} with a commit-or-ask
-decision, through function calling with up to two validation retries.
-Items matched the answer key within 15 minutes, five percentage points
-of EV charge or 1\,kWh.
+bound to a date of 2016 and the car's charge, and stated with exact
+values such as ``car at 80\,\% by 07:30''. The model returned the plan
+as a structured \texttt{HouseholdPlan} with a commit-or-ask decision,
+through function calling with up to two validation retries. Items
+matched the answer key within 15 minutes, five percentage points of EV
+charge or 1\,kWh. Table~\ref{tab:structpilot} summarises the three
+iterations for the ten models that were run.
 
 \begin{table}[htbp]
-\caption{Plan-interpretation pilot, 22 plans.}
-\label{tab:planpilot}
+\caption{Structured-call reader, 22 plans in exact wording, one run per
+model: item precision and recall; decision accuracy of the model alone,
+with the checker, and with the checker and the second prompt (v3);
+requirements met in closed loop of the plans executed (first prompt,
+with the checker, 11 commit plans); seconds per plan (first prompt).}
+\label{tab:structpilot}
 \small
-\begin{tabularx}{\textwidth}{@{}Xrrrrr@{}}
+\begin{tabularx}{\textwidth}{@{}Xlrrrlr@{}}
 \toprule
-Model & Precision & Recall & Clarif.\ F1 & Decision & s per plan \\
+Model & Prec.\ / rec. & Alone & + checker & + v3 & Met & s \\
 \midrule
-\multicolumn{6}{@{}l}{\textit{Small language models, local}} \\
-Gemma 4 E4B & 1.00 & 0.91 & 0.78 & 0.82 & 7.7 \\
-Qwen3 8B & 0.96 & 1.00 & 0.67 & 0.68 & 71 \\
-Ministral 3 8B & 0.82 & 0.96 & 0.57 & 0.50 & 7.4 \\
-Qwen3 4B, with reasoning & 0.95 & 0.87 & 0.95 & 0.95 & 126 \\
-Qwen3 4B instruct, no reasoning & 0.82 & 0.78 & 0.46 & 0.41 & 2.9 \\
-Llama 3.2 3B & 0.25 & 0.13 & 0.30 & 0.18 & 7.9 \\
-Qwen3 1.7B, with reasoning & 0.52 & 0.52 & 0.29 & 0.32 & 31 \\
-\multicolumn{6}{@{}l}{\textit{Larger open models, local}} \\
-gpt-oss-20b & 0.63 & 0.44 & 0.75 & 0.59 & 116 \\
-Qwen3 30B-A3B (CPU) & 1.00 & 0.96 & 0.84 & 0.86 & 150 \\
-\multicolumn{6}{@{}l}{\textit{Large language model, cloud}} \\
-GPT-6 Luna & 1.00 & 1.00 & 0.95 & 0.95 & 2.7 \\
+\multicolumn{7}{@{}l}{\textit{Small language models, local}} \\
+Gemma 4 E4B & 1.00 / 0.91 & 0.82 & 0.91 & 0.95 & 10 of 11 & 7.7 \\
+Qwen3 8B & 0.96 / 1.00 & 0.68 & 0.73 & 1.00 & 9 of 10 & 71 \\
+Ministral 3 8B & 0.82 / 0.96 & 0.50 & 0.50 & 0.68 & 2 of 2 & 7.4 \\
+Qwen3 4B, with reasoning & 0.95 / 0.87 & 0.95 & 0.95 & 1.00 & 10 of 11 & 126 \\
+Qwen3 4B instruct & 0.82 / 0.78 & 0.41 & 0.45 & 0.50 & 1 of 1 & 2.9 \\
+Llama 3.2 3B & 0.25 / 0.13 & 0.18 & 0.50 & 0.50 & none & 7.9 \\
+Qwen3 1.7B, with reasoning & 0.52 / 0.52 & 0.32 & 0.50 & 0.64 & 2 of 2 & 31 \\
+\multicolumn{7}{@{}l}{\textit{Larger open models, local}} \\
+gpt-oss-20b & 0.63 / 0.44 & 0.59 & 0.45 & 0.91 & none & 116 \\
+Qwen3 30B-A3B (CPU) & 1.00 / 0.96 & 0.86 & 0.91 & 0.91 & 10 of 11 & 150 \\
+\multicolumn{7}{@{}l}{\textit{Large language model, cloud}} \\
+GPT-6 Luna & 1.00 / 1.00 & 0.95 & 0.95 & 0.86 & 10 of 11 & 2.7 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-GPT-6 Luna made one error: for ``charge the car to 90\,\% before I head
-out'' it assumed a departure time and committed instead of asking.
-gpt-oss-20b often left numbers such as the EV target out and asked
-questions that simple plans did not need. Three newer open models ran
-on the same laptop (RTX 4070, 8\,GB), with output capped at 8,000
-tokens per call after Qwen3 8B looped in its reasoning phase on one
-plan. All three extracted items almost as well as the cloud model; they
+\textit{Reading and deciding (iteration 2).} The best small models
+extracted the plans' items almost as well as the cloud model; they
 differed in when they asked. Qwen3 8B committed on almost half of the
 plans that needed a question, Gemma 4 E4B missed most conflicts but
-answered in under 8 seconds, and Qwen3 30B-A3B came closest to the
-cloud model but had to run on the CPU and took two and a half minutes
-per plan. Ministral 3 8B, a third model family of the same size, was
-added later: it read the plans almost as completely (recall 0.96) and
-as fast as Gemma (7\,s per plan), but asked on 9 of the 13 plans that
-needed no question, mostly to confirm the car's charge that the plan
-already stated, and committed two ambiguous plans, so its decision
-accuracy was 0.50. For the small models the gap to the LLM lies in the
-commit-or-ask decision, not in reading the plan, and model size alone
-does not predict it. Whether the checker
-catches the infeasible requests they committed is the last part of SQ1. The
-cloud model is close to the ceiling on these cases, which is why the
-held-out plans are written by other people. These numbers come without
-the checker and the fallback, so they are the ``small model alone''
-set-up.
+answered in under 8 seconds, and Ministral 3 8B asked on 9 of the 13
+plans that needed no question, mostly to confirm the car's charge that
+the plan already stated. GPT-6 Luna made one error: for ``charge the
+car to 90\,\% before I head out'' it assumed a departure time and
+committed instead of asking. For the small models the gap to the LLM
+lay in the commit-or-ask decision, not in reading the plan, and model
+size alone did not predict it. Of the models that fit a 4\,GB gateway
+board, Qwen3 4B with its reasoning phase matched the cloud model's
+decision accuracy (0.95), but it wrote about 4,800 tokens per plan and
+took two minutes even on the laptop's GPU; its instruct build, Llama
+3.2 3B and Qwen3 1.7B were too weak.
 
-The stored answers were then rescored with a deterministic checker,
-without calling any model again (Table~\ref{tab:planchecker}). The
-checker looks only at the model's output and the car's charge: an EV
+\textit{The checker.} The stored answers were then rescored with a
+deterministic checker, without calling any model again. The checker
+looks only at the model's output and the car's charge: an EV
 requirement without a target is incomplete, and an EV requirement or an
 appliance window is infeasible when the charger or the cycle cannot
 meet it before the deadline. When it flags an answer the model would
-commit, the HEMS asks the household instead; with the fallback, the
-cloud model's answer to the same plan replaces the flagged or failed
-answer and is checked in turn.
+commit, the HEMS asks the household instead. For Gemma 4 E4B it stopped
+two infeasible EV requests (25\,kWh in five and a half hours, and a
+charge between 11:00 and 15:00 while the car is away), raising its
+decision accuracy from 0.82 to 0.91, against 0.95 for the cloud model.
+Its two remaining errors are conflicts the output schema cannot
+express: an away period that contradicts a comfort band, and a ban on
+grid power at night. A cloud fallback, in which the cloud model's
+answer replaces a flagged or failed answer and is checked in turn,
+would have been used on 9\,\% of Gemma's plans and added nothing,
+because the checker already asked where the cloud model would have
+asked. It can also make things worse: for Qwen3 30B-A3B it replaced a
+failed answer, which the HEMS would have turned into a question, with
+the cloud model's one wrong commit. For gpt-oss-20b the checker lowered
+decision accuracy, because the model left EV targets out of simple
+plans and the HEMS then asked needlessly. The checker's rules were
+written from the HEMS's constraints, not from the answer keys, but they
+were tested on the same 22 plans.
 
-\begin{table}[htbp]
-\caption{Plan-interpretation pilot with the checker and the cloud
-fallback: decision accuracy (clarification F1) and the share of plans
-sent to the cloud.}
-\label{tab:planchecker}
-\small
-\begin{tabularx}{\textwidth}{@{}Xllll@{}}
-\toprule
-Model & Alone & + checker & + checker + fallback & Fallback \\
-\midrule
-Gemma 4 E4B & 0.82 (0.78) & 0.91 (0.90) & 0.91 (0.90) & 9\,\% \\
-Qwen3 8B & 0.68 (0.67) & 0.73 (0.67) & 0.73 (0.74) & 5\,\% \\
-Ministral 3 8B & 0.50 (0.57) & 0.50 (0.57) & 0.50 (0.57) & none \\
-Qwen3 4B, with reasoning & 0.95 (0.95) & 0.95 (0.95) & 0.95 (0.95) & none \\
-Qwen3 4B instruct & 0.41 (0.46) & 0.45 (0.44) & 0.45 (0.52) & 14\,\% \\
-Llama 3.2 3B & 0.18 (0.30) & 0.50 (0.24) & 0.68 (0.64) & 55\,\% \\
-Qwen3 1.7B & 0.32 (0.29) & 0.50 (0.32) & 0.64 (0.74) & 45\,\% \\
-gpt-oss-20b & 0.59 (0.75) & 0.46 (0.58) & 0.77 (0.80) & 36\,\% \\
-Qwen3 30B-A3B (CPU) & 0.86 (0.84) & 0.91 (0.84) & 0.86 (0.84) & 5\,\% \\
-GPT-6 Luna & 0.95 (0.95) & 0.95 (0.95) & 0.95 (0.95) & none \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\textit{Explicit decision rules (iteration 3).} A second version of the
+prompt (v3) stated the decision rules explicitly, with three short
+worked examples, and was developed only on 14 new development plans
+with their own answer keys. With v3 and the checker, Gemma 4 E4B
+reached a decision accuracy of 0.95, although two of its answers failed
+validation and its recall fell from 0.91 to 0.87; Qwen3 8B reached
+1.00, but needed 85 seconds per plan; and gpt-oss-20b rose from 0.45 to
+0.91. The prompt did not suit every model: the cloud model began to ask
+needlessly (0.95 to 0.86), and Llama 3.2 3B failed on 19 of the 22
+plans. This is one run on 22 plans, so a difference of one or two plans
+is within the noise.
 
-The checker closed most of the distance between Gemma 4 E4B and the
-cloud model: it stopped two infeasible EV requests that Gemma would have
-committed (25\,kWh in five and a half hours, and a charge between 11:00
-and 15:00 while the car is away), raising its decision accuracy from
-0.82 to 0.91, against 0.95 for the cloud model. Its two remaining errors
-are conflicts the output schema cannot express: an away period that
-contradicts a comfort band, and a ban on grid power at night. The
-fallback added nothing for Gemma, because the checker already asked
-where the cloud model would have asked. It can also make things worse:
-for Qwen3 30B-A3B it replaced a failed answer, which the HEMS would
-have turned into a question, with the cloud model's one wrong commit.
-For gpt-oss-20b the checker lowered decision accuracy, because the model
-left EV targets out of simple plans and the HEMS then asked
-needlessly; the fallback then went to the cloud for a third of the
-plans. Gemma 4 E4B with the checker is the main small-model candidate.
-The checker rules were written from the HEMS's constraints, not from
-the answer keys, but they were tested on the same 22 plans, so these
-numbers are exploratory.
+\textit{Closed loop (iteration 4).} The stored answers then went
+through the checker, an MPC re-solved every hour on the weather
+forecasts, and the control layer, from the household's last message to
+the end of the next day. The household's requirements in the answer key
+were checked on what the control layer actually did: the car's energy
+by departure (within 1\,kWh), each appliance run inside its window, and
+less than 0.5\,degree-hours outside the comfort band. Only the 11 plans
+whose key says \textit{commit} were run, because for the others the
+household's answer to the question is unknown. The MPC with the key's
+constraints is the reference (``exact parameters''); it met the
+requirements on 10 of the 11 plans, and rules that charge the car at
+full power, start appliances at once and keep the set point met them on
+8 and cost 5.56\,EUR more. With Gemma 4 E4B, Qwen3 30B-A3B, Qwen3 4B
+with reasoning and the cloud model, the HEMS met the requirements on 10
+of 11 plans and cost exactly what the exact parameters cost. The one
+plan every system missed is S5, ``lower the heating to
+18--20\,\textdegree C from midnight'', sent at 22:30: the house cannot
+cool by one degree in an hour and a half. Qwen3 8B cost 1.46\,EUR more
+on S2: it turned ``we will be away'' into a comfort band of exactly
+17\,\textdegree C, so the MPC cooled the house and heated it back, a
+mistake that the item scores did not count. The models that asked on
+most plans executed almost nothing; the checker cannot help such a
+model, because it only stops plans that should not be committed. With
+the answers of v3, gpt-oss-20b executed 10 plans but met only 7: it
+dropped the washing machine's earliest start (S4) and left out the
+temperatures of a comfort band (C2), and the checker accepts both,
+since neither breaks a constraint. Fewer questions therefore do not
+guarantee a better result in closed loop.
 
-Gemma 4 E4B and Qwen3 8B need about 5 to 7\,GB of memory, more than a
-4\,GB gateway board such as the Arduino UNO Q or a small Raspberry Pi
-offers. Three models that fit in about 1.5 to 2.5\,GB were therefore run
-as well (lower rows of Tables~\ref{tab:planpilot}
-and~\ref{tab:planchecker}). Qwen3 4B with its reasoning phase matched
-the cloud model's decision accuracy (0.95), but it wrote about 4,800
-tokens per plan and took two minutes even on the laptop's GPU; on a
-board that generates a few tokens a second this would take tens of
-minutes. Its instruct build answers without reasoning in about 110
-tokens and 3 seconds, but its decision accuracy fell to 0.41, mostly
-because it asked on plans that needed no question. Llama 3.2 3B and
-Qwen3 1.7B were too weak: half of Llama's answers failed validation. At
-this size, accuracy on the commit-or-ask decision comes from the
-reasoning phase, which costs time, while Gemma 4 E4B reaches 0.91 with
-the checker in about 730 tokens. The speeds are the laptop's; on a
-gateway board they must be measured (SQ3). The ``reasoning off'' setting
-of Ollama's \texttt{qwen3:4b} build did not stop it from reasoning in
-its answer, so the instruct build was used for the run without
-reasoning.
+These iterations led to the present design. The checks moved into the
+planning tool, so that no plan reaches the MPC unchecked; rules that
+code can apply exactly left the prompt; the plans were rewritten in the
+words households use; and every committed plan is run on the real day.
+The model set was also changed to current small model families
+(Section~\ref{sec:reactpilot}).
 
-\textit{A second prompt for the local models.} Most errors of the small
-models were in the commit-or-ask decision, so a second version of the
-prompt (v3) states the decision rules explicitly: add an EV item only
-when the household asks for charge, never ask about the car's charge
-or a value the household has given, ask when a number or time is vague,
-check the charge and appliance arithmetic before committing, and ask
-when requests contradict each other; three short worked examples
-written for the prompt follow. To keep the pilot plans a fair test, v3
-was developed only on 14 new development plans with their own answer
-keys, and then run once on the 22 pilot plans
-(Table~\ref{tab:planv3}).
-
-\begin{table}[htbp]
-\caption{Plan-interpretation pilot with prompt v3, 22 plans: item
-precision, and decision accuracy with the checker (with the checker and
-the cloud fallback in brackets), under prompts v2 and v3.}
-\label{tab:planv3}
-\small
-\begin{tabularx}{\textwidth}{@{}Xllr@{}}
-\toprule
-Model & Precision v2 / v3 & Decision with checker v2 / v3 & s per plan, v3 \\
-\midrule
-Gemma 4 E4B & 1.00 / 1.00 & 0.91 / 0.95 (0.95) & 8.1 \\
-Qwen3 8B & 0.96 / 1.00 & 0.73 / 1.00 (1.00) & 85 \\
-Ministral 3 8B & 0.81 / 0.91 & 0.50 / 0.68 (0.68) & 8.8 \\
-Qwen3 30B-A3B (CPU) & 1.00 / 1.00 & 0.91 / 0.91 (0.91) & 198 \\
-gpt-oss-20b & 0.62 / 0.95 & 0.45 / 0.91 (0.95) & 65 \\
-Qwen3 4B & 0.95 / 0.95 & 0.95 / 1.00 (0.95) & 176 \\
-Qwen3 4B instruct & 0.82 / 0.90 & 0.45 / 0.50 (0.50) & 3.1 \\
-Llama 3.2 3B & 0.25 / 0.14 & 0.50 / 0.50 (0.91) & 6.8 \\
-Qwen3 1.7B & 0.52 / 0.76 & 0.50 / 0.64 (0.68) & 21 \\
-GPT-6 Luna (cloud) & 1.00 / 1.00 & 0.95 / 0.86 & 2.8 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-The explicit rules helped the local models that had asked or committed
-wrongly. With v3 and the checker, Gemma 4 E4B reached a decision
-accuracy of 0.95, the cloud model's with v2, although two of its
-answers failed validation and its recall fell from 0.91 to 0.87;
-Qwen3 8B reached 1.00, but with its reasoning phase it needed 85
-seconds per plan. The largest change was for gpt-oss-20b, whose
-precision rose from 0.62 to 0.95 and decision accuracy with the checker
-from 0.45 to 0.91, and it needed about half the time per plan (65
-against 116 seconds). Qwen3 4B with reasoning reached 1.00 with the
-checker, but the fallback replaced one correct question (0.95), and
-Qwen3 30B-A3B kept its decision accuracy (0.91) while its recall fell
-from 0.96 to 0.78. Ministral 3 8B, Qwen3 4B instruct and Qwen3 1.7B
-improved but stayed far behind. The prompt did not suit every model: the cloud model
-began to ask needlessly (0.95 to 0.86), and Llama 3.2 3B failed on 19
-of the 22 plans, so its score came almost entirely from the fallback.
-The local models therefore use v3 and the cloud model, also as the
-fallback, keeps v2; both prompts are frozen for the registered
-evaluation. This is one run on 22 plans, so a difference of one or two
-plans is within the noise; the held-out plans decide whether the gain
-holds.
-
-For the design principles, the pilot suggests that deterministic checks
-and explicit decision rules matter more than model size. Gemma 4 E4B
-with the checker (0.91 with v2, 0.95 with v3) came closer to the cloud
-model than any larger local model alone with v2 (at most 0.86), and
-needed the fallback on 9\,\% of the plans; the fallback itself, without
-the checker on its answer, could make a decision worse. These numbers
-are the basis of the provisional answer to SQ1 in
-Section~\ref{sec:answers}.
-
-\section{Configuring the optimiser}
-\label{sec:configpilot}
-
-The third pilot tested the riskiest part of SQ2, configuring the
-optimiser: whether a language-model Configurator sets the MPC better
-than a deterministic auto-tuner with the same history, first with the
-cloud model and then with two small models on local hardware. Over eight weeks (7 March to 1 May 2016), before each week
-the Configurator (GPT-6 Luna) read two weeks of history, backtested
-candidate settings and proposed a PV derating and a battery reserve; the
-harness applied them only if their backtest was not worse than the
-current settings. The auto-tuner chose the best of ten grid points on
-the same two weeks. The expert setting was tuned once on four September
-weeks (derating 0.7).
-
-\begin{table}[htbp]
-\caption{Configurator pilot, eight weeks of 2016: saving against the
-default MPC.}
-\label{tab:configpilot}
-\small
-\begin{tabularx}{\textwidth}{@{}Xrrr@{}}
-\toprule
-System & Saving vs default (EUR) & Gap closed & s per week \\
-\midrule
-Default MPC & 0.00 & 36\,\% & \\
-Auto-tuner (two weeks of history) & 0.10 & 36\,\% & \\
-Configurator, Gemma 4 E4B (local) & 2.85 & 48\,\% & 44 \\
-Configurator, Qwen3 8B (local) & 2.42 & 46\,\% & 300 \\
-Configurator, GPT-6 Luna (cloud) & 2.82 & 48\,\% & 16 \\
-Expert setting (tuned on September) & 2.83 & 48\,\% & \\
-Perfect foresight & 14.45 & 100\,\% & \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-With GPT-6 Luna, the Configurator matched the expert setting; the
-auto-tuner, which switched
-between deratings of 0.6 and 0.9, overfitted two weeks of history, while
-the agent kept stable settings between 0.75 and 0.9. The agent cost USD
-0.003 in total and took about 16\,s and five tool calls a week. In a
-one-week test, a setting tuned on another single week did worse than
-the default, so the tuned reference must always be chosen on separate
-weeks.
-
-The same eight weeks were then run with two small models as
-Configurator, on the laptop. Gemma 4 E4B saved as much as the cloud
-model and the expert setting (2.85 EUR against 2.82 and 2.83); it kept
-a derating of 0.8 from the second week on and took about 44 seconds and
-five tool calls a week. Qwen3 8B saved 2.42 EUR, still far more than
-the auto-tuner, with deratings between 0.75 and 0.9 from the second week
-on, mostly with a 20\,\% battery reserve; with its reasoning phase it
-took about five minutes a week. The backtest gate rejected one proposal from Gemma and
-two from Qwen3, and no call failed. A weekly task that may take minutes
-suits a small local model. Each system ran once on one house, and the
-differences of a few cents between Gemma, the cloud model and the
-expert setting are too small to rank them from one run, so the pilot
-shows that a small model can configure the MPC, not that it does so
-better. The language models beat the auto-tuner by keeping stable
-settings, which the backtest gate encourages, rather than by knowing
-more; a deterministic tuner with a longer history or a penalty on
-changes is therefore a fair test of whether the language model adds
-anything (H4).
-
-\section{Closed loop: household plans through the HEMS}
-\label{sec:looppilot}
-
-The two pilots above tested interpreting plans and configuring the
-optimiser on their own. The fourth pilot closed the loop on the real house-days: the
-stored answers of the plan pilot went through the checker, an MPC
-re-solved every hour on the weather forecasts, and the control layer,
-from the household's last message to the end of the next day. The
-household's requirements in the answer key were then checked on what
-the control layer actually did: the car's energy by departure (within
-1\,kWh), each appliance run inside its window, and less than
-0.5\,degree-hours outside the comfort band. Only the 11 plans whose key
-says \textit{commit} were run, because for the others the household's
-answer to the question is unknown; no model was called again. The MPC
-with the key's constraints is the reference (``exact parameters''); the
-rules charge the car at full power to the key's target, start
-appliances at once and keep the set point. The dishwasher and the
-washing machine were assumed to draw 1.0\,kWh over 2.5\,h and 0.9\,kWh
-over 2\,h.
-
-\begin{table}[htbp]
-\caption{Closed-loop pilot, 11 commit plans: plans executed, household
-requirements met, plans turned into a question, and adjusted cost
-against the exact parameters over the executed plans.}
-\label{tab:looppilot}
-\small
-\begin{tabularx}{\textwidth}{@{}Xrrrr@{}}
-\toprule
-System & Executed & Met & Asked & Extra cost (EUR) \\
-\midrule
-Rules (exact targets, no optimiser) & 11 & 8 & 0 & $+5.56$ \\
-MPC with exact parameters & 11 & 10 & 0 & 0 \\
-Gemma 4 E4B + checker & 11 & 10 & 0 & 0.00 \\
-Qwen3 8B + checker & 10 & 9 & 1 & $+1.46$ \\
-Ministral 3 8B + checker & 2 & 2 & 9 & 0.00 \\
-Qwen3 30B-A3B + checker & 11 & 10 & 0 & 0.00 \\
-Qwen3 4B (reasoning) + checker & 11 & 10 & 0 & 0.00 \\
-Qwen3 4B instruct + checker & 1 & 1 & 10 & 0.00 \\
-Qwen3 1.7B + checker & 2 & 2 & 9 & 0.00 \\
-Llama 3.2 3B + checker & 0 & 0 & 11 & none \\
-gpt-oss-20b + checker & 0 & 0 & 11 & none \\
-GPT-6 Luna + checker & 11 & 10 & 0 & 0.00 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-With Gemma 4 E4B, the HEMS met the household's requirements and cost
-exactly what the exact parameters cost on every plan; the same holds for
-the cloud model and Qwen3 30B-A3B (Table~\ref{tab:looppilot}). The one
-plan every system missed is S5, ``lower the heating to 18--20\,\textdegree C
-from midnight'', sent at 22:30: the house cannot cool by one degree in
-an hour and a half, so it stayed slightly too warm after midnight (about
-2\,degree-hours) whatever the constraints said. Qwen3 8B met the
-requirements but cost 1.46\,EUR more on S2: it turned ``we will be
-away'' into a comfort band of exactly 17\,\textdegree C, so the MPC
-cooled the house to 17 and heated it back, a mistake that the item
-scores of the plan pilot did not count. Besides S5, the rules missed
-the two plans that asked for extra warmth, and they cost 5.56\,EUR more
-over the 11 plans, about 0.50\,EUR a plan. gpt-oss-20b executed nothing:
-on every plan it asked, failed to answer, or left out the EV target, so
-the checker turned its answer into a question. Of the models small enough
-for a 4\,GB board, only Qwen3 4B with reasoning executed the plans, with
-the same result as Gemma; its instruct build, Qwen3 1.7B and Llama 3.2 3B
-asked on nine to eleven of the 11 plans. Ministral 3 8B, although as
-large as Gemma, also asked on 9 of them; the checker cannot help such
-a model, because it only stops plans that should not be committed.
-
-With the answers of prompt v3, Gemma kept its result (10 of 11), Qwen3
-8B met the requirements on 10 of 11 at the cost of the exact
-parameters (its costly misreading of S2 was gone), and Ministral 3 8B
-executed 6 plans and met all six, asking on the other five. Qwen3 4B
-with reasoning kept its result (10 of 11) and Qwen3 30B-A3B asked on one
-plan and met the requirements on the other ten except S5, which the
-exact parameters miss as well. gpt-oss-20b, which had asked on every
-plan with v2, executed 10 plans but met only 7: besides S5 it dropped
-the washing machine's earliest start, so the machine ran too early
-(S4), and left out the temperatures of a comfort band, so the room was
-cooler than the household asked (C2); the checker accepts both, since
-neither breaks a constraint. Qwen3 1.7B executed 8 plans and met 6. Fewer
-questions therefore do not guarantee a better result in closed loop.
-The plans are the 11 easy cases of the pilot set, keyed by
-the author, so this pilot shows that the loop works end to end; whether
-the requirements are met on plans written by other people is the
-registered evaluation's question.
-
-For narrow tasks, the closed loop is the clearest evidence so far: once
-the plan is read correctly, the MPC and the control layer deliver the
-household's requirements at the cost of the exact parameters, whichever
-model read it. What a small model must get right is therefore the
-reading of the plan and the decision to ask, not the schedule; the one
-costly error (Qwen3 8B on S2) was a misread plan, not a bad schedule.
-
-\section{The ReAct gateway: from a household message to the app}
+\section{Interpreting household plans: the Household Assistant as a ReAct agent}
 \label{sec:reactpilot}
 
-In the pilots above the model read a plan in one structured call, and
-the plan was then handed to the checker and the MPC. The Household
-Assistant of Chapter~\ref{ch:design} is meant to work differently: it is
-a ReAct agent that reasons about the message, looks at the home's data
-with its tools and acts by planning through the MPC. The fifth pilot
-built this agent for the gateway and ran it on the same 22 plans. It
-answers for the household app: the decision to commit or ask, the
-questions, the schedule of every device with a reason, the expected
-cost and saving, warnings and an hourly timeline. As in the planning
-pilot's lesson (Section~\ref{sec:gatewaypilot}), the model never writes
-the schedule itself; the app always shows the result of the planning
-tool.
+This section reports the Household Assistant as designed in
+Section~\ref{sec:agents} (SQ1): a ReAct agent that reads the home's
+data with its tools and plans through \texttt{plan\_schedule}, which
+checks the requirements and runs the MPC, with the rules of that
+section applied in code.
 
-\textit{Tools.} The agent has five tools (Table~\ref{tab:reacttools}).
-Four of them read what the gateway knows at the time of the message:
-the home's state, the day-ahead prices, the weather forecast and the
-house's appliances. The appliance cycles are measured: the median cycle
-of the OPSD house's dishwasher uses 0.76\,kWh in an hour and its washing
-machine 0.85\,kWh in 2.25 hours, with their power profiles per 15
-minutes, which replace the assumed cycles of the closed-loop pilot. The
-fifth tool, \texttt{plan\_schedule}, takes the household's requirements
-as constraints, checks them, and, if they pass, plans every device with
-the MPC on the forecasts.
-
-\begin{table}[htbp]
-\caption{Tools of the ReAct gateway.}
-\label{tab:reacttools}
-\small
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.4cm}X@{}}
-\toprule
-Tool & What it returns \\
-\midrule
-\texttt{get\_home\_state} & time, home battery, car charge and charger, indoor temperature, comfort settings and the usual car settings \\
-\texttt{get\_prices} & day-ahead import price per hour to the end of the known prices, the cheapest hours and the feed-in price \\
-\texttt{get\_weather\_forecast} & PV output per hour and the heat pump's heat demand, from the weather-driven forecasts \\
-\texttt{get\_appliances} & the measured dishwasher and washing machine cycles: energy, length and power profile \\
-\texttt{plan\_schedule} & the requirements read back in words, then either the problems to ask about, or the MPC's schedule with a reason per device, the cost, the saving against starting at once and a check of each requirement \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textit{Everyday wording.} The pilot plans stated exact values, such as
-``car at 80\,\% by 07:30''. Households rarely say this; they say
-``charge the car for work tomorrow'' or ``charge it full''. The 22 plans
-and the 14 development plans were therefore rewritten in everyday
-wording, and the household was given usual car settings, set once in
-the app: 80\,\% by 07:30 every day. Some keys changed with the wording.
-A full charge that the charger cannot finish in time (X1, ``just got
-home, need it full for 5am'', and X4) is now committed with a warning,
-because a household would rather have the car as full as possible than
-a question at midnight; and ``charge the car for my trip on Saturday''
-(a development plan) is committed for 07:30 on Saturday, and ``run the
-washing sometime when it's cheap'' at the cheapest time. Appendix~\ref{app:plans} lists
-the rules of the keys.
-
-\textit{Rules in code.} Where a rule can be applied exactly, the code
-applies it, so that the model's task stays to read the message and
-decide. A car request without a target or a time gets the usual
-settings, and a request with only a day gets the usual time on that day.
-A clock time written without am/pm (``from 6 to 8'') means its next
-occurrence after the message, because Gemma read such times twelve hours
-late on the development plans although the prompt stated the rule. A
-charge that the charger cannot finish is committed with a warning, and
-the explanation must pass it on; a charge allowed to start only after
-the car must be ready is a conflict. An appliance without a deadline
-runs at the cheapest time within the known prices. A plan with no
-requirement at all is refused, and a comfort band without a temperature
-is a problem to ask about. For vague words, the model copies the
-household's own words (``leaving early'', ``by lunchtime'') into one
-list, and the code turns each into a question; a label on every item
-had made the smallest model fail on 5 of 14 development plans. Finally,
-the gateway commits only when the model commits and the last schedule
-met every requirement or carries a warning.
+\textit{Everyday wording.} The plans of the earlier iterations stated
+exact values, such as ``car at 80\,\% by 07:30''. Households rarely say
+this; they say ``charge the car for work tomorrow'' or ``charge it
+full''. The 22 plans and the 14 development plans were therefore
+rewritten in everyday wording, and the household was given usual car
+settings: 80\,\% by 07:30 every day. Some keys changed with the
+wording. A full charge that the charger cannot finish in time (X1,
+``just got home, need it full for 5am'', and X4) is now committed with
+a warning, because a household would rather have the car as full as
+possible than a question at midnight; and ``charge the car for my trip
+on Saturday'' (a development plan) is committed for 07:30 on Saturday,
+and ``run the washing sometime when it's cheap'' at the cheapest time.
+Appendix~\ref{app:plans} lists the rules of the keys.
 
 \textit{Models.} The model set was changed to current small model
 families that fit a gateway or a small computer beside it: Gemma 4 E4B
@@ -1707,7 +1524,7 @@ for tool calls they called tools but never planned a schedule on the
 development plans. All local models ran on the laptop's GPU with a
 context window sized for one plan (8,192 tokens, 16,384 with
 reasoning), the default reasoning setting of each model and
-temperature~0.
+temperature~0. All models used the same prompt.
 
 \textit{An example.} For S2 (``Out at work from 8:30 till 5 today.
 Dishwasher done before we're home please.'', sent at 07:00), Gemma 4
@@ -1721,16 +1538,16 @@ once (0.15\,EUR). The answer took 4.7 seconds and two tool calls.
 \textit{Development and test.} All rules and the prompt were developed
 on the 14 development plans; the 22 pilot plans served as the test.
 Table~\ref{tab:reactgateway} shows the final run, one run per model.
-As in Section~\ref{sec:looppilot}, every committed plan was also run
-through the closed loop on the real day and its requirements were
+Every committed plan was also run through the closed loop on the real
+day, as in Section~\ref{sec:looppilot}, and its requirements were
 checked against the answer key.
 
 \begin{table}[htbp]
-\caption{ReAct gateway, final run: decisions right on the 14
-development plans and the 22 test plans; on the test plans, item
-precision and recall, mean seconds per plan, requirements met on the
-real day (of the plans that were committed and whose key says commit)
-and failed answers.}
+\caption{Household Assistant as a ReAct agent, final run: decisions
+right on the 14 development plans and the 22 test plans; on the test
+plans, item precision and recall, mean seconds per plan, requirements
+met on the real day (of the plans that were committed and whose key
+says commit) and failed answers.}
 \label{tab:reactgateway}
 \small
 \begin{tabularx}{\textwidth}{@{}Xrrlrrr@{}}
@@ -1789,7 +1606,7 @@ output. Ministral 3 8B never called
 asked, for example whether ``work'' meant the usual 07:30, so it was
 right only on the plans that needed a question.
 
-The gateway's rules developed over the day, and the test results with
+The rules in code developed over the day, and the test results with
 them: in the first run with everyday wording Gemma 4 E4B got 16 and the
 cloud model 17 of the 22 decisions right, after the rules for vague
 words, conflicts and comfort 18 and 21, and after the defaults for
@@ -1801,10 +1618,9 @@ while the heat pump heats (S5). The 22 plans have also been inspected
 in detail several times, so they are no longer a clean test; the
 held-out plans written by other people are (Section~\ref{sec:registered}).
 The everyday wording and the changed keys also mean that these results
-cannot be compared directly with Tables~\ref{tab:planpilot}
-to~\ref{tab:looppilot}.
+cannot be compared directly with Table~\ref{tab:structpilot}.
 
-For the design principles, the ReAct gateway shows the narrow task at
+For the design principles, this section shows the narrow task at
 work: the small model reads the message and decides, while the code
 fills the usual settings, resolves clock times and checks feasibility,
 and the MPC plans. With this division Gemma 4 E4B, a model that runs on
@@ -1813,6 +1629,68 @@ a consumer GPU in about ten seconds, answered as the cloud model did on
 committed was delivered on the real day as well as the exact parameters
 allowed. Model size alone does not predict the result: Ministral 3 8B,
 the largest local model, was the least useful, because it never acted.
+
+\section{Configuring the optimiser}
+\label{sec:configpilot}
+
+The Configurator pilot tested the riskiest part of SQ2, configuring the
+optimiser: whether a language-model Configurator sets the MPC better
+than a deterministic auto-tuner with the same history, first with the
+cloud model and then with two small models on local hardware. Over eight weeks (7 March to 1 May 2016), before each week
+the Configurator (GPT-6 Luna) read two weeks of history, backtested
+candidate settings and proposed a PV derating and a battery reserve; the
+harness applied them only if their backtest was not worse than the
+current settings. The auto-tuner chose the best of ten grid points on
+the same two weeks. The expert setting was tuned once on four September
+weeks (derating 0.7).
+
+\begin{table}[htbp]
+\caption{Configurator pilot, eight weeks of 2016: saving against the
+default MPC.}
+\label{tab:configpilot}
+\small
+\begin{tabularx}{\textwidth}{@{}Xrrr@{}}
+\toprule
+System & Saving vs default (EUR) & Gap closed & s per week \\
+\midrule
+Default MPC & 0.00 & 36\,\% & \\
+Auto-tuner (two weeks of history) & 0.10 & 36\,\% & \\
+Configurator, Gemma 4 E4B (local) & 2.85 & 48\,\% & 44 \\
+Configurator, Qwen3 8B (local) & 2.42 & 46\,\% & 300 \\
+Configurator, GPT-6 Luna (cloud) & 2.82 & 48\,\% & 16 \\
+Expert setting (tuned on September) & 2.83 & 48\,\% & \\
+Perfect foresight & 14.45 & 100\,\% & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+With GPT-6 Luna, the Configurator matched the expert setting; the
+auto-tuner, which switched
+between deratings of 0.6 and 0.9, overfitted two weeks of history, while
+the agent kept stable settings between 0.75 and 0.9. The agent cost USD
+0.003 in total and took about 16\,s and five tool calls a week. In a
+one-week test, a setting tuned on another single week did worse than
+the default, so the tuned reference must always be chosen on separate
+weeks.
+
+The same eight weeks were then run with two small models as
+Configurator, on the laptop. Gemma 4 E4B saved as much as the cloud
+model and the expert setting (2.85 EUR against 2.82 and 2.83); it kept
+a derating of 0.8 from the second week on and took about 44 seconds and
+five tool calls a week. Qwen3 8B saved 2.42 EUR, still far more than
+the auto-tuner, with deratings between 0.75 and 0.9 from the second week
+on, mostly with a 20\,\% battery reserve; with its reasoning phase it
+took about five minutes a week. The backtest gate rejected one proposal from Gemma and
+two from Qwen3, and no call failed. A weekly task that may take minutes
+suits a small local model. Each system ran once on one house, and the
+differences of a few cents between Gemma, the cloud model and the
+expert setting are too small to rank them from one run, so the pilot
+shows that a small model can configure the MPC, not that it does so
+better. The language models beat the auto-tuner by keeping stable
+settings, which the backtest gate encourages, rather than by knowing
+more; a deterministic tuner with a longer history or a penalty on
+changes is therefore a fair test of whether the language model adds
+anything (H4).
 
 \section{Speed on local hardware}
 \label{sec:edgebench}
@@ -1895,56 +1773,65 @@ written by the author and one run per configuration. They are
 provisional answers that the registered evaluation tests (H1 to H5),
 not findings.
 
-\textit{SQ1, interpreting household plans.} On reading a plan, the
-best small models were as good as the cloud model: Gemma 4 E4B
-extracted the plans' items with a precision of 1.00 and a recall of
-0.91, against 1.00 and 1.00 for GPT-6 Luna
-(Table~\ref{tab:planpilot}). The gap lay in deciding whether to commit
-or to ask (0.82 against 0.95). The deterministic checker closed most of
-it, to 0.91, by stopping infeasible EV requests the small model would
-have committed (Table~\ref{tab:planchecker}); the two errors left are
-conflicts the output schema cannot express. A second prompt with
-explicit decision rules, developed on separate plans, raised Gemma with
-the checker to 0.95, the cloud model's level, and Qwen3 8B to 1.00,
-though at 85 seconds per plan (Table~\ref{tab:planv3}). The cloud fallback added
-nothing for Gemma and, for one larger model, replaced a correct
-question with the cloud model's one wrong commit. In closed loop, Gemma
-with the checker met the household's requirements on 10 of the 11
-plans that should be committed, at the same cost as the exact
-parameters and with the same result as the cloud model
-(Table~\ref{tab:looppilot}). The provisional answer is that a well
-chosen small model of four to eight billion parameters, with a
-deterministic checker, comes within about 0.05 of a cloud LLM on these
-plans and needs the fallback rarely. Size alone is not enough: Ministral
-3 8B, as large as Gemma, asked the household needlessly on most plans
-(decision accuracy 0.50), an error the checker cannot correct, so the
-model has to be chosen on the task. Smaller models of one to three billion
-parameters were not enough unless they reasoned at length, which costs
-the time that local hardware lacks. This agrees with
-\textcite{belcak2025}, who argue that narrow, repeated tasks suit small
-models, and with \textcite{elmakroum2026}, where model size mattered
-most for the open-ended task of coordinating all appliances: here the
-open-ended part, the schedule, is left to the MPC, and the model only
-fills a fixed schema.
-
-The ReAct gateway (Section~\ref{sec:reactpilot}) tested the same task
-closer to operation: the model reads a message in everyday wording,
-looks at the home's data with its tools and plans through the MPC,
-while code fills in the household's usual settings, resolves clock
-times and checks feasibility. Gemma 4 E4B then decided 19 of the 22
+\textit{SQ1, interpreting household plans.} In the present design the
+Household Assistant is a ReAct agent: the model reads a message in
+everyday wording, looks at the home's data with its tools and plans
+through the MPC, while code fills in the household's usual settings,
+resolves clock times and checks feasibility
+(Section~\ref{sec:reactpilot}). Gemma 4 E4B then decided 19 of the 22
 test plans and all 14 development plans correctly, against 21 and 14
-for the cloud model, and every plan it committed was delivered on the
-real day as well as the exact parameters allowed
-(Table~\ref{tab:reactgateway}). Its remaining errors were about vague
+for the cloud model (Table~\ref{tab:reactgateway}). It read the plans
+less completely than the cloud model (item precision 0.86 and recall
+0.83, against 1.00 and 1.00), but every plan it committed was delivered
+on the real day as well as the exact parameters allowed, for 0.05\,EUR
+more over 12 plans. Its remaining errors were about vague
 words: it asked about ``nice and warm'' when the message gave the
 temperatures, and it guessed ``by lunchtime'' and ``the weekend''
 instead of asking. The other small models confirm that the choice of
 model matters more than its size: Gemma 4 E2B, small enough for a 4\,GB
 board, decided 17 correctly, while Ministral 3 8B never called the
 planning tool and asked on every plan, and Nemotron 3 Nano failed on a
-third of the plans despite its training for tool calls. These rules were
-partly shaped by the test plans themselves, so the held-out plans
-decide whether the gap of two plans holds.
+third of the plans despite its training for tool calls. The rules in
+code were partly shaped by the test plans themselves, and one plan is
+4.5 percentage points of the 22, so the held-out plans decide whether
+the gap of two plans holds.
+
+The earlier iterations show where the distance to the cloud model lies
+and what closes it (Section~\ref{sec:planpilot},
+Table~\ref{tab:structpilot}). With one structured call and plans in
+exact wording, Gemma 4 E4B extracted the plans' items with a precision
+of 1.00 and a recall of 0.91, against 1.00 and 1.00 for GPT-6 Luna; the
+gap lay in deciding whether to commit or to ask (0.82 against 0.95).
+The deterministic checker closed most of it, to 0.91, by stopping
+infeasible EV requests the small model would have committed; the two
+errors left are conflicts the output schema cannot express. Explicit
+decision rules in the prompt raised Gemma with the checker to 0.95 and
+Qwen3 8B to 1.00, though at 85 seconds per plan, but made the cloud
+model ask needlessly (0.86); in the present design, rules that can be
+applied exactly are in code. A cloud fallback would have been used on
+9\,\% of Gemma's plans and added nothing, and for one larger model it
+replaced a correct question with the cloud model's one wrong commit. In
+closed loop, Gemma with the checker met the household's requirements on
+10 of the 11 plans that should be committed, at the same cost as the
+exact parameters and with the same result as the cloud model
+(Section~\ref{sec:looppilot}). These are single runs on 22 plans, in
+which a difference of one or two plans is within the noise.
+
+The provisional answer is that a well chosen small model of four to
+eight billion parameters, inside deterministic checks and rules in
+code, comes within two of 22 plans of a cloud LLM on the commit-or-ask
+decision and delivers the plans it commits as well as exact parameters
+do. Size alone is not enough: Ministral 3 8B, as large as Gemma, asked
+the household needlessly on most plans in both designs, an error the
+checker cannot correct, so the model has to be chosen on the task.
+Smaller models of one to three billion parameters were not enough
+unless they reasoned at length, which costs the time that local
+hardware lacks. This agrees with \textcite{belcak2025}, who argue that
+narrow, repeated tasks suit small models, and with
+\textcite{elmakroum2026}, where model size mattered most for the
+open-ended task of coordinating all appliances: here the open-ended
+part, the schedule, is left to the MPC, and the model only states the
+household's requirements.
 
 \textit{SQ2, configuring an optimiser.} As Configurator, Gemma 4 E4B
 saved as much as the cloud model and the expert setting over eight
@@ -1972,8 +1859,9 @@ speed of small models on edge boards \parencite{islam2025}, so a plan
 may take minutes there. Most plans are given hours before they matter
 (a departure the next morning, a guest in the evening), so minutes are
 acceptable; plans due sooner can go to the fallback, which H5 measures.
-The local model keeps the plans in the house: with Gemma and the
-checker, the fallback would have sent 9\,\% of the plans to the cloud,
+The local model keeps the plans in the house: in the earlier iteration
+with Gemma and the checker, the fallback would have sent 9\,\% of the
+plans to the cloud,
 and with the fallback switched off the HEMS asks the household instead.
 The energy and money that local inference costs are measured on the two
 devices and are not yet known.
@@ -2051,10 +1939,15 @@ work.
 The evidence so far is narrow. All pilots used one house in Konstanz,
 22 plans written by the author with answer keys by the author, and one
 run per configuration; the checker's rules were tested on the same 22
-plans. Small models answer differently from run to run: the same model
-on the same plans reached a decision accuracy of 0.82 on the GPU and
-0.64 on the CPU. The closed loop ran only the 11 plans that should be
-committed, because the household's answer to a question is unknown.
+plans, and two rules of the present design came from errors seen on
+them. With 22 plans, one plan is 4.5 percentage points. Small models
+answer differently from run to run: the same model on the same plans
+reached a decision accuracy of 0.82 on the GPU and 0.64 on the CPU. The
+closed loop ran only the plans that should be committed, because the
+household's answer to a question is unknown. Of the design, only the
+Household Assistant and the Configurator are built; the Monitor, the
+Explainer, the running model layer with the cloud fallback and the user
+app are designed but not evaluated (Section~\ref{sec:envisioned}).
 The registered evaluation addresses these points with held-out plans
 written by other people, more houses and three repeats, but it remains
 a simulation: the battery is simulated, the prices are a counterfactual
@@ -2119,15 +2012,15 @@ control layer switches the devices, and a cloud LLM serves as the
 reference and as an optional fallback.
 
 The exploratory pilots give a provisional answer. On interpreting
-household plans, the best small model, Gemma 4 E4B, read the plans as
-well as the cloud model and fell behind only in deciding when to ask;
-with the checker its decision accuracy rose from 0.82 to 0.91, and to
-0.95 with a prompt that states the decision rules, the cloud model's
-level, and in closed loop it met the household's
-requirements as often and at the same cost. Built as a ReAct agent that
-reads the home's data and plans through the MPC, on plans in everyday
-wording, it decided 19 of 22 plans correctly against the cloud model's
-21. On configuring the
+household plans, the best small model, Gemma 4 E4B, built as a ReAct
+agent that reads the home's data and plans through the MPC, decided 19
+of 22 plans in everyday wording correctly against the cloud model's 21,
+and the plans it committed met the household's requirements as often
+as exact parameters did. The earlier design iterations showed where a
+small model falls behind and what helps: it read the plans nearly as
+well as the cloud model and fell behind in deciding when to ask, and a
+deterministic checker raised its decision accuracy from 0.82 to 0.91,
+against the cloud model's 0.95. On configuring the
 optimiser, the same small model saved as much as the cloud model and an
 expert setting, and far more than a deterministic auto-tuner with the
 same history. On local hardware, the optimiser takes a tenth of a
@@ -2397,7 +2290,7 @@ C1 to C5 change the plan during the day, A1 to A6 are ambiguous and X1
 to X5 are conflicting or infeasible. Twenty were adapted from an
 external review and two restored from the first pilot. The answer keys
 are drafts and are checked before any result is used. The pilots of
-Sections~\ref{sec:planpilot} to~\ref{sec:looppilot} used plans with
+Section~\ref{sec:planpilot} used plans with
 exact values (archived as
 \path{prototypes/plan_pilot/archive/plans_exact_wording.json}); the
 ReAct gateway (Section~\ref{sec:reactpilot}) uses the same plans
