@@ -127,7 +127,7 @@ ul.tight li { margin: 4px 0; }
 
 <div class="wrap">
 <header class="prose">
-  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · updated 14 Nov 2026</div>
+  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · updated 16 Nov 2026</div>
   <h1>Small Language Models for Smart Home Energy Management: Interpreting Household Plans and Configuring an Optimiser on Local Hardware</h1>
   <p class="lede">A home energy gateway controls rooftop PV (photovoltaic solar panels), a home battery, a heat pump and an EV (electric vehicle) charger. A tuned optimiser, MPC (model predictive control), plans them; four language-model agents handle what an optimiser cannot: they turn the household's plain-language plans into constraints, explain the plan, react to plug-ins and deviations, and configure the optimiser from the house's own history. The agents run on a small language model (SLM) on local hardware, so the household's plans stay in the house; a cloud large language model (LLM) is the reference and, when needed, a fallback. A deterministic checker and control layer keep every plan safe.</p>
   <ul class="tight">
@@ -142,137 +142,11 @@ ul.tight li { margin: 4px 0; }
 <section>
   <h2>1. Problem</h2>
   <div class="prose">
-    <p>A home energy gateway is the box in the meter cabinet or on the home network that reads the smart meter and controls the home's energy assets: the solar inverter, the battery, the EV charger, the heat pump and the smart appliances. Its job is to decide every few minutes when each asset draws, stores or exports power, so that the household pays less, uses more of its own solar power and stays within the limits set by the grid operator.</p>
+    <p>A home energy gateway is the box in the meter cabinet or on the home network that reads the smart meter and controls the home's energy assets: on-site renewable generation (rooftop PV panels, a small wind turbine, or both) with its inverter, the battery, the EV charger, the heat pump and the smart appliances. Its job is to decide every few minutes when each asset draws, stores or exports power, so that the household pays less for electricity, uses more of the power it generates and stays within the limits set by the grid operator.</p>
 
   </div>
   <figure class="figure">
-  <svg viewBox="0 0 1130 770" role="img" aria-label="A home energy system: solar PV and a wind turbine feed inverters, inverters and the grid meet at the smart meter, and the energy management controller reads the meter and inverters, takes prices, weather and the household's plans, and sets the battery and the home's loads; it is the gateway this thesis builds on.">
-    <defs>
-      <marker id="hc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head warn" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="hd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head ok" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head sun" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="ht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
-
-    </defs>
-
-    <!-- generation and grid -->
-    <g><circle class="dt sun" cx="58" cy="44" r="11"/><path class="st sun" d="M58 24 V28 M58 60 V64 M38 44 H42 M74 44 H78 M44 30 L47 33 M69 55 L72 58 M72 30 L69 33 M44 58 L47 55"/></g>
-    <path class="dt grid" d="M90 128 L118 66 H214 L186 128 Z"/>
-    <path class="st" d="M104 97 H200 M150 66 L134 128 M182 66 L166 128 M118 66 L102 128 M150 128 V146 M128 146 H172"/>
-    <text class="title" x="150" y="170" text-anchor="middle">Solar PV</text>
-
-    <rect class="box" x="300" y="66" width="130" height="50" rx="6"/>
-    <g transform="translate(306.0,73.0) scale(0.750)"><path class="st" d="M14 20 L10 9 M34 20 L38 9"/><rect class="dt" x="5" y="20" width="38" height="16" rx="4"/><circle class="acc-ok" cx="12" cy="28" r="2"/><circle class="acc-ok" cx="18" cy="28" r="2"/><path class="st" d="M26 28 H37"/></g>
-    <text class="title" x="346" y="96">PV gateway</text>
-
-    <path class="dt" d="M565 34 L542 158 H588 Z"/>
-    <path class="st" d="M528 58 H602 M534 84 H596 M556 84 L581 124 M574 84 L549 124 M549 124 H581 M530 158 H600"/>
-    <circle class="acc-g" cx="528" cy="58" r="3"/><circle class="acc-g" cx="602" cy="58" r="3"/>
-    <circle class="acc-g" cx="534" cy="84" r="3"/><circle class="acc-g" cx="596" cy="84" r="3"/>
-    <text class="title" x="565" y="182" text-anchor="middle">Public grid</text>
-
-    <path class="dt" d="M791 176 L793 84 H797 L799 176 Z"/>
-    <path class="dt" d="M795 80 Q790 54 793 28 Q799 52 795 80 Z M795 80 Q770 96 750 106 Q768 88 795 80 Z M795 80 Q818 96 838 108 Q815 104 795 80 Z"/>
-    <circle class="dt grid" cx="795" cy="80" r="5"/>
-    <path class="st" d="M760 176 H830"/>
-    <text class="title" x="795" y="198" text-anchor="middle">Wind turbine</text>
-
-    <rect class="box" x="930" y="40" width="140" height="50" rx="6"/>
-    <g transform="translate(936.0,47.0) scale(0.750)"><path class="st" d="M14 20 L10 9 M34 20 L38 9"/><rect class="dt" x="5" y="20" width="38" height="16" rx="4"/><circle class="acc-ok" cx="12" cy="28" r="2"/><circle class="acc-ok" cx="18" cy="28" r="2"/><path class="st" d="M26 28 H37"/></g>
-    <text class="title" x="976" y="70">Wind gateway</text>
-
-    <!-- conversion and metering -->
-    <rect class="box" x="60" y="236" width="160" height="80" rx="6"/>
-    <g transform="translate(70.0,250.0) scale(1.042)"><rect class="dt" x="10" y="3" width="28" height="40" rx="4"/><rect class="dt grid" x="15" y="9" width="18" height="10" rx="2"/><path class="st" d="M17 30 Q20.5 25 24 30 T31 30"/><path class="st" d="M16 43 V46 M32 43 V46"/></g>
-    <text class="title" x="124" y="272">Solar</text>
-    <text class="title" x="124" y="290">inverter</text>
-
-    <rect class="box" x="490" y="236" width="150" height="80" rx="6"/>
-    <g transform="translate(500.0,250.0) scale(1.042)"><rect class="dt" x="9" y="3" width="30" height="42" rx="5"/><rect class="dt grid" x="14" y="9" width="20" height="10" rx="2"/><path class="st" d="M17 14 H20 M23 14 H26 M29 14 H31"/><circle class="dt" cx="24" cy="32" r="6"/><path class="st" d="M24 32 L28 28"/></g>
-    <text class="title" x="552" y="272">Smart</text>
-    <text class="title" x="552" y="290">meter</text>
-
-    <rect class="box" x="910" y="236" width="160" height="80" rx="6"/>
-    <g transform="translate(920.0,250.0) scale(1.042)"><rect class="dt" x="10" y="3" width="28" height="40" rx="4"/><rect class="dt grid" x="15" y="9" width="18" height="10" rx="2"/><path class="st" d="M17 30 Q20.5 25 24 30 T31 30"/><path class="st" d="M16 43 V46 M32 43 V46"/></g>
-    <text class="title" x="974" y="272">Wind</text>
-    <text class="title" x="974" y="290">inverter</text>
-
-    <!-- the controller: the gateway of this thesis -->
-    <rect class="agentbox" x="440" y="370" width="250" height="78" rx="8"/>
-    <g transform="translate(450.0,383.0) scale(1.083)"><path class="st" d="M18 11 V5 M24 11 V5 M30 11 V5 M18 37 V43 M24 37 V43 M30 37 V43 M11 18 H5 M11 24 H5 M11 30 H5 M37 18 H43 M37 24 H43 M37 30 H43"/><rect class="dt grid" x="11" y="11" width="26" height="26" rx="5"/><path class="st" d="M19 19 L29 20 L28 29 Z"/><circle class="acc-g" cx="19" cy="19" r="2.6"/><circle class="acc-g" cx="29" cy="20" r="2.6"/><circle class="acc-g" cx="28" cy="29" r="2.6"/></g>
-    <text class="title" x="508" y="398">Energy management</text>
-    <text class="title" x="508" y="416">controller (EMC)</text>
-    <text class="lbl agent" x="508" y="436">= the gateway in this thesis</text>
-
-    <!-- inputs the EMC needs from outside the house -->
-    <rect class="sunbox" x="880" y="476" width="200" height="64" rx="6"/>
-    <g transform="translate(888.0,484.0) scale(0.958)"><circle class="dt sun" cx="17" cy="15" r="7"/><path class="dt" d="M13 37 H36 A7.5 7.5 0 0 0 36 22 A10 10 0 0 0 17 25 A6 6 0 0 0 13 37 Z"/><path class="st sun" d="M18 33 L23 29 L27 31 L32 26"/></g>
-    <text class="title" x="940" y="504">Prices, weather</text>
-    <text class="sub" x="940" y="522">day-ahead, forecasts</text>
-
-    <rect class="box" x="880" y="596" width="200" height="64" rx="6"/>
-    <g transform="translate(888.0,604.0) scale(0.958)"><rect class="dt" x="13" y="3" width="22" height="42" rx="4"/><path class="st" d="M21 7 H27"/><path class="dt grid" d="M17 13 H31 V23 H22 L19 26 V23 H17 Z"/><circle class="acc-g" cx="24" cy="39" r="1.6"/></g>
-    <text class="title" x="940" y="624">Household app</text>
-    <text class="sub" x="940" y="642">plans, messages</text>
-
-    <!-- storage -->
-    <rect class="box" x="60" y="490" width="140" height="170" rx="8"/>
-    <g transform="translate(90.0,500.0) scale(1.667)"><rect class="dt" x="10" y="3" width="28" height="42" rx="4"/><rect class="dt" x="16" y="9" width="16" height="7" rx="1.5"/><rect class="acc-ok" x="17.5" y="10.5" width="9" height="4" rx="0.8"/><path class="st" d="M17 24 H31 M17 30 H31 M17 36 H31"/></g>
-    <text class="title" x="130" y="610" text-anchor="middle">Home</text>
-    <text class="title" x="130" y="628" text-anchor="middle">battery</text>
-
-    <!-- the home and its loads -->
-    <path class="icon" d="M300 560 L560 488 L820 560 M326 553 V694 H794 V553"/>
-    <text class="title" x="560" y="716" text-anchor="middle">Home and its loads</text>
-    <path class="ln ac" d="M350 622 H770 M372 622 V612 M482 622 V612 M600 622 V612 M372 622 V632 M482 622 V632 M592 622 V632 M702 622 V632"/>
-    <g transform="translate(354.0,576.0) scale(0.750)"><path class="dt sun" d="M24 4 A13 13 0 0 1 32 27 Q30 29.5 30 33 H18 Q18 29.5 16 27 A13 13 0 0 1 24 4 Z"/><path class="st" d="M18 38 H30 M20 42 H28 M21 33 V25 L24 22 L27 25 V33"/></g>
-    <text class="lbl" x="372" y="572" text-anchor="middle">lighting</text>
-    <g transform="translate(462.0,574.0) scale(0.833)"><rect class="dt" x="3" y="9" width="42" height="30" rx="4"/><circle class="dt grid" cx="19" cy="24" r="10"/><path class="st" d="M19 24 Q19 17 23 16 M19 24 Q25 27 25 31 M19 24 Q13 28 10 25"/><circle class="acc-g" cx="19" cy="24" r="2"/><path class="st" d="M34 15 H41 M34 20 H41 M34 25 H41 M34 30 H41"/><path class="st" d="M9 39 V43 M39 39 V43"/></g>
-    <text class="lbl" x="482" y="572" text-anchor="middle">heat pump</text>
-    <g transform="translate(580.0,575.0) scale(0.792)"><rect class="dt" x="6" y="4" width="22" height="38" rx="4"/><rect class="dt grid" x="10" y="9" width="14" height="8" rx="1.5"/><path class="acc" d="M19 21 L14 30 H18 L16 38 L23 28 H19 L21 21 Z"/><path class="st" d="M28 27 C38 27 40 33 40 39 V43"/><path class="st" d="M3 45 H31"/></g>
-    <g transform="translate(628.0,572.0) scale(0.917)"><path class="dt" d="M3 31 L8 21 Q10 17 15 17 H33 Q38 17 40 21 L45 31 V37 H3 Z"/><path class="dt grid" d="M12 22 L14 19 H23 V24 H11 Z M26 19 H34 L37 24 H26 Z"/><circle class="dt" cx="13" cy="37" r="4.5"/><circle class="dt" cx="35" cy="37" r="4.5"/><circle class="acc" cx="42" cy="28" r="1.5"/></g>
-    <text class="lbl" x="630" y="566" text-anchor="middle">EV charger and car</text>
-    <g transform="translate(354.0,636.0) scale(0.750)"><rect class="dt" x="11" y="3" width="26" height="42" rx="4"/><path class="st" d="M11 17 H37 M16 8 V12 M16 22 V30"/><circle class="acc-g" cx="31" cy="9" r="1.6"/></g>
-    <text class="lbl" x="372" y="688" text-anchor="middle">fridge</text>
-    <g transform="translate(464.0,636.0) scale(0.750)"><rect class="dt" x="7" y="4" width="34" height="40" rx="4"/><path class="st" d="M7 12 H41 M27 8 H35"/><circle class="acc-g" cx="13" cy="8" r="1.6"/><circle class="dt grid" cx="24" cy="28" r="10"/><path class="st" d="M16 29 Q20 25 24 29 T32 28"/></g>
-    <text class="lbl" x="482" y="688" text-anchor="middle">washer</text>
-    <g transform="translate(574.0,636.0) scale(0.750)"><rect class="dt" x="7" y="4" width="34" height="40" rx="4"/><path class="st" d="M7 12 H41 M13 8 H22"/><circle class="acc-g" cx="35" cy="8" r="1.6"/><path class="st" d="M14 21 V35 M20 19 V35 M26 21 V35 M32 19 V35 M12 35 H36"/></g>
-    <text class="lbl" x="592" y="688" text-anchor="middle">dishwasher</text>
-    <g transform="translate(683.0,636.0) scale(0.792)"><rect class="dt grid" x="9" y="9" width="30" height="21" rx="2.5"/><path class="dt" d="M4 33 H44 L41 38 H7 Z"/></g>
-    <text class="lbl" x="702" y="688" text-anchor="middle">laptop</text>
-
-    <!-- DC lines -->
-    <path class="ln dc" d="M200 92 H298" marker-end="url(#hd)"/>
-    <path class="ln dc" d="M365 116 V200 H180 V234" marker-end="url(#hd)"/>
-    <path class="ln dc" d="M1000 90 V234" marker-end="url(#hd)"/>
-    <path class="ln dc" d="M130 490 V440 H438" marker-start="url(#hd)" marker-end="url(#hd)"/>
-    <!-- AC lines -->
-    <path class="ln ac" d="M220 276 H488" marker-end="url(#ha)"/>
-    <path class="ln ac" d="M910 276 H642" marker-end="url(#ha)"/>
-    <!-- two-way electricity -->
-    <path class="ln two" d="M565 188 V234" marker-start="url(#ht)" marker-end="url(#ht)"/>
-    <path class="ln two" d="M565 448 V486" marker-start="url(#ht)" marker-end="url(#ht)"/>
-    <!-- communication -->
-    <path class="ln comm" d="M432 92 H516" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <path class="ln comm" d="M614 92 H744" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <path class="ln comm" d="M846 66 H928" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <path class="ln comm" d="M565 318 V368" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <text class="lbl" x="573" y="348">meter data</text>
-    <path class="ln comm" d="M140 318 V400 H438" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <text class="lbl" x="230" y="394">Modbus / SunSpec</text>
-    <path class="ln comm" d="M990 318 V392 H692" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <text class="lbl" x="870" y="386">Modbus</text>
-    <path class="ln comm" d="M878 508 H866 V408 H692" marker-end="url(#hc)"/>
-    <path class="ln comm" d="M878 628 H850 V428 H692" marker-start="url(#hc)" marker-end="url(#hc)"/>
-    <path class="ln comm" d="M202 590 H316" marker-end="url(#hc)"/>
-    <text class="lbl" x="214" y="582">setpoints</text>
-
-    <!-- legend -->
-    <path class="ln comm" d="M60 748 H100"/><text class="lbl" x="108" y="752">communication</text>
-    <path class="ln dc" d="M250 748 H290"/><text class="lbl" x="298" y="752">DC power</text>
-    <path class="ln ac" d="M410 748 H450"/><text class="lbl" x="458" y="752">AC power</text>
-    <path class="ln two" d="M570 748 H610"/><text class="lbl" x="618" y="752">two-way power flow</text>
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1010" font-family="Arial, Helvetica, sans-serif" role="img" aria-label="A home energy system: solar PV and a small wind turbine feed inverters, the inverters and the grid meet at the smart meter, and the energy management controller (the home energy gateway) reads the meter and inverters, sets the battery and the smart loads, talks to the household app over the home Wi-Fi and gets prices and forecasts from the internet."><defs><marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f9e44"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9480f"/></marker><marker id="two" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0b7285"/></marker><marker id="com" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c92a2a"/></marker></defs><rect width="1720" height="1010" fill="#ffffff"/><path d="M155,110 L155,148" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M155,340 L155,378" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M270,185 L618,185" fill="none" stroke="#d9480f" stroke-width="2.2" marker-end="url(#ac)"/><path d="M270,400 L460,400 L460,225 L618,225" fill="none" stroke="#d9480f" stroke-width="2.2" marker-end="url(#ac)"/><path d="M750,110 L750,148" fill="none" stroke="#0b7285" stroke-width="2.2" marker-start="url(#two)" marker-end="url(#two)"/><path d="M700,250 L700,328" fill="none" stroke="#0b7285" stroke-width="2.2" marker-start="url(#two)" marker-end="url(#two)"/><path d="M700,540 L700,618" fill="none" stroke="#0b7285" stroke-width="2.2" marker-start="url(#two)" marker-end="url(#two)"/><path d="M120,640 L120,480 L538,480" fill="none" stroke="#0b7285" stroke-width="2.2" marker-start="url(#two)" marker-end="url(#two)"/><path d="M820,250 L820,328" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M40,205 L20,205 L20,455 L538,455" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M270,430 L538,430" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M205,640 L205,515 L538,515" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M820,540 L820,618" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-end="url(#com)"/><path d="M960,400 L1198,400" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M960,500 L1150,500 L1150,845 L1198,845" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M40,965 L100,965" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M330,965 L390,965" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M620,965 L680,965" fill="none" stroke="#d9480f" stroke-width="2.2" marker-end="url(#ac)"/><path d="M910,965 L970,965" fill="none" stroke="#0b7285" stroke-width="2.2" marker-start="url(#two)" marker-end="url(#two)"/><rect x="40" y="40" width="230" height="70" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.5"/><text x="155" y="72" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Solar PV</text><text x="155" y="94" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">rooftop</text><rect x="40" y="150" width="230" height="70" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="155" y="192" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Solar inverter</text><rect x="40" y="270" width="230" height="70" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.5"/><text x="155" y="302" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Wind turbine</text><text x="155" y="324" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">small, optional</text><rect x="40" y="380" width="230" height="70" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="155" y="422" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Wind inverter</text><rect x="40" y="640" width="230" height="120" rx="8" fill="#e3f6e5" stroke="#2f7d3b" stroke-width="1.5"/><text x="155" y="697" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Home battery</text><text x="155" y="719" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">with battery inverter</text><rect x="620" y="40" width="260" height="70" rx="8" fill="#eef0f2" stroke="#6b7785" stroke-width="1.5"/><text x="750" y="82" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Public grid</text><rect x="620" y="150" width="260" height="100" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="750" y="207" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Smart meter</text><rect x="540" y="330" width="420" height="210" rx="8" fill="#dcf5ea" stroke="#1b7f5b" stroke-width="2.5"/><text x="750" y="409" font-size="21" font-weight="600" fill="#1f2933" text-anchor="middle">Energy management controller</text><text x="750" y="432" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">= home energy gateway</text><text x="750" y="455" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">runs the HEMS: local small language model,</text><text x="750" y="477" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">MPC, checker and control layer</text><rect x="300" y="620" width="790" height="270" rx="10" fill="#fbf8ec" stroke="#a39e8a" stroke-width="1.5"/><text x="322" y="652" font-size="20" font-weight="700" fill="#1f2933" text-anchor="start">Smart loads</text><rect x="322" y="672" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="410" y="723" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Heat pump</text><rect x="512" y="672" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="600" y="723" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Water heater</text><rect x="702" y="672" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="790" y="712" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Air</text><text x="790" y="735" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">conditioning</text><rect x="892" y="672" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="980" y="712" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">EV charger</text><text x="980" y="735" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">and car</text><rect x="322" y="776" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="410" y="816" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Washing</text><text x="410" y="839" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">machine</text><rect x="512" y="776" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="600" y="827" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Dishwasher</text><rect x="702" y="776" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="790" y="816" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Smart</text><text x="790" y="839" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">thermostats</text><rect x="892" y="776" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="980" y="816" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Smart</text><text x="980" y="839" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">light bulbs</text><rect x="1200" y="140" width="480" height="620" rx="10" fill="#f8f9fa" stroke="#8a94a0" stroke-width="1.3" stroke-dasharray="7 5"/><text x="1220" y="170" font-size="17" font-weight="400" fill="#52606d" text-anchor="start">In the household, over the home Wi-Fi</text><rect x="1220" y="186" width="440" height="470" rx="8" fill="#efe9ff" stroke="#5f3dc4" stroke-width="1.8"/><text x="1240" y="216" font-size="19" font-weight="700" fill="#3b2c84" text-anchor="start">Household app (phone or tablet)</text><rect x="1240" y="232" width="400" height="92" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="263" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Plans, typed or spoken</text><text x="1440" y="284" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">“car at 80 % by 07:30,</text><text x="1440" y="304" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">guests from 18:00”</text><rect x="1240" y="336" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="365" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Live view: PV, consumption, battery %,</text><text x="1440" y="386" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">grid import/export, EV, indoor °C</text><rect x="1240" y="416" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="445" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Today’s plan, prices and the</text><text x="1440" y="466" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">committed requirements</text><rect x="1240" y="496" width="400" height="50" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="527" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Savings vs rules, PV used at home</text><rect x="1240" y="558" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="587" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Questions and messages,</text><text x="1440" y="608" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">each with its reason</text><rect x="1220" y="672" width="440" height="72" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1.2"/><text x="1440" y="704" font-size="17" font-weight="600" fill="#1f2933" text-anchor="middle">Voice satellite (optional)</text><text x="1440" y="724" font-size="15" font-weight="400" fill="#52606d" text-anchor="middle">wake word; speech becomes text on the gateway</text><rect x="1200" y="790" width="480" height="110" rx="8" fill="#ffe8cc" stroke="#c2610c" stroke-width="1.5"/><text x="1440" y="830" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Internet services</text><text x="1440" y="853" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">day-ahead prices · weather forecasts</text><text x="1440" y="875" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">cloud LLM (optional fallback)</text><text x="832" y="295" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">meter data</text><text x="300" y="508" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">battery setpoints</text><text x="832" y="585" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">device setpoints</text><text x="1080" y="390" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="middle">Wi-Fi, encrypted</text><text x="975" y="492" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">prices, forecasts, fallback</text><text x="114" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">communication</text><text x="404" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">DC power</text><text x="694" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">AC power</text><text x="984" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">two-way power flow</text></svg>
   </figure>
   <div class="prose">
     <h3>How gateways plan today, and where they fall short</h3>
@@ -790,6 +664,76 @@ ul.tight li { margin: 4px 0; }
     <li><strong>Rules applied by code:</strong> usual car settings fill a missing target or time (a day without a time gets 07:30 that day); a clock time without am/pm means its next occurrence; a car charge that cannot be finished is committed with a warning; a charge allowed to start only after the departure is a conflict; an appliance without a deadline runs at the cheapest time in the known prices; an empty plan is refused; a comfort band without a temperature is a problem; vague words the model copies into <code>unclear</code> become a question.</li>
   </ul>
 
+  <h3>What <code>plan_schedule</code> does</h3>
+  <div class="prose"><p>The model's only action on the house is a call to <code>plan_schedule</code>. Inside the tool the MPC is solved once, as a preview on the forecasts of the moment; only after a commit does the receding-horizon MPC take over, without the model.</p></div>
+  <figure class="figure">
+  <svg viewBox="0 0 1060 300" role="img" aria-label="Inside plan_schedule: code completes the requirements, reads them back, the checker either returns problems to ask about or the MPC solves once and returns a preview; after the gateway commits, the MPC replans every hour without the model.">
+    <defs>
+      <marker id="ps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="psa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
+      <marker id="psw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head warn" d="M0,0 L10,5 L0,10 z"/></marker>
+    </defs>
+    <rect class="zone" x="150" y="20" width="740" height="150" rx="10"/>
+    <text class="mono" x="166" y="40">plan_schedule (deterministic)</text>
+
+    <rect class="agentbox" x="10" y="60" width="120" height="70" rx="8"/>
+    <text class="title" x="24" y="90">SLM</text>
+    <text class="sub" x="24" y="110">requirements</text>
+
+    <rect class="detbox" x="170" y="60" width="150" height="70" rx="8"/>
+    <text class="title" x="184" y="88">1 Complete</text>
+    <text class="sub" x="184" y="106">usual settings,</text>
+    <text class="sub" x="184" y="121">am/pm, deadlines</text>
+
+    <rect class="detbox" x="350" y="60" width="140" height="70" rx="8"/>
+    <text class="title" x="364" y="88">2 Read back</text>
+    <text class="sub" x="364" y="106">weekday, part of</text>
+    <text class="sub" x="364" y="121">day, hours from now</text>
+
+    <rect class="detbox" x="520" y="60" width="140" height="70" rx="8"/>
+    <text class="title" x="534" y="88">3 Checker</text>
+    <text class="sub" x="534" y="106">vague, conflict,</text>
+    <text class="sub" x="534" y="121">infeasible window</text>
+
+    <rect class="sunbox" x="700" y="60" width="170" height="70" rx="8"/>
+    <text class="title" x="714" y="88">4 MPC, one solve</text>
+    <text class="sub" x="714" y="106">forecasts and prices</text>
+    <text class="sub" x="714" y="121">at the message time</text>
+
+    <rect class="box" x="910" y="60" width="140" height="70" rx="8"/>
+    <text class="title" x="924" y="88">App preview</text>
+    <text class="sub" x="924" y="106">schedule, reasons,</text>
+    <text class="sub" x="924" y="121">cost, checks</text>
+
+    <path class="arrow agent" d="M130,95 H168" marker-end="url(#psa)"/>
+    <path class="arrow" d="M320,95 H348" marker-end="url(#ps)"/>
+    <path class="arrow" d="M490,95 H518" marker-end="url(#ps)"/>
+    <path class="arrow" d="M660,95 H698" marker-end="url(#ps)"/>
+    <text class="lbl" x="664" y="86">pass</text>
+    <path class="arrow" d="M870,95 H908" marker-end="url(#ps)"/>
+
+    <path class="arrow" d="M590,130 V200 H70 V132" marker-end="url(#psw)" stroke-dasharray="5 4"/>
+    <text class="lbl" x="240" y="194">problems → the model asks the household (MPC not run)</text>
+    <path class="arrow agent" d="M420,60 V8 H70 V58" marker-end="url(#psa)" stroke-dasharray="5 4"/>
+    <text class="lbl agent" x="140" y="16">wrong time in the read-back → call again</text>
+
+    <rect class="detbox" x="700" y="220" width="350" height="64" rx="8"/>
+    <text class="title" x="714" y="246">After commit: MPC every hour</text>
+    <text class="sub" x="714" y="266">new forecasts, measured state; control layer every 15 min</text>
+    <path class="arrow" d="M980,130 V218" marker-end="url(#ps)"/>
+    <text class="lbl" x="988" y="180">commit</text>
+  </svg>
+  <figcaption>The four steps inside <code>plan_schedule</code>. Dashed lines go back to the model: a problem from the checker becomes a question, and a wrong time in the read-back makes the model call the tool again (the app shows the last result). The MPC in the tool is a single preview; the hourly replanning after a commit needs no model call.</figcaption>
+  </figure>
+  <div class="scroll"><table>
+    <thead><tr><th>Household requirement</th><th>MPC constraint it fills</th></tr></thead>
+    <tbody>
+      <tr><td>Car charge ("charge the car for work tomorrow")</td><td>energy E<sup>car</sup> to add between the earliest charging slot a and the departure b (usual 80 % by 07:30 if not stated)</td></tr>
+      <tr><td>Appliance run ("dishwasher done before we're home")</td><td>one start of the measured cycle inside the window [a, b); no deadline = end of the known prices</td></tr>
+      <tr><td>Away period, comfort band ("22-23 from 6 to 8")</td><td>lower and upper indoor temperature per slot; away lowers the band to the 17 °C set-back</td></tr>
+    </tbody>
+  </table></div>
+
   <h3>Explainer agent</h3>
   <div class="scroll"><table>
     <thead><tr><th>Function</th><th>Input → output</th><th>Notes</th></tr></thead>
@@ -820,6 +764,27 @@ ul.tight li { margin: 4px 0; }
       <tr><td>Final answer <code>MpcSettings</code></td><td>PV derating by weather class and battery reserve (confirmatory); default comfort bands and flexible-load windows (exploratory) · reason</td><td>Starts from defaults, uses past weeks only; applied from the next day if the backtest beats the current settings</td></tr>
     </tbody>
   </table></div>
+
+  <h3>The optimiser: scheduling loads under dynamic prices</h3>
+  <div class="prose">
+    <p>The MPC turns the household's requirements and the day-ahead prices into a schedule (thesis Section 4.3; code <span class="mono">closed_loop.mpc</span>). It plans in 15-minute slots from now to the end of the last day with published prices, and it is solved with PuLP and CBC in about 0.1 s.</p>
+    <p><strong>Objective.</strong> Minimise Σ<sub>t</sub> Δ (p<sub>t</sub> g<sup>+</sup><sub>t</sub> − p<sup>x</sup> g<sup>−</sup><sub>t</sub>) − p̄ (η E<sub>H</sub> + C T<sub>H</sub> / COP̄) + penalties: the cost of imports at the hourly dynamic price p<sub>t</sub>, minus feed-in income at p<sup>x</sup> = 0.123 EUR/kWh, minus the value of energy left in the battery and the building at the end, plus 5 EUR per kWh of car charge missing, 5 EUR per degree and slot outside the comfort band and 20 EUR per missed appliance run. The penalties are far above any price, so a requirement is never traded for money, and a plan always exists.</p>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Part</th><th>What the MPC decides or respects (per 15-minute slot)</th></tr></thead>
+    <tbody>
+      <tr><td>Decisions</td><td>grid import and export; battery charge and discharge; heat pump power; car charging power; a binary start for each appliance run (this makes it a MILP)</td></tr>
+      <tr><td>Power balance</td><td>base load + heat pump + car + appliances + battery charge − discharge − PV = import − export</td></tr>
+      <tr><td>Battery</td><td>10 kWh, 5 kW, 95 % efficiency each way, kept above 10 %</td></tr>
+      <tr><td>Building</td><td>one-node thermal model: C (T<sub>t+1</sub> − T<sub>t</sub>) = Δ (COP<sub>t</sub> h<sub>t</sub> − Q<sub>t</sub> − U (T<sub>t</sub> − T<sup>set</sup>)), C = 10 kWh/K, U = 0.15 kW/K; heat pump up to 3.2 kW</td></tr>
+      <tr><td>Car, appliances</td><td>car energy before departure at up to 3.7 kW; each appliance starts exactly once inside its window or counts as missed</td></tr>
+      <tr><td>Configurator settings</td><td>PV derating δ (plan with δ × PV forecast), battery reserve at midnight; a §14a grid limit would cap the import</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="tight prose">
+    <li><strong>How dynamic prices shape the schedule:</strong> every kWh is weighed by the price of its hour. Solar surplus costs only the lost feed-in (0.123 against about 0.25-0.35 EUR/kWh imported), so loads go to sunny hours first, otherwise to the cheapest grid hours in their window; the heat pump preheats the building before an expensive hour; the battery charges low and discharges high only where the price gap beats its round-trip loss of about 10 %.</li>
+    <li><strong>Receding horizon:</strong> re-solved every hour from the measured state on new forecasts, only the first hour is used; the control layer holds the planned grid exchange every 15 minutes, charges the car at full power when a deadline needs it and starts an appliance at its last possible slot if the plan has not.</li>
+  </ul>
 
   <h3>One day at runtime</h3>
   <div class="figure">
@@ -1045,7 +1010,7 @@ ul.tight li { margin: 4px 0; }
       <tr><td>Simulation only</td><td>Optional Home Assistant replay with simulated devices; field study as future work</td></tr>
     </tbody>
   </table></div>
-  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed. Revised on 1 Nov 2026 after an external review (section 15 of <span class="mono">docs/protocol_home_gateway.md</span>) and on 4 Nov 2026 around small language models (section 16). Updated on 14 Nov 2026 with the ReAct gateway and the new model set.</p>
+  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed. Revised on 1 Nov 2026 after an external review (section 15 of <span class="mono">docs/protocol_home_gateway.md</span>) and on 4 Nov 2026 around small language models (section 16). Updated on 14 Nov 2026 with the ReAct gateway and the new model set, and on 16 Nov 2026 with the MPC formulation under dynamic prices and the steps inside <code>plan_schedule</code> (section 4).</p>
 </section>
 
 <section>

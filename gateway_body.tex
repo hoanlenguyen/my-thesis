@@ -162,11 +162,12 @@ the accuracy and integrity of the final work.
 \label{sec:problem}
 
 A smart home energy management system (HEMS) plans and controls a
-home's energy assets: the rooftop photovoltaic (PV) system and its
-inverter, a home battery, a heat pump, an electric vehicle (EV) charger
-and smart appliances. Its task is to decide, every few minutes, when
+home's energy assets: on-site renewable generation (rooftop photovoltaic
+(PV) panels, a small wind turbine, or both) with its inverter, a home
+battery, a heat pump, an electric vehicle (EV) charger and smart
+appliances. Its task is to decide, every few minutes, when
 each asset draws, stores or exports power, so that the household pays
-less, uses more of its own solar power and stays within the limits set
+less for electricity, uses more of the power it generates and stays within the limits set
 by the grid operator. The HEMS runs on a home energy gateway, the device
 in the meter cabinet or on the home network that reads the smart meter
 and talks to the devices; in this thesis, \textit{local hardware} means
@@ -197,11 +198,27 @@ receive commands from the car's app, the charger's app, a smart-charging
 service, a flexibility service and the energy supplier
 \parencite{catapult2026}.
 
-\textit{The grid operator sets limits.} In Germany, heat pumps and
-wallboxes above 4.2\,kW installed since 2024 must accept power
+\textit{The grid operator sets limits, or prices.} In Germany, heat
+pumps and wallboxes above 4.2\,kW installed since 2024 must accept power
 reductions from the grid operator through the smart meter gateway and a
 control box (§14a of the Energy Industry Act, EnWG), so the household's
-plan has to fit inside an external limit \parencite{evcc14a}.
+plan has to fit inside an external limit \parencite{evcc14a}. Other EU
+countries rely mainly on prices. Article 11 of the EU electricity
+directive gives every customer with a smart meter the right to a
+dynamic price contract \parencite{eudir2019}, and in Finland about a
+third of all retail contracts were dynamic price contracts at the end
+of 2024 \parencite{energyauthority2025}. Finland prices a household's
+peak instead of limiting it: from 2029 at the latest, a distribution
+product with a power charge bills the month's highest 60-minute average
+power above 8\,kW, and households can still choose a product without
+such a charge \parencite{energyauthority2026}. In the Netherlands about
+8\,\% of households had a dynamic contract in mid-2026
+\parencite{acm2026}, and net metering of solar power ends on 1 January
+2027, after which suppliers pay a compensation for the power fed in,
+which rewards using solar power in the house \parencite{businessnl2027}.
+Under this market-based approach the household shifts its consumption
+voluntarily and weighs a price on its peak, so the saving depends on a
+home energy management system that can act on the prices.
 
 \textit{Planning by fixed rules leaves savings unused, and an optimiser
 needs an expert.} Typical systems follow rules such as ``charge the car
@@ -218,8 +235,12 @@ systems slow adoption \parencite{tuomela2021}.
 
 The first three problems concern how the gateway connects to devices
 and to outside controllers; the HEMS of this thesis takes them as given
-and treats the grid operator's limit as a constraint. Its subject is the
-fourth: who supplies the optimiser's parameters and settings.
+and treats the grid operator's limit as a constraint. A priced peak,
+such as the Finnish power charge, would enter the optimiser's cost
+instead of its constraints; it is not modelled here, because the
+evaluation uses a German house, and is left for future research
+(Section~\ref{sec:future}). The subject of the thesis is the
+fourth problem: who supplies the optimiser's parameters and settings.
 
 Language-model agents can bridge the gap between what a household says
 and what an optimiser needs. Recent work turns plain-language
@@ -956,7 +977,8 @@ deterministic checks around it, and local inference first with the
 cloud only as a fallback. After the requirements and the architecture,
 the chapter describes the two agents that are built and evaluated, the
 Household Assistant and the Configurator, with their tools and the
-rules kept in code. It then describes the parts that are designed but
+rules kept in code, and the MPC that schedules the home's loads under
+dynamic prices. It then describes the parts that are designed but
 not yet built (the Monitor, the Explainer, the model layer and the user
 app with voice) and the implementation.
 
@@ -1099,6 +1121,35 @@ Tool & What it returns \\
 \end{tabularx}
 \end{table}
 
+\textit{What \texttt{plan\_schedule} does.} The model's only action on
+the house is a call to \texttt{plan\_schedule}, and the tool works in a
+fixed order. First, code completes the requirements: the usual car
+settings fill a missing target or time, an appliance without a deadline
+gets the end of the known prices, and clock times written without am/pm
+are moved to their next occurrence (the rules below). Second, the tool
+reads the requirements back in words, with the weekday, the part of the
+day and the hours from now, so that the model can compare them with the
+message. Third, the checker tests them; if it finds a problem, such as a
+vague word, a conflict, a comfort band without a temperature or an
+appliance window shorter than its cycle, the MPC is not run, and the
+tool returns the problems for the model to ask about. Otherwise, fourth,
+the requirements become the constraints of the MPC of
+Section~\ref{sec:mpc}: each car charge sets $E^{\mathrm{car}}_i$, $a_i$
+and $b_i$, each appliance run its window $[a_n, b_n)$, and away periods
+and comfort bands set $T^{\mathrm{low}}_t$ and $T^{\mathrm{high}}_t$. The
+MPC is solved once, from the state at the time of the message, on the
+forecasts and day-ahead prices available then. Last, the tool returns
+the schedule of every device with a reason (its share of solar energy
+and the grid price it pays against the cheapest and dearest run in its
+window), the expected cost and the saving against starting everything
+at once, and whether each requirement is met. If the read-back shows a
+wrong time, the model can call the tool again with a corrected one; the
+app always shows the last result. This single solve is a preview that
+the household sees in the app. Once the gateway commits, the
+requirements stay in force as constraints, and the MPC replans every
+hour on its own on new forecasts (Section~\ref{sec:mpc}) without
+calling the model again.
+
 \textit{Rules in code.} Where a rule can be applied exactly, the code
 applies it, so that the model's task stays to read the message and
 decide. The household sets its usual car settings once in the app
@@ -1164,6 +1215,123 @@ hour and the control layer runs every 15 minutes without a language
 model.}
 \label{fig:day}
 \end{figure}
+
+\section{The optimiser: scheduling loads under dynamic prices}
+\label{sec:mpc}
+
+The MPC is the part of the HEMS that turns the household's requirements
+and the day-ahead prices into a schedule. With a dynamic tariff the
+import price changes every hour, so the same energy costs more or less
+depending on when it is drawn. The MPC uses this in the way rules
+cannot: it plans all flexible loads together over the hours whose prices
+are known and moves each to the hours where its energy is cheapest,
+within the household's requirements and the limits of the devices.
+
+\textit{Horizon and inputs.} The horizon runs in 15-minute slots
+$t = k, \dots, H-1$ (slot length $\Delta = 0.25$\,h) from the current
+slot $k$ to the end of the last day whose day-ahead prices are
+published. The inputs are the import price $p_t$ of the dynamic tariff
+(Section~\ref{sec:data}), the feed-in price $p^{x}$, and forecasts of the
+PV output $\mathit{PV}_t$, the household's base load $L_t$, the
+building's heat demand $Q_t$ and the heat pump's coefficient of
+performance $\mathit{COP}_t$, all made at slot $k$ from the weather
+forecast. The household's requirements enter as constraints:
+a car charge as an energy $E^{\mathrm{car}}_i$ between the slot $a_i$ from
+which charging is allowed and the departure $b_i$; an appliance run as a
+window $[a_n, b_n)$ for its measured cycle of length $\ell_n$ with power
+profile $P_n$; and comfort bands, including the lower set-back while
+everyone is away, as a band $[T^{\mathrm{low}}_t, T^{\mathrm{high}}_t]$ per
+slot.
+
+\textit{Decisions.} For every slot the MPC decides the grid import
+$g^{+}_t$ and export $g^{-}_t$, the battery's charge $c_t$ and discharge
+$d_t$, the heat pump's electric power $h_t$ and each car charge's power
+$e_{i,t}$, and for each appliance a binary start $y_{n,s}$ for every
+start slot $s$ that finishes inside its window. The appliance runs make
+the problem a mixed-integer linear programme; without them it is a
+linear programme.
+
+\textit{Objective.} The MPC minimises the cost of the energy bought
+minus the income from the energy sold, less the value of the energy left
+in the battery and in the building at the end of the horizon, plus
+penalties for requirements it cannot meet:
+\begin{multline}
+\min \; \sum_{t=k}^{H-1} \Delta \left(p_t\, g^{+}_t - p^{x} g^{-}_t\right)
+ - \bar{p}\left(\eta E_H + \frac{C\, T_H}{\overline{\mathit{COP}}}\right) \\
+ + \lambda_{\mathrm{car}} \sum_i s_i + \lambda_{T} \sum_t u_t
+ + \lambda_{\mathrm{app}} \sum_n m_n .
+\label{eq:mpcobj}
+\end{multline}
+The end value, at the mean price $\bar{p}$, stops the MPC from emptying
+the battery or letting the house cool just because the horizon ends,
+and the same value is used when a day is scored. The penalties
+($\lambda_{\mathrm{car}} = 5$\,EUR per kWh missing, $\lambda_T = 5$\,EUR per
+degree and slot outside the band, $\lambda_{\mathrm{app}} = 20$\,EUR per
+missed run) are far above any price, so the MPC never trades a
+requirement for money, but it always finds a plan, and the plan shows
+what cannot be met.
+
+\textit{Constraints.} In every slot the power balances,
+\begin{equation}
+L_t + h_t + \sum_i e_{i,t} + \sum_n \sum_s y_{n,s} P_n(t-s) + c_t - d_t
+ - \mathit{PV}_t = g^{+}_t - g^{-}_t ,
+\label{eq:mpcbalance}
+\end{equation}
+the battery's energy follows
+$E_{t+1} = E_t + \Delta(\eta c_t - d_t/\eta)$ with
+$0.1 E^{\max} \le E_t \le E^{\max}$ and $c_t, d_t \le 5$\,kW, and the
+indoor temperature follows a one-node thermal model,
+\begin{equation}
+C\,(T_{t+1} - T_t) = \Delta\left(\mathit{COP}_t\, h_t - Q_t - U\,(T_t - T^{\mathrm{set}})\right),
+\label{eq:mpcthermal}
+\end{equation}
+with $0 \le h_t \le 3.2$\,kW, and the comfort shortfall is
+$u_t \ge T^{\mathrm{low}}_t - T_{t+1}$ and
+$u_t \ge T_{t+1} - T^{\mathrm{high}}_t$. Each car charge adds its energy before
+departure, $\sum_{t=a_i}^{b_i-1} \Delta\, e_{i,t} + s_i = E^{\mathrm{car}}_i$,
+at no more than the charger's 3.7\,kW in total, and each appliance starts
+exactly once or is counted as missed,
+$\sum_s y_{n,s} + m_n = 1$. The house of Section~\ref{sec:data} has a
+10\,kWh battery ($E^{\max}$) with an efficiency $\eta = 0.95$ each way, a
+thermal capacity $C = 10$\,kWh/K and a heat loss $U = 0.15$\,kW/K.
+
+\textit{How the prices shape the schedule.} Because the objective
+weighs every kilowatt-hour by the price of its hour, each flexible load
+moves to where its energy is cheapest. Energy drawn while the PV produces
+more than the house needs costs only the lost feed-in, 0.123\,EUR/kWh
+against an import price of about 0.25 to 0.35\,EUR/kWh, so appliances and
+the car go to sunny hours when they can, and otherwise to the cheapest
+grid hours inside their windows. The heat pump uses the building as a
+store: within the comfort band it heats more before an expensive hour
+and less during it. The battery charges from surplus PV or in cheap
+hours and discharges in expensive ones, but only where the price
+difference exceeds its round-trip loss of about 10\,\%. The same model
+shows why a requirement costs money: a tight departure or a narrow
+comfort band removes cheap hours from the choice.
+
+\textit{Receding horizon.} The plan is a forecast, so the MPC is
+re-solved every hour from the measured state (battery charge, indoor
+temperature, the energy each car still needs and the appliances already
+started) on the newest forecasts, and only the first hour of each plan
+is used. Between solves the control layer runs every 15 minutes: it
+holds the planned grid exchange by letting the battery absorb the
+forecast error, keeps the comfort band, charges the car at full power
+when its deadline requires it, and starts an appliance at its last
+possible slot if the plan has not started it. A solve takes about a
+tenth of a second (Section~\ref{sec:edgebench}).
+
+\textit{Settings.} The Configurator's settings enter the optimiser as
+parameters (Section~\ref{sec:agents}; the Configurator pilot used the
+same formulation with the house's recorded car sessions and without
+appliance runs): the PV forecast is planned with a derating
+$\delta \in [0.5, 1]$ ($\delta\,\mathit{PV}_t$ in
+Equation~\ref{eq:mpcbalance}), a battery reserve adds
+$E_{\mathrm{midnight}} \ge E^{\mathrm{res}}$, and a grid operator's limit
+under §14a EnWG would add an import cap, $g^{+}_t \le G$. The closed-loop pilot and
+the ReAct gateway (Sections~\ref{sec:looppilot}
+and~\ref{sec:reactpilot}) used the default settings, $\delta = 1$ and no
+reserve, so that only the household's requirements differ between
+systems.
 
 \section{Designed but not yet built: Monitor, Explainer, model layer and user app}
 \label{sec:envisioned}
@@ -1243,11 +1411,10 @@ speech recognition takes on the gateway.
 \section{Implementation}
 
 The prototypes are written in Python. The digital twin replays the
-OPSD house with a virtual 10\,kWh / 5\,kW battery. The MPC is a linear
-programme, mixed-integer when appliance runs are planned, solved with
-PuLP and CBC from the measured state to the end of the horizon, and
-energy left at the end is valued in the same way in the optimiser and
-in the score. The agents use LangChain and LangGraph ReAct agents with
+OPSD house with a virtual 10\,kWh / 5\,kW battery. The MPC of
+Section~\ref{sec:mpc} is solved with PuLP and CBC (time limit 60\,s),
+and energy left at the end of the horizon is valued in the same way in
+the optimiser and in the score. The agents use LangChain and LangGraph ReAct agents with
 structured outputs and a recovery step that returns invalid answers with
 the validation errors. The Household Assistant uses one prompt for
 every model; the two prompt versions of the earlier iterations
@@ -1967,7 +2134,7 @@ AI-assisted and is being checked by the author.
 \section{Future research}
 \label{sec:future}
 
-Four directions follow from the design and its limits:
+Five directions follow from the design and its limits:
 
 \begin{enumerate}
 \item \textit{Households in the loop.} A field study in which
@@ -1988,6 +2155,13 @@ errors that no model can avoid today.
 plant (shift plans, production orders, maintenance windows) and other
 flexible loads, such as heat pumps with storage or fleets of chargers,
 would test the transferability argued in Section~\ref{sec:industry}.
+\item \textit{A priced peak.} Where the grid operator prices the
+household's peak instead of limiting it, as the Finnish power charge
+does above 8\,kW (Section~\ref{sec:problem}), the charge would enter
+the MPC's cost, and the optimiser would weigh a cheap hour against a
+higher monthly peak. Evaluating the HEMS on a Finnish house with such a
+charge would show whether the two tasks of the language model change,
+for example whether households state plans about their peak.
 \end{enumerate}
 
 % ════════════════════════════════════════════════════════════════════════════
@@ -2052,6 +2226,11 @@ sufficient.
 
 \begin{hangparas}{0.7cm}{1}
 
+ACM. (2026, August 13). \textit{ACM's monitor on the consumer energy
+market: Increase in the number of dynamic contracts continues}.
+Netherlands Authority for Consumers and Markets.
+\url{https://www.acm.nl/en/publications/acms-monitor-consumer-energy-market-increase-number-dynamic-contracts-continues}
+
 AhmadiTeshnizi, A., Gao, W., \& Udell, M. (2024). OptiMUS: Scalable
 optimization modeling with (MI)LP solvers and large language models. In
 \textit{Proceedings of the 41st International Conference on Machine
@@ -2089,6 +2268,10 @@ Bundesnetzagentur. (n.d.). \textit{EEG-Vergütungssätze: Archiv}
 [Archive of EEG feed-in rates]. Retrieved 1 November 2026, from
 \url{https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/ErneuerbareEnergien/EEG_Foerderung/Archiv_VergSaetze/start.html}
 
+Business.gov.nl. (n.d.). \textit{Netting scheme solar panels ends per
+2027}. Netherlands Enterprise Agency. Retrieved 15 November 2026, from
+\url{https://business.gov.nl/amendments/netting-scheme-solar-panels-ends/}
+
 Cui, F., An, D., \& Zhao, Y. (2023). A two-stage distributed
 optimization method for home energy management systems via multi-modal
 data-driven algorithm. \textit{Frontiers in Energy Research, 11},
@@ -2098,6 +2281,12 @@ Deutscher Wetterdienst. (n.d.). \textit{Hourly station observations
 for Germany: Air temperature and solar radiation, station 02712
 Konstanz} [Data set]. DWD Climate Data Center.
 \url{https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/}
+
+Directive (EU) 2019/944 of the European Parliament and of the Council
+of 5 June 2019 on common rules for the internal market for electricity
+and amending Directive 2012/27/EU. (2019). \textit{Official Journal of
+the European Union, L 158}, 125--199.
+\url{https://eur-lex.europa.eu/eli/dir/2019/944/oj}
 
 Dong, P., \& Tran, V. (2025). SLB: A bridge module of local SLM and
 online LLM for smart home device control. In \textit{2025 17th
@@ -2112,6 +2301,16 @@ residential load scheduling. \textit{Results in Engineering, 29},
 EMHASS contributors. (2026). \textit{EMHASS: Energy Management for Home
 Assistant} (Version 0.18.4) [Computer software].
 \url{https://emhass.readthedocs.io}
+
+Energy Authority. (2025, July 10). \textit{Dynamic-price contracts held
+by more than one third of households: Fixed-term contracts still the
+most common type in 2024} [News release].
+\url{https://energiavirasto.fi/en/-/dynamic-price-contracts-held-by-more-than-one-third-of-households-fixed-term-contracts-still-the-most-common-type-in-2024}
+
+Energy Authority. (2026, February 2). \textit{Sähkön jakelun
+hinnoitteluperusteet yhtenäistetään vuoteen 2029 mennessä} [Electricity
+distribution pricing criteria to be harmonised by 2029] [News release].
+\url{https://energiavirasto.fi/-/sahkon-jakelun-hinnoitteluperusteet-yhtenaistetaan-vuoteen-2029-mennessa}
 
 Energy Systems Catapult. (2026, February 12). \textit{Making home
 energy management work for consumers}.
