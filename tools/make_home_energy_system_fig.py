@@ -2,8 +2,17 @@
 
 Layout v3 (16 Nov 2026): flat style (no hand-drawn look), Arial; solar and wind both on the left, each above its
 inverter; the loads box is "Smart loads"; no protocol names on the inverter links.
+Wiring v4 (16 Nov 2026): power meets at a distribution board (the home's AC bus) and never passes through the
+controller; DC only panels -> solar inverter and battery <-> battery inverter; the wind turbine delivers AC to a
+rectifier and inverter; colour says AC or DC, two arrowheads say the power flows both ways.
+Wiring v5 (16 Nov 2026): one hybrid inverter with solar, wind (through a rectifier) and the battery on its DC
+side, as hybrid inverters are built; AC lines are blue.
+Two variants on the same diagram (16 Nov 2026): Figure 1.1 is a generic home energy system (one app box, one
+internet box, the controller by name only); Figure 1.2 (--thesis) adds what this thesis puts into it: the small
+language model in the controller, the household app's panels, the voice satellite and the cloud fallback.
 Render to PNG with headless Chrome (see render() below):
     uv run python tools/make_home_energy_system_fig.py attachments/gateway/home_energy_system
+    uv run python tools/make_home_energy_system_fig.py --thesis attachments/gateway/home_energy_system_slm
 """
 
 import shutil
@@ -12,9 +21,10 @@ import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-W, H = 1720, 1010
+THESIS = "--thesis" in sys.argv  # Figure 1.2: the same system with the thesis's additions
+W, H = (1720 if THESIS else 1420), 1010
 FONT = "Arial, Helvetica, sans-serif"
-DC, AC, TWO, COM = "#2f9e44", "#d9480f", "#0b7285", "#c92a2a"
+DC, AC, TWO, COM = "#2f9e44", "#1971c2", "#0b7285", "#c92a2a"  # AC is blue so it differs from the red dashes
 INK, MUTED = "#1f2933", "#52606d"
 # fill, stroke per kind of element
 KIND = {
@@ -56,12 +66,14 @@ def box(x: float, y: float, w: float, h: float, label: str, kind: str, size: flo
         txt(x + w / 2, cy - s * 0.3, line, s, wt, col, into=nodes)
 
 
-def arrow(pts: list[tuple[float, float]], color: str, dashed: bool = False, both: bool = False) -> None:
+def arrow(pts: list[tuple[float, float]], color: str, dashed: bool = False, both: bool = False,
+          top: bool = False) -> None:
+    """top=True draws the arrow over the boxes (for links that end inside the controller group)."""
     d = "M" + " L".join(f"{x:.0f},{y:.0f}" for x, y in pts)
     mid = {DC: "dc", AC: "ac", TWO: "two", COM: "com"}[color]
     dash = ' stroke-dasharray="7 5"' if dashed else ""
     start = f' marker-start="url(#{mid})"' if both else ""
-    edges.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="2.2"{dash}{start} '
+    (labels if top else edges).append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="2.2"{dash}{start} '
                  f'marker-end="url(#{mid})"/>')
 
 
@@ -69,79 +81,121 @@ def lbl(x: float, y: float, s: str, anchor: str = "start") -> None:
     txt(x, y, s, 16, 400, COM, anchor)
 
 
-# ── generation on the left: solar above wind, each above its inverter ────────────────────────────────────────
-box(40, 40, 230, 70, "Solar PV", "source", sub="rooftop")
-box(40, 150, 230, 70, "Solar inverter", "convert")
-box(40, 270, 230, 70, "Wind turbine", "source", sub="small, optional")
-box(40, 380, 230, 70, "Wind inverter", "convert")
-box(40, 640, 230, 120, "Home battery", "storage", sub="with battery inverter")
+# ── generation and storage on the left: solar, wind and the battery share one hybrid inverter ────────────────
+box(30, 40, 125, 90, "Solar PV", "source", size=18, sub="rooftop", sub_size=14)
+box(165, 40, 125, 90, "Wind turbine", "source", size=18, sub="small, optional\nwith rectifier", sub_size=14)
+box(30, 200, 260, 80, "Hybrid inverter", "convert", sub="DC inputs: solar, wind, battery")
+box(30, 430, 260, 90, "Home battery", "storage")
+
+# ── the home's AC side: the inverter, the meter and the loads meet at the distribution board ──────────────────
+fill, stroke = KIND["grid"]
+nodes.append(f'<rect x="340" y="150" width="70" height="420" rx="8" fill="{fill}" stroke="{stroke}" '
+             f'stroke-width="1.5"/>')
+nodes.append(f'<text transform="translate(368,360) rotate(-90)" font-size="19" font-weight="600" fill="{INK}" '
+             f'text-anchor="middle">Distribution board</text>')
+nodes.append(f'<text transform="translate(392,360) rotate(-90)" font-size="16" font-weight="400" fill="{MUTED}" '
+             f'text-anchor="middle">the home’s AC bus</text>')
 
 # ── grid, meter, controller ───────────────────────────────────────────────────────────────────────────────────
 box(620, 40, 260, 70, "Public grid", "grid")
 box(620, 150, 260, 100, "Smart meter", "convert")
-box(540, 330, 420, 210, "Energy management controller", "control", size=21, sw=2.5,
-    sub="= home energy gateway\nruns the HEMS: local small language model,\nMPC, checker and control layer",
-    sub_size=17)
+if THESIS:
+    # The gateway keeps the deterministic parts; the small model runs on a companion device beside it (Sec. 4.x
+    # Implementation, "Deployment on one device or two"); a gateway with enough memory can host the model itself.
+    # The energy management controller is the role (the HEMS); here it is two devices on the home network. All
+    # outside links end at the gateway, which runs the harness and passes the model its plans and data.
+    nodes.append('<rect x="530" y="318" width="440" height="272" rx="10" fill="#f1faf5" stroke="#1b7f5b" '
+                 'stroke-width="2.5"/>')
+    txt(548, 578, "Energy management controller", 17, 700, "#1b7f5b", "start", into=nodes)
+    box(680, 334, 270, 80, "Companion device", "source", size=19, sw=2,
+        sub="small language model\ne.g. Raspberry Pi 5 or mini PC", sub_size=15)
+    box(550, 446, 400, 100, "Home energy gateway", "control", size=20, sw=2,
+        sub="harness, checker, MPC,\ncontrol layer and fallback rules", sub_size=16)
+else:
+    box(540, 330, 420, 210, "Energy management controller", "control", size=21, sw=2.5,
+        sub="(home energy gateway)", sub_size=17)
 
 # ── smart loads ───────────────────────────────────────────────────────────────────────────────────────────────
+LY = 640 if THESIS else 620  # top of the loads box
 fill, stroke = KIND["group"]
-nodes.append(f'<rect x="300" y="620" width="790" height="270" rx="10" fill="{fill}" stroke="{stroke}" '
+nodes.append(f'<rect x="300" y="{LY}" width="790" height="270" rx="10" fill="{fill}" stroke="{stroke}" '
              f'stroke-width="1.5"/>')
-txt(322, 652, "Smart loads", 20, 700, INK, "start", into=nodes)
+txt(322, LY + 32, "Smart loads", 20, 700, INK, "start", into=nodes)
 devices = ["Heat pump", "Water heater", "Air\nconditioning", "EV charger\nand car",
            "Washing\nmachine", "Dishwasher", "Smart\nthermostats", "Smart\nlight bulbs"]
 for i, name in enumerate(devices):
-    box(322 + (i % 4) * 190, 672 + (i // 4) * 104, 176, 90, name, "load", size=18, weight=400, sw=1.2)
+    box(322 + (i % 4) * 190, LY + 52 + (i // 4) * 104, 176, 90, name, "load", size=18, weight=400, sw=1.2)
 
-# ── household: app and voice satellite, over the home Wi-Fi; internet services ────────────────────────────────
-nodes.append('<rect x="1200" y="140" width="480" height="620" rx="10" fill="#f8f9fa" stroke="#8a94a0" '
-             'stroke-width="1.3" stroke-dasharray="7 5"/>')
-txt(1220, 170, "In the household, over the home Wi-Fi", 17, 400, MUTED, "start", into=nodes)
-fill, stroke = KIND["app"]
-nodes.append(f'<rect x="1220" y="186" width="440" height="470" rx="8" fill="{fill}" stroke="{stroke}" '
-             f'stroke-width="1.8"/>')
-txt(1240, 216, "Household app (phone or tablet)", 19, 700, "#3b2c84", "start", into=nodes)
-py = 232
-for label, h in [("Plans, typed or spoken\n\u201ccar at 80 % by 07:30,\nguests from 18:00\u201d", 92),
-                 ("Live view: PV, consumption, battery %,\ngrid import/export, EV, indoor \u00b0C", 68),
-                 ("Today\u2019s plan, prices and the\ncommitted requirements", 68),
-                 ("Savings vs rules, PV used at home", 50),
-                 ("Questions and messages,\neach with its reason", 68)]:
-    box(1240, py, 400, h, label, "panel", size=16, weight=400, sw=1)
-    py += h + 12
-box(1220, 672, 440, 72, "Voice satellite (optional)", "panel", size=17, weight=600, sw=1.2,
-    sub="wake word; speech becomes text on the gateway", sub_size=15)
-box(1200, 790, 480, 110, "Internet services", "net", size=20,
-    sub="day-ahead prices \u00b7 weather forecasts\ncloud LLM (optional fallback)", sub_size=17)
+# ── the household's app and the internet: one box each (the thesis's own design is in Figure 1.2) ─────────────
+if THESIS:
+    box(1200, 30, 480, 110, "Internet services", "net", size=20,
+        sub="day-ahead prices \u00b7 weather forecasts\ncloud LLM (optional fallback)", sub_size=17)
+    nodes.append('<rect x="1200" y="180" width="480" height="520" rx="10" fill="#f8f9fa" stroke="#8a94a0" '
+                 'stroke-width="1.3" stroke-dasharray="7 5"/>')
+    txt(1220, 210, "In the household, over the home Wi-Fi", 17, 400, MUTED, "start", into=nodes)
+    fill, stroke = KIND["app"]
+    nodes.append(f'<rect x="1220" y="226" width="440" height="456" rx="8" fill="{fill}" stroke="{stroke}" '
+                 f'stroke-width="1.8"/>')
+    txt(1240, 256, "Household app (phone or tablet)", 19, 700, "#3b2c84", "start", into=nodes)
+    py = 272
+    for label, h in [("Plans, typed or spoken\n\u201ccharge the car for work tomorrow,\nguests from six\u201d", 92),
+                     ("Live view: PV, consumption, battery %,\ngrid import/export, EV, indoor \u00b0C", 68),
+                     ("Today\u2019s plan, prices and the\ncommitted requirements", 68),
+                     ("Savings vs rules, PV used at home", 50),
+                     ("Questions and messages,\neach with its reason", 68)]:
+        box(1240, py, 400, h, label, "panel", size=16, weight=400, sw=1)
+        py += h + 12
+else:
+    box(1120, 345, 270, 90, "Household app", "app", sub="phone or tablet")
+    box(1120, 465, 270, 90, "Internet services", "net", sub="day-ahead prices, weather forecasts")
 
 # ── power flows ───────────────────────────────────────────────────────────────────────────────────────────────
-arrow([(155, 110), (155, 148)], DC)
-arrow([(155, 340), (155, 378)], DC)
-arrow([(270, 185), (618, 185)], AC)
-arrow([(270, 400), (460, 400), (460, 225), (618, 225)], AC)
-arrow([(750, 110), (750, 148)], TWO, both=True)
-arrow([(700, 250), (700, 328)], TWO, both=True)
-arrow([(700, 540), (700, 618)], TWO, both=True)
-arrow([(120, 640), (120, 480), (538, 480)], TWO, both=True)
+# Power never passes through the controller. DC on the inverter's input side: the panels, the wind turbine (whose
+# variable AC a rectifier turns into DC first) and the battery. AC from the inverter to the board, the meter, the
+# grid and the loads. Two arrowheads = power flows both ways (grid import and export, battery charge and discharge).
+arrow([(92, 130), (92, 198)], DC)                              # panels -> hybrid inverter
+arrow([(227, 130), (227, 198)], DC)                            # turbine with rectifier -> hybrid inverter
+arrow([(160, 428), (160, 282)], DC, both=True)                 # battery <-> hybrid inverter
+arrow([(290, 240), (338, 240)], AC, both=True)                 # hybrid inverter <-> board
+arrow([(412, 200), (618, 200)], AC, both=True)                 # board <-> smart meter
+arrow([(750, 110), (750, 148)], AC, both=True)                 # smart meter <-> grid
+arrow([(375, 570), (375, LY - 2)], AC)                            # board -> loads
 
 # ── communication ─────────────────────────────────────────────────────────────────────────────────────────────
-arrow([(820, 250), (820, 328)], COM, dashed=True, both=True)
-lbl(832, 295, "meter data")
-arrow([(40, 205), (20, 205), (20, 455), (538, 455)], COM, dashed=True, both=True)
-arrow([(270, 430), (538, 430)], COM, dashed=True, both=True)
-arrow([(205, 640), (205, 515), (538, 515)], COM, dashed=True, both=True)
-lbl(300, 508, "battery setpoints")
-arrow([(820, 540), (820, 618)], COM, dashed=True)
-lbl(832, 585, "device setpoints")
-arrow([(960, 400), (1198, 400)], COM, dashed=True, both=True)
-lbl(1080, 390, "Wi-Fi, encrypted", "middle")
-arrow([(960, 500), (1150, 500), (1150, 845), (1198, 845)], COM, dashed=True, both=True)
-lbl(975, 492, "prices, forecasts, fallback")
+if THESIS:
+    arrow([(640, 250), (640, 444)], COM, dashed=True, both=True, top=True)
+    lbl(652, 295, "meter data")
+    arrow([(30, 240), (12, 240), (12, 615), (512, 615), (512, 500), (548, 500)], COM, dashed=True, both=True,
+          top=True)
+    lbl(40, 607, "inverter data, battery setpoints")
+    arrow([(820, 546), (820, LY - 2)], COM, dashed=True, top=True)
+    lbl(832, 622, "device setpoints")
+    arrow([(720, 414), (720, 444)], COM, dashed=True, both=True, top=True)
+    lbl(732, 435, "plans, data ↔ constraints")
+    arrow([(930, 334), (930, 80), (1198, 80)], COM, dashed=True, both=True, top=True)
+    lbl(945, 72, "model updates")
+    arrow([(950, 460), (1150, 460), (1150, 120), (1198, 120)], COM, dashed=True, both=True, top=True)
+    lbl(980, 432, "prices, forecasts,")
+    lbl(980, 452, "fallback")
+    arrow([(950, 520), (1198, 520)], COM, dashed=True, both=True, top=True)
+    lbl(1085, 510, "Wi-Fi, encrypted", "middle")
+else:
+    arrow([(820, 250), (820, 328)], COM, dashed=True, both=True)
+    lbl(832, 295, "meter data")
+    arrow([(30, 240), (12, 240), (12, 595), (660, 595), (660, 542)], COM, dashed=True, both=True)
+    lbl(395, 587, "inverter data, battery setpoints")
+    arrow([(820, 540), (820, 618)], COM, dashed=True)
+    lbl(832, 585, "device setpoints")
+    arrow([(960, 390), (1118, 390)], COM, dashed=True, both=True)
+    lbl(1040, 380, "home Wi-Fi", "middle")
+    arrow([(1118, 510), (962, 510)], COM, dashed=True)
+    lbl(1040, 500, "prices, forecasts", "middle")
 
 # ── legend ────────────────────────────────────────────────────────────────────────────────────────────────────
 lx = 40
 for name, color, dashed, both in [("communication", COM, True, True), ("DC power", DC, False, False),
-                                  ("AC power", AC, False, False), ("two-way power flow", TWO, False, True)]:
+                                  ("AC power", AC, False, False),
+                                  ("two arrowheads: power flows both ways", AC, False, True)]:
     arrow([(lx, 965), (lx + 60, 965)], color, dashed, both)
     txt(lx + 74, 971, name, 17, 400, INK, "start")
     lx += 290
@@ -151,9 +205,10 @@ markers = "".join(
     f'orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="{c}"/></marker>'
     for m, c in [("dc", DC), ("ac", AC), ("two", TWO), ("com", COM)])
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
-       f'font-family="{FONT}" role="img" aria-label="A home energy system: solar PV and a small wind turbine '
-       f'feed inverters, the inverters and the grid meet at the smart meter, and the energy management controller '
-       f'(the home energy gateway) reads the meter and inverters, sets the battery and the smart loads, talks to the '
+       f'font-family="{FONT}" role="img" aria-label="A home energy system: solar PV, a small wind turbine and the '
+       f'home battery share one hybrid inverter; the inverter, the smart loads and the smart meter to the public grid '
+       f'meet at the distribution board, the home AC bus. No power passes through the energy management controller '
+       f'(the home energy gateway): it reads the meter and inverters, sets the battery and the smart loads, talks to the '
        f'household app over the home Wi-Fi and gets prices and forecasts from the internet.">'
        f'<defs>{markers}</defs><rect width="{W}" height="{H}" fill="#ffffff"/>'
        + "".join(edges) + "".join(nodes) + "".join(labels) + "</svg>")
@@ -173,7 +228,7 @@ def render(svg_path: Path, png_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    out = Path(sys.argv[1])
+    out = Path(next(a for a in sys.argv[1:] if not a.startswith("--")))
     out.with_suffix(".svg").write_text(svg, encoding="utf-8")
     render(out.with_suffix(".svg"), out.with_suffix(".png"))
     print("wrote", out.with_suffix(".svg"), out.with_suffix(".png"))

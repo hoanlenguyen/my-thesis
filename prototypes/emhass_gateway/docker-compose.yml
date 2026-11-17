@@ -1,0 +1,49 @@
+# The home energy gateway, simulated on the laptop: EMHASS and the Household Assistant's harness in containers limited
+# to a Raspberry Pi 5 (4 cores, 8 GB each; a real Pi shares them). The companion device is the laptop's Ollama,
+# reached over Docker's host network (host.docker.internal); on a real Pi set COMPANION to the laptop's address.
+#
+#   docker compose -f prototypes/emhass_gateway/docker-compose.yml up -d emhass
+#   docker compose -f prototypes/emhass_gateway/docker-compose.yml run --rm assistant --ids DS1
+#
+# RAW_DIR: the raw data folder (OPSD house, DWD weather, prices); default D:/Study/my-thesis/data/raw.
+name: home-gateway
+
+services:
+  emhass:
+    image: ghcr.io/davidusb-geek/emhass:latest  # 0.18.4 when this was written (17 Nov 2026), as in the first thesis
+    environment:
+      TIME_ZONE: Europe/Berlin  # the OPSD house (Konstanz)
+      LAT: "47.66"
+      LON: "9.18"
+      ALT: "400"
+      SUPERVISOR_TOKEN: ""
+      EMHASS_URL: empty  # never contacts Home Assistant; all data comes with each request
+    ports: ["5001:5000"]
+    cpus: 4
+    mem_limit: 8g
+    restart: unless-stopped
+
+  assistant:
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /work
+    depends_on: [emhass]
+    environment:
+      UV_PROJECT_ENVIRONMENT: /venv  # the code is mounted read-only; the environment lives in a volume
+      UV_LINK_MODE: copy
+      UV_FROZEN: "1"
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    volumes:
+      - ../..:/work:ro
+      - ${RAW_DIR:-D:/Study/my-thesis/data/raw}:/data:ro
+      - ./out/gateway:/out
+      - venv:/venv
+      - uv-cache:/root/.cache/uv
+    entrypoint: ["uv", "run", "--no-dev", "python", "prototypes/emhass_gateway/emhass_gateway.py",
+                 "--raw-dir", "/data", "--emhass", "http://emhass:5000",
+                 "--ollama", "${COMPANION:-http://host.docker.internal:11434}", "--out", "/out/results.jsonl"]
+    cpus: 4
+    mem_limit: 8g
+
+volumes:
+  venv:
+  uv-cache:

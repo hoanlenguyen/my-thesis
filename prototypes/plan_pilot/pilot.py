@@ -364,6 +364,7 @@ def extract(model_name: str, plan: dict, household: dict, method: str | None = M
     call, as the thesis harness uses; with Ollama's default JSON-schema mode gpt-oss-20b returned empty plans).
     ``retries``: how often an answer that fails validation is sent back with the errors (as the thesis harness's
     recovery nudge; 0 = one attempt)."""
+    method = MODELS[model_name].structured_method or method  # e.g. JSON schema for a server without tool calls
     kwargs = {"method": method} if method else {}
     model = make_model(model_name, num_ctx=plan_num_ctx(model_name))
     model = model.with_structured_output(HouseholdPlan, include_raw=True, **kwargs)

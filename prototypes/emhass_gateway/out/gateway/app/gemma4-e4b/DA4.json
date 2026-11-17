@@ -1,0 +1,28 @@
+{
+ "plan": "DA4",
+ "model": "gemma4-e4b",
+ "household_message": {
+  "sent": "2016-01-25 16:00",
+  "text": "Guests tonight, make it cosy.",
+  "car_pct": 45
+ },
+ "decision": "ask",
+ "message_to_household": "I need a little more information to set the comfort level for your guests tonight.",
+ "questions": [
+  {
+   "topic": "comfort",
+   "text": "What temperature range would you consider 'cosy' for your guests tonight?"
+  }
+ ],
+ "notes": [],
+ "warnings": [],
+ "requirements": [],
+ "problems": [
+  "the household's 'cosy' is too vague to plan: ask what they mean"
+ ],
+ "schedule": null,
+ "cost_eur": null,
+ "timeline_hourly": null,
+ "optimiser": "EMHASS",
+ "emhass_solves": []
+}

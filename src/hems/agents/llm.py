@@ -20,10 +20,16 @@ class ModelSpec:
     # Ollama models: the ``think`` setting ("medium" for gpt-oss, True/False for models with an on/off reasoning
     # phase, None to leave the model's default); unused by the other providers
     ollama_think: bool | str | None = "medium"
-    # Ollama models: cap on generated tokens per call (``num_predict``); None = no cap
+    # Local models: cap on generated tokens per call (Ollama's ``num_predict``, llama.cpp's ``max_tokens``); None = no cap
     ollama_num_predict: int | None = None
     # Ollama models: layers placed on the GPU (``num_gpu``; 0 = CPU only); None = Ollama decides
     ollama_num_gpu: int | None = None
+    # llama.cpp servers (provider "llamacpp"): OpenAI-compatible endpoint; the environment variable
+    # ``LLAMACPP_BASE_URL`` overrides it (e.g. a companion device on the home network)
+    base_url: str | None = None
+    # LangChain structured-output method for this model (None = the caller's default, a tool call); servers without
+    # tool calling use "json_schema", which constrains the answer to the schema with a grammar
+    structured_method: str | None = None
 
 
 MODELS: dict[str, ModelSpec] = {
@@ -83,6 +89,13 @@ MODELS: dict[str, ModelSpec] = {
     # has a template in SmolLM3's documented tool format (react_gateway/smollm3-tools.Modelfile), reasoning on.
     # Dropped from the model set on 13 Nov 2026 (never planned a schedule); kept for its archived results.
     "smollm3-tools": ModelSpec("ollama", "smollm3-tools", 0.0, 0.0, ollama_think=True, ollama_num_predict=8000),
+    # Microsoft BitNet b1.58 2B-4T (ternary weights, I2_S GGUF from microsoft/BitNet-b1.58-2B-4T-gguf), added
+    # 17 Nov 2026. Runs in bitnet.cpp's llama-server, not Ollama: BitNet commit 1876a3e (Jan 2026; one const fix for
+    # Clang 18) in WSL, since the July 2026 main branch (embedding fork of llama.cpp) gives incoherent text with this
+    # model. That server rejects ``tools``, so the plan pilot uses JSON-schema output and the ReAct gateway (tool
+    # calls) cannot run it. No reasoning phase; 4,000-token cap within the server's 8,192-token context.
+    "bitnet-2b": ModelSpec("llamacpp", "bitnet-b1.58-2b-4t", 0.0, 0.0, ollama_think=None, ollama_num_predict=4000,
+                           base_url="http://localhost:8089/v1", structured_method="json_schema"),  # fmt: skip
 }
 
 # The model new runs use unless another is named (CLI, LangGraph Studio, demo)
@@ -114,6 +127,14 @@ def make_model(name: str, temperature: float = 0.0, seed: int | None = None, num
             reasoning=spec.ollama_think, num_predict=spec.ollama_num_predict, num_gpu=spec.ollama_num_gpu,
             keep_alive="30m",
         )  # fmt: skip
+    if spec.provider == "llamacpp":
+        import os
+
+        from langchain_openai import ChatOpenAI
+
+        base_url = os.environ.get("LLAMACPP_BASE_URL") or spec.base_url
+        return ChatOpenAI(model=spec.model_id, base_url=base_url, api_key="not-needed", temperature=temperature,
+                          seed=seed, max_tokens=spec.ollama_num_predict, max_retries=2)  # fmt: skip
     raise ValueError(f"unknown provider {spec.provider}")
 
 

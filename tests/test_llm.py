@@ -25,6 +25,16 @@ def test_cached_input_tokens_are_priced_at_the_cached_rate() -> None:
     assert usage_cost_usd(no_cache, "gpt-6-luna")[2] == pytest.approx((3000 * 0.10 + 100 * 0.50) / 1e6)
 
 
+def test_bitnet_runs_on_a_llamacpp_server_with_json_schema_output(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("LLAMACPP_BASE_URL", raising=False)
+    spec = MODELS["bitnet-2b"]
+    assert spec.provider == "llamacpp" and spec.structured_method == "json_schema"
+    model = make_model("bitnet-2b")  # the client is only built, never called
+    assert model.openai_api_base == "http://localhost:8089/v1" and model.max_tokens == 4000
+    monkeypatch.setenv("LLAMACPP_BASE_URL", "http://companion.local:8089/v1")
+    assert make_model("bitnet-2b").openai_api_base == "http://companion.local:8089/v1"
+
+
 def test_recorded_runs_keep_their_pinned_model(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     assert MODELS["gpt-4o-mini"].model_id == "gpt-4o-mini-2024-07-18"
