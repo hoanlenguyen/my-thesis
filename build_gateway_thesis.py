@@ -26,7 +26,8 @@ AUTHORS = {  # key: (authors as cited, year)
     "elmakroum2026": ("El Makroum et al.", "2026"),
     "emhass": ("EMHASS contributors", "2026"),
     "energycharts": ("Fraunhofer ISE", "n.d."),
-    "evcc14a": ("evcc", "n.d."),
+    "evcc14a": ("evcc", "n.d.-a"),
+    "evccvehicle": ("evcc", "n.d.-b"),
     "hevner2004": ("Hevner et al.", "2004"),
     "hevner2007": ("Hevner", "2007"),
     "homeassistant_assist": ("Home Assistant", "n.d."),
@@ -71,6 +72,15 @@ def narrative(match: re.Match) -> str:
 def main() -> None:
     lines = (HERE / "main.tex").read_text(encoding="utf-8").splitlines(keepends=True)
     head = "".join(lines[: next(i for i, l in enumerate(lines) if l.startswith("\\begin{document}")) + 1])
+    # Figure and table captions: only the label ("Figure 1.2.", "Table 5.1") is bold, the caption text is regular.
+    for kind in ("figure", "table"):
+        bold = f"\\captionsetup[{kind}]{{\n  font={{sf,small,bf}},"
+        assert bold in head, f"{kind} caption setup of main.tex changed"
+        head = head.replace(bold, f"\\captionsetup[{kind}]{{\n  font={{sf,small}},\n  labelfont=bf,")
+    # Table labels end with a period like figure labels ("Table 5.1.").
+    sep = "\\captionsetup[table]{\n  font={sf,small},\n  labelfont=bf,\n  labelsep=space,"
+    assert sep in head, "table caption separator of main.tex changed"
+    head = head.replace(sep, sep.replace("labelsep=space", "labelsep=period"))
     body = (HERE / "gateway_body.tex").read_text(encoding="utf-8")
     body = re.sub(r"\\parencite\{([^}]*)\}", paren, body)
     body = re.sub(r"\\textcite\{([^}]*)\}", narrative, body)

@@ -1,0 +1,62 @@
+{
+ "status": "DRAFT, not registered. All values fixed by the author by 22 Nov 2026; this file, the keyed plans_heldout.json, the hypotheses and confirm_heldout.py (REGISTERED = True) are registered together in one commit, before any system reads a held-out message.",
+ "sq1_plans": {
+  "plans": "prototypes/heldout/plans_heldout.json",
+  "cards": "prototypes/heldout/scenarios.json",
+  "house": "DE_KN_residential4, 2016 (OPSD), household of plan_pilot/plans.json",
+  "n_plans": 120,
+  "kinds": {"simple": 40, "change": 40, "ambiguous": 20, "conflict": 20},
+  "writers": 4,
+  "runs_per_model": 3,
+  "temperature": 0,
+  "agent": "Household Assistant, the ReAct agent of react_gateway/agent.py: prompt, tools, checker and rules in code as of the registration commit",
+  "optimiser": "EMHASS 0.18.4 REST (emhass_gateway.py), image ghcr.io/davidusb-geek/emhass@sha256:840e2ad213ffa5472d49294bf706970fc2b3c1178981d9639e9c050e9f1d5e1c (pinned in docker-compose.yml, 22 Nov 2026)",
+  "small_models": {
+   "gemma4-e4b": "gemma4:e4b, main candidate",
+   "gemma4-e2b": "gemma4:e2b",
+   "ministral-3-8b": "ministral-3:8b",
+   "ministral-3-3b": "ministral-3:3b",
+   "nemotron3-nano-4b": "nemotron-3-nano:4b"
+  },
+  "ollama_digests": {"gemma4:e4b": "dc35e8d9c606", "gemma4:e2b": "b37049369adf", "ministral-3:8b": "1922accd5827", "ministral-3:3b": "f04aa1c738f6", "nemotron-3-nano:4b": "d94b6dfae26d", "recorded": "22 Nov 2026 (ollama list); check unchanged at registration"},
+  "cloud_model": "gpt-6-luna (no dated snapshot; id only), reasoning_effort none",
+  "setups": {
+   "slm_no_checks": "small model, plan_schedule without the checker and the rules in code (Gateway(checks=False), built 22 Nov 2026)",
+   "slm_checks": "small model with the checker and the rules in code (the design)",
+   "slm_checks_fallback": "slm_checks; when the checker flags the answer or it fails twice, the cloud model answers (run_heldout.py, built 22 Nov 2026: on a failed answer or a committed plan the gateway refused)",
+   "llm": "gpt-6-luna in the same agent with the checks"
+  },
+  "closed_loop": "committed plans executed on the real day and judged against the key (agent.py --loop); with EMHASS through run_heldout.py --emhass (built 22 Nov 2026), cached by plan and constraints",
+  "hardware": "laptop, RTX 4070 8 GB, all models; the edge runs on the Raspberry Pi 5 and the mini PC come last (plan section 7)"
+ },
+ "sq2_configurator": {
+  "script": "prototypes/configurator_pilot/configurator.py (hourly MPC and at each plug-in)",
+  "models": ["gemma4-e4b", "gpt-6-luna"],
+  "references": ["default", "auto-tuner", "expert (frozen: derating 0.7; residential3 0.8)", "rules", "perfect foresight"],
+  "history_weeks": 2,
+  "heldout_weeks": {
+   "DE_KN_residential4": ["2016-01-18, 7 weeks (winter)", "2016-05-30, 8 weeks (summer)"],
+   "DE_KN_residential3": ["2016-05-30, 8 weeks (summer)"],
+   "DE_KN_residential6": ["2016-05-30, 8 weeks (summer)"]
+  },
+  "note": "weeks not used by the pilots (spring 2016-03-07 to 05-01, autumn 10-03 to 11-27) or the tuning (09-05 to 10-02); residential3 has data from 2016-02-29 and residential6 from 2016-05-14, so only summer for them. Confirmed by the author 22 Nov 2026; every day of the weeks and of their two-week histories has data."
+ },
+ "year_simulation": {
+  "script": "prototypes/configurator_pilot/configurator.py --start 2016-01-18 --weeks 49 --models gemma4-e4b gpt-6-luna --out prototypes/heldout/out/year_2016.jsonl --resume, then prototypes/heldout/year_balance.py (built 22 Nov 2026)",
+  "systems": "rules, default MPC, expert MPC (derating tuned on 2016-09-05 to 10-02), auto-tuner, Configurator with gemma4-e4b and gpt-6-luna, perfect foresight; hourly MPC and each plug-in, same control layer",
+  "house": "DE_KN_residential4, 2016: 49 weeks (18 Jan to 24 Dec), scaled to 365 days",
+  "when": "after the registration commit: the year contains the Configurator's held-out weeks",
+  "energy_of_inference": "year_balance.py: one plan per day and one configuration per week; Wh per event and idle power from the edge-board runs (last step); two set-ups: model on the gateway (extra idle of the loaded model) and on a companion device (its whole idle power); priced at the year's mean import price",
+  "optimiser": "the thesis MPC (PuLP), as in the Configurator pilots (author's decision 22 Nov 2026; Sections 3.5 and 5.5 say so)"
+ },
+ "analysis": {
+  "alpha": 0.05,
+  "correction": "Holm within each sub-question (SQ1: H1, H2, H3)",
+  "H1": "decision accuracy and constraint recall of the best small model vs gpt-6-luna, non-inferiority, paired cluster bootstrap over plans; margin 0.10 (author's decision 21 Nov 2026; power.py: 0.05 would need about 390 plans at the pilot's discordance 0.11, 0.10 needs about 100, power 0.89 with 120)",
+  "H2": "requirements met on feasible committed house-days, one-sided exact binomial, p0 = 0.90 (author's decision 21 Nov 2026; 0.95 needs at least 80 such days even if all are met; 0.90 has power 0.78 at a true 0.98 with 80)",
+  "H3": "slm_checks_fallback decision accuracy within the H1 margin of the LLM's; fallback share at most 0.20 (exact binomial)",
+  "H4": "Configurator (small model) non-inferior to the auto-tuner, and the LLM-configured MPC, paired one-sided Wilcoxon over held-out weeks for each; margin 0.20 EUR per week (author's decision 22 Nov 2026); H4 holds if both pass",
+  "H5": "p95 time per plan per device at most 15 minutes (author's decision 22 Nov 2026); plans due within 30 minutes go to the fallback; descriptive with the year simulation",
+  "script": "prototypes/heldout/confirm_heldout.py (built 22 Nov 2026); tested small model BEST_SLM = gemma4-e4b, named before the run"
+ }
+}

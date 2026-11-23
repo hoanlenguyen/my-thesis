@@ -96,6 +96,7 @@ def main() -> None:
     parser.add_argument("--plans", nargs="*", help="plan ids (default: all 22)")
     parser.add_argument("--idle-w", type=float, help="device power at idle (meter reading, W)")
     parser.add_argument("--load-w", type=float, help="device power while generating (meter reading, W)")
+    parser.add_argument("--out-dir", type=Path, default=HERE / "out", help="(edge kit: the code is mounted read-only)")
     args = parser.parse_args()
     data = json.loads((PILOT_DIR / "plans.json").read_text(encoding="utf-8"))
     household = data["household"]
@@ -104,14 +105,16 @@ def main() -> None:
     model = model_for(args.model, args.host, args.cpu_only, args.threads, args.num_ctx)
     print(f"{args.device}: {args.model} at {args.host}, {len(plans)} plans", flush=True)
     model.invoke("Say OK.")  # load the model first, so the first plan is not charged for it
-    out_path = HERE / "out" / f"{args.device}_{args.model}.jsonl"
+    out_path = args.out_dir / f"{args.device}_{args.model}.jsonl"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rows = []
     with out_path.open("w") as out:
         for plan in plans:
+            started_at = time.time()  # wall clock, to match the plan to the power meter's log (edge kit)
             got, calls, wall = run_plan(model, plan, household, args.retries)
             ok = [c for c in calls if "error" not in c]
             row = {"device": args.device, "model": args.model, "id": plan["id"], "wall_s": round(wall, 1),
+                   "started_at": round(started_at, 2), "ended_at": round(time.time(), 2),
                    "calls": len(calls), "prompt_tokens": sum(c["prompt_eval_count"] or 0 for c in ok),
                    "output_tokens": sum(c["eval_count"] or 0 for c in ok),
                    "prefill_tok_s": rate([c["prompt_eval_count"] for c in ok], [c["prompt_eval_duration"] for c in ok]),
@@ -136,7 +139,7 @@ def main() -> None:
         "wh_per_plan": round(args.load_w * sum(walls) / len(walls) / 3600, 3) if args.load_w else None,
         **{k: (round(v, 3) if isinstance(v, float) else v) for k, v in summarize(rows).items()},
     }  # fmt: skip
-    (HERE / "out" / f"{args.device}_{args.model}_summary.json").write_text(json.dumps(summary, indent=1))
+    (args.out_dir / f"{args.device}_{args.model}_summary.json").write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))
 
 

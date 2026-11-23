@@ -5,8 +5,9 @@ auto-tuner that sees the same history? Built on the gateway twin (``prototypes/h
 (``--market de --export feedin --forecast weather``), OPSD ``residential4`` 2016.
 
 Settings in scope (the confirmatory scope of SQ2): PV forecast derating and battery reserve at midnight. Every
-system runs the MPC at the gateway's checkpoints (00, 06, 12, 18 h and each EV plug-in) through the same control
-layer; each day starts from the reference state and is scored by adjusted cost (as ``gateway.score``).
+system runs the MPC every hour and at each EV plug-in, as the gateway does, through the same control layer; each
+day starts from the reference state and is scored by adjusted cost (as ``gateway.score``). Results recorded before
+19 Nov 2026 (``out/archive/``) used the checkpoint MPC (00, 06, 12, 18 h and each plug-in).
 
 Systems, per evaluation week:
 
@@ -41,14 +42,15 @@ from langchain_core.tools import tool
 from pydantic import BaseModel, Field
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "home_gateway"))
-from gateway import (CHECKPOINTS, Forecasts, Plan, Run, Settings, State, execute, forecasts_for,  # noqa: E402
+from gateway import (Forecasts, Plan, Run, Settings, State, execute, forecasts_for,  # noqa: E402
                      perfect_foresight, score, solve)  # fmt: skip
 from twin import Day, Home, load_days, rules  # noqa: E402
 
 from hems.agents.harness import ReactResult, run_react  # noqa: E402
 from hems.agents.llm import make_model, usage_cost_usd  # noqa: E402
-from hems.core.models import SLOT_HOURS  # noqa: E402
+from hems.core.models import SLOT_HOURS, SLOTS_PER_DAY  # noqa: E402
 
+HOURLY = set(range(0, SLOTS_PER_DAY, 4))  # replan slots; execute() also replans at each plug-in
 DERATES = (0.6, 0.7, 0.8, 0.9, 1.0)
 RESERVES: tuple[float | None, ...] = (None, 50.0)
 GRID = [Settings(pv_derate=d, battery_reserve_pct=r) for d in DERATES for r in RESERVES]
@@ -65,7 +67,7 @@ def mpc(fc: Forecasts, day: Day, home: Home, s: Settings):
 
 
 class Backtester:
-    """Adjusted cost of the checkpoint MPC with given settings, cached per (settings, date)."""
+    """Adjusted cost of the hourly MPC with given settings, cached per (settings, date)."""
 
     def __init__(self, days: dict[str, Day], fcs: dict[str, Forecasts], home: Home):
         self.days, self.fcs, self.home = days, fcs, home
@@ -76,13 +78,17 @@ class Backtester:
         key = (round(s.pv_derate, 3), s.battery_reserve_pct, d)
         if key not in self.cache:
             day = self.days[d]
-            run = execute(day, self.home, mpc(self.fcs[d], day, self.home, s), set(CHECKPOINTS))
+            run = execute(day, self.home, mpc(self.fcs[d], day, self.home, s), HOURLY)
             self.cache[key] = score(day, self.home, run.result)
             self.runs += 1
         return self.cache[key]
 
     def cost(self, s: Settings, dates: list[str]) -> float:
         return sum(self.day(s, d)["adjusted_cost_eur"] for d in dates)
+
+    def energy(self, s: Settings, dates: list[str]) -> dict[str, float]:
+        """Grid import and export over the dates, kWh (for the year simulation)."""
+        return {k: round(sum(self.day(s, d)[k] for d in dates), 3) for k in ("import_kwh", "export_kwh")}
 
 
 def week_dates(start: date) -> list[str]:
@@ -99,9 +105,15 @@ def unlabel(text: str) -> Settings:
 
 
 # ── The Configurator agent ───────────────────────────────────────────────────
-SYSTEM_PROMPT = """You are the Configurator of a home energy gateway in Konstanz, Germany. The home has rooftop PV, \
-a 10 kWh home battery, a heat pump and an EV charger. An MPC plans the devices at 00, 06, 12 and 18 h and at each \
-plug-in, using day-ahead forecasts of PV (from weather forecasts), heat demand and household load.
+HOME_FULL = ("rooftop PV, a 10 kWh home battery, a heat pump and an EV charger",
+             "every hour and at each plug-in", "PV (from weather forecasts), heat demand and household load")
+HOME_PV_ONLY = ("rooftop PV and a 10 kWh home battery", "every hour",
+                "PV (from weather forecasts) and household load")
+# 19 Nov 2026: "in Konstanz, Germany" removed from the role statement (author's decision: no location in the
+# prompt), and the MPC switched from checkpoints (00, 06, 12, 18 h) to hourly, as on the gateway. The results in
+# out/archive/ used the earlier wording and the checkpoint MPC.
+SYSTEM_PROMPT = """You are the Configurator of a home energy gateway. The home has {0}. \
+An MPC plans the devices {1}, using day-ahead forecasts of {2}.
 
 Once a week you choose two MPC settings for the coming week:
 - pv_derate (0.5-1.0): the share of the PV forecast the MPC plans with;
@@ -148,7 +160,8 @@ def history_text(history: list[str], days: dict[str, Day], fcs: dict[str, Foreca
 
 
 def agent_configure(model_name: str, history: list[str], days: dict[str, Day], fcs: dict[str, Forecasts],
-                    classes: dict[str, str], current: Settings, bt: Backtester) -> tuple[Settings, dict]:  # fmt: skip
+                    classes: dict[str, str], current: Settings, bt: Backtester,
+                    prompt: str) -> tuple[Settings, dict]:  # fmt: skip
     @tool
     def history_summary() -> str:
         """Day by day for the past weeks: weather class, PV actual vs day-ahead forecast, EV energy, prices; and the
@@ -175,7 +188,7 @@ def agent_configure(model_name: str, history: list[str], days: dict[str, Day], f
     started = time.perf_counter()
     with get_usage_metadata_callback() as usage:
         try:
-            out = run_react(model, [history_summary, backtest], SYSTEM_PROMPT, MpcSettings, message, "configurator",
+            out = run_react(model, [history_summary, backtest], prompt, MpcSettings, message, "configurator",
                             AGENT_STEP_LIMIT, None)  # fmt: skip
         except Exception as exc:  # Ollama's HTTP 500 on a malformed tool call: keep the current settings
             if type(exc).__name__ != "ResponseError":
@@ -204,13 +217,25 @@ def main() -> None:
     parser.add_argument("--history", type=int, default=2, help="weeks of history for the backtest")
     parser.add_argument("--tune-start", default="2016-09-05", help="exploratory period for the tuned reference")
     parser.add_argument("--tune-weeks", type=int, default=4)
-    parser.add_argument("--out", type=Path, default=HERE / "out" / "results.jsonl")
+    parser.add_argument("--site", default="DE_KN_residential4",
+                        help="OPSD site; residential3 and residential6 have PV but no heat pump or EV")
+    parser.add_argument("--year", type=int, default=2016)
+    parser.add_argument("--out", type=Path, default=None, help="default out/results.jsonl, or out/<site>.jsonl")
     parser.add_argument("--resume", action="store_true",
                         help="keep the weeks already in --out and continue from the settings they end with")  # fmt: skip
     args = parser.parse_args()
     load_dotenv()
-    home = Home()
-    all_days = load_days(args.raw_dir, 2016, "de", "feedin")
+    all_days = load_days(args.raw_dir, args.year, "de", "feedin", site=args.site)
+    has_hp = any(d.hp.sum() > 0 for d in all_days)
+    has_ev = any(d.sessions for d in all_days)
+    if has_hp != has_ev:
+        raise SystemExit(f"{args.site}: only homes with both a heat pump and an EV, or neither, are described")
+    home = Home() if has_hp else Home(hp_max_kw=0.0)
+    prompt = SYSTEM_PROMPT.format(*(HOME_FULL if has_hp else HOME_PV_ONLY))
+    if args.out is None:
+        name = "results" if args.site == "DE_KN_residential4" and args.year == 2016 else f"{args.site}_{args.year}"
+        args.out = HERE / "out" / f"{name}.jsonl"
+    print(f"{args.site} {args.year}: {len(all_days)} days, heat pump and EV: {has_hp}", flush=True)
     fcs = forecasts_for(all_days, "weather")
     days = {d.date: d for d in all_days}
     classes = weather_classes(all_days)
@@ -248,19 +273,24 @@ def main() -> None:
                 "auto_tuner": (min(GRID, key=lambda s: bt.cost(s, history)), {}),
             }  # fmt: skip
             for m in args.models:
-                chosen[f"agent:{m}"] = agent_configure(m, history, days, fcs, classes, current[f"agent:{m}"], bt)
+                chosen[f"agent:{m}"] = agent_configure(m, history, days, fcs, classes, current[f"agent:{m}"], bt,
+                                                       prompt)
             for name, (s, meta) in chosen.items():
                 if name in current:
                     current[name] = s
                 record = {"week": start.isoformat(), "system": name, "settings": label(s),
-                          "adjusted_cost_eur": bt.cost(s, week), "history_cost_eur": bt.cost(s, history), **meta}  # fmt: skip
+                          "adjusted_cost_eur": bt.cost(s, week), "history_cost_eur": bt.cost(s, history),
+                          **bt.energy(s, week), **meta}  # fmt: skip
                 out.write(json.dumps(record) + "\n")
                 print(f"{start} {name:18s} {label(s):28s} week {record['adjusted_cost_eur']:7.2f} EUR"
                       + (f"  {meta['decision']}" if "decision" in meta else ""), flush=True)  # fmt: skip
             for name, fn in (("rules", lambda d: Run(rules(days[d], home, home.soc_start * home.battery_kwh, home.set_c))),
                              ("optimum", lambda d: perfect_foresight(days[d], home))):  # fmt: skip
-                cost = sum(score(days[d], home, fn(d).result)["adjusted_cost_eur"] for d in week)
-                out.write(json.dumps({"week": start.isoformat(), "system": name, "adjusted_cost_eur": cost}) + "\n")
+                scores = [score(days[d], home, fn(d).result) for d in week]
+                out.write(json.dumps({"week": start.isoformat(), "system": name,
+                                      "adjusted_cost_eur": sum(x["adjusted_cost_eur"] for x in scores),
+                                      **{k: round(sum(x[k] for x in scores), 3) for k in ("import_kwh", "export_kwh")}})
+                          + "\n")  # fmt: skip
             out.flush()
     print(f"\n{bt.runs} day backtests run")
     summarize(args.out)

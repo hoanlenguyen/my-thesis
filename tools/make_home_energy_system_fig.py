@@ -52,10 +52,11 @@ def txt(x: float, y: float, s: str, size: float = 18, weight: int = 400, color: 
 
 
 def box(x: float, y: float, w: float, h: float, label: str, kind: str, size: float = 20, weight: int = 600,
-        sw: float = 1.5, sub: str = "", sub_size: float = 16) -> None:
+        sw: float = 1.5, sub: str = "", sub_size: float = 16, dashed: bool = False) -> None:
     fill, stroke = KIND[kind]
+    dash = ' stroke-dasharray="8 5"' if dashed else ""
     nodes.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" fill="{fill}" stroke="{stroke}" '
-                 f'stroke-width="{sw}"/>')
+                 f'stroke-width="{sw}"{dash}/>')
     lines = [(l, size, weight, INK) for l in label.split("\n") if l]
     lines += [(l, sub_size, 400, MUTED) for l in sub.split("\n") if l]
     gap = 1.3
@@ -100,17 +101,25 @@ nodes.append(f'<text transform="translate(392,360) rotate(-90)" font-size="16" f
 box(620, 40, 260, 70, "Public grid", "grid")
 box(620, 150, 260, 100, "Smart meter", "convert")
 if THESIS:
-    # The gateway keeps the deterministic parts; the small model runs on a companion device beside it (Sec. 4.x
-    # Implementation, "Deployment on one device or two"); a gateway with enough memory can host the model itself.
-    # The energy management controller is the role (the HEMS); here it is two devices on the home network. All
-    # outside links end at the gateway, which runs the harness and passes the model its plans and data.
-    nodes.append('<rect x="530" y="318" width="440" height="272" rx="10" fill="#f1faf5" stroke="#1b7f5b" '
+    # The gateway keeps the deterministic parts; the small model runs on a companion device beside it, or on the
+    # gateway itself when it has enough memory (Sec. 4.x Implementation, "Deployment on one device or two"; one-device
+    # test in Sec. 5.4.x), so the companion device is drawn dashed: optional. The energy management controller is the
+    # role (the HEMS). All outside links end at the gateway, which runs the harness and passes the model its data.
+    # One device (author's decision, 18 Nov 2026): the home energy gateway, the energy management controller, is a
+    # Raspberry Pi 5 or a mini PC that runs EMHASS as the optimiser and the small language model side by side.
+    nodes.append('<rect x="530" y="318" width="440" height="272" rx="10" fill="#dcf5ea" stroke="#1b7f5b" '
                  'stroke-width="2.5"/>')
-    txt(548, 578, "Energy management controller", 17, 700, "#1b7f5b", "start", into=nodes)
-    box(680, 334, 270, 80, "Companion device", "source", size=19, sw=2,
-        sub="small language model\ne.g. Raspberry Pi 5 or mini PC", sub_size=15)
-    box(550, 446, 400, 100, "Home energy gateway", "control", size=20, sw=2,
-        sub="harness, checker, MPC,\ncontrol layer and fallback rules", sub_size=16)
+    txt(750, 346, "Home energy gateway", 20, 700, INK, into=nodes)
+    txt(750, 368, "energy management controller", 15, 400, MUTED, into=nodes)
+    nodes.append('<rect x="548" y="382" width="404" height="190" rx="8" fill="#ffffff" stroke="#1b7f5b" '
+                 'stroke-width="1.6"/>')
+    txt(750, 406, "Raspberry Pi 5 or mini PC", 17, 600, INK, into=nodes)
+    box(564, 420, 172, 92, "EMHASS", "convert", size=18, sw=1.6, sub="optimiser (MPC):\nschedules the devices",
+        sub_size=14)
+    box(764, 420, 172, 92, "Small language\nmodel", "source", size=18, sw=1.6, sub="reads plans,\nsets constraints",
+        sub_size=14)
+    txt(750, 540, "harness and checker · control layer · fallback rules", 14, 400, MUTED, into=nodes)
+    txt(750, 560, "talks to the devices locally", 14, 400, MUTED, into=nodes)
 else:
     box(540, 330, 420, 210, "Energy management controller", "control", size=21, sw=2.5,
         sub="(home energy gateway)", sub_size=17)
@@ -130,13 +139,10 @@ for i, name in enumerate(devices):
 if THESIS:
     box(1200, 30, 480, 110, "Internet services", "net", size=20,
         sub="day-ahead prices \u00b7 weather forecasts\ncloud LLM (optional fallback)", sub_size=17)
-    nodes.append('<rect x="1200" y="180" width="480" height="520" rx="10" fill="#f8f9fa" stroke="#8a94a0" '
-                 'stroke-width="1.3" stroke-dasharray="7 5"/>')
-    txt(1220, 210, "In the household, over the home Wi-Fi", 17, 400, MUTED, "start", into=nodes)
     fill, stroke = KIND["app"]
     nodes.append(f'<rect x="1220" y="226" width="440" height="456" rx="8" fill="{fill}" stroke="{stroke}" '
                  f'stroke-width="1.8"/>')
-    txt(1240, 256, "Household app (phone or tablet)", 19, 700, "#3b2c84", "start", into=nodes)
+    txt(1240, 256, "Household app", 19, 700, "#3b2c84", "start", into=nodes)
     py = 272
     for label, h in [("Plans, typed or spoken\n\u201ccharge the car for work tomorrow,\nguests from six\u201d", 92),
                      ("Live view: PV, consumption, battery %,\ngrid import/export, EV, indoor \u00b0C", 68),
@@ -146,7 +152,7 @@ if THESIS:
         box(1240, py, 400, h, label, "panel", size=16, weight=400, sw=1)
         py += h + 12
 else:
-    box(1120, 345, 270, 90, "Household app", "app", sub="phone or tablet")
+    box(1120, 345, 270, 90, "Household app", "app")
     box(1120, 465, 270, 90, "Internet services", "net", sub="day-ahead prices, weather forecasts")
 
 # ── power flows ───────────────────────────────────────────────────────────────────────────────────────────────
@@ -163,22 +169,19 @@ arrow([(375, 570), (375, LY - 2)], AC)                            # board -> loa
 
 # ── communication ─────────────────────────────────────────────────────────────────────────────────────────────
 if THESIS:
-    arrow([(640, 250), (640, 444)], COM, dashed=True, both=True, top=True)
-    lbl(652, 295, "meter data")
-    arrow([(30, 240), (12, 240), (12, 615), (512, 615), (512, 500), (548, 500)], COM, dashed=True, both=True,
-          top=True)
+    arrow([(640, 250), (640, 316)], COM, dashed=True, both=True)
+    lbl(652, 290, "meter data")
+    arrow([(30, 240), (12, 240), (12, 615), (512, 615), (512, 470), (528, 470)], COM, dashed=True, both=True)
     lbl(40, 607, "inverter data, battery setpoints")
-    arrow([(820, 546), (820, LY - 2)], COM, dashed=True, top=True)
-    lbl(832, 622, "device setpoints")
-    arrow([(720, 414), (720, 444)], COM, dashed=True, both=True, top=True)
-    lbl(732, 435, "plans, data ↔ constraints")
-    arrow([(930, 334), (930, 80), (1198, 80)], COM, dashed=True, both=True, top=True)
-    lbl(945, 72, "model updates")
-    arrow([(950, 460), (1150, 460), (1150, 120), (1198, 120)], COM, dashed=True, both=True, top=True)
-    lbl(980, 432, "prices, forecasts,")
-    lbl(980, 452, "fallback")
-    arrow([(950, 520), (1198, 520)], COM, dashed=True, both=True, top=True)
-    lbl(1085, 510, "Wi-Fi, encrypted", "middle")
+    arrow([(820, 590), (820, LY - 2)], COM, dashed=True)
+    lbl(832, 618, "device setpoints")
+    arrow([(764, 466), (738, 466)], COM, dashed=True, top=True)  # the model's constraints into the optimiser
+    arrow([(970, 400), (1176, 400), (1176, 120), (1198, 120)], COM, dashed=True, both=True)
+    lbl(990, 372, "prices, forecasts,")
+    lbl(990, 392, "fallback, model updates")
+    arrow([(970, 520), (1218, 520)], COM, dashed=True, both=True)
+    lbl(1094, 494, "home Wi-Fi, or a VPN", "middle")
+    lbl(1094, 510, "when away; encrypted", "middle")
 else:
     arrow([(820, 250), (820, 328)], COM, dashed=True, both=True)
     lbl(832, 295, "meter data")

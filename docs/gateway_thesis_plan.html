@@ -46,8 +46,7 @@ a { color: var(--grid); }
 
 .shift { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 22px; }
 .shift > div { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; min-width: 0; }
-.shift .from { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--warn); }
-.shift .to { font-weight: 600; margin-top: 6px; }
+.shift .to { font-weight: 600; margin-top: 10px; }
 .shift .label { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 
 .evidence { margin-top: 18px; overflow-x: auto; }
@@ -127,73 +126,73 @@ ul.tight li { margin: 4px 0; }
 
 <div class="wrap">
 <header class="prose">
-  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · updated 16 Nov 2026</div>
+  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · updated 19 Nov 2026</div>
   <h1>Small Language Models for Smart Home Energy Management: Interpreting Household Plans and Configuring an Optimiser on Local Hardware</h1>
-  <p class="lede">A home energy gateway controls rooftop PV (photovoltaic solar panels), a home battery, a heat pump and an EV (electric vehicle) charger. A tuned optimiser, MPC (model predictive control), plans them; four language-model agents handle what an optimiser cannot: they turn the household's plain-language plans into constraints, explain the plan, react to plug-ins and deviations, and configure the optimiser from the house's own history. The agents run on a small language model (SLM) on local hardware, so the household's plans stay in the house; a cloud large language model (LLM) is the reference and, when needed, a fallback. A deterministic checker and control layer keep every plan safe.</p>
+  <p class="lede">A home energy gateway runs EMHASS as the optimiser (MPC, model predictive control) for PV, a home battery, a heat pump and an EV charger. Language-model agents do what an optimiser cannot: turn the household's plain-language plans into constraints, explain the plan, react to deviations and configure the optimiser. They run on a small language model (SLM) on the gateway itself, so plans stay in the house; a cloud LLM is the reference and an optional fallback. A deterministic checker and control layer keep every plan safe.</p>
   <ul class="tight">
-    <li><strong>Problem:</strong> optimisers save more than fixed rules, but need expert set-up that households cannot provide; cloud language models could provide it, but send the household's plans out of the house (section 1).</li>
-    <li><strong>Questions:</strong> can small local models interpret plans (SQ1) and configure the optimiser (SQ2) as well as a cloud LLM, how much a checker and a cloud fallback close the gap (also SQ1), and what running them on local hardware costs (SQ3) (section 2).</li>
-    <li><strong>Design:</strong> four agents, one per event, inside a verified harness (sections 3-4).</li>
-    <li><strong>Evaluation:</strong> one house with PV, heat pump and EV, real weather and prices, against a tuned MPC and an auto-tuner (sections 5-6). The house comes from the OPSD Household dataset: measured 15-minute energy data of six homes in Konstanz, Germany (2015-2019); other homes of the same dataset test the Configurator across houses.</li>
-    <li><strong>Progress:</strong> five pilots done. Small local models read plans almost as well as the cloud LLM but are weaker at deciding when to ask; with a deterministic checker, Gemma 4 E4B comes within 0.04 of the cloud LLM, and as Configurator it saved as much as the cloud LLM and an expert setting. Built as a ReAct agent that reads the home's data and plans through the MPC, on plans in everyday wording, Gemma 4 E4B decided 19 of 22 test plans right against 21 for the cloud LLM, in about 10 s per plan (section 9).</li>
+    <li><strong>Problem:</strong> optimisers save more than rules but need expert set-up; cloud models could help but send the household's plans out (section 1).</li>
+    <li><strong>Questions:</strong> can a small local model interpret plans (SQ1) and configure the optimiser (SQ2) as well as a cloud LLM, and what does running it on the gateway cost in time, energy, money and privacy, and does the saving outweigh it (SQ3) (section 2)?</li>
+    <li><strong>Design:</strong> four agents, one per event, inside a verified harness on one gateway (sections 3-4).</li>
+    <li><strong>Evaluation:</strong> OPSD homes in Konstanz with real weather and prices, against a tuned MPC and an auto-tuner (sections 5-6).</li>
+    <li><strong>Progress:</strong> Gemma 4 E4B decided 19 of 22 test plans right against 21 for the cloud LLM (about 10 s per plan); as Configurator it saved less than the cloud LLM in spring and about as much as the cloud LLM and the auto-tuner on three houses in autumn (section 9). The registered evaluation is prepared (thresholds fixed, runner, year simulation and edge kit built) and waits for the plan writers.</li>
   </ul>
 </header>
 
 <section>
   <h2>1. Problem</h2>
   <div class="prose">
-    <p>A home energy gateway is the box in the meter cabinet or on the home network that reads the smart meter and controls the home's energy assets: on-site renewable generation (rooftop PV panels, a small wind turbine, or both) with its inverter, the battery, the EV charger, the heat pump and the smart appliances. Its job is to decide every few minutes when each asset draws, stores or exports power, so that the household pays less for electricity, uses more of the power it generates and stays within the limits set by the grid operator.</p>
+    <p>A home energy gateway reads the smart meter and controls the home's energy assets (PV, battery, EV charger, heat pump, smart appliances), deciding every few minutes when each draws, stores or exports power so that the household pays less, uses more of its own power and stays within the grid operator's limits.</p>
 
   </div>
   <figure class="figure">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1010" font-family="Arial, Helvetica, sans-serif" role="img" aria-label="A home energy system: solar PV, a small wind turbine and the home battery share one hybrid inverter; the inverter, the smart loads and the smart meter to the public grid meet at the distribution board, the home AC bus. No power passes through the energy management controller (the home energy gateway): it reads the meter and inverters, sets the battery and the smart loads, talks to the household app over the home Wi-Fi and gets prices and forecasts from the internet."><defs><marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f9e44"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1971c2"/></marker><marker id="two" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0b7285"/></marker><marker id="com" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c92a2a"/></marker></defs><rect width="1720" height="1010" fill="#ffffff"/><path d="M92,130 L92,198" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M227,130 L227,198" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M160,428 L160,282" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-start="url(#dc)" marker-end="url(#dc)"/><path d="M290,240 L338,240" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><path d="M412,200 L618,200" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><path d="M750,110 L750,148" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><path d="M375,570 L375,638" fill="none" stroke="#1971c2" stroke-width="2.2" marker-end="url(#ac)"/><path d="M40,965 L100,965" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M330,965 L390,965" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M620,965 L680,965" fill="none" stroke="#1971c2" stroke-width="2.2" marker-end="url(#ac)"/><path d="M910,965 L970,965" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><rect x="30" y="40" width="125" height="90" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.5"/><text x="92" y="82" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">Solar PV</text><text x="92" y="102" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">rooftop</text><rect x="165" y="40" width="125" height="90" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.5"/><text x="228" y="73" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">Wind turbine</text><text x="228" y="92" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">small, optional</text><text x="228" y="111" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">with rectifier</text><rect x="30" y="200" width="260" height="80" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="160" y="237" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Hybrid inverter</text><text x="160" y="259" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">DC inputs: solar, wind, battery</text><rect x="30" y="430" width="260" height="90" rx="8" fill="#e3f6e5" stroke="#2f7d3b" stroke-width="1.5"/><text x="160" y="482" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Home battery</text><rect x="340" y="150" width="70" height="420" rx="8" fill="#eef0f2" stroke="#6b7785" stroke-width="1.5"/><text transform="translate(368,360) rotate(-90)" font-size="19" font-weight="600" fill="#1f2933" text-anchor="middle">Distribution board</text><text transform="translate(392,360) rotate(-90)" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">the home’s AC bus</text><rect x="620" y="40" width="260" height="70" rx="8" fill="#eef0f2" stroke="#6b7785" stroke-width="1.5"/><text x="750" y="82" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Public grid</text><rect x="620" y="150" width="260" height="100" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="750" y="207" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Smart meter</text><rect x="530" y="318" width="440" height="272" rx="10" fill="#f1faf5" stroke="#1b7f5b" stroke-width="2.5"/><text x="548" y="578" font-size="17" font-weight="700" fill="#1b7f5b" text-anchor="start">Energy management controller</text><rect x="680" y="334" width="270" height="80" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="2"/><text x="815" y="361" font-size="19" font-weight="600" fill="#1f2933" text-anchor="middle">Companion device</text><text x="815" y="382" font-size="15" font-weight="400" fill="#52606d" text-anchor="middle">small language model</text><text x="815" y="401" font-size="15" font-weight="400" fill="#52606d" text-anchor="middle">e.g. Raspberry Pi 5 or mini PC</text><rect x="550" y="446" width="400" height="100" rx="8" fill="#dcf5ea" stroke="#1b7f5b" stroke-width="2"/><text x="750" y="482" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Home energy gateway</text><text x="750" y="504" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">harness, checker, MPC,</text><text x="750" y="525" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">control layer and fallback rules</text><rect x="300" y="640" width="790" height="270" rx="10" fill="#fbf8ec" stroke="#a39e8a" stroke-width="1.5"/><text x="322" y="672" font-size="20" font-weight="700" fill="#1f2933" text-anchor="start">Smart loads</text><rect x="322" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="410" y="743" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Heat pump</text><rect x="512" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="600" y="743" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Water heater</text><rect x="702" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="790" y="732" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Air</text><text x="790" y="755" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">conditioning</text><rect x="892" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="980" y="732" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">EV charger</text><text x="980" y="755" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">and car</text><rect x="322" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="410" y="836" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Washing</text><text x="410" y="859" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">machine</text><rect x="512" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="600" y="847" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Dishwasher</text><rect x="702" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="790" y="836" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Smart</text><text x="790" y="859" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">thermostats</text><rect x="892" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="980" y="836" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Smart</text><text x="980" y="859" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">light bulbs</text><rect x="1200" y="30" width="480" height="110" rx="8" fill="#ffe8cc" stroke="#c2610c" stroke-width="1.5"/><text x="1440" y="70" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Internet services</text><text x="1440" y="93" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">day-ahead prices · weather forecasts</text><text x="1440" y="115" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">cloud LLM (optional fallback)</text><rect x="1200" y="180" width="480" height="520" rx="10" fill="#f8f9fa" stroke="#8a94a0" stroke-width="1.3" stroke-dasharray="7 5"/><text x="1220" y="210" font-size="17" font-weight="400" fill="#52606d" text-anchor="start">In the household, over the home Wi-Fi</text><rect x="1220" y="226" width="440" height="456" rx="8" fill="#efe9ff" stroke="#5f3dc4" stroke-width="1.8"/><text x="1240" y="256" font-size="19" font-weight="700" fill="#3b2c84" text-anchor="start">Household app (phone or tablet)</text><rect x="1240" y="272" width="400" height="92" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="303" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Plans, typed or spoken</text><text x="1440" y="324" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">“charge the car for work tomorrow,</text><text x="1440" y="344" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">guests from six”</text><rect x="1240" y="376" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="405" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Live view: PV, consumption, battery %,</text><text x="1440" y="426" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">grid import/export, EV, indoor °C</text><rect x="1240" y="456" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="485" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Today’s plan, prices and the</text><text x="1440" y="506" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">committed requirements</text><rect x="1240" y="536" width="400" height="50" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="567" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Savings vs rules, PV used at home</text><rect x="1240" y="598" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="627" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Questions and messages,</text><text x="1440" y="648" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">each with its reason</text><path d="M640,250 L640,444" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><text x="652" y="295" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">meter data</text><path d="M30,240 L12,240 L12,615 L512,615 L512,500 L548,500" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><text x="40" y="607" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">inverter data, battery setpoints</text><path d="M820,546 L820,638" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-end="url(#com)"/><text x="832" y="622" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">device setpoints</text><path d="M720,414 L720,444" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><text x="732" y="435" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">plans, data ↔ constraints</text><path d="M930,334 L930,80 L1198,80" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><text x="945" y="72" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">model updates</text><path d="M950,460 L1150,460 L1150,120 L1198,120" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><text x="980" y="432" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">prices, forecasts,</text><text x="980" y="452" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">fallback</text><path d="M950,520 L1198,520" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><text x="1085" y="510" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="middle">Wi-Fi, encrypted</text><text x="114" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">communication</text><text x="404" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">DC power</text><text x="694" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">AC power</text><text x="984" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">two arrowheads: power flows both ways</text></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1010" font-family="Arial, Helvetica, sans-serif" role="img" aria-label="A home energy system: solar PV, a small wind turbine and the home battery share one hybrid inverter; the inverter, the smart loads and the smart meter to the public grid meet at the distribution board, the home AC bus. No power passes through the energy management controller (the home energy gateway): it reads the meter and inverters, sets the battery and the smart loads, talks to the household app over the home Wi-Fi and gets prices and forecasts from the internet."><defs><marker id="dc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f9e44"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1971c2"/></marker><marker id="two" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0b7285"/></marker><marker id="com" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c92a2a"/></marker></defs><rect width="1720" height="1010" fill="#ffffff"/><path d="M92,130 L92,198" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M227,130 L227,198" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M160,428 L160,282" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-start="url(#dc)" marker-end="url(#dc)"/><path d="M290,240 L338,240" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><path d="M412,200 L618,200" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><path d="M750,110 L750,148" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><path d="M375,570 L375,638" fill="none" stroke="#1971c2" stroke-width="2.2" marker-end="url(#ac)"/><path d="M640,250 L640,316" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M30,240 L12,240 L12,615 L512,615 L512,470 L528,470" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M820,590 L820,638" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-end="url(#com)"/><path d="M970,400 L1176,400 L1176,120 L1198,120" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M970,520 L1218,520" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M40,965 L100,965" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-start="url(#com)" marker-end="url(#com)"/><path d="M330,965 L390,965" fill="none" stroke="#2f9e44" stroke-width="2.2" marker-end="url(#dc)"/><path d="M620,965 L680,965" fill="none" stroke="#1971c2" stroke-width="2.2" marker-end="url(#ac)"/><path d="M910,965 L970,965" fill="none" stroke="#1971c2" stroke-width="2.2" marker-start="url(#ac)" marker-end="url(#ac)"/><rect x="30" y="40" width="125" height="90" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.5"/><text x="92" y="82" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">Solar PV</text><text x="92" y="102" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">rooftop</text><rect x="165" y="40" width="125" height="90" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.5"/><text x="228" y="73" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">Wind turbine</text><text x="228" y="92" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">small, optional</text><text x="228" y="111" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">with rectifier</text><rect x="30" y="200" width="260" height="80" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="160" y="237" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Hybrid inverter</text><text x="160" y="259" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">DC inputs: solar, wind, battery</text><rect x="30" y="430" width="260" height="90" rx="8" fill="#e3f6e5" stroke="#2f7d3b" stroke-width="1.5"/><text x="160" y="482" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Home battery</text><rect x="340" y="150" width="70" height="420" rx="8" fill="#eef0f2" stroke="#6b7785" stroke-width="1.5"/><text transform="translate(368,360) rotate(-90)" font-size="19" font-weight="600" fill="#1f2933" text-anchor="middle">Distribution board</text><text transform="translate(392,360) rotate(-90)" font-size="16" font-weight="400" fill="#52606d" text-anchor="middle">the home’s AC bus</text><rect x="620" y="40" width="260" height="70" rx="8" fill="#eef0f2" stroke="#6b7785" stroke-width="1.5"/><text x="750" y="82" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Public grid</text><rect x="620" y="150" width="260" height="100" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.5"/><text x="750" y="207" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Smart meter</text><rect x="530" y="318" width="440" height="272" rx="10" fill="#dcf5ea" stroke="#1b7f5b" stroke-width="2.5"/><text x="750" y="346" font-size="20" font-weight="700" fill="#1f2933" text-anchor="middle">Home energy gateway</text><text x="750" y="368" font-size="15" font-weight="400" fill="#52606d" text-anchor="middle">energy management controller</text><rect x="548" y="382" width="404" height="190" rx="8" fill="#ffffff" stroke="#1b7f5b" stroke-width="1.6"/><text x="750" y="406" font-size="17" font-weight="600" fill="#1f2933" text-anchor="middle">Raspberry Pi 5 or mini PC</text><rect x="564" y="420" width="172" height="92" rx="8" fill="#e7f1fb" stroke="#3a6ea5" stroke-width="1.6"/><text x="650" y="454" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">EMHASS</text><text x="650" y="474" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">optimiser (MPC):</text><text x="650" y="492" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">schedules the devices</text><rect x="764" y="420" width="172" height="92" rx="8" fill="#fff4cc" stroke="#b08900" stroke-width="1.6"/><text x="850" y="442" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">Small language</text><text x="850" y="466" font-size="18" font-weight="600" fill="#1f2933" text-anchor="middle">model</text><text x="850" y="485" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">reads plans,</text><text x="850" y="503" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">sets constraints</text><text x="750" y="540" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">harness and checker · control layer · fallback rules</text><text x="750" y="560" font-size="14" font-weight="400" fill="#52606d" text-anchor="middle">talks to the devices locally</text><rect x="300" y="640" width="790" height="270" rx="10" fill="#fbf8ec" stroke="#a39e8a" stroke-width="1.5"/><text x="322" y="672" font-size="20" font-weight="700" fill="#1f2933" text-anchor="start">Smart loads</text><rect x="322" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="410" y="743" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Heat pump</text><rect x="512" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="600" y="743" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Water heater</text><rect x="702" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="790" y="732" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Air</text><text x="790" y="755" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">conditioning</text><rect x="892" y="692" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="980" y="732" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">EV charger</text><text x="980" y="755" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">and car</text><rect x="322" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="410" y="836" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Washing</text><text x="410" y="859" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">machine</text><rect x="512" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="600" y="847" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Dishwasher</text><rect x="702" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="790" y="836" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Smart</text><text x="790" y="859" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">thermostats</text><rect x="892" y="796" width="176" height="90" rx="8" fill="#ffffff" stroke="#7b8794" stroke-width="1.2"/><text x="980" y="836" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">Smart</text><text x="980" y="859" font-size="18" font-weight="400" fill="#1f2933" text-anchor="middle">light bulbs</text><rect x="1200" y="30" width="480" height="110" rx="8" fill="#ffe8cc" stroke="#c2610c" stroke-width="1.5"/><text x="1440" y="70" font-size="20" font-weight="600" fill="#1f2933" text-anchor="middle">Internet services</text><text x="1440" y="93" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">day-ahead prices · weather forecasts</text><text x="1440" y="115" font-size="17" font-weight="400" fill="#52606d" text-anchor="middle">cloud LLM (optional fallback)</text><rect x="1220" y="226" width="440" height="456" rx="8" fill="#efe9ff" stroke="#5f3dc4" stroke-width="1.8"/><text x="1240" y="256" font-size="19" font-weight="700" fill="#3b2c84" text-anchor="start">Household app</text><rect x="1240" y="272" width="400" height="92" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="303" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Plans, typed or spoken</text><text x="1440" y="324" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">“charge the car for work tomorrow,</text><text x="1440" y="344" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">guests from six”</text><rect x="1240" y="376" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="405" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Live view: PV, consumption, battery %,</text><text x="1440" y="426" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">grid import/export, EV, indoor °C</text><rect x="1240" y="456" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="485" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Today’s plan, prices and the</text><text x="1440" y="506" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">committed requirements</text><rect x="1240" y="536" width="400" height="50" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="567" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Savings vs rules, PV used at home</text><rect x="1240" y="598" width="400" height="68" rx="8" fill="#ffffff" stroke="#8c74d6" stroke-width="1"/><text x="1440" y="627" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">Questions and messages,</text><text x="1440" y="648" font-size="16" font-weight="400" fill="#1f2933" text-anchor="middle">each with its reason</text><text x="652" y="290" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">meter data</text><text x="40" y="607" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">inverter data, battery setpoints</text><text x="832" y="618" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">device setpoints</text><path d="M764,466 L738,466" fill="none" stroke="#c92a2a" stroke-width="2.2" stroke-dasharray="7 5" marker-end="url(#com)"/><text x="990" y="372" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">prices, forecasts,</text><text x="990" y="392" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="start">fallback, model updates</text><text x="1094" y="494" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="middle">home Wi-Fi, or a VPN</text><text x="1094" y="510" font-size="16" font-weight="400" fill="#c92a2a" text-anchor="middle">when away; encrypted</text><text x="114" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">communication</text><text x="404" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">DC power</text><text x="694" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">AC power</text><text x="984" y="971" font-size="17" font-weight="400" fill="#1f2933" text-anchor="start">two arrowheads: power flows both ways</text></svg>
   </figure>
   <div class="prose">
     <h3>How gateways plan today, and where they fall short</h3>
     <ul class="tight">
-      <li><strong>Devices do not speak one language.</strong> A market study for ElaadNL counted 26 protocols and communication methods in home energy devices and concluded that there is no interoperability across the board; Modbus (a common protocol for reading and writing device values) dominates inside the home, with S2, EEBUS, Matter and OCPP (Open Charge Point Protocol) competing as common standards (<a href="https://elaad.nl/wp-content/uploads/downloads/Residential-Flexibility-march-2025.pdf" target="_blank" rel="noopener">ElaadNL, 2025</a>; <a href="https://www.aceee.org/sites/default/files/proceedings/ssb26/pdfs/323_0959_1434_001151.pdf" target="_blank" rel="noopener">ACEEE, 2026</a>). Many inverters, chargers and heat pumps are reachable only through their maker's cloud.</li>
-      <li><strong>Several controllers fight over one device.</strong> An EV charger can receive commands from the car's app, the charger's app, a smart-charging service, a flexibility service and the energy supplier at the same time (<a href="https://es.catapult.org.uk/insight/making-home-energy-management-work-for-consumers/" target="_blank" rel="noopener">Energy Systems Catapult, 2026</a>).</li>
-      <li><strong>The grid operator now sets limits too.</strong> In Germany, heat pumps and wallboxes above 4.2 kW installed since 2024 must accept power reductions from the grid operator through the smart meter gateway and a control box (§14a of the Energy Industry Act, EnWG), so the home's own plan has to fit inside an external limit (<a href="https://docs.evcc.io/en/docs/features/14a-enwg-steuve" target="_blank" rel="noopener">evcc documentation</a>; <a href="https://www.gridx.ai/knowledge/meter-box-14a-enwg-compliance-explained" target="_blank" rel="noopener">gridX</a>).</li>
-      <li><strong>Planning is mostly by fixed rules.</strong> Typical rules are "charge the car from PV surplus" or "charge the battery when the price is below X". Rules leave savings unused: model predictive control (MPC), which plans ahead with price and weather forecasts, cut the energy cost of a PV and battery home by 13.5 % against a rule-based strategy (<a href="https://arxiv.org/pdf/1912.06943" target="_blank" rel="noopener">Seal et al., 2019</a>), and stochastic MPC did best under realistic forecast errors (<a href="https://research-hub.nrel.gov/en/publications/home-energy-management-under-realistic-and-uncertain-conditions-a-2/" target="_blank" rel="noopener">NREL</a>).</li>
-      <li><strong>An optimiser needs an expert to set it up.</strong> MPC needs exact parameters: when the car leaves and how full it must be, the comfort band of each room, battery reserve, how far to trust the PV forecast. Households do not think in these parameters. Open-source tools exist: EMHASS (Energy Management for Home Assistant) plans PV, a battery, deferrable loads (a car charge, a washing machine) and thermal loads (a water heater, a room) by linear programming, day-ahead or as rolling MPC, reads its data from Home Assistant and publishes the schedule back for its automations to act on (<a href="https://emhass.readthedocs.io" target="_blank" rel="noopener">EMHASS</a>), but its configuration has 125 settings (version 0.18.4). Usability tests of smart heating controls found that none met the effectiveness and satisfaction benchmarks, schedule set-up being the main problem (<a href="https://www.aceee.org/files/proceedings/2012/data/papers/0193-000022.pdf" target="_blank" rel="noopener">ACEEE, 2012</a>), and Finnish households named too complicated systems as a barrier to adoption (<a href="https://oulurepo.oulu.fi/handle/10024/34035" target="_blank" rel="noopener">Tuomela et al., 2021</a>). Settings also go stale when the household's routine, the season or the tariff changes.</li>
+      <li><strong>Devices do not speak one language.</strong> 26 protocols in home energy devices and no interoperability across the board; many devices are reachable only through their maker's cloud (<a href="https://elaad.nl/wp-content/uploads/downloads/Residential-Flexibility-march-2025.pdf" target="_blank" rel="noopener">ElaadNL, 2025</a>).</li>
+      <li><strong>Several controllers fight over one device</strong>, such as a charger commanded by the car's app, a smart-charging service and the supplier (<a href="https://es.catapult.org.uk/insight/making-home-energy-management-work-for-consumers/" target="_blank" rel="noopener">Energy Systems Catapult, 2026</a>).</li>
+      <li><strong>The grid operator sets limits too:</strong> since 2024 German heat pumps and wallboxes above 4.2 kW must accept power reductions (§14a EnWG; <a href="https://docs.evcc.io/en/docs/features/14a-enwg-steuve" target="_blank" rel="noopener">evcc</a>).</li>
+      <li><strong>Planning is mostly by fixed rules,</strong> which leave savings unused: MPC cut the cost of a PV and battery home by 13.5 % against rules (<a href="https://arxiv.org/pdf/1912.06943" target="_blank" rel="noopener">Seal et al., 2019</a>).</li>
+      <li><strong>An optimiser needs an expert.</strong> MPC needs exact parameters (departure, comfort bands, reserve, trust in the PV forecast) that households do not think in. EMHASS, the open-source optimiser for Home Assistant (<a href="https://emhass.readthedocs.io" target="_blank" rel="noopener">EMHASS</a>), has 125 settings, and set-up is the main usability problem of smart heating controls (<a href="https://www.aceee.org/files/proceedings/2012/data/papers/0193-000022.pdf" target="_blank" rel="noopener">ACEEE, 2012</a>; <a href="https://oulurepo.oulu.fi/handle/10024/34035" target="_blank" rel="noopener">Tuomela et al., 2021</a>).</li>
     </ul>
 
     <h3>Where AI agents fit</h3>
-    <p>Recent work uses language-model agents as the interface between the household and the optimiser. They turn plain-language preferences into optimisation constraints (<a href="https://arxiv.org/html/2503.21360v1" target="_blank" rel="noopener">Sanguinetti et al., 2025</a>; <a href="https://www.qeios.com/read/EVPWM7/pdf" target="_blank" rel="noopener">Michelon et al., 2025</a>) or schedule appliances directly with ReAct (reasoning and acting) agents and tools (<a href="https://arxiv.org/abs/2510.26603v1" target="_blank" rel="noopener">El Makroum et al., 2025</a>; <a href="https://arxiv.org/abs/2607.04569" target="_blank" rel="noopener">Jonah et al., 2026</a>). The direct schedulers come close to the MILP (mixed-integer linear programming) optimum, but Jonah et al. report fabricated schedules and misstated deadlines and recommend a deterministic validator before any device is switched. Our own household thesis found the same: an optimiser plus checker was reliable, agents writing schedules were not.</p>
-    <p>This thesis therefore gives the agent the parts an optimiser cannot do: <strong>interpret</strong> the household's plans and changes into constraints, <strong>configure</strong> the MPC from the house's own history, and <strong>explain</strong> the plan. The MPC computes the schedule and a checker and control layer switch the devices. Our gateway pilot shows why the agent should not plan for cost itself: in 12 days (German prices, weather-driven forecasts) the agents closed more of the gap between rules and perfect foresight than default MPC, but MPC with one fixed setting (plan with 90 % of the PV forecast) closed more than either agent.</p>
+    <p>Language-model agents can turn plain-language preferences into optimiser constraints (<a href="https://arxiv.org/html/2503.21360v1" target="_blank" rel="noopener">Sanguinetti et al., 2025</a>; <a href="https://www.qeios.com/read/EVPWM7/pdf" target="_blank" rel="noopener">Michelon et al., 2025</a>) or schedule appliances directly (<a href="https://arxiv.org/abs/2510.26603v1" target="_blank" rel="noopener">El Makroum et al., 2025</a>; <a href="https://arxiv.org/abs/2607.04569" target="_blank" rel="noopener">Jonah et al., 2026</a>), but direct schedulers fabricate schedules and need a deterministic validator. Our household thesis found the same.</p>
+    <p>So the agent <strong>interprets</strong> plans, <strong>configures</strong> the MPC and <strong>explains</strong> the plan; the MPC schedules and a checker and control layer switch the devices. In our gateway pilot, MPC with one fixed setting beat agents that planned for cost.</p>
     <h3>Where the model runs</h3>
-    <p>These studies call large language models (LLMs) in the cloud. A gateway that sends the household's plans to a cloud service reveals when the family is home or away, stops interpreting plans when the internet fails, and pays for every call for as long as it runs. Small language models (SLMs, below about 10 billion parameters) now run on edge boards such as the Raspberry Pi 5 and the Jetson Orin Nano (<a href="https://arxiv.org/abs/2511.11624" target="_blank" rel="noopener">Islam et al., 2025</a>), and a small model on a Raspberry-Pi-class device can phrase grounded answers for a home energy advisor (<a href="https://doi.org/10.1007/978-3-032-30511-4_16" target="_blank" rel="noopener">Spaias et al., 2027</a>). They are less capable, though: in El Makroum et al.'s scheduler only the largest of three open models coordinated several appliances at once. Whether a small model can interpret plans and configure an optimiser, and how much a deterministic harness or a cloud fallback adds, has not been tested; that is this thesis. The gateway keeps the deterministic parts (checker, MPC, control layer, fallback rules); the small model runs on a companion device beside it on the home network, such as a Raspberry Pi 5 or a mini PC, so the control loop keeps working when the model is slow, fails or is replaced. A gateway with enough memory can host the model itself. A demonstration with EMHASS as the gateway's optimiser, in containers sized like a Raspberry Pi 5, showed the split working end to end (Progress, step 13).</p>
+    <p>Cloud LLMs reveal when the family is away, stop working offline and cost money per call. Small models (below about 10 billion parameters) now run on boards such as the Raspberry Pi 5 (<a href="https://arxiv.org/abs/2511.11624" target="_blank" rel="noopener">Islam et al., 2025</a>), but are less capable. Whether they can interpret plans and configure an optimiser, and what a harness or cloud fallback adds, is untested. Here one gateway (Raspberry Pi 5 16 GB or mini PC) runs EMHASS and the small model side by side; the model runs at lower priority with a time limit, so the control loop never waits for it.</p>
   </div>
   <div class="shift">
-    <div><div class="label">Agent role</div><div class="from">Plans and replans to save money</div><div class="to">Interprets the household, configures and explains the optimiser</div></div>
-    <div><div class="label">Cost reference</div><div class="from">Default MPC</div><div class="to">Expert-tuned MPC, which the agent must match, not beat</div></div>
-    <div><div class="label">Main claim</div><div class="from">"The agent saves more"</div><div class="to">Usable without an expert, from plain language, safely</div></div>
-    <div><div class="label">Where the model runs</div><div class="from">Cloud LLM</div><div class="to">Small model on local hardware; cloud LLM as reference and fallback</div></div>
+    <div><div class="label">Agent role</div><div class="to">Interprets the household, configures and explains the optimiser</div></div>
+    <div><div class="label">Cost reference</div><div class="to">Expert-tuned MPC, which the agent must match, not beat</div></div>
+    <div><div class="label">Main claim</div><div class="to">Usable without an expert, from plain language, safely</div></div>
+    <div><div class="label">Where the model runs</div><div class="to">Small model on local hardware; cloud LLM as reference and fallback</div></div>
   </div>
 </section>
 
 <section>
   <h2>2. Research questions</h2>
   <div class="prose">
-    <p><strong>RQ.</strong> How can a smart home energy management system use small language models running on local hardware, the home's energy gateway, to interpret households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud large language model?</p>
-    <p>SLM here means an open model below about 10 billion parameters. The current model set (since 13 Nov 2026) is Gemma 4 E4B (main candidate) and E2B, Ministral 3 8B and 3B, and Nemotron 3 Nano 4B; GPT-6 Luna is the cloud LLM. The earlier pilots also ran gpt-oss-20b and Llama 3.2 3B; Llama 4, Phi-4-mini and SmolLM3 were assessed and dropped. All run on a laptop with an 8 GB GPU; SQ3 is repeated on a Raspberry Pi 5 (16 GB) and a Ryzen 7 mini PC (32 GB). If the small models allow it, one agent is compared with four (exploratory).</p>
-    <p>Usability is not measured with users: the claim is "without expert configuration, from plans written by people other than the author". A usability study is future work.</p>
+    <p><strong>RQ.</strong> How can small language models on a home energy gateway reliably interpret household plans and configure an optimiser, and how close do they come to a cloud language model?</p>
+    <p>Models: Gemma 4 E4B (main candidate) and E2B, Ministral 3 8B and 3B, Nemotron 3 Nano 4B; GPT-6 Luna as the cloud LLM. Runs on a laptop with an 8 GB GPU; SQ3 also on a Raspberry Pi 5 (16 GB) and a Ryzen mini PC (32 GB). In each sub-question the small model is compared with the cloud LLM.</p>
+    <p>Usability is not measured with users; the claim is that the HEMS works without expert configuration, from plans written by people other than the author. A usability study is future research.</p>
   </div>
   <div class="scroll"><table>
     <thead><tr><th>Sub-question</th><th>Measured by</th><th>Draft hypothesis (thresholds fixed at registration)</th></tr></thead>
     <tbody>
-      <tr><td><strong>SQ1 Interpreting household plans.</strong> How accurately do small language models turn plain-language plans and changes into constraints and a commit-or-ask decision, compared with a cloud large language model, how often are the requirements then met, and how much of the remaining gap do the checker and a cloud fallback close?</td><td>Item precision and recall vs answer key (cluster bootstrap over plans); clarification F1; decision accuracy; requirements met; four set-ups (SLM alone, + checker, + checker + cloud fallback, LLM alone); fallback share</td><td>H1 best SLM within 0.05 of the LLM on recall and decision accuracy · H2 with the best SLM, answer-key requirements met on ≥ 95 % of feasible house-days · H3 with checker and fallback, SLM decision accuracy within 0.05 of the LLM, fallback on ≤ 20 % of plans</td></tr>
-      <tr><td><strong>SQ2 Configuring an optimiser.</strong> Can a small language model configure the MPC from the house's history as well as a large language model, and better than a deterministic auto-tuner?</td><td>Saving over default MPC; share of the default-to-tuned gap; difference to the auto-tuner and to the LLM Configurator</td><td>H4 SLM-configured MPC non-inferior to the auto-tuner and within a registered margin of the LLM-configured MPC</td></tr>
-      <tr><td><strong>SQ3 On local hardware.</strong> What does running the small models on household hardware cost in latency, energy, money and privacy compared with the cloud model, and does the saving outweigh these costs?</td><td>Tokens, USD, mean and p95 (95th-percentile) latency, Wh (watt-hours) per event, share of household data that leaves the house</td><td>H5 on each device a plan is committed within a registered time (p95, in minutes, set from the exploratory runs); plans due sooner go to the fallback; yearly saving exceeds the energy and cost of inference</td></tr>
+      <tr><td><strong>SQ1 Interpreting household plans.</strong> How accurately does a small language model turn a household's plans into requirements for the optimiser, and how much do deterministic checks and a cloud fallback help?</td><td>Constraint precision and recall vs answer key; clarification F1; decision accuracy (commit or ask correctly); household requirements met; rejected plans, failed calls and the share of plans sent to the cloud fallback; four set-ups (SLM alone, + checker, + checker + cloud fallback, LLM alone)</td><td>H1 best SLM within 0.10 of the LLM on recall and decision accuracy · H2 with the best SLM, household requirements met on more than 90 % of feasible house-days · H3 with checker and fallback, SLM decision accuracy within 0.10 of the LLM, fallback on ≤ 20 % of plans</td></tr>
+      <tr><td><strong>SQ2 Configuring an optimiser.</strong> Can a small language model set up the optimiser from the house's history as well as a cloud model, and better than an automatic tuner?</td><td>Adjusted cost (battery charge and stored heat left at midnight subtracted) and saving over the default MPC; share of the gap between rules and perfect foresight closed; difference to the auto-tuner (same history) and to the LLM Configurator</td><td>H4 SLM-configured MPC costs at most 0.20 EUR per week more than the auto-tuner and than the LLM-configured MPC</td></tr>
+      <tr><td><strong>SQ3 On local hardware.</strong> What does running the model on the gateway cost in time, energy, money and privacy, and does the saving outweigh it?</td><td>Tokens, USD, mean and p95 (95th-percentile) latency, Wh (watt-hours) per event measured at the wall above the device's idle power, share of household data that leaves the house; costs set against those of the cloud LLM</td><td>H5 on each device the p95 time per plan is at most 15 minutes; plans due within 30 minutes go to the fallback; yearly saving exceeds the energy and cost of inference</td></tr>
     </tbody>
   </table></div>
-  <p class="caption">Grid and battery limits after the checker are reported as safety checks (expected zero violations), not as a hypothesis: they test the harness, not the agent. When interpretation or configuration fails (weather, price pattern, load, plan type) is reported descriptively under each SQ. Holm within each SQ. The held-out set is sized for H1 (roughly 150-200 constraint items).</p>
+  <p class="caption">Grid and battery limits are safety checks, not hypotheses. Conditions in which interpretation or configuration fails (weather, price pattern, household load, plan type) are reported descriptively. Analysis: cluster bootstrap intervals over plans, exact binomial and paired Wilcoxon or McNemar tests, Holm correction within each SQ; thresholds are set from the pilots and registered before the held-out plans are run.</p>
 </section>
 
 <section>
   <h2>3. System design</h2>
   <div class="prose">
-    <p>Three layers, and the language models sit in only one of them. The MPC replans every hour on its own; an agent is called only when something a model cannot handle happens: a message from the household, a commit to explain, an EV plug-in or a large deviation, and once a week for configuration. Each of these events has its own agent. The agents run on a small language model on local hardware; a model layer in the harness calls a cloud LLM only when the small model's answer fails validation twice or the checker rejects its plan, and logs each such call.</p>
+    <p>Three layers; models sit in one. The MPC replans every hour on its own; an agent runs only on an event (a message, a commit, a plug-in or deviation, the weekly configuration). A model layer calls the cloud LLM only when the small model's answer fails twice or the checker rejects it.</p>
   </div>
   <figure class="figure">
   <svg viewBox="0 0 1130 800" role="img" aria-label="Four agents, each started by its own event, reach the gateway only through validated tools; the tuned MPC plans, the checker passes only valid plans to the control layer, and measurements flow into the history the Configurator learns from.">
@@ -221,7 +220,7 @@ ul.tight li { margin: 4px 0; }
 
     <!-- row B: four agents, each started by its own event -->
     <rect class="zone" x="28" y="140" width="1044" height="100" rx="10"/>
-    <text class="mono" x="590" y="134">AGENT LAYER · SLM on gateway or companion</text>
+    <text class="mono" x="590" y="134">AGENT LAYER · local SLM on the gateway</text>
 
     <rect class="agentbox" x="40" y="150" width="234" height="80" rx="8"/>
     <g class="icon agent" transform="translate(54,177)"><path d="M3 4 H23 V17 H12 L7 22 V17 H3 Z"/><path d="M8.5 10.5 H8.6 M13 10.5 H13.1 M17.5 10.5 H17.6"/></g>
@@ -229,15 +228,15 @@ ul.tight li { margin: 4px 0; }
     <text class="sub" x="92" y="199">on each message</text>
     <text class="sub" x="92" y="216">plan → constraints, asks</text>
 
-    <rect class="agentbox" x="302" y="150" width="234" height="80" rx="8"/>
+    <rect class="agentbox" x="302" y="150" width="234" height="80" rx="8" stroke-dasharray="6 5"/>
     <g class="icon agent" transform="translate(316,177)"><path d="M6 3 H16 L21 8 V23 H6 Z"/><path d="M16 3 V8 H21 M9.5 13 H17.5 M9.5 17 H17.5 M9.5 21 H14"/></g>
-    <text class="title" x="354" y="180">Explainer</text>
+    <text class="title" x="354" y="180">Explainer (designed)</text>
     <text class="sub" x="354" y="199">after each commit, daily</text>
     <text class="sub" x="354" y="216">plan → message, report</text>
 
-    <rect class="agentbox" x="564" y="150" width="234" height="80" rx="8"/>
+    <rect class="agentbox" x="564" y="150" width="234" height="80" rx="8" stroke-dasharray="6 5"/>
     <g class="icon agent" transform="translate(578,177)"><path d="M2 14 H7 L10 7 L15 21 L18 14 H24"/></g>
-    <text class="title" x="616" y="180">Monitor</text>
+    <text class="title" x="616" y="180">Monitor (designed)</text>
     <text class="sub" x="616" y="199">on plug-in or deviation</text>
     <text class="sub" x="616" y="216">diagnoses, adjusts, alerts</text>
 
@@ -257,8 +256,8 @@ ul.tight li { margin: 4px 0; }
     <text class="mono" x="40" y="342">DETERMINISTIC HARNESS</text>
     <rect class="box" x="40" y="350" width="300" height="96" rx="8"/>
     <g class="icon" transform="translate(56,385)"><path d="M3 3 V23 H24"/><path d="M6 19 H10 V13 H14 V16 H18 V8 H22"/></g>
-    <text class="title" x="94" y="386">Tuned MPC</text>
-    <text class="sub" x="94" y="406">LP / MILP</text>
+    <text class="title" x="94" y="386">EMHASS (MPC)</text>
+    <text class="sub" x="94" y="406">tuned settings · LP / MILP</text>
     <text class="sub" x="94" y="423">replans hourly on its own</text>
 
     <rect class="box" x="400" y="350" width="300" height="96" rx="8"/>
@@ -343,9 +342,10 @@ ul.tight li { margin: 4px 0; }
     <path class="arrow" d="M1060,686 H1092 V398 H1060" marker-end="url(#ia)"/>
     <text class="lbl" x="1106" y="540" transform="rotate(-90 1106 540)" text-anchor="middle">measurements, events</text>
 
-    <text class="lbl" x="550" y="772" text-anchor="middle">No agent computes a schedule or switches a device; every agent acts only through the validated tools.</text>
+    <text class="lbl" x="550" y="764" text-anchor="middle">No agent computes a schedule or switches a device; every agent acts only through the validated tools.</text>
+    <text class="lbl" x="550" y="786" text-anchor="middle">Dashed agent boxes: designed, not built or evaluated.</text>
   </svg>
-  <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. The agents run on a small language model on local hardware. Dashed lines: the cloud LLM, called only as a fallback when the small model's answer fails validation twice or the checker rejects its plan, and violations returned to the agents.</figcaption>
+  <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. The agents run on a small language model on local hardware. Dashed agent boxes: the Explainer and the Monitor are designed but not built. Dashed lines: the cloud LLM, called only as a fallback when the small model's answer fails validation twice or the checker rejects its plan, and violations returned to the agents.</figcaption>
   </figure>
 
   <h3>Four agents, one per event</h3>
@@ -359,12 +359,11 @@ ul.tight li { margin: 4px 0; }
     </tbody>
   </table></div>
   <ul class="tight prose">
-    <li><strong>Why more than two.</strong> Each agent has its own trigger, inputs, tools and output, so a prompt stays small and each output can be checked on its own: constraints by the checker, messages against the plan's figures, settings by backtest. The household thesis found that splitting <em>one</em> task between agents added cost without reliability; here the agents do different tasks at different times, so they rarely run together and the cost grows with the number of events, not with the number of agents.</li>
-    <li><strong>No orchestrator agent.</strong> Routing is by event type, which needs no language model; the harness does it. No agent calls another; they share state only through the harness (committed plan, history).</li>
-    <li><strong>Safety.</strong> The harness follows the Simplex pattern (Sha, 2001): the agents are unverified controllers inside a verified envelope (checker and control layer) with a safe fallback. The hourly replanning stays in the MPC; the pilot showed that putting an agent in that loop adds latency and cost without beating a tuned setting.</li>
-    <li><strong>Model layer.</strong> Local small model first; the cloud LLM only as a fallback, which can be switched off (the gateway then asks the household). The fallback share and the data that leave the house are measured (SQ1, SQ3). New requirement: plans stay in the house unless the fallback is needed, and plan interpretation works offline.</li>
-    <li><strong>Agent count, if the small models allow it.</strong> Narrow tasks with short prompts should suit a small model. If time and the models allow, the four-agent design is compared with one agent holding all tools (exploratory, no hypothesis).</li>
-  </ul>
+      <li><strong>Why four.</strong> Each agent has its own trigger, tools and output, so prompts stay small and each output is checked on its own (constraints by the checker, messages against the plan, settings by backtest).</li>
+      <li><strong>No orchestrator.</strong> The harness routes by event type; agents share state only through the harness.</li>
+      <li><strong>Safety.</strong> Simplex pattern (Sha, 2001): unverified agents inside a verified envelope with a safe fallback.</li>
+      <li><strong>Model layer.</strong> Local model first; the cloud fallback can be switched off (the gateway then asks the household).</li>
+    </ul>
 
   <h3>How each agent decides</h3>
   <figure class="figure">
@@ -406,16 +405,16 @@ ul.tight li { margin: 4px 0; }
     <text class="title" x="884" y="121">Ask the household</text>
     <text class="sub" x="884" y="138">questions in the app answer</text>
     <rect class="zone" x="296" y="170" width="520" height="120" rx="10"/>
-    <text class="lbl agent" x="310" y="186">Explainer (ReAct)</text>
+    <text class="lbl agent" x="310" y="186">Explainer (ReAct, designed, not built)</text>
     <rect class="box" x="20" y="200" width="160" height="60" rx="8"/>
     <text class="title" x="34" y="226">Commit, daily</text>
     <text class="sub" x="34" y="245">after each commit</text>
     <path class="arrow" d="M180,230 H204" marker-end="url(#fa)"/>
     <path class="arrow agent" d="M268,230 H322" marker-end="url(#fg)"/>
-    <rect class="agentbox" x="324" y="204" width="140" height="56" rx="8"/>
+    <rect class="agentbox" x="324" y="204" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
     <text class="title" x="336" y="226">Read figures</text>
     <text class="mono" x="336" y="245">explain_plan</text>
-    <rect class="agentbox" x="484" y="204" width="140" height="56" rx="8"/>
+    <rect class="agentbox" x="484" y="204" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
     <text class="title" x="496" y="226">Write message</text>
     <text class="sub" x="496" y="245">cites the figures</text>
     <path class="arrow agent" d="M464,232 H482" marker-end="url(#fg)"/>
@@ -436,16 +435,16 @@ ul.tight li { margin: 4px 0; }
     <text class="title" x="884" y="261">Send template</text>
     <text class="sub" x="884" y="278">fixed wording</text>
     <rect class="zone" x="296" y="310" width="520" height="120" rx="10"/>
-    <text class="lbl agent" x="310" y="326">Monitor (ReAct)</text>
+    <text class="lbl agent" x="310" y="326">Monitor (ReAct, designed, not built)</text>
     <rect class="box" x="20" y="340" width="160" height="60" rx="8"/>
     <text class="title" x="34" y="366">Plug-in, deviation</text>
     <text class="sub" x="34" y="385">from the control layer</text>
     <path class="arrow" d="M180,370 H204" marker-end="url(#fa)"/>
     <path class="arrow agent" d="M268,370 H322" marker-end="url(#fg)"/>
-    <rect class="agentbox" x="324" y="344" width="140" height="56" rx="8"/>
+    <rect class="agentbox" x="324" y="344" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
     <text class="title" x="336" y="366">Diagnose</text>
     <text class="mono" x="336" y="385">get_situation</text>
-    <rect class="agentbox" x="484" y="344" width="140" height="56" rx="8"/>
+    <rect class="agentbox" x="484" y="344" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
     <text class="title" x="496" y="366">Adjust or alert</text>
     <text class="mono" x="496" y="385">propose → preview</text>
     <path class="arrow agent" d="M464,372 H482" marker-end="url(#fg)"/>
@@ -504,10 +503,10 @@ ul.tight li { margin: 4px 0; }
 
   <h3>User app, voice and the Wi-Fi link</h3>
   <div class="prose">
-    <p>The household talks to the gateway through an app on a phone or tablet, by text or by voice, and sees the home's energy at a glance. The app and an optional voice satellite reach the gateway over the home Wi-Fi; the gateway does the planning, and the speech recognition and the language model run on a companion device beside it (or on the gateway when it is large enough), so neither the words nor the household's routine leave the house unless the cloud fallback is used. The design follows three sources: commercial home energy systems show PV, consumption, battery charge and grid exchange in real time and talk to devices over Wi-Fi, Ethernet, RS485, CAN and Modbus (<a href="https://avebattery.com/blog/smart-home-energy-management/" target="_blank" rel="noopener">Avepower, 2026</a>); in the HEMS architecture of <a href="https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2023.1289641/full" target="_blank" rel="noopener">Cui et al. (2023)</a> the gateway does not only relay meter data but processes it and runs the home's own optimisation; and Home Assistant's Assist shows that a voice pipeline can run fully locally, with wake-word satellites on cheap ESP32 boards and an optional language model as the conversation agent (<a href="https://www.home-assistant.io/voice_control/" target="_blank" rel="noopener">Home Assistant, 2026</a>).</p>
+    <p>The household talks to the gateway through an app, by text or voice, over the home Wi-Fi or an encrypted VPN when away. The gateway runs speech recognition, the model and the planning, so nothing leaves the house unless the fallback is used. Local voice follows Home Assistant's Assist (<a href="https://www.home-assistant.io/voice_control/" target="_blank" rel="noopener">Home Assistant, 2026</a>).</p>
   </div>
   <figure class="figure">
-  <svg viewBox="0 0 1130 620" role="img" aria-label="The user app and a voice satellite reach the energy gateway over home Wi-Fi; the gateway keeps the app interface, the harness with the checker and the MPC, the control layer and the device link, and a companion device beside it runs the small language model and the voice pipeline; the cloud is optional.">
+  <svg viewBox="0 0 1130 620" role="img" aria-label="The user app and a voice satellite reach the energy gateway, a Raspberry Pi 5 or mini PC, over home Wi-Fi; the gateway runs the app interface, the harness with the checker and EMHASS, the control layer, the device link, the voice pipeline and the small language model; the cloud is optional.">
     <defs>
       <marker id="ua" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
       <marker id="uag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
@@ -533,11 +532,11 @@ ul.tight li { margin: 4px 0; }
 
     <rect class="detbox" x="30" y="440" width="270" height="150" rx="8" stroke-dasharray="6 5"/>
     <g class="icon" transform="translate(46,458)"><path d="M7 21 H20 A5 5 0 0 0 20 11 A7 7 0 0 0 7 10 A5.5 5.5 0 0 0 7 21 Z"/></g>
-    <text class="title" x="80" y="474">Internet (optional)</text>
+    <text class="title" x="80" y="474">Internet</text>
     <text class="sub" x="48" y="504">· prices and weather forecasts</text>
     <text class="sub" x="48" y="526">· cloud LLM fallback</text>
     <text class="sub" x="48" y="548">· remote access through a VPN</text>
-    <text class="sub" x="48" y="570">· model updates (companion)</text>
+    <text class="sub" x="48" y="570">· model updates</text>
 
     <!-- Wi-Fi band -->
     <rect class="zone" x="318" y="40" width="124" height="470" rx="10"/>
@@ -545,8 +544,8 @@ ul.tight li { margin: 4px 0; }
     <text class="mono" x="380" y="74" text-anchor="middle">local network</text>
 
     <!-- energy gateway -->
-    <rect class="zone" x="460" y="40" width="300" height="470" rx="10"/>
-    <text class="mono" x="610" y="58" text-anchor="middle">ENERGY GATEWAY · local first</text>
+    <rect class="zone" x="460" y="40" width="650" height="470" rx="10"/>
+    <text class="mono" x="785" y="58" text-anchor="middle">ENERGY GATEWAY · Raspberry Pi 5 or mini PC · local first</text>
 
     <rect class="box" x="476" y="72" width="268" height="64" rx="8"/>
     <text class="title" x="492" y="98">App API</text>
@@ -554,7 +553,7 @@ ul.tight li { margin: 4px 0; }
 
     <rect class="box" x="476" y="154" width="268" height="92" rx="8"/>
     <text class="title" x="492" y="178">Harness</text>
-    <text class="sub" x="492" y="198">checker · tuned MPC</text>
+    <text class="sub" x="492" y="198">checker · EMHASS (the MPC)</text>
     <text class="sub" x="492" y="216">the agents' tools · history store</text>
     <text class="sub" x="492" y="234">statistics for the dashboard</text>
 
@@ -570,10 +569,6 @@ ul.tight li { margin: 4px 0; }
     <text class="sub" x="492" y="436">SG Ready relays · OCPP / evcc</text>
     <text class="sub" x="492" y="454">smart meter port · MQTT</text>
 
-    <!-- companion device -->
-    <rect class="zone" x="780" y="40" width="330" height="470" rx="10"/>
-    <text class="mono" x="945" y="58" text-anchor="middle">COMPANION DEVICE</text>
-    <text class="mono" x="945" y="74" text-anchor="middle">Raspberry Pi 5 or mini PC</text>
 
     <rect class="box" x="796" y="88" width="298" height="120" rx="8"/>
     <text class="title" x="812" y="112">Voice pipeline, local</text>
@@ -608,7 +603,7 @@ ul.tight li { margin: 4px 0; }
     <path class="arrow" d="M300,515 L454,515 L454,232 L474,232" stroke-dasharray="5 4" marker-end="url(#ua)"/>
     <text class="lbl" x="380" y="532" text-anchor="middle">outgoing only</text>
 
-    <!-- flows: gateway and companion -->
+    <!-- flows: app, satellite and gateway -->
     <path class="arrow agent" d="M744,104 L794,104" marker-start="url(#uag)" marker-end="url(#uag)"/>
     <text class="lbl agent" x="769" y="96" text-anchor="middle">audio</text>
     <path class="arrow agent" d="M794,240 L746,240" marker-start="url(#uag)" marker-end="url(#uag)"/>
@@ -624,7 +619,7 @@ ul.tight li { margin: 4px 0; }
     <path class="arrow" d="M610,492 L610,542" marker-end="url(#ua)"/>
     <text class="lbl" x="618" y="526">Wi-Fi, Ethernet, RS485</text>
   </svg>
-  <figcaption>The household speaks or types in the app or to a voice satellite; both reach the gateway over the home Wi-Fi. The gateway passes audio to the voice pipeline on the companion device and calls the small language model there; speech becomes text, and every message goes to the Household Assistant like a typed one; replies come back as text in the app and as speech from the satellite. The dashboard reads its statistics from the gateway's history store. The internet is used only for prices, forecasts, the cloud fallback, remote access and model updates.</figcaption>
+  <figcaption>The household speaks or types in the app or to a voice satellite; both reach the gateway over the home Wi-Fi. The gateway runs the voice pipeline and the small language model itself; speech becomes text, and every message goes to the Household Assistant like a typed one; replies come back as text in the app and as speech from the satellite. The dashboard reads its statistics from the gateway's history store. The internet is used only for prices, forecasts, the cloud fallback, remote access and model updates.</figcaption>
   </figure>
 
   <div class="scroll"><table>
@@ -638,12 +633,9 @@ ul.tight li { margin: 4px 0; }
     </tbody>
   </table></div>
   <ul class="tight prose">
-    <li><strong>One input path.</strong> Voice is turned into text by the voice pipeline and then treated exactly like a typed message, so the Assistant, the checker and the plan pilot's scoring stay the same. The app shows the transcript, so a misheard "seven" can be corrected before the plan commits.</li>
-    <li><strong>Local voice.</strong> Wake word, speech recognition and speech output run beside the language model on the companion device, such as a 16 GB Raspberry Pi 5 (as in Home Assistant's local Assist set-up), so voice adds no cloud dependency.</li>
-    <li><strong>Wi-Fi link.</strong> The app finds the gateway on the home network, pairs once with a code shown on the gateway, and then uses an encrypted local connection; live statistics stream over a WebSocket. Away from home, the app reaches the gateway through a VPN rather than a vendor cloud.</li>
-    <li><strong>Home Assistant as an option.</strong> The gateway can run its own small device link or sit beside Home Assistant and use its integrations and voice satellites; either way the planning and the checker stay in the gateway.</li>
-    <li><strong>Scope.</strong> The thesis does not measure usability; the app is a demonstration of the artifact. What the thesis does measure (SQ3) is the time from message to committed plan, and voice adds the speech-recognition time to it.</li>
-  </ul>
+      <li><strong>One input path.</strong> Speech becomes text and is treated like a typed message; the app shows the transcript before the plan commits.</li>
+      <li><strong>Scope.</strong> The app is a demonstration; the thesis measures only the time from message to committed plan (SQ3).</li>
+    </ul>
 </section>
 
 <section>
@@ -663,7 +655,7 @@ ul.tight li { margin: 4px 0; }
   </table></div>
 
   <h3>Household Assistant agent (built as the ReAct gateway, 13-14 Nov 2026)</h3>
-  <div class="prose"><p>The Assistant is built in <span class="mono">prototypes/react_gateway/agent.py</span>. A ReAct agent reads the household's message, looks at the home's data with four reading tools, and acts through <code>plan_schedule</code>, which runs the checks and the MPC. The model never writes the schedule: the app shows the last <code>plan_schedule</code> result. Each answer is saved as one JSON file for the app (decision, message, questions, schedule with a reason per device, cost and saving, warnings, requirements, hourly timeline).</p></div>
+  <div class="prose"><p>A ReAct agent (<span class="mono">prototypes/react_gateway/agent.py</span>) reads the message, looks at the home's data with four tools and acts only through <code>plan_schedule</code>; the app always shows the tool's result, never a schedule the model wrote.</p></div>
   <div class="scroll"><table>
     <thead><tr><th>Function</th><th>Input → output</th><th>Notes</th></tr></thead>
     <tbody>
@@ -676,11 +668,11 @@ ul.tight li { margin: 4px 0; }
     </tbody>
   </table></div>
   <ul class="tight prose">
-    <li><strong>Rules applied by code:</strong> usual car settings fill a missing target or time (a day without a time gets 07:30 that day); a clock time without am/pm means its next occurrence; a car charge that cannot be finished is committed with a warning; a charge allowed to start only after the departure is a conflict; an appliance without a deadline runs at the cheapest time in the known prices; an empty plan is refused; a comfort band without a temperature is a problem; vague words the model copies into <code>unclear</code> become a question.</li>
-  </ul>
+      <li><strong>Rules in code:</strong> usual car settings fill gaps; clock times without am/pm mean their next occurrence; an appliance without a deadline runs at the cheapest time; vague words become questions.</li>
+    </ul>
 
   <h3>What <code>plan_schedule</code> does</h3>
-  <div class="prose"><p>The model's only action on the house is a call to <code>plan_schedule</code>. Inside the tool the MPC is solved once, as a preview on the forecasts of the moment; only after a commit does the receding-horizon MPC take over, without the model.</p></div>
+  <div class="prose"><p>The MPC in the tool is a one-off preview; after a commit the hourly MPC takes over without the model.</p></div>
   <figure class="figure">
   <svg viewBox="0 0 1060 300" role="img" aria-label="Inside plan_schedule: code completes the requirements, reads them back, the checker either returns problems to ask about or the MPC solves once and returns a preview; after the gateway commits, the MPC replans every hour without the model.">
     <defs>
@@ -750,25 +742,10 @@ ul.tight li { margin: 4px 0; }
   </table></div>
 
   <h3>Explainer agent</h3>
-  <div class="scroll"><table>
-    <thead><tr><th>Function</th><th>Input → output</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>explain_plan()</code></td><td>→ committed plan's figures: when each device runs, cost vs rules, EV energy by departure, comfort, what changed and why</td><td>Pre-computed by the harness; the agent only words them</td></tr>
-      <tr><td><code>get_situation()</code></td><td>→ the day so far, for the daily report</td><td>Shared with the other agents</td></tr>
-      <tr><td>Final answer <code>HouseholdMessage</code></td><td>text · the figures it cites</td><td>Every cited figure is compared with the plan; a mismatch sends a fixed template instead</td></tr>
-    </tbody>
-  </table></div>
+  <div class="prose"><p>Words the committed plan's pre-computed figures for the household (on each commit and once a day); every cited figure is checked against the plan, and a mismatch sends a fixed template. Designed, not built.</p></div>
 
   <h3>Monitor agent</h3>
-  <div class="scroll"><table>
-    <thead><tr><th>Function</th><th>Input → output</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>get_situation()</code></td><td>→ the event (plug-in, deviation), forecast error so far, battery and EV state, active constraints</td><td>The control layer raises a deviation when the grid exchange or a requirement drifts past a threshold</td></tr>
-      <tr><td><code>get_forecast()</code></td><td>→ updated PV, load and price forecasts</td><td>Weather class from DWD</td></tr>
-      <tr><td><code>propose_constraints(items)</code> · <code>preview_plan()</code></td><td>adjusted constraints → checked plan</td><td>Only within what the household asked (for example the EV target of a car that arrived early); never removes a household requirement</td></tr>
-      <tr><td>Final answer <code>MonitorDecision</code></td><td>no action · commit adjusted constraints · alert the household (with a reason)</td><td>Alerts go through the Explainer's checked message</td></tr>
-    </tbody>
-  </table></div>
+  <div class="prose"><p>Started by a plug-in or a large deviation; finds the cause, adjusts constraints only within what the household asked, or alerts the household. Designed, not built.</p></div>
 
   <h3>Configurator agent</h3>
   <div class="scroll"><table>
@@ -782,8 +759,8 @@ ul.tight li { margin: 4px 0; }
 
   <h3>The optimiser: scheduling loads under dynamic prices</h3>
   <div class="prose">
-    <p>The MPC turns the household's requirements and the day-ahead prices into a schedule (thesis Section 4.3; code <span class="mono">closed_loop.mpc</span>). It plans in 15-minute slots from now to the end of the last day with published prices, and it is solved with PuLP and CBC in about 0.1 s.</p>
-    <p><strong>Objective.</strong> Minimise Σ<sub>t</sub> Δ (p<sub>t</sub> g<sup>+</sup><sub>t</sub> − p<sup>x</sup> g<sup>−</sup><sub>t</sub>) − p̄ (η E<sub>H</sub> + C T<sub>H</sub> / COP̄) + penalties: the cost of imports at the hourly dynamic price p<sub>t</sub>, minus feed-in income at p<sup>x</sup> = 0.123 EUR/kWh, minus the value of energy left in the battery and the building at the end, plus 5 EUR per kWh of car charge missing, 5 EUR per degree and slot outside the comfort band and 20 EUR per missed appliance run. The penalties are far above any price, so a requirement is never traded for money, and a plan always exists.</p>
+    <p>On the gateway the MPC is EMHASS 0.18.4, called by the harness over REST; the pilots solved the same formulation with PuLP/CBC in about 0.1 s (thesis Section 4.3). 15-minute slots to the end of the known prices.</p>
+    <p><strong>Objective:</strong> minimise import cost at the dynamic price minus feed-in income (0.123 EUR/kWh) minus the value of energy left at the end, plus large penalties for a missed car charge, comfort band or appliance run, so a requirement is never traded for money.</p>
   </div>
   <div class="scroll"><table>
     <thead><tr><th>Part</th><th>What the MPC decides or respects (per 15-minute slot)</th></tr></thead>
@@ -797,9 +774,9 @@ ul.tight li { margin: 4px 0; }
     </tbody>
   </table></div>
   <ul class="tight prose">
-    <li><strong>How dynamic prices shape the schedule:</strong> every kWh is weighed by the price of its hour. Solar surplus costs only the lost feed-in (0.123 against about 0.25-0.35 EUR/kWh imported), so loads go to sunny hours first, otherwise to the cheapest grid hours in their window; the heat pump preheats the building before an expensive hour; the battery charges low and discharges high only where the price gap beats its round-trip loss of about 10 %.</li>
-    <li><strong>Receding horizon:</strong> re-solved every hour from the measured state on new forecasts, only the first hour is used; the control layer holds the planned grid exchange every 15 minutes, charges the car at full power when a deadline needs it and starts an appliance at its last possible slot if the plan has not.</li>
-  </ul>
+      <li><strong>Prices:</strong> loads go to sunny hours first, else to the cheapest hours in their window; the heat pump preheats before expensive hours; the battery cycles only where the price gap beats its losses.</li>
+      <li><strong>Receding horizon:</strong> re-solved hourly; the control layer holds the planned grid exchange every 15 minutes.</li>
+    </ul>
 
   <h3>One day at runtime</h3>
   <div class="figure">
@@ -810,7 +787,7 @@ ul.tight li { margin: 4px 0; }
     </defs>
     <text class="title" x="40" y="30">Household</text>
     <text class="title" x="225" y="30">Agents</text>
-    <text class="title" x="440" y="30">Harness: MPC + checker</text>
+    <text class="title" x="440" y="30">Harness: EMHASS + checker</text>
     <text class="title" x="665" y="30">Control layer</text>
     <text class="title" x="850" y="30">Devices</text>
     <line class="lane" x1="80" y1="42" x2="80" y2="455"/>
@@ -898,7 +875,7 @@ ul.tight li { margin: 4px 0; }
 
 <section>
   <h2>5. Datasets to evaluate</h2>
-  <div class="prose"><p>All core data are open (CC BY 4.0, Creative Commons Attribution, unless noted), cover the same place (Konstanz) and the same dates (Oct 2015 to 2019), and are already downloaded except where marked.</p></div>
+  <div class="prose"><p>Core data are open (CC BY 4.0 unless noted), from Konstanz, 2015-2019, and downloaded.</p></div>
   <div class="scroll"><table>
     <thead><tr><th>Dataset</th><th>What it provides</th><th>Period · resolution</th><th>Role</th><th>Checked</th></tr></thead>
     <tbody>
@@ -941,9 +918,9 @@ ul.tight li { margin: 4px 0; }
     <text class="small" x="244" y="100">plan type (4)</text>
     <text class="small" x="244" y="120">weather (3 × 3)</text>
     <text class="small" x="244" y="140">price pattern (3)</text>
-    <text class="small" x="244" y="160">load (3), house</text>
+    <text class="small" x="244" y="160">load (3); one house</text>
     <text class="small" x="244" y="190">exploratory ≈ 100</text>
-    <text class="small" x="244" y="210">held-out ≈ 100</text>
+    <text class="small" x="244" y="210">held-out 120</text>
 
     <rect class="box" x="470" y="30" width="230" height="230" rx="6"/>
     <text class="title" x="484" y="56">Systems</text>
@@ -974,26 +951,23 @@ ul.tight li { margin: 4px 0; }
   </svg>
   </div>
   <ul class="tight prose">
-    <li>The <strong>tuned MPC with exact parameters</strong> is the cost reference. The agent is expected to match it while starting from plain language and no expert tuning.</li>
-    <li>Tuned settings are chosen once on the exploratory set and frozen; the Configurator and the auto-tuner start from defaults and use only the house's past weeks.</li>
-    <li>The <strong>auto-tuner</strong> (a deterministic weekly grid search with the same backtest) shows whether configuration needs a language model at all (H4).</li>
-    <li><strong>Models:</strong> small models (Gemma 4 E4B and E2B, Ministral 3 8B and 3B, Nemotron 3 Nano 4B, each with its default reasoning setting and a context window sized for one plan) and the cloud LLM (GPT-6 Luna), each in the four set-ups of SQ1. All run on the laptop (RTX 4070, 8 GB); for SQ3 the plan benchmark and the optimiser are repeated on a Raspberry Pi 5 with 16 GB (low end) and a Ryzen 7 mini PC with 32 GB (middle).</li>
-    <li>EMHASS (Energy Management for Home Assistant, an open-source optimiser) gets the shared forecasts (primary) and its own default forecasts (secondary, as deployed).</li>
-    <li>Set-ups: the small model alone and with the checker are scored but never executed without the checker; with the fallback, every cloud call is logged. One agent vs four is compared only if the small models allow it.</li>
-    <li>Every system uses the same house-days, forecasts, plans and control layer, and the same valuation of energy left at midnight.</li>
-  </ul>
+      <li>Cost reference: the <strong>tuned MPC with exact parameters</strong>; settings tuned once on the exploratory set and frozen.</li>
+      <li>The <strong>auto-tuner</strong> (deterministic weekly grid search, same backtest) tests whether configuration needs a language model (H4).</li>
+      <li>Small models and the cloud LLM in the four set-ups of SQ1; SQ3 repeated on a Raspberry Pi 5 and a mini PC.</li>
+      <li>Every system uses the same house-days, forecasts, plans and control layer.</li>
+    </ul>
 </section>
 
 <section>
   <h2>7. Plan</h2>
   <div class="figure">
-  <svg viewBox="0 0 980 340" role="img" aria-label="Work plan over 20 weeks">
+  <svg viewBox="0 0 980 372" role="img" aria-label="Work plan over 20 weeks; the edge-board runs come last">
     <g>
-      <line class="gridline" x1="300" y1="26" x2="300" y2="318"/>
-      <line class="gridline" x1="467" y1="26" x2="467" y2="318"/>
-      <line class="gridline" x1="633" y1="26" x2="633" y2="318"/>
-      <line class="gridline" x1="800" y1="26" x2="800" y2="318"/>
-      <line class="gridline" x1="967" y1="26" x2="967" y2="318"/>
+      <line class="gridline" x1="300" y1="26" x2="300" y2="350"/>
+      <line class="gridline" x1="467" y1="26" x2="467" y2="350"/>
+      <line class="gridline" x1="633" y1="26" x2="633" y2="350"/>
+      <line class="gridline" x1="800" y1="26" x2="800" y2="350"/>
+      <line class="gridline" x1="967" y1="26" x2="967" y2="350"/>
       <text class="mono" x="296" y="18">1</text><text class="mono" x="459" y="18">5</text><text class="mono" x="622" y="18">10</text><text class="mono" x="789" y="18">15</text><text class="mono" x="952" y="18">20</text>
     </g>
     <text x="20" y="48">Literature review</text><rect class="bar muted" x="300" y="36" width="100" height="16" rx="3"/>
@@ -1002,12 +976,22 @@ ul.tight li { margin: 4px 0; }
     <text x="20" y="144">Systems, tuned MPC, auto-tuner</text><rect class="bar" x="400" y="132" width="167" height="16" rx="3"/>
     <text x="20" y="176">Agents, model layer, SLM iterations</text><rect class="bar sun" x="533" y="164" width="167" height="16" rx="3"/>
     <text x="20" y="208">Registration, held-out run</text><rect class="bar sun" x="667" y="196" width="67" height="16" rx="3"/>
-    <text x="20" y="240">Year simulation, edge-board runs</text><rect class="bar" x="700" y="228" width="67" height="16" rx="3"/>
+    <text x="20" y="240">Year simulation</text><rect class="bar" x="700" y="228" width="67" height="16" rx="3"/>
     <text x="20" y="272">Home Assistant replay (optional)</text><rect class="bar" x="733" y="260" width="67" height="16" rx="3"/>
     <text x="20" y="304">Writing</text><rect class="bar muted" x="700" y="292" width="267" height="16" rx="3"/>
+    <text x="20" y="336">Edge-board runs (Pi 5, mini PC), last</text><rect class="bar" x="900" y="324" width="67" height="16" rx="3"/>
   </svg>
   </div>
-  <p class="caption">Weeks from the start of the follow-up thesis. Amber bars are the agent work and the registered run; the rest builds the benchmark and baselines. Agree the schedule with the supervisor before starting.</p>
+  <p class="caption">Weeks from the start of the follow-up thesis. Amber bars are the agent work and the registered run; the rest builds the benchmark and baselines. The edge-board runs come last, once the devices and a power meter are at hand. Agree the schedule with the supervisor before starting.</p>
+
+  <h3>Next steps (22 Nov 2026)</h3>
+  <div class="prose"><ol>
+    <li><strong>Register.</strong> Everything the registration fixes is ready: 120 scenario cards and four writer sheets, the keying guide, the power calculation, the thresholds (H1/H3 margin 0.10, H2 against 90 %, H4 0.20 EUR per week against the auto-tuner and the cloud model, H5 15 minutes), the plans on the main house only, the Configurator's held-out weeks, the runner and the confirm script (<span class="mono">prototypes/heldout/</span>). Waiting on: the writers' messages, the author's keys and a second person's check. Then one commit registers keys, config, hypotheses and confirm script.</li>
+    <li><strong>Held-out evaluation and year simulation (Cycle 3, Section 5.5).</strong> Runner built and tested on the development plans: four set-ups, cloud fallback, closed loop with EMHASS, three runs, resumes. Year simulation built: 49 weeks of 2016 with every system, then the energy balance (saving over rules and over the expert MPC, against the model's energy on the gateway or a companion device). Both run only after the registration commit; whole campaigns, so they start after the author confirms.</li>
+    <li><strong>Finish the literature review.</strong> Author's check of the pre-screening (53 include, 69 unsure, 610 exclude), then full-text eligibility, snowballing and data extraction for LQ1 to LQ3. Can run alongside steps 1 and 2; Chapter 2's research gap depends on it.</li>
+    <li><strong>Text pass.</strong> Write in the results of steps 2 and 3, remove the "in process" wording outside the edge table (Abstract, Chapter 1, the progress table), place the Shelly devices in Figure 1.2, and settle the Section 6 sentence on models under 4B parameters.</li>
+    <li><strong>Edge-board runs, final step.</strong> Raspberry Pi 5 (16 GB) and Ryzen mini PC (32 GB). The edge kit is ready (<span class="mono">prototypes/edge_kit/</span>): one command per device runs idle phases, the edge benchmark, the MPC timing and the one-device test, with a Shelly plug logging power (or manual readings), and <span class="mono">edge_energy.py</span> turns the log into idle power and energy per plan for the energy balance. Waits for the devices and a power meter.</li>
+  </ol></div>
 </section>
 
 <section>
@@ -1015,22 +999,21 @@ ul.tight li { margin: 4px 0; }
   <div class="scroll"><table>
     <thead><tr><th>Risk</th><th>Handling</th></tr></thead>
     <tbody>
-      <tr><td>Interpretation is too easy for current models (ceiling effect)</td><td>Changes during the day, ambiguous, conflicting and infeasible requests; plans by other people; clarification F1</td></tr>
-      <tr><td>The small model configures no better than the auto-tuner</td><td>Report it (H4); the thesis then rests on SQ1 and SQ3</td></tr>
-      <tr><td>Small model too weak at deciding when to ask (ReAct gateway: Gemma 4 E4B 19 of 22 test decisions vs 21 for the cloud LLM; errors on vague words)</td><td>The checker and the rules in code catch infeasible and incomplete plans; the cloud fallback handles what is left (SQ1); report the gap as it is</td></tr>
-      <tr><td>Small model too slow on gateway hardware (Nemotron 3 Nano 26.5 s per plan with reasoning, up to 2 min)</td><td>Gemma 4 E4B as main candidate (about 10 s on the laptop GPU); plan-sized context (8k, 16k with reasoning); reasoning stays on where it is the model's default; Assistant is event-driven</td></tr>
-      <tr><td>The 22 test plans have been inspected and two rules came from their errors</td><td>Develop only on the 14 development plans; the held-out plans by other people are the real test</td></tr>
-      <tr><td>Gateway energy use cancels the savings</td><td>Measure idle and inference energy on the Raspberry Pi 5 and the Ryzen mini PC with a power meter (H5)</td></tr>
-      <tr><td>Plans written by the author or a language model bias the result</td><td>Held-out plans by 3-5 other people, keyed before any run, second-person check, registered; edge cases written by a large language model (LLM) exploratory only</td></tr>
-      <tr><td>Simulation only</td><td>Optional Home Assistant replay with simulated devices; field study as future work</td></tr>
+      <tr><td>Interpretation too easy (ceiling effect)</td><td>Changes, ambiguous and infeasible requests; plans by other people</td></tr>
+      <tr><td>Small model configures no better than the auto-tuner (seen in autumn)</td><td>Report it (H4); the thesis then rests more on SQ1 and SQ3</td></tr>
+      <tr><td>Small model weaker at deciding when to ask</td><td>Checker, rules in code and the cloud fallback; report the gap</td></tr>
+      <tr><td>Small model too slow on gateway hardware</td><td>Plan-sized context, event-driven Assistant, fallback for urgent plans</td></tr>
+      <tr><td>Test plans inspected; two rules came from their errors</td><td>Develop only on the 14 development plans; held-out plans by other people are the real test</td></tr>
+      <tr><td>Gateway energy use cancels the savings</td><td>Measure with a power meter on both devices (H5)</td></tr>
+      <tr><td>Simulation only</td><td>Home Assistant replay; field study as future work</td></tr>
     </tbody>
   </table></div>
-  <p class="note">Status: the current thesis is being finished on its own branch. This plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and the protocol; nothing is registered or committed. Revised on 1 Nov 2026 after an external review (section 15 of <span class="mono">docs/protocol_home_gateway.md</span>) and on 4 Nov 2026 around small language models (section 16). Updated on 14 Nov 2026 with the ReAct gateway and the new model set, and on 16 Nov 2026 with the MPC formulation under dynamic prices and the steps inside <code>plan_schedule</code> (section 4).</p>
+  <p class="note">Nothing is registered or committed. The plan lives on <span class="mono">new-thesis/home-gateway</span> with the prototypes and <span class="mono">docs/protocol_home_gateway.md</span>.</p>
 </section>
 
 <section>
-  <h2>9. Progress (17 Nov 2026)</h2>
-  <div class="prose"><p>Five pilots tested the riskiest parts of the plan before the main build and compare small and large models. All are exploratory: one house, one run each, answer keys still drafts. The newest, the ReAct gateway, is the Household Assistant as it would run in the home.</p></div>
+  <h2>9. Progress (22 Nov 2026)</h2>
+  <div class="prose"><p>All pilots are exploratory: mostly one house, one run each, draft answer keys.</p></div>
   <h3>ReAct gateway, final run</h3>
   <div class="scroll"><table>
     <thead><tr><th>Model</th><th>Dev decisions</th><th>Test decisions</th><th>Precision / recall</th><th>s per plan</th><th>Tool calls</th><th>Met on the real day</th><th>Failed</th></tr></thead>
@@ -1043,29 +1026,33 @@ ul.tight li { margin: 4px 0; }
       <tr><td>Ministral 3 8B</td><td class="num">4/14</td><td class="num">9/22</td><td class="num">0.00 / 0.00</td><td class="num">6.6</td><td class="num">2.0</td><td class="num">none</td><td class="num">0</td></tr>
     </tbody>
   </table></div>
-  <p class="caption">14 development plans and 22 test plans in everyday wording, laptop RTX 4070, one run per model. "Met on the real day": committed plans whose key says commit, run through the closed loop and checked against the key. The three misses of Gemma 4 E4B and Luna (X1, X4: the car cannot be full in time and the plan carries a warning; S5: the house cannot cool by midnight) miss with the exact parameters too. Gemma's errors: asked about "nice and warm" although the message gave 22-23 °C (S3); guessed "by lunchtime" (A5) and "the weekend" (A6). Ministral 3 8B never called <code>plan_schedule</code> and asked on every plan.</p>
+  <p class="caption">Everyday wording, laptop RTX 4070, one run per model. "Met": committed plans run through the closed loop and checked against the key; the misses of Gemma and Luna also miss with exact parameters.</p>
   <div class="scroll"><table>
     <thead><tr><th>Step</th><th>Status</th><th>What it showed</th></tr></thead>
     <tbody>
       <tr><td>1. Commit the revised plan and prototypes</td><td><span class="tag opt">author</span></td><td>Protocol, plan page, the pilots, the ReAct gateway and the review files are uncommitted on <span class="mono">new-thesis/home-gateway</span></td></tr>
       <tr><td>2. Check the answer keys (22 test, 14 development)</td><td><span class="tag opt">author</span></td><td>All drafts, now in everyday wording; changed keys first: X1, X4 and DX1 (commit with a warning), DA1 (Saturday 07:30), DA2 (cheapest time), and A5 ("by lunchtime" as vague)</td></tr>
-      <tr><td>3. Plan pilot v2 (SQ1): 22 edge-case plans, commit-or-ask</td><td><span class="tag core">done</span></td><td>GPT-6 Luna: precision 1.00, recall 1.00, clarification F1 0.95, decision accuracy 0.95, 2.7 s, USD 0.003 for all; one error (A3: invented a departure time and committed). gpt-oss-20b: precision 0.63, recall 0.44, F1 0.75, decision 0.59, 116 s per plan. Luna is near the ceiling on these cases, so held-out plans written by other people matter. Newer local model (output capped at 8,000 tokens per call): Gemma 4 E4B precision 1.00, recall 0.91, F1 0.78, decision 0.82, 7.7 s. It extracts items well; the difference to the cloud model is in when it asks. This is the "SLM alone" set-up; Gemma 4 E4B is the main small-model candidate.</td></tr>
-      <tr><td>4. Configurator pilot (SQ2): agent vs auto-tuner, 8 weeks Mar-Apr 2016</td><td><span class="tag core">done</span></td><td>Saving vs default MPC: expert setting (tuned on 4 September weeks) 2.83 EUR, Configurator agent 2.82 EUR, deterministic auto-tuner 0.10 EUR, perfect foresight 14.45 EUR. The auto-tuner overfits two weeks of history; the agent chose stable settings (derate 0.75-0.9). USD 0.003, about 16 s per week. Cloud LLM only so far.</td></tr>
-      <tr><td>5. Redesign around small language models</td><td><span class="tag core">done</span></td><td>New title, RQ, SQ1-SQ3 (four until 12 Nov) and draft H1-H5; mixed method (SLR inside DSR); model layer with cloud fallback; thesis draft <span class="mono">gateway_thesis.tex</span> updated</td></tr>
-      <tr><td>6. Rescore the plan pilot with the checker (SQ1)</td><td><span class="tag core">done</span></td><td>Stored answers rescored, no new model calls. Decision accuracy alone → with checker → with checker and cloud fallback: Gemma 4 E4B 0.82 → 0.91 → 0.91 (fallback on 9 % of plans), gpt-oss-20b 0.59 → 0.46 → 0.77 (36 %); GPT-6 Luna 0.95. The checker stopped two infeasible EV requests Gemma would have committed; its two remaining errors (away vs comfort, no grid at night) cannot be expressed in the output schema. Gemma 4 E4B with the checker is the main candidate.</td></tr>
-      <tr><td>7. Configurator pilot with a small model (SQ2)</td><td><span class="tag core">done</span></td><td>Same 8 weeks on the laptop. Saving vs default MPC: Gemma 4 E4B 2.85 EUR (about 44 s and 5 tool calls a week, derate 0.8 from week 2), against GPT-6 Luna 2.82, the expert setting 2.83 and the auto-tuner 0.10. No failed calls; the backtest gate rejected one of Gemma's proposals. One run on one house: a small model can configure the MPC; the cents between Gemma, Luna and the expert do not rank them.</td></tr>
-      <tr><td>8. Closed-loop pilot (Cycle 2): plan → checker → MPC → control layer</td><td><span class="tag core">done</span></td><td>The stored answers ran through the whole gateway on the real house-days (11 commit plans, no new model calls); the household's requirements were checked on what was executed. Gemma 4 E4B and GPT-6 Luna met 10 of 11 at exactly the cost of the exact parameters; the miss (S5, "cool to 18-20 °C from midnight", sent at 22:30) is physically impossible for every system. Rules met 8 and cost 5.56 EUR more. gpt-oss-20b executed nothing (all answers became questions).</td></tr>
-      <tr><td>9. Models small enough for a 4 GB board (Arduino UNO Q, small Raspberry Pi)</td><td><span class="tag core">done</span></td><td>Gemma 4 E4B (6.6 GB) does not fit 4 GB; Llama 3.2 3B (2 GB), tested on the laptop, was too weak (decision accuracy 0.50 with the checker, nothing executed in the closed loop). The gateway logic (control, checker, MPC) fits a small board; the language model needs about 8 GB or more, which is one reason for a companion device. Board speeds are not yet measured.</td></tr>
-      <tr><td>10. Prompt with explicit decision rules (v3) and a plan-sized context</td><td><span class="tag core">done</span></td><td>Developed on 14 new development plans, run once on the 22. With the checker, Gemma 4 E4B 0.91 → 0.95, gpt-oss-20b 0.45 → 0.91; the cloud model got worse (0.95 → 0.86) and kept the first prompt. A context window sized for one plan (8k, 16k with reasoning) made several models faster with the same answers; turning reasoning off made them much faster but worse. In thesis Table 5.4; the code now has one prompt only.</td></tr>
-      <tr><td>11. New model set</td><td><span class="tag core">done</span></td><td>Gemma 4 E4B and E2B, Ministral 3 8B and 3B, Nemotron 3 Nano 4B, GPT-6 Luna. Dropped: Llama 4 (smallest model 109B; licence excludes EU users of its multimodal models), Phi-4-mini and SmolLM3 (no tool calls with the stock templates; with tool templates they never planned a schedule).</td></tr>
-      <tr><td>12. ReAct gateway (SQ1, Cycle 3): message → data tools → checks + MPC → app</td><td><span class="tag core">done</span></td><td>Plans rewritten in everyday wording with usual car settings (80 % by 07:30). Gemma 4 E4B 19/22 test and 14/14 dev decisions, Luna 21/22 and 14/14 (table above); every plan Gemma committed was delivered as well as the exact parameters allowed (+0.05 EUR over 12 plans). Two rules came from test-plan errors (X3, S5), so the 22 plans are no longer a clean test. In thesis Section 5.5, Abstract, 6.1 and Conclusions.</td></tr>
-      <tr><td>13. Two-device demonstration with EMHASS (SQ3)</td><td><span class="tag core">done</span></td><td>The gateway simulated in two containers limited to a Raspberry Pi 5 (4 cores, 8 GB): EMHASS 0.18.4 without Home Assistant, and the Household Assistant's harness with its tools and checker; Gemma 4 E4B on the laptop as the companion device, reached over the network. Only the optimiser behind <code>plan_schedule</code> changed: car charges and appliance runs as deferrable loads, the heat pump as a thermal load with the twin's house model. 14 development plans: 14/14 decisions, items 16 right and none extra or missed, EMHASS at most 2.4 s per solve (always optimal), 4-13 s from message to answer. With the companion switched off the gateway answers at once and keeps the last confirmed plan. A demonstration, not an evaluation: one run, the laptop's processor, EMHASS instead of the MPC. Thesis Section 5.4.1; code in <span class="mono">prototypes/emhass_gateway/</span>.</td></tr>
-      <tr><td>14. Household hardware for SQ3 (plan A)</td><td><span class="tag ref">next</span></td><td>Buy a Raspberry Pi 5 with 16 GB (about €150 with power supply and cooler) and a Ryzen 7 mini PC with 32 GB (about €450), plus a power meter. The benchmark scripts are ready (<span class="mono">prototypes/edge_bench/</span>). On the laptop: Gemma 4 E4B 140 tokens/s on the GPU (3 s per plan), 18 tokens/s on 4 CPU threads (39 s per plan); the optimiser needs 0.08 s per solve, so it is never the bottleneck. A CPU run gave a lower decision accuracy than the GPU run (0.64 vs 0.82): single runs are noisy, so the evaluation repeats each run three times.</td></tr>
+      <tr><td>3. Plan pilot (SQ1): structured call, 22 plans</td><td><span class="tag core">done</span></td><td>Precision / recall, decision: Gemma 4 E4B 1.00 / 0.87, 0.86; GPT-6 Luna 1.00 / 0.96, 0.86 (asked needlessly on three plans).</td></tr>
+      <tr><td>4. Configurator pilot (SQ2), spring</td><td><span class="tag core">done</span></td><td>Saving vs default, 8 weeks, hourly MPC: Gemma 4 E4B 2.87 EUR, Luna 4.15, expert 3.52, auto-tuner 1.91 (it chased the last two weeks).</td></tr>
+      <tr><td>5. Redesign around small language models</td><td><span class="tag core">done</span></td><td>New title, RQ, SQ1-SQ3, draft H1-H5; SLR inside DSR; model layer with cloud fallback.</td></tr>
+      <tr><td>6. Checker (SQ1)</td><td><span class="tag core">done</span></td><td>Decision alone → with checker: Gemma 0.86 → 0.95, Luna 0.86. Failed answers became questions; a cloud fallback added nothing.</td></tr>
+      <tr><td>7. Configurator on three houses (SQ2), autumn</td><td><span class="tag core">done</span></td><td>Hourly MPC: Gemma within 0.2 EUR of the cloud LLM on every house; the auto-tuner saved more than both on the main house (3.35 vs 3.00 and 2.82); PV-only homes gained little from any setting. Answer: about as well as the auto-tuner, not better; less than the cloud LLM in spring.</td></tr>
+      <tr><td>8. Closed loop (Cycle 2)</td><td><span class="tag core">done</span></td><td>Gemma executed 11 plans and met 10 at the cost of the exact parameters; the miss is impossible for every system. Rules met 8 and cost 5.56 EUR more.</td></tr>
+      <tr><td>9. Models for a 4 GB board</td><td><span class="tag core">done</span></td><td>Too weak (Llama 3.2 3B) or too big (Gemma 4 E4B, 6.6 GB); the gateway needs about 8 GB or more.</td></tr>
+      <tr><td>10. Plan-sized context window</td><td><span class="tag core">done</span></td><td>Faster with the same answers; reasoning stays on.</td></tr>
+      <tr><td>11. New model set</td><td><span class="tag core">done</span></td><td>Gemma 4 E4B/E2B, Ministral 3 8B/3B, Nemotron 3 Nano 4B, GPT-6 Luna (US/EU models only).</td></tr>
+      <tr><td>12. ReAct gateway (SQ1, Cycle 3)</td><td><span class="tag core">done</span></td><td>Gemma 19/22 test and 14/14 dev decisions, Luna 21/22 and 14/14 (table above).</td></tr>
+      <tr><td>13. The Household Assistant with EMHASS</td><td><span class="tag core">done</span></td><td>14/14 dev decisions, EMHASS at most 2.4 s per solve, 4-13 s per plan with the model on the GPU. One-device test (EMHASS, harness and Gemma on the CPU, same 4 physical cores): 8 of 8 decisions right at 2-4 min per plan; EMHASS replans (median 0.35-0.48 s, max 1.04 s) and control steps (0.04 s) barely affected while the model answers; capping the model at 3 cores with low priority made it slightly faster (168 vs 188 s). Lessons: set the model's threads to its cores; serialise EMHASS calls.</td></tr>
+      <tr><td>14. Household hardware for SQ3</td><td><span class="tag ref">next</span></td><td>Buy a Raspberry Pi 5 16 GB, a mini PC and a power meter (a Shelly plug is logged automatically); the edge kit is ready (step 20). Laptop: 3 s per plan on GPU, 39 s on 4 CPU threads, MPC 0.08 s.</td></tr>
       <tr><td>15. Send the plan and the pilots to the supervisors</td><td><span class="tag ref">next</span></td><td>Agree scope: SLM framing, hardware, plan writers, 20 weeks</td></tr>
       <tr><td>16. Literature screening; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Searches done (732 unique records, AI-assisted first pass); the author checks the screening decisions. Plan writers use everyday wording; keys follow the same rules as the pilot plans.</td></tr>
+      <tr><td>17. Held-out materials</td><td><span class="tag core">done</span></td><td>120 scenario cards on new days of the main house (season x weather; 40 simple, 40 change, 20 ambiguous, 20 conflicting), four writer sheets, collect script, keying guide with a blind second keying. Sheets ready to send.</td></tr>
+      <tr><td>18. Registration decisions</td><td><span class="tag core">done</span></td><td>Power calculation: H1/H3 margin 0.10 (0.05 would need about 390 plans), H2 against 90 %, H4 0.20 EUR per week against the auto-tuner and the cloud model, H5 15 minutes; plans on the main house only; Configurator weeks in winter and summer 2016; EMHASS pinned by digest, model versions recorded.</td></tr>
+      <tr><td>19. Runner, confirm script, year simulation</td><td><span class="tag core">done</span></td><td>Set-up without checks, cloud fallback on a failed answer or a refused commit, closed loop with EMHASS (cached by constraints), driver over models x set-ups x 3 runs; confirm script (Holm over H1-H3, H4, H5); year simulation over 49 weeks with an energy balance. Tested on development plans and pilot weeks only. The Configurator's weeks and the year keep the thesis MPC (thousands of simulated days); the thesis says so.</td></tr>
+      <tr><td>20. Edge kit</td><td><span class="tag core">done</span></td><td>One command per device; power log from a Shelly plug or manual readings; energy per plan above idle. Tested on the laptop (dry run, simulated plug, synthetic logs with known answers); not yet run on a device.</td></tr>
       <tr><td>Later: extra datasets (in notes); Home Assistant replay</td><td><span class="tag ref">later</span></td><td>After the supervisor agrees the scope</td></tr>
     </tbody>
   </table></div>
-  <p class="caption">One finding changed a number in this plan: the earlier "PV derating 0.9" setting was chosen on the same days it was scored on. A setting tuned on other weeks did worse than the default in one test week, so the tuned reference must always be chosen on separate weeks (as the protocol now requires).</p>
+  <p class="caption">Tuned references are always chosen on separate weeks.</p>
 </section>
 </div>

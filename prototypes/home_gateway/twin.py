@@ -143,12 +143,21 @@ class Result:
     indoor: np.ndarray  # 97 values, C
 
 
-def load_days(raw_dir: Path, year: int, market: str = "fi", export: str = "spot") -> list[Day]:
+def load_days(raw_dir: Path, year: int, market: str = "fi", export: str = "spot", site: str = SITE) -> list[Day]:
+    """Complete days of one OPSD site. A site without a heat pump or EV gets zero heat demand and no sessions;
+    a site without grid export cannot be used, because its consumption cannot be derived."""
     data = pd.read_csv(raw_dir / "opsd_household" / "household_data_15min_singleindex.csv",
-                       usecols=lambda c: c == "utc_timestamp" or c.startswith(SITE))  # fmt: skip
+                       usecols=lambda c: c == "utc_timestamp" or c.startswith(f"{site}_"))  # fmt: skip
     data.index = pd.DatetimeIndex(pd.to_datetime(data.pop("utc_timestamp"), utc=True)).tz_convert(PLANT_TZ)
     kw = (data.diff() * 4).clip(lower=0)
-    kw.columns = [c.removeprefix(f"{SITE}_") for c in kw.columns]
+    kw.columns = [c.removeprefix(f"{site}_") for c in kw.columns]
+    missing = {"pv", "grid_import", "grid_export"} - set(kw.columns)
+    if missing:
+        raise ValueError(f"{site} has no {', '.join(sorted(missing))}; its consumption cannot be derived")
+    kw = kw[["pv", "grid_import", "grid_export"] + [c for c in ("heat_pump", "ev") if c in kw.columns]]
+    for column in ("heat_pump", "ev"):
+        if column not in kw.columns:
+            kw[column] = 0.0
     w2h = pd.read_csv(raw_dir / "when2heat_de_2015_2018.csv")
     w2h.index = pd.DatetimeIndex(pd.to_datetime(w2h.pop("utc_timestamp"), utc=True)).tz_convert(PLANT_TZ)
     cop = w2h["DE_COP_ASHP_radiator"].resample("15min").ffill()

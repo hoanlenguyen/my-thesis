@@ -38,6 +38,7 @@ the requested band, so comfort conflicts were not exposed (DX2). Results are not
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import math
 import os
@@ -158,14 +159,36 @@ def request(f: dict[str, np.ndarray], st, c, home: Home) -> tuple[dict, list[tup
     return body, loads
 
 
+@contextlib.contextmanager
+def emhass_lock():
+    """Hold the EMHASS lock shared with the one-device probe (``EMHASS_LOCK``; unset elsewhere, then no lock).
+
+    EMHASS's ``GET /api/v1/plan`` returns the latest solve; on 19 Nov 2026 the probe's 96-step replan landed between
+    a plan's solve and its read (caught by the step-count check). On a real gateway one harness makes both calls.
+    """
+    path = os.environ.get("EMHASS_LOCK")
+    if not path:
+        yield
+        return
+    import fcntl
+
+    with open(path, "a") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
 def emhass_mpc(f: dict[str, np.ndarray], k: int, st, c, w: World, home: Home, url: str, log: list) -> dict:
     """Same output as ``closed_loop.mpc`` (kW per horizon slot), solved by EMHASS."""
     H = w.horizon
     body, loads = request({key: v[k:] for key, v in f.items()}, st, c, home)
-    started = time.perf_counter()
-    action = call(f"{url}/action/naive-mpc-optim", body)
-    plan = call(f"{url}/api/v1/plan")
-    solve_s = time.perf_counter() - started
+    with emhass_lock():  # the one-device probe shares EMHASS: a solve and its read must not interleave
+        started = time.perf_counter()
+        action = call(f"{url}/action/naive-mpc-optim", body)
+        plan = call(f"{url}/api/v1/plan")
+        solve_s = time.perf_counter() - started
     rows = plan.get("plan") or []
     if isinstance(rows, dict):
         rows = [dict(zip(rows, values)) for values in zip(*rows.values())]
@@ -252,7 +275,18 @@ def main() -> None:
     parser.add_argument("--emhass", default=EMHASS_URL, help="the gateway's EMHASS service")
     parser.add_argument("--ollama", default=None, help="the companion device's Ollama server (default: OLLAMA_HOST)")
     parser.add_argument("--out", type=Path, default=HERE / "out" / "results.jsonl")
+    parser.add_argument("--num-thread", type=int, default=None,
+                        help="Ollama threads; set it to the cores the model may use (Ollama counts the host's)")  # fmt: skip
     args = parser.parse_args()
+    if args.num_thread:  # 20 Nov 2026: in a container pinned to 4 cores Ollama started 10 threads, 30-60x slower
+        make_model = agent.make_model
+
+        def make_with_threads(*a, **k):
+            model = make_model(*a, **k)
+            model.num_thread = args.num_thread
+            return model
+
+        agent.make_model = make_with_threads
     if args.ollama:
         os.environ["OLLAMA_HOST"] = args.ollama  # read by the Ollama client behind ChatOllama
     version = call(f"{args.emhass}/api/v1/last-run").get("emhass_version", "?")
@@ -272,7 +306,9 @@ def main() -> None:
             d0, d1 = t0.date().isoformat(), (t0.date() + timedelta(days=1)).isoformat()
             w = World(t0, t0.hour * 4 + t0.minute // 15, (days[d0], days[d1]), (fcs[d0], fcs[d1]))
             gw = EmhassGateway(plan, data["household"], w, home, appliances, url=args.emhass)
+            started_at = time.time()  # wall clock, to match the one-device probe's samples to plan windows
             got, meta = run_plan(args.model, gw) if companion_up() else offline_answer(plan)
+            meta["started_at"], meta["ended_at"] = round(started_at, 2), round(time.time(), 2)
             app = meta.pop("app")
             app["optimiser"] = "EMHASS"
             app["emhass_solves"] = gw.solves

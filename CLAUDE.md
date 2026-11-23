@@ -93,138 +93,95 @@ Python 3.12 via `uv` (not the system 3.14). Skills: `compile-thesis`, `run-evalu
 
 ## Follow-up thesis (this branch: `new-thesis/home-gateway`)
 
-This branch is the current thesis (merged from `claude/thesis-scope-expansion-47c694`, PR #1) plus exploratory
-work for a follow-up thesis: a language-model agent as the interface of a home energy gateway (PV, battery, heat
-pump, EV). **Title (author's decision, 12 Nov 2026): "Small Language Models for Smart Home Energy Management:
-Interpreting Household Plans and Configuring an Optimiser on Local Hardware"** (4 Nov: "... for a Home Energy
-Gateway: ..."; "gateway" stays the device term: the HEMS runs on the home energy gateway) (earlier working title, 3 Nov: "Design of a
-Multi-Agent Home Energy Gateway: ..."). Supervisors: Yueqiang Xu, PhD, Docent, Adjunct Professor; Paula Alavesa, PhD.
-**Research questions (4 Nov 2026, drafts until registration; RQ reworded 12 Nov):** RQ "How can a smart home energy
-management system use small language models running on local hardware, the home's energy gateway, to interpret
-households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud large
-language model?" The thesis abstract (12 Nov) summarises the pilots; update it when results change. **Three SQs since 12 Nov 2026** (one per
-part of the title; old SQ3 merged into SQ1, old SQ4 is now SQ3, H3/H4 swapped numbers): SQ1 interpreting household
-plans (SLM vs LLM; H1 best SLM within 0.05 of the LLM on recall and decision accuracy, H2 requirements met on
->= 95 % of feasible days; four set-ups SLM alone, + checker, + checker + cloud fallback, LLM alone; H3 within 0.05
-with fallback on <= 20 % of plans), SQ2 configuring an optimiser (SLM Configurator vs LLM Configurator vs
-auto-tuner; H4), SQ3 on local hardware (latency, energy, cost, privacy; H5 registered time per plan locally,
-saving > inference cost). Older notes below that cite SQ3/SQ4 use the old numbering.
-Conditions (weather, price, load, plan type) are descriptive under each SQ. SLM = open model below about 10B
-parameters (Gemma 4 E4B is the main candidate, Qwen3 8B; Qwen3 30B-A3B and gpt-oss-20b are "larger local";
-GPT-6 Luna the cloud LLM). Hardware (plan A, 11 Nov 2026): laptop RTX 4070 8 GB for all runs; SQ3 also on a Raspberry Pi 5 16 GB and a Ryzen 7 mini PC 32 GB (`prototypes/edge_bench/`, run once
-the author has bought them). The one-agent vs four-agent comparison is kept only if the SLMs allow it (exploratory).
-**Method (4 Nov 2026):** mixed method, SLR (Kitchenham; review questions LQ1-LQ3 in thesis section 2.1, since 12 Nov one per SQ: LQ1 plans + checks, LQ2 configuring, LQ3 local hardware) as the
-rigor cycle of DSR (Hevner 2007 three cycles, Peffers activities, FEDS evaluation strategy). Design and plan: `docs/protocol_home_gateway.md` (reframed 30 Oct 2026, revised 1 Nov 2026 after an
-external review; changes in its section 15) and `docs/gateway_thesis_plan.html` (the published plan page with
-diagrams); `docs/proposal_spark.md` is an earlier industrial idea (SPARK, KIT). The review: `docs/gemini_review_brief.md`
-(what Gemini was given), `docs/gemini_review.md` (its answer), `docs/gemini_review_response.md` (what was adopted, and why).
-**Thesis text of the follow-up (4 Nov 2026):** edit `gateway_body.tex` (citations as `\parencite{key}` /
-`\textcite{key}`, keys in `build_gateway_thesis.py`), then `uv run python build_gateway_thesis.py` writes
-`gateway_thesis.tex` (preamble of `main.tex` + body, citations as APA text) and `latexmk -xelatex gateway_thesis`.
-Never edit `gateway_thesis.tex` by hand. Figures in `attachments/gateway/` are exported from the plan page's SVG.
-Parts without results say "In process."; only verified references are cited; `main.tex` stays the finished thesis.
-Compile gotcha: the `.aux` was repeatedly corrupted in the worktree (likely another compiler writing at the same
-time); compiling with `latexmk -xelatex -outdir=<scratchpad>/texbuild gateway_thesis` and copying the PDF works.
-Thesis structure (4 Nov 2026): Ch. 2 = 2.1 SLR (LQ1-LQ3, stages "in process"), 2.2 optimisation and safe control,
-2.3 language models in HEMS, 2.4 frontier vs small models, 2.5 gap; Ch. 3 = 3.1 research design (figure of the
-three cycles), 3.2 SLR protocol, 3.3 DSR, 3.4 data, 3.5 evaluation design, 3.6 threats to validity.
-Ch. 4 section 4.5 (11 Nov 2026): user app (text and push-to-talk voice, energy dashboard), optional voice
-satellite and Wi-Fi link to the gateway; voice runs locally (wake word, Whisper, Piper), speech becomes text and
-follows the typed-message path; figure `attachments/gateway/user_app.png` exported from the plan page's SVG.
-**Agent design (author's decision, 1 Nov 2026): four agents, one per event** (Household Assistant, Explainer,
-Monitor, Configurator), routed by the harness, no orchestrator agent. Since 4 Nov a model layer runs a local SLM
-first and a cloud LLM only when the SLM's answer fails validation twice or the checker rejects its plan
-(requirement R6: plans stay in the house; works offline). The Gemini brief and response still describe the
-earlier two-agent design.
+The current thesis plus a follow-up thesis on small language models (SLMs) in a home energy gateway (PV, battery,
+heat pump, EV). Supervisors: Yueqiang Xu, PhD, Docent, Adjunct Professor; Paula Alavesa, PhD. All prototype results
+are exploratory; the answer keys are drafts until the author checks them. Keep the theses apart: never cite
+prototype numbers in `main.tex`; prototype code and outputs stay in `prototypes/` (the only shared-code change is
+the unused `industrial_machine` appliance kind in `core/models.py` and `tools/__init__.py`).
 
-- `prototypes/plan_pilot/`: plan-interpretation pilot. `pilot.py --self-test` must score 1.0 on every metric and
-  report no EV feasibility mismatch. Version 2 (22 edge-case plans bound to dates, commit-or-ask decision) ran on
-  3 Nov 2026 (`results.jsonl`); version 1 results are in `results_v1.jsonl` (and the buggy retry run in
-  `results_retry_bug.jsonl`). The local models qwen3-8b, gemma4-e4b and qwen3-30b-a3b have an 8,000-token output cap
-  per call (`ModelSpec.ollama_num_predict`, since 4 Nov 2026, after a reasoning loop); a capped call is a failed answer.
-  qwen3-30b-a3b runs CPU-only (`ModelSpec.ollama_num_gpu=0`; it fails to start on the 8 GB GPU; the failed rows are
-  in `results_qwen30b_oom.jsonl`). Results 4 Nov (precision, recall, clarification F1, decision, s per plan):
-  gemma4-e4b 1.00/0.91/0.78/0.82/7.7; qwen3-8b 0.96/1.00/0.67/0.68/71; qwen3-30b-a3b 1.00/0.96/0.84/0.86/150;
-  gpt-6-luna 1.00/1.00/0.95/0.95/2.7; gpt-oss-20b 0.63/0.44/0.75/0.59/116. These are the "SLM alone" set-up.
-  `rescore_checker.py` rescores the stored answers (no model calls) with a deterministic checker and the cloud
-  fallback (SQ1; `out/rescore_checker.json`, thesis Table 5.3): decision accuracy alone / + checker / + fallback:
-  gemma4-e4b 0.82 / 0.91 / 0.91 (fallback 9 %), qwen3-8b 0.68 / 0.73 / 0.73, gpt-oss-20b 0.59 / 0.46 / 0.77 (36 %),
-  qwen3-30b-a3b 0.86 / 0.91 / 0.86, luna 0.95. The checker gates only answers the model would commit.
-  Tiny models for a 4 GB board (10 Nov 2026; `qwen3-1.7b`, `qwen3-4b`, `qwen3-4b-instruct`, `llama3.2-3b` in
-  `llm.MODELS`): qwen3-4b with reasoning reaches decision 0.95 but writes about 4,800 tokens per plan (126 s on the
-  laptop); qwen3-4b-instruct is fast (2.9 s) but 0.41; llama3.2-3b and qwen3-1.7b are too weak. Ollama's `qwen3:4b`
-  ignores think=False (2507 thinking build); that run is set aside in `results_qwen3_4b_think_false_ignored.jsonl`.
-  Ministral 3 8B (12 Nov 2026, `ministral-3-8b`, in thesis Tables 5.2, 5.3, 5.5): precision 0.82, recall 0.96, F1 0.57,
-  decision 0.50, 7.4 s per plan; asks needlessly (9 of 13 commit plans), so the checker cannot help; closed loop 2 of
-  11 executed. Used in the text as "size alone does not predict the commit-or-ask decision".
-  **Prompt v3 (author's decision 13 Nov 2026: local models use v3, the cloud model and fallback keep v2; both frozen
-  until the held-out run).** `pilot.py --prompt v3` (label `+p3`), tuned only on `plans_dev.json` (14 new plans, draft
-  keys to be checked); results `results_v3.jsonl`, `rescore_v3.py`, closed loop `closed_loop.py --answers
-  results_v3.jsonl` -> `out/results_v3.jsonl`. Decision with checker v2 -> v3: Gemma 0.91 -> 0.95, Qwen3 8B 0.73 ->
-  1.00 (85 s), Ministral 0.50 -> 0.68; Luna 0.95 -> 0.86 and Llama 3.2 3B broke (19 failed). Thesis Table 5.4
-  (`tab:planv3`); Gemma's 0.95 is quoted in the Abstract, 6.1 and 7. All ten models have v3 rows (13 Nov 2026): gpt-oss-20b
-  0.45 -> 0.91 (but met only 7 of 10 executed in closed loop), Qwen3 4B 0.95 -> 1.00, Qwen3 30B-A3B 0.91 -> 0.91,
-  Qwen3 1.7B 0.50 -> 0.64.
-  **Superseded in code (13 Nov 2026, evening):** the prompt files above are archived (`plan_pilot/archive/`,
-  README); the thesis text (Tables 5.2-5.5) still reports them until the author decides on the rewrite.
-- **ReAct gateway (13 Nov 2026, current design, exploratory)**: `prototypes/react_gateway/agent.py` (ReAct agent with
-  data tools + `plan_schedule` = checks + MPC; the model never writes the schedule), app JSON per plan in
-  `out/app/<model>/<plan>.json`, tables `summary.py`. Model set: Gemma 4 E4B/E2B, Ministral 3 8B/3B, Nemotron 3 Nano 4B,
-  GPT-6 Luna; dropped Llama 4, Qwen3, gpt-oss, Phi-4-mini, SmolLM3. Plans in everyday wording with usual car settings
-  (`plan_pilot/rewrite_plans.py`; DRAFT keys). Full decisions, rules and the resume commands for the interrupted run:
-  protocol log entry "ReAct gateway (13 November 2026)". Never tune on the 22 pilot plans; develop on `plans_dev.json`.
-  Final run (14 Nov 2026) in `out/results.jsonl` and thesis Section 5.5 (`sec:reactpilot`, Tables 5.7-5.8), also
-  cited in the Abstract (kept to one page), Ch. 1 structure, 6.1 (SQ1, SQ3, RQ) and Ch. 7.
-- Figure 1.1 (`attachments/gateway/home_energy_system.png`, 12 Nov 2026): Excalidraw, source
-  `attachments/gateway/home_energy_system.excalidraw`, redrawn by `tools/make_home_energy_system_fig.py <out.excalidraw>`
-  (renders with @excalidraw/utils 0.1.2 in headless Edge); the old figure is `home_energy_system_v1.png`.
-- `prototypes/configurator_pilot/configurator.py`: SQ2 pilot, Configurator agent vs deterministic auto-tuner vs
-  expert-tuned and default MPC over weekly windows (`out/results.jsonl` = GPT-6 Luna; `out/results_slm.jsonl` =
-  gemma4-e4b and qwen3-8b, 7 Nov 2026); results in protocol sections 14 and 16. `--resume` continues an interrupted
-  run from the weeks already written. Saving vs default: gemma4-e4b 2.85 EUR (44 s/week), qwen3-8b 2.42 (about
-  300 s/week), luna 2.82, expert 2.83, auto-tuner 0.10.
-- `prototypes/closed_loop/closed_loop.py` (9 Nov 2026, Cycle 2): stored plan-pilot answers -> checker -> hourly MPC
-  (MILP with comfort per slot, EV by departure, appliance runs) -> control layer on the real house-days; the key's
-  requirements are judged on what was executed (H2). 11 "commit" plans, no model calls (`out/results.jsonl`, thesis
-  section 5.4, Table 5.5). Gemma 4 E4B, Qwen3 30B-A3B and Luna: 10 of 11 met at exactly the exact-parameter cost;
-  qwen3-8b +1.46 EUR (S2); gpt-oss-20b executed nothing; rules +5.56 EUR, 8 met. S5 is physically unmeetable.
-- `prototypes/slr/` (11 Nov 2026): SLR search records. `arxiv_search.py` (arXiv API), `merge.py` (merges
-  `out/scopus_*.csv`, `sciencedirect_*.tsv`, `arxiv_*.csv`, and `ieee_*.csv` / `wos_*.txt` if added, into
-  `out/screening.csv`, de-duplicated by DOI and title). Run: Scopus A 543 / B 129, ScienceDirect 63 / 1, arXiv 126 / 1;
-  732 unique. IEEE Xplore (301 / 35 hits) and Web of Science not exported (no institutional access in the browser);
-  reported as a limitation in thesis 3.2 and 3.6. `prescreen.py` (11 Nov) wrote a first-pass decision and reason
-  for every record (53 include, 69 unsure, 610 exclude); the author checks them, then full texts.
-- `prototypes/edge_bench/` (11 Nov 2026, SQ3): `bench.py --device <label> --host http://<device>:11434 --model
-  gemma4-e4b [--cpu-only --threads 4] [--idle-w W --load-w W]` runs the 22 plans against an Ollama server and records
-  Ollama's timings (prefill, generation tokens/s, s per plan) and scores; `mpc_time.py --device <label>` times the
-  closed-loop MPC on the device. Results in `edge_bench/out/` and thesis section 5.5. Laptop: GPU 140 tok/s, 3.3 s
-  per plan; CPU 4 threads 18 tok/s, 39 s mean, 72 s p95; MPC 0.08 s per solve. The CPU run's decision accuracy (0.64)
-  differed from the GPU pilot run (0.82): repeat runs are needed.
-  The answer keys are drafts: the author checks them before any result is used.
+**Title (12 Nov 2026):** "Small Language Models for Smart Home Energy Management: Interpreting Household Plans and
+Configuring an Optimiser on Local Hardware". **Questions (simplified 18 Nov 2026, same scope; H1-H5 unchanged,
+drafts until registration):** RQ "How can small language models on a home energy gateway reliably interpret
+household plans and configure an optimiser, and how close do they come to a cloud language model?" SQ1 interpreting
+plans (accuracy; checks and cloud fallback; H1-H3), SQ2 configuring the optimiser (vs cloud model and an automatic
+tuner; H4), SQ3 on local hardware (time, energy, money, privacy; H5). LQ1-LQ3 in section 2.1 mirror them. Method:
+SLR (Kitchenham) as the rigor cycle of DSR. Plan: `docs/protocol_home_gateway.md` and the plan page
+`docs/gateway_thesis_plan.html` (artifact https://claude.ai/artifact/2GN2bsRDJ5dp8xUhnFqHM8, republish after edits).
 
-- **Keep the two theses apart.** `main.tex`, `src/hems/` campaigns, `data/scenarios*` and `results/` belong to the
-  current thesis; never cite prototype numbers in `main.tex`. Prototype code and outputs stay in `prototypes/`.
-  The only shared-code change is the `industrial_machine` appliance kind (`core/models.py`, `tools/__init__.py`),
-  which no thesis scenario uses.
-- `prototypes/home_gateway/`: `twin.py` (one year of OPSD `residential4` with a virtual battery: recorded, battery,
-  rules, perfect-foresight LP; `--market fi|de`, `--export spot|feedin`) and `gateway.py` (12 sample days with
-  forecasts, a control layer with fallbacks, day-ahead LP, MPC, perfect foresight and the ReAct agent;
-  `--forecast noise|weather`, `--models gpt-6-luna gpt-oss-20b`). Run from the repo root, e.g.
-  `uv run python prototypes/home_gateway/gateway.py --raw-dir D:/Study/my-thesis/data/raw --market de --forecast weather`.
-  `prototypes/hipe/`, `prototypes/opsd/`: industrial scenarios for `hems run`; `prototypes/heatpump/`: REFIT +
-  When2Heat + Norwegian EV sessions. Each folder has a README with its data and assumptions.
-- **Lessons to keep** (they decided results): value the battery and heat left at midnight the same way in the
-  optimiser and the score; the control layer holds the planned grid exchange (the battery absorbs forecast error),
-  never the planned battery power; tool descriptions never suggest a default for a decision the agent makes (a
-  suggested 50 % reserve was copied by both models); report savings in EUR when export income cancels the bill.
-- **Main finding so far:** on cost, MPC with a fixed PV derating of 0.8-0.9 closed 46-51 % of the rules-to-optimum
-  gap, more than the agents (36-39 %, GPT-6 Luna and gpt-oss-20b). The follow-up is therefore framed around plan
-  interpretation and configuration, with a tuned MPC as the cost reference, not around beating the optimiser.
-- Prototype data in `data/raw/` (gitignored, shared with the main checkout): `when2heat.csv` (+ `when2heat_fi.csv`,
-  `when2heat_de_2015_2018.csv`), `hipe/`, `opsd_household/`, `dwd_konstanz/`, `ev_norway/`,
-  `prices_de_energycharts_2015_2019.csv`, `prices_fi_elering_2015_2017.csv`, `prices_fi_elering_2018_2021.csv`,
-  `prices_fi_elering_2017_10.csv`. Agent runs need `.env` (found by walking up from the script) and, for
-  gpt-oss-20b, the Ollama server; set `LANGSMITH_TRACING=false` (the trace quota is exhausted).
+**Design (18 Nov 2026):** one home energy gateway (Raspberry Pi 5 16 GB or mini PC) runs EMHASS 0.18.4 as the MPC,
+the SLM (Gemma 4 E4B via Ollama), the harness with tools and checker, and the control layer; no companion device.
+The model reaches EMHASS only through the harness (`POST /action/naive-mpc-optim`, `GET /api/v1/plan`); the
+harness replans hourly without the model. The Configurator sets only the PV derating and the battery reserve, sent
+with each request (EMHASS's own configuration keeps its defaults); "expert-tuned" EMHASS sets the same two by
+hand. Pilots in Chapter 5 solved the same formulation in PuLP/CBC. Four agents (Household Assistant, Configurator
+built; Monitor, Explainer designed), local model first, cloud LLM only as an optional fallback.
+**Models: US/EU-developed only** (Gemma 4 E4B/E2B, Ministral 3 8B/3B, Nemotron 3 Nano 4B; GPT-6 Luna as cloud LLM;
+earlier runs also gpt-oss-20b and Llama 3.2 3B). No Qwen, Falcon or BitNet in the thesis.
+
+**Thesis text:** edit `gateway_body.tex` (`\parencite`/`\textcite`, keys in `build_gateway_thesis.py`), run
+`uv run python build_gateway_thesis.py`, wait until VS Code's LaTeX auto-build has finished (no xelatex/latexmk/
+perl/xdvipdfmx process), delete the `gateway_thesis` aux files, then `latexmk -xelatex gateway_thesis`. Never edit
+`gateway_thesis.tex` by hand. The build script makes figure and table captions bold only in the label
+("Figure 1.2.", "Table 5.1."). Parts without results say "In process."; only verified references; no em dashes.
+Don't refresh `gateway_thesis_overleaf.zip` unless asked.
+**Figures (`attachments/gateway/`):** 1.1 Excalidraw (`home_energy_system.excalidraw`); 1.2
+`tools/make_home_energy_system_fig.py --thesis attachments/gateway/home_energy_system_slm` (delete the generated
+`.html`); 4.1, 4.3-4.5 exported from the plan page's SVGs; 4.2 `plan_schedule.png` and 4.6 `request_path.png` from
+`tools/flow_figs/` (`export.py`, then crop to content).
+
+**Prototypes and their thesis numbers:**
+- `plan_pilot/` (structured-call reader, 22 plans in exact wording, Table 5.3): the thesis reports only the latest
+  prompt (decision rules with worked examples, developed on `plans_dev.json`): `archive/results_prompt2_ctx32k.jsonl`
+  with closed loop `closed_loop/out/archive/results_prompt2_ctx32k.jsonl`. Prec/rec, decision alone / + checker,
+  met, s: Gemma 1.00/0.87, 0.86/0.95, 10 of 11, 8.1; Ministral 0.91/0.87, 0.68/0.68, 6 of 6; Llama 0.14/0.04, 0.00/0.50
+  (19 failed); gpt-oss 0.95/0.83, 0.77/0.91, 7 of 10, 65 s; Luna 1.00/0.96, 0.86/0.86, 8 of 8. The checker's gain is
+  failed answers becoming questions. Never mention prompt versions in the text. Never tune on the 22 test plans.
+- `react_gateway/` (current Household Assistant, Section 5.2): ReAct agent, everyday wording, Gemma 19/22 test and
+  14/14 dev decisions, Luna 21/22 and 14/14; `out/results.jsonl`, `summary.py`.
+- `configurator_pilot/configurator.py` (SQ2): Configurator vs auto-tuner vs default/expert MPC over weekly windows.
+  Since 19 Nov 2026 every system runs the MPC hourly (as on the gateway) and the prompt names no location; the
+  checkpoint-MPC runs (00/06/12/18 h) are archived in `out/archive/`. Hourly rerun 20 Nov (`out/results_spring.jsonl`),
+  March-April 2016 residential4: Gemma 2.87 EUR, Luna 4.15, expert 3.52, auto-tuner 1.91, perfect 14.25. Since 18 Nov `--site`/
+  `--year` (twin `load_days(site=...)`): residential3 and residential6 (PV only; residential1 has no grid export
+  meter), common period 8 weeks from 2016-10-03, tuned on 4 weeks from 2016-06-06, outputs
+  `out/houses_autumn_<house>.jsonl`; thesis Table 5.6 (`tab:confighouses`). Saving vs default (main / res6 / res3):
+  Gemma 3.00 / 0.62 / -0.39, Luna 2.82 / 0.56 / -0.38, auto-tuner 3.35 / 0.25 / -0.39, expert 3.79 / 0.34 / -0.45,
+  rules -9.68 / 2.10 / -0.22 (hourly, 20 Nov). SQ2 answer: about as well as the auto-tuner, not better; as well as the
+  cloud model in autumn, less in spring (2.87 vs 4.15).
+- `closed_loop/`, `edge_bench/` (laptop GPU 3.3 s, CPU 4 threads 39 s mean / 72 s p95, MPC 0.08 s; CPU vs GPU decision
+  0.64 vs 0.82 shows run-to-run variation), `home_gateway/` (twin of OPSD `residential4`, `gateway.py`), `slr/`
+  (732 records, prescreened), `hipe/`, `opsd/`, `heatpump/`.
+- `emhass_gateway/`: Household Assistant with EMHASS (Section 5.4.1: 14/14, solves <= 2.4 s, 4-13 s per plan) and the
+  one-device test (Section 5.4.2, Table 5.8): `docker-compose.onedevice.yml`, `run_onedevice.ps1`, `probe.py`,
+  `onedevice_summary.py`; DS1-DS4 on 4 physical cores (cpuset 0,2,4,6; in the Docker VM CPUs 0-3 are 2 cores x 2
+  threads), model threads = its cores (`--num-thread`; Ollama otherwise starts 10 threads, 30-70x slower), one EMHASS
+  lock (`EMHASS_LOCK`, the plan GET returns the latest solve). 20 Nov: 8/8 right; 188 s per plan unprioritised, 168 s
+  prioritised (3 cores, low priority); replan median 0.35-0.38 s idle, 0.45-0.48 s answering, max 1.04; control 0.04 s.
+  Earlier runs (oversubscribed, 2 SMT cores) in `out/onedevice/archive/` (README).
+- `edge_kit/` (22 Nov 2026, tested on the laptop only): `run_device.sh` (DEVICE, RAW_DIR, SHELLY) runs on a Linux
+  device: idle without/with the model, `edge_bench/bench.py` (now with per-plan timestamps and `--out-dir`),
+  `mpc_time.py`, the one-device test (all cores / one fewer at low weight, DS1-DS4, 2-min probe baseline); phases in
+  `events.jsonl`; `power_log.py` (Shelly Gen1/Gen2, stdlib) or `manual.json`; `edge_energy.py` -> idle W, Wh per
+  plan above idle and the `year_balance.py` command. Waits for the Pi 5, the mini PC and a meter (last step).
+- `heldout/` (21 Nov 2026, draft, not registered): materials for the registered run. 120 scenario cards
+  (`make_scenarios.py`, seed 2027; `residential4` 2016 days not used by the pilots or the tuning, season x weather,
+  40 simple / 40 change / 20 ambiguous / 20 conflict, writers W1-W4), writer sheets, `collect.py`, `keying_guide.md`,
+  `power.py` (H1/H3 margin 0.10, author's decision 21 Nov; 0.05 would need ~390 plans; H2 p0 0.90, author's decision 21 Nov, as 0.95 needs >= 80 feasible commit days; plans on `residential4` only, author's decision 21 Nov),
+  `config_heldout.json` (H4 margin 0.20 EUR/week vs auto-tuner and LLM, H5 p95 <= 15 min, author's decisions 22 Nov; Configurator weeks confirmed 22 Nov: residential4 from 2016-01-18 (7) and 05-30 (8), residential3/6 from 05-30 (8)). Runner `run_heldout.py` (22 Nov: set-ups
+  slm_no_checks = `Gateway(checks=False)`, slm_checks, slm_checks_fallback = cloud on a failed answer or a refused
+  commit, llm; closed loop with EMHASS via `emhass_replan`, which keeps the last plan in the final hour as EMHASS
+  needs >= 5 steps; loop days cached by constraints) and `confirm_heldout.py` (REGISTERED = False, BEST_SLM =
+  gemma4-e4b). EMHASS pinned by digest in `docker-compose.yml`. Tested on dev plans only. Year simulation (22 Nov): `configurator.py`
+  over 49 weeks from 2016-01-18 (records import/export kWh since 22 Nov, costs unchanged) + `heldout/year_balance.py`
+  (saving vs rules and vs expert MPC, against model energy on the gateway or a companion device); runs only after
+  registration (contains the Configurator's held-out weeks); Configurator weeks and year use the thesis MPC, not EMHASS (author's decision 22 Nov; Sections 3.5 and 5.5 say so). **No system may read a
+  held-out message before the registration commit**; next steps (plan page section 7): register, held-out run, SLR, text pass, edge boards last.
+
+**Lessons to keep:** value energy left at midnight the same way in optimiser and score; the control layer holds the
+planned grid exchange, not the battery power; tool descriptions never suggest a default for the agent's decision;
+on cost a tuned MPC beats the agents, so the thesis is about interpreting plans and configuring, not beating the
+optimiser. Data in `data/raw/` of the main checkout (gitignored). Agent runs need `.env`; set
+`LANGSMITH_TRACING=false`.
 
 ## Methodology invariants (keep these true)
 

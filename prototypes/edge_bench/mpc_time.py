@@ -28,6 +28,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--device", required=True)
     parser.add_argument("--raw-dir", type=Path, default=Path("data/raw"))
+    parser.add_argument("--out-dir", type=Path, default=HERE / "out", help="(edge kit: the code is mounted read-only)")
     args = parser.parse_args()
     times: list[float] = []
     solve = closed_loop.mpc
@@ -57,7 +58,7 @@ def main() -> None:
     summary = {"device": args.device, "host_os": platform.platform(), "solves": len(times),
                "mean_s": round(sum(times) / len(times), 3), "p95_s": round(ordered[int(0.95 * (len(ordered) - 1))], 3),
                "max_s": round(ordered[-1], 3)}  # fmt: skip
-    out = HERE / "out" / f"{args.device}_mpc.json"
+    out = args.out_dir / f"{args.device}_mpc.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))

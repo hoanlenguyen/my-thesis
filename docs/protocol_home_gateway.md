@@ -84,11 +84,11 @@ change is a new design iteration on the development plans only.
 
 | | Hypothesis | Test |
 |---|---|---|
-| H1 (SQ1) | On the held-out plans, the best SLM is within 0.05 of the cloud LLM on constraint recall and decision accuracy (non-inferiority) | paired cluster bootstrap over plans; McNemar on decisions |
-| H2 (SQ1) | With the best SLM in closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on at least 95 % of feasible house-days | one-sided exact binomial, p0 = 0.95 |
-| H3 (SQ1) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.05 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
-| H4 (SQ2) | The SLM-configured MPC is non-inferior to the deterministic auto-tuner (same history, same backtest) and within a registered margin of the LLM-configured MPC | paired one-sided Wilcoxon |
-| H5 (SQ3) | On each device the gateway commits a plan within a registered time (p95 of the time per plan; the limit in minutes set from the exploratory runs), plans due sooner go to the fallback, and the yearly saving over rules exceeds the energy and cost of inference | descriptive with measured power; year simulation |
+| H1 (SQ1) | On the held-out plans, the best SLM is within 0.10 of the cloud LLM on constraint recall and decision accuracy (non-inferiority; margin chosen 21 Nov 2026 from `prototypes/heldout/power.py`: 0.05 would need about 390 plans, 0.10 about 100) | paired cluster bootstrap over plans; McNemar on decisions |
+| H2 (SQ1) | With the best SLM in closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on more than 90 % of feasible house-days | one-sided exact binomial, p0 = 0.90 (changed from 0.95 on 21 Nov 2026: with at most 80 feasible commit plans among the 120, 0.95 had no slack) |
+| H3 (SQ1) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.10 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
+| H4 (SQ2) | The SLM-configured MPC costs at most 0.20 EUR per week more than the deterministic auto-tuner (same history, same backtest) and than the LLM-configured MPC (non-inferiority; margin fixed 22 Nov 2026: less than half of the expert setting's 0.45 EUR per week on the main house; power 0.94 over 31 weeks if equal) | paired one-sided Wilcoxon, both comparisons |
+| H5 (SQ3) | On each device the p95 of the time per plan is at most 15 minutes (fixed 22 Nov 2026: plans due within 30 minutes go to the fallback, so every plan kept locally is committed at least 15 minutes ahead), plans due sooner go to the fallback, and the yearly saving over rules exceeds the energy and cost of inference | descriptive with measured power; year simulation |
 
 The earlier hypotheses (H1-H6 of 1 November) are replaced; the cost comparison of plain-language vs exact
 parameters (old H3) and the default-to-tuned share (old H4a) can be kept as descriptive results.
@@ -206,7 +206,7 @@ the cost.
 | Weather | sunny, variable, overcast (DWD radiation); cold, mild, warm (DWD temperature) |
 | Price pattern | flat, evening peak, volatile (including negative prices) |
 | Load | base, + heat pump, + heat pump + EV |
-| House | several OPSD homes (configuration is learned per house) |
+| House | plans (SQ1): `residential4` only, the one OPSD home with a heat pump and an EV (author's decision 21 Nov 2026); configuration (SQ2): `residential4`, `3`, `6` |
 
 **Answer-key rules** (from the review, adopted 1 Nov 2026):
 
@@ -228,7 +228,7 @@ the cost.
   keyed by the author.
 - *Exploratory set* (about 100 house-days) for design iterations.
 - *Held-out set*: plans written by 3-5 people other than the author from scenario prompts (the house-day, who is
-  home, what they want), keyed by the author, checked by a second person, registered before any run. Its size
+  home, what they want) on 120 new days of `residential4` (`prototypes/heldout/`), keyed by the author, checked by a second person, registered before any run. Its size
   follows the power calculation in section 2.
 
 ## 6. Systems compared

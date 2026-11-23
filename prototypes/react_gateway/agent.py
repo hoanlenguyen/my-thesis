@@ -116,6 +116,10 @@ class Gateway:
     home: Home
     appliances: dict
     schedules: list[dict] = field(default_factory=list)  # every plan_schedule result, the last one is shown
+    # False = the set-up without the checks and the rules in code (registered evaluation, 22 Nov 2026): plan_schedule
+    # plans what it is given (the usual car settings are still filled in, because the optimiser needs a target and a
+    # time), and the gateway applies whatever the model commits. True (default) = the design, unchanged.
+    checks: bool = True
 
     def hour(self, k: int) -> str:
         return (self.world.t0 + timedelta(minutes=15 * int(k))).strftime(FMT)
@@ -180,6 +184,8 @@ class Gateway:
             its expected cost and whether each requirement is met, or the problems that need a question."""
             req = Requirements(ev=ev or [], appliances=appliances or [], away=away or [], comfort=comfort or [])
             got = req.model_dump()
+            if not gw.checks:
+                return gw.plan_unchecked(got)
             # Vague words are asked about, never filled with the usual settings (test run: "leaving really early"
             # became the usual 07:30). Developed on the dev plans only (DA3 "leaving early tomorrow").
             vague = [("other", f"the household's '{w}' is too vague to plan: ask what they mean")
@@ -226,6 +232,26 @@ class Gateway:
             return result["text"]
 
         return [get_home_state, get_prices, get_weather_forecast, get_appliances, plan_schedule]
+
+    def plan_unchecked(self, got: dict) -> str:
+        """plan_schedule without the checks and the rules in code: no question for vague words, no time rule, no
+        feasibility or conflict check, no refusal of an empty plan. Only the usual car settings are filled in, and
+        charges after the known prices are left for later, as in the design, so that the optimiser can plan at all."""
+        notes = self.fill_usual(got)
+        notes.insert(0, self.read_back(got))
+        end = self.world.t0 + timedelta(minutes=15 * self.world.horizon)
+        later = [e for e in got["ev"] if parse(e["departure"]) and parse(e["departure"]) > end]
+        try:
+            result = self.schedule({**got, "ev": [e for e in got["ev"] if e not in later]})
+        except Exception as exc:  # unchecked input the optimiser cannot plan (e.g. a deadline before its start)
+            self.schedules.append({"requirements": got, "problems": [f"optimiser failed: {str(exc)[:120]}"]})
+            return "\n".join([*notes, f"Not planned: the optimiser could not plan these requirements ({str(exc)[:120]})."])
+        result["requirements"] = got
+        result["checks"] += [{"requirement": f"car by {e['departure']}", "met": True, "later": True} for e in later]
+        result["text"] = "\n".join([*notes, result["text"]])
+        result["notes"] = notes
+        self.schedules.append(result)
+        return result["text"]
 
     def when(self, value: str | None) -> str:
         """A time as the household would say it: weekday, clock time, part of the day and hours from now."""
@@ -522,12 +548,19 @@ def run_plan(model_name: str, gw: Gateway) -> tuple[dict, dict]:
                        for call in m.tool_calls]  # fmt: skip
     last = gw.schedules[-1] if gw.schedules else None
     answer = r.output.model_dump() if r.output is not None else None
-    commit = bool(answer and answer["commit"] and last and "problems" not in last
-                  and all(x["met"] or x.get("warning") for x in last.get("checks", [])))  # fmt: skip
+    if gw.checks:
+        commit = bool(answer and answer["commit"] and last and "problems" not in last
+                      and all(x["met"] or x.get("warning") for x in last.get("checks", [])))  # fmt: skip
+    else:  # without the checks the gateway applies whatever the model commits
+        commit = bool(answer and answer["commit"])
     got = {**(last["requirements"] if last else {}), "questions": (answer or {}).get("questions", []), "commit": commit}
     if answer is None:  # a failed answer is a question to the household
         got["questions"] = [{"topic": "other", "text": "(no valid answer)"}]
     meta["model_commit"] = bool(answer and answer["commit"])
+    # The model layer's fallback triggers (Section 4.2 of the thesis): the answer failed validation (run_react already
+    # retried), or the gateway refused a plan the model committed.
+    meta["failed_answer"] = answer is None
+    meta["checker_rejected"] = bool(gw.checks and meta["model_commit"] and not commit)
     last = last or {}
     message_in = {"sent": gw.plan["sent"], "text": gw.plan["text"], "car_pct": gw.plan.get("state", {}).get("ev_pct")}
     if gw.plan.get("change"):

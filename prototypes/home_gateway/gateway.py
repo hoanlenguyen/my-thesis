@@ -442,7 +442,9 @@ def score(day: Day, home: Home, r: Result) -> dict[str, float]:
               + home.capacity_kwh_per_k * (r.indoor[-1] - home.set_c) / float(day.cop.mean()))  # fmt: skip
     return {"cost_eur": cost, "end_state_eur": stored * price, "adjusted_cost_eur": cost - stored * price,
             "peak_import_kw": float(r.imports.max()), "min_indoor_c": float(r.indoor.min()),
-            "ev_kwh": float(r.ev.sum() * SLOT_HOURS)}  # fmt: skip
+            "ev_kwh": float(r.ev.sum() * SLOT_HOURS),
+            # added 22 Nov 2026 for the year simulation (energy, not only cost); no other value changes
+            "import_kwh": float(r.imports.sum() * SLOT_HOURS), "export_kwh": float(r.exports.sum() * SLOT_HOURS)}  # fmt: skip
 
 
 def sample_days(days: list[Day], n: int) -> list[Day]:

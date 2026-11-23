@@ -1,0 +1,91 @@
+# One-device test (18 Nov 2026): EMHASS, the language model (Ollama, processor only) and the harness share ONE device,
+# simulated as the same 4 physical cores and 16 GB, like a 16 GB Raspberry Pi 5 or a small mini PC. A probe times
+# the gateway's background work (an EMHASS re-plan and a control step) every 15 s while the model answers plans.
+#
+# Two runs differ only in the model's share of the cores:
+#   unprioritised:  MODEL_CPUS=4  MODEL_SHARES=1024  (default)
+#   prioritised:    MODEL_CPUS=3  MODEL_SHARES=128   (the model is capped below all cores and yields to the rest)
+# The model runs with as many threads as MODEL_CPUS (20 Nov 2026; before, Ollama started 10 threads on the 4 cores).
+#
+#   docker compose -f prototypes/emhass_gateway/docker-compose.onedevice.yml up -d emhass ollama probe
+#   docker compose -f prototypes/emhass_gateway/docker-compose.onedevice.yml run --rm assistant --out /out/one.jsonl
+#
+# OLLAMA_MODELS_DIR: the laptop's Ollama models folder, mounted read-only (gemma4:e4b is already downloaded there).
+name: home-gateway-one
+
+x-device: &device
+  cpuset: "0,2,4,6"  # four physical cores: in the Docker VM, CPUs 0-3 are two cores with two threads each (20 Nov 2026)
+
+services:
+  emhass:
+    <<: *device
+    image: ghcr.io/davidusb-geek/emhass:latest  # 0.18.4 when this was written
+    environment:
+      TIME_ZONE: Europe/Berlin
+      LAT: "47.66"
+      LON: "9.18"
+      ALT: "400"
+      SUPERVISOR_TOKEN: ""
+      EMHASS_URL: empty
+    mem_limit: 2g
+    cpu_shares: 1024
+
+  ollama:
+    <<: *device
+    image: ollama/ollama:0.40.16  # the laptop's Ollama version
+    environment:
+      OLLAMA_NOPRUNE: "1"  # the models folder is shared with the laptop: never delete from it
+      OLLAMA_KEEP_ALIVE: 30m
+    volumes:
+      - ${OLLAMA_MODELS_DIR:-C:/Users/Admin/.ollama/models}:/root/.ollama/models:ro
+    cpus: ${MODEL_CPUS:-4}
+    cpu_shares: ${MODEL_SHARES:-1024}
+    mem_limit: 11g
+
+  probe:
+    <<: *device
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /work
+    depends_on: [emhass]
+    environment:
+      EMHASS_LOCK: /lock/emhass.lock  # one solve-and-read at a time, as one harness on a real gateway
+    volumes:
+      - ../..:/work:ro
+      - ./out/onedevice:/out
+      - lock:/lock
+    entrypoint: ["python", "-u", "prototypes/emhass_gateway/probe.py", "--emhass", "http://emhass:5000",
+                 "--out", "/out/probe_${RUN:-run}.jsonl"]
+    mem_limit: 512m
+    cpu_shares: 1024
+
+  assistant:
+    <<: *device
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /work
+    depends_on: [emhass, ollama]
+    environment:
+      UV_PROJECT_ENVIRONMENT: /venv
+      UV_LINK_MODE: copy
+      UV_FROZEN: "1"
+      EMHASS_LOCK: /lock/emhass.lock
+    volumes:
+      - ../..:/work:ro
+      - ${RAW_DIR:-D:/Study/my-thesis/data/raw}:/data:ro
+      - ./out/onedevice:/out
+      - lock:/lock
+      - venv:/venv
+      - uv-cache:/root/.cache/uv
+    entrypoint: ["uv", "run", "--no-dev", "python", "prototypes/emhass_gateway/emhass_gateway.py",
+                 "--raw-dir", "/data", "--emhass", "http://emhass:5000", "--ollama", "http://ollama:11434",
+                 "--num-thread", "${MODEL_CPUS:-4}"]  # Ollama would start threads for all the host's cores
+    mem_limit: 2512m
+    cpu_shares: 1024
+
+volumes:  # the environment built for the two-device demonstration
+  lock: {}  # a named volume (Linux file system), so flock works across the two containers
+  venv:
+    external: true
+    name: home-gateway_venv
+  uv-cache:
+    external: true
+    name: home-gateway_uv-cache

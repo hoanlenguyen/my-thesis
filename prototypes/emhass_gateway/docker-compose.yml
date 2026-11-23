@@ -10,7 +10,8 @@ name: home-gateway
 
 services:
   emhass:
-    image: ghcr.io/davidusb-geek/emhass:latest  # 0.18.4 when this was written (17 Nov 2026), as in the first thesis
+    # 0.18.4, as in the first thesis; pinned by digest on 22 Nov 2026 for the registered evaluation (was :latest)
+    image: ghcr.io/davidusb-geek/emhass@sha256:840e2ad213ffa5472d49294bf706970fc2b3c1178981d9639e9c050e9f1d5e1c
     environment:
       TIME_ZONE: Europe/Berlin  # the OPSD house (Konstanz)
       LAT: "47.66"

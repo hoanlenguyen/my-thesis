@@ -1,0 +1,86 @@
+# Edge kit (22 Nov 2026): the gateway on a household device (Raspberry Pi 5 with 16 GB, or the Ryzen mini PC).
+# The whole device is the gateway: EMHASS, the language model (Ollama, processor only) and the harness share its
+# cores, as in the one-device test (prototypes/emhass_gateway/docker-compose.onedevice.yml), without the laptop's core
+# pinning. run_device.sh drives it; see README.md.
+#
+# Environment (set by run_device.sh):
+#   DEVICE      label of the device, e.g. pi5-16gb or ryzen-minipc
+#   RAW_DIR     the raw data folder on the device (OPSD house, DWD Konstanz, When2Heat, prices)
+#   OUT_DIR     where the results go (default prototypes/edge_kit/out/<DEVICE>)
+#   MODEL_CPUS  cores the model may use (and its threads); MODEL_SHARES its CPU weight
+#   RUN         name of the one-device run (unprioritised or prioritised)
+name: edge-gateway
+
+services:
+  emhass:
+    # 0.18.4, pinned by digest as in the registered evaluation (multi-architecture image: arm64 on the Pi)
+    image: ghcr.io/davidusb-geek/emhass@sha256:840e2ad213ffa5472d49294bf706970fc2b3c1178981d9639e9c050e9f1d5e1c
+    environment:
+      TIME_ZONE: Europe/Berlin
+      LAT: "47.66"
+      LON: "9.18"
+      ALT: "400"
+      SUPERVISOR_TOKEN: ""
+      EMHASS_URL: empty
+    cpu_shares: 1024
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:0.40.16
+    environment:
+      OLLAMA_KEEP_ALIVE: 30m
+    volumes:
+      - ollama-models:/root/.ollama/models
+    cpus: ${MODEL_CPUS:-4}
+    cpu_shares: ${MODEL_SHARES:-1024}
+    restart: unless-stopped
+
+  probe:
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /work
+    depends_on: [emhass]
+    environment:
+      EMHASS_LOCK: /lock/emhass.lock
+    volumes:
+      - ../..:/work:ro
+      - ${OUT_DIR:-./out/device}:/out
+      - lock:/lock
+    entrypoint: ["python", "-u", "prototypes/emhass_gateway/probe.py", "--emhass", "http://emhass:5000",
+                 "--out", "/out/probe_${RUN:-run}.jsonl"]
+    cpu_shares: 1024
+
+  assistant:  # the Household Assistant with EMHASS (one-device test)
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /work
+    depends_on: [emhass, ollama]
+    environment: &uvenv
+      UV_PROJECT_ENVIRONMENT: /venv
+      UV_LINK_MODE: copy
+      UV_FROZEN: "1"
+      EMHASS_LOCK: /lock/emhass.lock
+    volumes: &uvvolumes
+      - ../..:/work:ro
+      - ${RAW_DIR:-./raw}:/data:ro
+      - ${OUT_DIR:-./out/device}:/out
+      - lock:/lock
+      - venv:/venv
+      - uv-cache:/root/.cache/uv
+    entrypoint: ["uv", "run", "--no-dev", "python", "prototypes/emhass_gateway/emhass_gateway.py",
+                 "--raw-dir", "/data", "--emhass", "http://emhass:5000", "--ollama", "http://ollama:11434",
+                 "--num-thread", "${MODEL_CPUS:-4}"]
+    cpu_shares: 1024
+
+  tools:  # the edge benchmark and the MPC timing, in the same Python environment
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /work
+    depends_on: [ollama]
+    environment: *uvenv
+    volumes: *uvvolumes
+    entrypoint: ["uv", "run", "--no-dev", "python"]
+    cpu_shares: 1024
+
+volumes:
+  ollama-models: {}
+  lock: {}
+  venv: {}
+  uv-cache: {}
