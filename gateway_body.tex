@@ -26,9 +26,13 @@ Hoan Le\\
 % ── ABSTRACT ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Abstract}
 
-Optimisers such as model predictive control (MPC) save households more
-than fixed rules, but need exact parameters that households cannot give
-and settings that an expert has to tune. Language models can read
+Optimisers such as model predictive control (MPC) lower household
+electricity bills more than fixed rules, such as timers or ``run in the
+cheapest hours'' settings, because they plan the whole day ahead from
+price and demand forecasts instead of following the same pattern every
+day. However, they need parameters that are hard to measure, such as how
+much the solar panels actually produce, and their settings are usually
+tuned by an expert or installer. Language models can read
 plain-language plans and set an optimiser up, yet studies so far use
 large cloud models, which reveal the household's routine, fail offline
 and cost money for every call. This
@@ -37,8 +41,7 @@ reliably interpret household plans and configure an optimiser, and how
 close they come to a cloud language model.
 
 The work combines a systematic literature review with Design Science
-Research (732 records from Scopus, ScienceDirect and arXiv; screening
-in process). The artifact is a HEMS on the energy gateway in which a local small model
+Research. The artifact is a home energy management system (HEMS) on the energy gateway in which a local small model
 has only the two tasks of the title: an assistant turns plans into
 constraints or asks the household, and a configurator chooses the MPC's
 settings each week. The MPC schedules, a deterministic checker and a
@@ -48,17 +51,17 @@ fallback. It is evaluated on measured data of a German home with PV, a
 heat pump, an electric vehicle and a simulated battery.
 
 In exploratory pilots, the small model Gemma 4 E4B, as a ReAct agent
-with the home's data and the MPC as tools, got 19 of 22 plans in
-everyday words right, the cloud model 21, and its committed plans met
+with the home's data and the MPC as tools, got nearly as many plans in
+everyday words right as the cloud model, and its committed plans met
 the requirements as often as exact parameters did. In earlier
 iterations it read plans nearly as well as the cloud model and decided
 as often correctly when to ask; a checker that turns failed answers
 into questions raised it above the cloud model. As
 configurator it saved less than the cloud model in spring and about as
-much on three houses in autumn; a rule-based auto-tuner saved less than
+much on several houses in autumn; a rule-based auto-tuner saved less than
 both in spring and about as much in autumn. The MPC
-solves in a tenth of a second, the language model a plan in seconds on
-a GPU and 39 on a laptop CPU.
+solves within a second, and the language model handles a plan in a few
+seconds on a GPU and considerably longer on a laptop CPU.
 
 The results suggest three design principles: narrow tasks for the
 model, deterministic checks around it, and local inference first. They
@@ -444,7 +447,8 @@ lists its stages.
 Stage & Activity & Studies \\
 \midrule
 Identification & database search (Scopus, ScienceDirect, arXiv; 11 November 2026) & 863 records, 732 after removing duplicates \\
-Screening & titles and abstracts against the inclusion criteria & pre-screened: 53 include, 69 unsure, 610 exclude; author's check in process \\
+ & supplementary search (arXiv; 24 November 2026) & 171 records, 149 new after removing duplicates \\
+Screening & titles and abstracts against the inclusion criteria & pre-screened: database search 69 include, 53 unsure, 610 exclude; supplementary search 9 include, 3 unsure, 137 exclude; author's check in process \\
 Eligibility & full texts & in process \\
 Snowballing & backward and forward from the included studies & in process \\
 Included & data extraction for LQ1--LQ3 & in process \\
@@ -764,6 +768,19 @@ proceedings and overlaps strongly with Web of Science in this field, so
 the loss is expected to be small; snowballing from the included studies
 covers the rest. Backward and forward snowballing from the included
 studies follows the database search \parencite{wohlin2014}.
+
+The search was checked against the studies read before it. It found
+all of them but one: \textcite{sanguinetti2025}, who turn household
+preferences into optimisation constraints for home appliances without
+using the home energy terms of the first search. A supplementary search
+was therefore run on arXiv on 24 November 2026. It combines
+language-model terms with a household asset or setting (appliances,
+households, residential, energy communities, prosumers, electric
+vehicles, heat pumps, thermostats, HVAC) and with optimisation,
+constraints, scheduling or control. It returned 171 records, 149 of them
+new after duplicates were removed, among them the missed study. The same
+search is to be run in Scopus; Appendix~\ref{app:search} gives the
+strings.
 
 \textit{Inclusion and exclusion.} Included are studies from 2022 to
 2026, in English, on behind-the-meter assets (appliances, PV, batteries,
@@ -2898,7 +2915,8 @@ has are used.
 
 The search strings of the systematic literature review
 (Section~\ref{sec:slr}). Search A answers LQ1 and LQ2, search B answers
-LQ3. All searches cover 2022 to 2026, articles, conference papers and
+LQ3, and the supplementary search C covers household settings that
+search A misses (LQ1, LQ2). All searches cover 2022 to 2026, articles, conference papers and
 reviews, in English. ScienceDirect allows at most eight Boolean
 operators per field and no wildcards, so search A is split in two there.
 
@@ -2934,6 +2952,12 @@ operators per field and no wildcards, so search A is split in two there.
 \texttt{("small language model" OR "on-device language model" OR "edge LLM" OR "local LLM") AND ("energy management" OR "smart home" OR "smart grid")}
 
 \textbf{arXiv} (API, abstracts, submitted 2022 to 2026). Search A: \texttt{"language model(s)"} or \texttt{LLM(s)} and one of \texttt{"home energy"}, \texttt{"demand response"}, \texttt{"smart home"}, \texttt{"energy gateway"} or \texttt{"building energy management"}; search B: \texttt{"small language model(s)"}, \texttt{"on-device LLM"}, \texttt{"edge LLM"}, \texttt{"local LLM"} or \texttt{"locally deployed"} and one of \texttt{"energy management"}, \texttt{"home energy"}, \texttt{"smart grid"}, \texttt{"demand response"} or \texttt{"building energy"}. The word \texttt{energy} alone was not used, because it also matches the energy a model itself uses.
+
+\textbf{arXiv, supplementary search C} (API, abstracts, submitted 2022 to 2026; run 24 November 2026).
+\texttt{"language model(s)"} or \texttt{LLM(s)}; and one of \texttt{appliance(s)}, \texttt{household(s)}, \texttt{residential}, \texttt{"energy community"}, \texttt{prosumer(s)}, \texttt{"electric vehicle(s)"}, \texttt{"heat pump(s)"}, \texttt{thermostat} or \texttt{HVAC}; and one of \texttt{constraint(s)}, \texttt{optimization}, \texttt{optimisation}, \texttt{scheduling}, \texttt{"model predictive control"}, \texttt{MPC} or \texttt{controller}.
+
+\textbf{Scopus, supplementary search C} (to be run).
+\texttt{TITLE-ABS-KEY ( ( "large language model*" OR "small language model*" OR LLM* OR "language model*" ) AND ( appliance* OR household* OR residential OR "energy communit*" OR prosumer* OR "electric vehicle*" OR "heat pump*" OR thermostat* OR HVAC ) AND ( constraint* OR optimi?ation OR schedul* OR "model predictive control" OR MPC OR controller* ) )}, with the same limits as search A.
 
 \textbf{Google Scholar} (snowballing and grey literature only, first 100 results each):
 \texttt{"small language model" "home energy management"};

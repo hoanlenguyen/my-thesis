@@ -168,8 +168,8 @@ def main() -> None:
             r["decision"], r["reason"] = "include", INCLUDE[r["id"]]
         elif r["id"] in UNSURE:
             r["decision"], r["reason"] = "unsure", UNSURE[r["id"]]
-        elif r["id"] in LQ3_BACKGROUND:
-            r["decision"], r["reason"] = "unsure", "LQ3 background: small or local model controls smart-home devices, no energy objective"
+        elif r["id"] in LQ3_BACKGROUND:  # included by the author's decision, 24 Nov 2026 (was unsure)
+            r["decision"], r["reason"] = "include", "LQ3 background: small or local model controls smart-home devices, no energy objective"
         elif r["id"] in BACKGROUND:
             r["decision"], r["reason"] = "exclude", "review or position paper (kept as background)"
         elif r["abstract"] and not (LM.search(text) and EN.search(text)):
