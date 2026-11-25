@@ -52,24 +52,34 @@ study is future work.
 
 ## 2. Research questions and hypotheses (draft)
 
-- **RQ:** How can a smart home energy management system use small language models running on local hardware, the home's energy gateway, to interpret
-  households' plain-language plans and configure an optimiser reliably, and how close do they come to a cloud
-  large language model?
+Wording shortened on 25 November 2026 (author's decision; same scope, H1-H5 unchanged), as in thesis Section 1.2:
+
+- **RQ:** How can small language models on a home energy gateway reliably interpret household plans and configure
+  an optimiser?
+
 Three sub-questions, one per part of the title (reduced from four on 12 November 2026: the old SQ3, checker and
 fallback, is now the last part of SQ1; the old SQ4, deployment, is now SQ3):
 
-- **SQ1 (interpreting household plans):** How accurately do small language models turn plain-language plans and
-  their changes into constraints and a commit-or-ask decision, compared with a cloud large language model, how
-  often are the household's requirements then met, and how much of the remaining gap do the deterministic checker
-  and a cloud fallback close?
-- **SQ2 (configuring an optimiser):** Can a small language model configure the MPC from the house's history as
-  well as a large language model, and better than a deterministic auto-tuner that sees the same history?
-- **SQ3 (on local hardware):** What does running the small models on household hardware cost in latency, energy,
-  money and privacy compared with the cloud model, and does the HEMS's saving outweigh these costs?
+- **SQ1 (interpreting household plans):** How accurately does a small model turn household plans into optimiser
+  requirements, and what do checks and a cloud fallback add?
+- **SQ2 (configuring an optimiser):** Can a small model configure the optimiser from the house's history as well
+  as a cloud model and better than an automatic tuner?
+- **SQ3 (on local hardware):** Does the saving of running the model on the gateway outweigh its cost in time,
+  energy, money and privacy?
 
-The conditions in which interpretation or configuration fails (weather, price pattern, load, plan type) are
-reported descriptively under each SQ. If the small models allow it, one agent is compared with the four-agent
-design (exploratory: do narrow tasks help a small model more than a large one?).
+The small model is compared with the cloud LLM in each sub-question; SQ1 also measures whether the model commits a
+plan or asks the household (constraints and the commit-or-ask decision, including changes to a plan) and how often
+the household's requirements are then met, and the automatic tuner of SQ2 is deterministic and sees the same history
+as the model. The conditions in which interpretation or configuration fails (weather, price pattern, load, plan type)
+are reported descriptively under each SQ, and an exploratory comparison of one agent with the four-agent design tests
+whether narrow tasks help a small model more than a large one.
+
+Previous wording (18 November 2026): RQ "How can small language models on a home energy gateway reliably interpret
+household plans and configure an optimiser, and how close do they come to a cloud language model?"; SQ1 "How
+accurately does a small language model turn a household's plans into requirements for the optimiser, and how much do
+deterministic checks and a cloud fallback help?"; SQ2 "Can a small language model set up the optimiser from the
+house's history as well as a cloud model, and better than an automatic tuner?"; SQ3 "What does running the model on
+the gateway cost in time, energy, money and privacy, and does the saving outweigh it?"
 
 **Models.** SLM = open model below about 10 billion parameters (Belcak et al., 2025): Gemma 4 E4B (main
 candidate), Qwen3 8B, and one or two more of similar size. Larger local: Qwen3 30B-A3B, gpt-oss-20b. Cloud LLM:

@@ -179,8 +179,7 @@ plain-language plans and set an optimiser up, yet studies so far use
 large cloud models, which reveal the household's routine, fail offline
 and cost money for every call. This
 thesis asks how small language models on a home energy gateway can
-reliably interpret household plans and configure an optimiser, and how
-close they come to a cloud language model.
+reliably interpret household plans and configure an optimiser.
 
 The work combines a systematic literature review with Design Science
 Research. The artifact is a home energy management system (HEMS) on the energy gateway in which a local small model
@@ -239,13 +238,16 @@ household's plans and set the optimiser up, can a small model that runs
 in the home do it, so that the household's routine never has to leave
 the house?
 
-I thank my supervisors, Yueqiang Xu and Paula Alavesa, for their
-guidance and feedback. The study relies on open data and software: the
-household measurements of the Open Power System Data project, the
-weather observations of the German Weather Service (DWD), the German
-day-ahead prices published by Energy-Charts, the When2Heat heat pump
-data, and the open models and tools, among them Ollama, PuLP and CBC,
-that made it possible to run the experiments on a laptop.
+I would like to express my gratitude to my supervisors, Yueqiang Xu and
+Paula Alavesa, for their help at every step of this work. Whenever I
+faced a difficulty, I found support in their advice and opinions.
+
+My deep thanks also go to my professors and lecturers, who shared their
+knowledge and experience with me during my Master's studies. What they
+taught me served as a solid basis for my thesis and my future work.
+
+Finally, I wish to thank my family and my friends for their support
+throughout my education.
 
 \vspace{12pt}
 Oulu, November 2026
@@ -316,8 +318,7 @@ each asset draws, stores or exports power, so that the household pays
 less for electricity, uses more of the power it generates and stays within the limits set
 by the grid operator. The HEMS runs on a home energy gateway, the device
 in the meter cabinet or on the home network that reads the smart meter
-and talks to the devices; in this thesis, \textit{local hardware} means
-that gateway, a small computer such as a Raspberry Pi~5 or a mini PC.
+and talks to the devices.
 Figure~\ref{fig:homesystem} shows such a system.
 
 \begin{figure}[htbp]
@@ -330,40 +331,33 @@ energy gateway), which only measures and sends setpoints.}
 \label{fig:homesystem}
 \end{figure}
 
-Four problems limit what today's home energy management systems
+Three problems limit what today's home energy management systems
 achieve.
 
-\textit{Devices do not share one language.} Inverters, batteries,
-chargers and heat pumps from different makers communicate in different
-ways, many only through their manufacturer's cloud, and standards such
-as Matter and OpenADR are adopted slowly (Energy Systems Catapult, 2026).
-
-\textit{Several controllers act on one device.} An EV charger can
-receive commands from the car's app, the charger's app, a smart-charging
-service, a flexibility service and the energy supplier
+\textit{Devices and controllers are not coordinated.} Inverters,
+batteries, chargers and heat pumps from different makers communicate in
+different ways. Common standards, Matter inside the home and OpenADR for
+signals from the grid, are adopted slowly, so many devices can be
+reached only through their maker's cloud, whose interfaces differ even
+between makers of the same kind of device. A device that can be reached
+is often controlled by several services: an EV charger can receive
+commands from the car's app, the charger's app, a smart-charging
+service, a flexibility service and the energy supplier, and these
+commands can conflict, although the British standard PAS~1878 states
+that only one energy manager should control a device at a time
 (Energy Systems Catapult, 2026).
 
 \textit{The grid operator sets limits, or prices.} In Germany, heat
 pumps and wallboxes above 4.2\,kW installed since 2024 must accept power
-reductions from the grid operator through the smart meter gateway and a
-control box (§14a of the Energy Industry Act, EnWG), so the household's
-plan has to fit inside an external limit (evcc, n.d.-a). Other EU
-countries rely mainly on prices. Article 11 of the EU electricity
-directive gives every customer with a smart meter the right to a
-dynamic price contract (Directive (EU) 2019/944, 2019), and in Finland about a
-third of all retail contracts were dynamic price contracts at the end
-of 2024 (Energy Authority, 2025). Finland prices a household's
-peak instead of limiting it: from 2029 at the latest, a distribution
-product with a power charge bills the month's highest 60-minute average
-power above 8\,kW, and households can still choose a product without
-such a charge (Energy Authority, 2026). In the Netherlands about
-8\,\% of households had a dynamic contract in mid-2026
-(ACM, 2026), and net metering of solar power ends on 1 January
-2027, after which suppliers pay a compensation for the power fed in,
-which rewards using solar power in the house (Business.gov.nl, n.d.).
-Under this market-based approach the household shifts its consumption
-voluntarily and weighs a price on its peak, so the saving depends on a
-home energy management system that can act on the prices.
+reductions from the grid operator (§14a of the Energy Industry Act,
+EnWG), so the household's plan has to fit inside an external limit
+(evcc, n.d.-a). Other EU countries rely mainly on prices: every
+customer with a smart meter has the right to a dynamic price contract
+(Directive (EU) 2019/944, 2019), about a third of Finnish retail contracts were
+dynamic at the end of 2024 (Energy Authority, 2025), and from
+2029 an optional Finnish power charge bills the month's highest
+60-minute average power above 8\,kW (Energy Authority, 2026). The
+household's saving then depends on a HEMS that can act on the prices.
 
 \textit{Planning by fixed rules leaves savings unused, and an optimiser
 needs an expert.} Typical systems follow rules such as ``charge the car
@@ -378,14 +372,13 @@ forecast. Households do not think in these parameters, settings become
 outdated when routines, seasons or tariffs change, and complicated
 systems slow adoption (Tuomela et al., 2021).
 
-The first three problems concern how the gateway connects to devices
-and to outside controllers; the HEMS of this thesis takes them as given
-and treats the grid operator's limit as a constraint. A priced peak,
-such as the Finnish power charge, would enter the optimiser's cost
-instead of its constraints; it is not modelled here, because the
-evaluation uses a German house, and is left for future research
-(Section~\ref{sec:future}). The subject of the thesis is the
-fourth problem: who supplies the optimiser's parameters and settings.
+The first two problems concern how the gateway connects to devices and
+to outside controllers; the HEMS of this thesis takes them as given and
+treats the grid operator's limit as a constraint. A priced peak, such as
+the Finnish power charge, is left for future research
+(Section~\ref{sec:future}), because the evaluation uses a German house.
+The subject of the thesis is the third problem: who supplies the
+optimiser's parameters and settings.
 
 Language-model agents can bridge the gap between what a household says
 and what an optimiser needs. Recent work turns plain-language
@@ -416,7 +409,9 @@ optimiser, and what a deterministic harness or a cloud fallback adds,
 has not been tested.
 
 This thesis therefore gives small language models the work an optimiser
-cannot do, and runs them on local hardware. They \textit{interpret
+cannot do, and runs them on local hardware. In this thesis,
+\textit{local hardware} means the home energy gateway, a small computer
+such as a Raspberry Pi~5 or a mini PC. The models \textit{interpret
 household plans}: they turn what the household says, by text or by
 voice, and its later changes into constraints for the optimiser, or ask
 when a plan is unclear or cannot be met. They \textit{configure the
@@ -457,36 +452,30 @@ fallback.}
 The main research question is:
 
 \textbf{RQ:} How can small language models on a home energy gateway
-reliably interpret household plans and configure an optimiser, and how
-close do they come to a cloud language model?
+reliably interpret household plans and configure an optimiser?
 
 Three sub-questions (SQ) divide it, one for each part of the title:
 
 \begin{description}[leftmargin=1.4cm, style=sameline, font=\normalfont\bfseries]
 \item[SQ1] \textit{Interpreting household plans.} How accurately does a
-small language model turn a household's plans into requirements for the
-optimiser, and how much do deterministic checks and a cloud fallback
-help?
-\item[SQ2] \textit{Configuring an optimiser.} Can a small language
-model set up the optimiser from the house's history as well as a cloud
-model, and better than an automatic tuner?
-\item[SQ3] \textit{On local hardware.} What does running the model on
-the gateway cost in time, energy, money and privacy, and does the
-saving outweigh it?
+small model turn household plans into optimiser requirements, and what
+do checks and a cloud fallback add?
+\item[SQ2] \textit{Configuring an optimiser.} Can a small model
+configure the optimiser from the house's history as well as a cloud
+model and better than an automatic tuner?
+\item[SQ3] \textit{On local hardware.} Does the saving of running the
+model on the gateway outweigh its cost in time, energy, money and
+privacy?
 \end{description}
 
-In each, the small model is compared with a cloud language model. SQ1
-also measures whether the model commits a plan or asks the household
-correctly and how often the household's requirements are then met; the
-automatic tuner of SQ2 sees the same history as the model; and SQ3
-sets the costs of the local model against those of the cloud model.
-
-Under each sub-question, the conditions in which interpretation or
-configuration fails (weather, price pattern, household load and plan
-type) are reported descriptively. If the small models allow it, the
-design iterations also compare one agent with the four-agent design, to
-see whether narrow tasks help a small model more than a large one; this
-comparison is exploratory.
+The small model is compared with a cloud language model in each
+sub-question; SQ1 also measures whether the model commits a plan or asks
+the household and how often the requirements are then met, and the
+automatic tuner of SQ2 sees the same history as the model. The
+conditions in which interpretation or configuration fails (weather,
+price pattern, household load and plan type) are reported descriptively,
+and an exploratory comparison of one agent with the four-agent design
+tests whether narrow tasks help a small model more than a large one.
 
 The thesis does not measure usability with users. Its claim is that the
 HEMS works without expert configuration from plans written by people
@@ -588,9 +577,9 @@ lists its stages.
 \toprule
 Stage & Activity & Studies \\
 \midrule
-Identification & database search (Scopus, ScienceDirect, arXiv; 11 November 2026) & 863 records, 732 after removing duplicates \\
+Identification & database search (Scopus, ScienceDirect, arXiv; 11 November 2026) & 863 records, 729 after removing duplicates \\
  & supplementary search (arXiv; 24 November 2026) & 171 records, 149 new after removing duplicates \\
-Screening & titles and abstracts against the inclusion criteria & pre-screened: database search 69 include, 53 unsure, 610 exclude; supplementary search 9 include, 3 unsure, 137 exclude; author's check in process \\
+Screening & titles and abstracts against the inclusion criteria & screened: database search 88 include, 641 exclude; supplementary search 11 include, 138 exclude \\
 Eligibility & full texts & in process \\
 Snowballing & backward and forward from the included studies & in process \\
 Included & data extraction for LQ1--LQ3 & in process \\
@@ -901,7 +890,9 @@ for each database.
 The searches were run on 11 November 2026. Scopus returned 543
 records for the first search and 129 for the second, ScienceDirect 63
 and 1, and arXiv 126 and 1: 863 records, of which 732 remained after
-duplicates were removed by DOI and title. IEEE Xplore was searched but
+duplicates were removed by DOI and title, and 729 after screening found
+three more versions of studies already in the set (a conference paper,
+a preprint and a poster). IEEE Xplore was searched but
 could not be exported without institutional access (301 and 35 hits,
 counted but not screened), and Web of Science could not be searched at
 all, because the university subscription did not reach the browser used
@@ -1167,6 +1158,14 @@ answers of the pilots (Section~\ref{sec:answers}) inform where the
 thresholds are set, and the thresholds are registered before the
 held-out plans are run.
 
+With the model's work in a queue (Section~\ref{sec:architecture}), what
+the household notices is not the time per plan but the time from its
+message until the plan is committed or a question is asked, which
+includes the wait in the queue. Under SQ3 the evaluation therefore also
+reports, descriptively and on each device, the time to a committed plan
+and the share of plans committed before their first deadline; H5 is
+unchanged.
+
 \section{Threats to validity}
 \label{sec:validity}
 
@@ -1225,6 +1224,7 @@ not yet built (the Monitor, the Explainer, the model layer and the user
 app with voice) and the implementation.
 
 \section{Requirements and architecture}
+\label{sec:architecture}
 
 From the problem (Section~\ref{sec:problem}) follow six requirements:
 (R1) the household states its plans in plain language; (R2) the HEMS
@@ -1251,6 +1251,18 @@ the EV deadline and the battery limits, and falls back to rules. The
 harness follows the Simplex pattern (Sha, 2001): the agents are
 unverified controllers inside a verified envelope.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{attachments/gateway/architecture.png}
+\caption{Architecture of the HEMS on the gateway: four agents on a
+local small model act only through validated tools; EMHASS, the MPC
+with tuned settings, plans and the checker passes only valid plans to
+the control layer. Tools of the Monitor and the Explainer
+(\texttt{get\_situation}, \texttt{explain\_plan}) are designed, not
+built.}
+\label{fig:architecture}
+\end{figure}
+
 The agents run on a small language model on local hardware by default.
 A \textit{model layer} in the harness decides which model answers: the
 local small model first, and a cloud LLM only when the small model's
@@ -1264,29 +1276,33 @@ SQ3).
 
 A small model needs seconds per plan on a consumer GPU but may need a
 minute or more on a household device's processor
-(Section~\ref{sec:edgebench}), so the model layer also handles time. The Assistant
-acknowledges a message at once and confirms when the plan is committed;
-the house keeps running on the last committed plan in the meantime, and
-the control layer never waits for a model. A plan whose first deadline
-is too close for the local model (for example within 30 minutes) goes to
-the fallback. Because the model shares the gateway with the optimiser
+(Section~\ref{sec:edgebench}), and the Household Assistant, a ReAct
+agent, two to four minutes (Section~\ref{sec:onedevice}), so the model
+layer also handles time. Every request to a model becomes a
+\textit{job} in one queue on the gateway, and one worker runs the jobs
+one after another on a single model, kept in memory between jobs so
+that no job waits for it to load. The Assistant acknowledges a message
+at once and confirms the plan, or asks its question, when the job is
+done; the house keeps running on the last committed plan in the
+meantime, and the control layer never waits for a model. Each job
+carries a deadline from its plan, such as the car's departure. A plan
+whose first deadline is too close for the local model (for example
+within 30 minutes) goes to the fallback at once, and a job still waiting
+near its deadline goes to the fallback too or, if the fallback is
+switched off, is reported to the household as late. The worker takes
+the household's plans and its answers to questions first, then the
+Monitor's events and the Explainer's explanations, and the
+Configurator's weekly run last, only when the queue is empty, for
+example at night. A model call cannot be interrupted, so the
+Configurator works in short calls and the worker checks the queue
+between them. Because the model shares the gateway with the optimiser
 and the control layer, it runs in its own process with a time limit and
 at a lower priority, so that it can never delay a replan or a control
-step (Section~\ref{sec:onedevice}); if the model does not answer, the
-gateway keeps the last committed plan and tells the household
+step (Section~\ref{sec:onedevice}); the harness also passes the
+optimiser one solve at a time, because EMHASS returns the result of its
+latest solve to any client. If the model does not answer, the gateway
+keeps the last committed plan and tells the household
 (Section~\ref{sec:emhassdemo}).
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{attachments/gateway/architecture.png}
-\caption{Architecture of the HEMS on the gateway: four agents on a
-local small model act only through validated tools; EMHASS, the MPC
-with tuned settings, plans and the checker passes only valid plans to
-the control layer. Tools of the Monitor and the Explainer
-(\texttt{get\_situation}, \texttt{explain\_plan}) are designed, not
-built.}
-\label{fig:architecture}
-\end{figure}
 
 \section{Agents and tools: interpreting plans and configuring the optimiser}
 \label{sec:agents}
@@ -1646,7 +1662,9 @@ daily report, and every figure it cites is compared with the plan; in
 the built Assistant, the planning tool already returns a reason for
 each device. The \textit{model layer} with its cloud fallback has so
 far been applied only to stored answers
-(Section~\ref{sec:planpilot}), not as a running part. The
+(Section~\ref{sec:planpilot}), not as a running part, and its job queue
+(Section~\ref{sec:architecture}) is designed, not built: the prototypes
+answer one plan at a time (Section~\ref{sec:onedevice}). The
 \textit{user app}, with voice and the Wi-Fi link, is the intended
 interface and is described in the rest of this section.
 
@@ -1683,6 +1701,12 @@ the checker and the scoring of Chapter~\ref{ch:results} do not change.
 The app shows the transcript, so that a misheard number can be corrected
 before the plan is committed, and replies come back as text in the app
 and as speech from the satellite.
+
+\textit{Direct commands.} Commands that need no interpretation, such as
+charging the car now, boosting the heating or cancelling a plan, are
+buttons in the app that go to the control layer directly and never wait
+for a model; only plans written in free text, and their changes, become
+jobs for the Household Assistant.
 
 \textit{Local voice.} Wake-word detection, speech recognition (Whisper)
 and speech output (Piper) run on the gateway beside the small language
@@ -2703,8 +2727,8 @@ their plans for the day and settings that suit their house. Today an
 expert sets both, or the household gives up the saving. This thesis
 asked how a smart home energy management system can use small language
 models on local hardware, the home's energy gateway, to interpret
-households' plain-language plans and configure the optimiser reliably,
-and how close they come to a cloud large language model. It combined a
+households' plain-language plans and configure the optimiser reliably.
+It combined a
 systematic literature review with Design Science Research and built a
 HEMS in which the language models have only these two tasks: a
 Household Assistant turns plans and their changes into constraints or
@@ -2755,11 +2779,6 @@ sufficient.
 
 \begin{hangparas}{0.7cm}{1}
 
-ACM. (2026, August 13). \textit{ACM's monitor on the consumer energy
-market: Increase in the number of dynamic contracts continues}.
-Netherlands Authority for Consumers and Markets.
-\url{https://www.acm.nl/en/publications/acms-monitor-consumer-energy-market-increase-number-dynamic-contracts-continues}
-
 AhmadiTeshnizi, A., Gao, W., \& Udell, M. (2024). OptiMUS: Scalable
 optimization modeling with (MI)LP solvers and large language models. In
 \textit{Proceedings of the 41st International Conference on Machine
@@ -2800,10 +2819,6 @@ of heuristic, deterministic, and stochastic control methods.
 Bundesnetzagentur. (n.d.). \textit{EEG-Vergütungssätze: Archiv}
 [Archive of EEG feed-in rates]. Retrieved 1 November 2026, from
 \url{https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/ErneuerbareEnergien/EEG_Foerderung/Archiv_VergSaetze/start.html}
-
-Business.gov.nl. (n.d.). \textit{Netting scheme solar panels ends per
-2027}. Netherlands Enterprise Agency. Retrieved 15 November 2026, from
-\url{https://business.gov.nl/amendments/netting-scheme-solar-panels-ends/}
 
 Cui, F., An, D., \& Zhao, Y. (2023). A two-stage distributed
 optimization method for home energy management systems via multi-modal

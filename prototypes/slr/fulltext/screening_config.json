@@ -1,0 +1,53 @@
+{
+  "review_title": "LMs for household plans and optimiser configuration in HEMS, on local hardware (SLR)",
+  "exclusion_codes": [
+    {"code": "E1", "short": "setting", "label": "Grid-scale, data-centre or other setting without a household or building"},
+    {"code": "E2", "short": "role of the language model", "label": "Language model only forecasts, answers questions, summarises or analyses text, without control"},
+    {"code": "E3", "short": "language", "label": "Not in English"},
+    {"code": "E9", "short": "other", "label": "Other (explained)"}
+  ],
+  "ft_exclusion_codes": [
+    {"code": "E3", "short": "language or date", "label": "Full text not in English, or published before 2022"},
+    {"code": "E4", "short": "no evaluation", "label": "No evaluation with data (review, survey, position or vision paper, illustrative example only); kept as background"},
+    {"code": "E1", "short": "setting", "label": "Grid-scale, data-centre, industrial or other setting without a household or building, LQ3 rule not applicable"},
+    {"code": "E2", "short": "role of the language model", "label": "Language model has no eligible role (forecasting, question answering, summaries or explanations only)"},
+    {"code": "E9", "short": "other", "label": "Other (explained)"}
+  ],
+  "core_criteria": [
+    "a language model that interprets requirements, generates constraints, configures an optimiser or controller, schedules loads or controls devices",
+    "a home, building or behind-the-meter setting, or a small or locally run model on an energy or smart-home task"
+  ],
+  "personas": {
+    "A": "You are REVIEWER A, a researcher in home and building energy management (MPC, scheduling, smart-home control) who also builds language-model agents.",
+    "B": "You are REVIEWER B, a software-engineering methodologist experienced in Kitchenham-style systematic literature reviews of evaluated technical systems."
+  },
+  "conflict_policy": "adjudicate",
+  "qc": {
+    "near_miss": {
+      "language_model": ["language models?", "\\bLLMs?\\b", "\\bSLMs?\\b", "\\bGPT", "foundation models?"],
+      "energy_or_home": ["energy", "smart homes?", "household", "residential", "building", "HVAC", "appliance", "heat pump", "battery", "electric vehicle"]
+    },
+    "random_exclusion_sample": 20,
+    "random_seed": 2026,
+    "policy": "advance"
+  },
+  "seeds": [
+    {"label": "Sanguinetti et al. 2025, arXiv 2503.21360", "doi": "", "pmid": "", "title": "From User Preferences to Optimization Constraints Using Large Language Models"},
+    {"label": "Michelon et al. 2025, ACM e-Energy", "doi": "10.1145/3679240.3734586", "pmid": "", "title": "Large Language Model Interface for Home Energy Management Systems"},
+    {"label": "El Makroum et al. 2026, Results in Engineering", "doi": "10.1016/j.rineng.2026.109857", "pmid": "", "title": "Agentic AI Home Energy Management System: A Large Language Model Framework for Residential Load Scheduling"},
+    {"label": "Jonah et al. 2026, arXiv 2607.04569", "doi": "", "pmid": "", "title": "LLMs for Agentic Home Energy Management"},
+    {"label": "HEMA 2026, SoftwareX", "doi": "10.1016/j.softx.2026.102633", "pmid": "", "title": "Multi-Agent Home Energy Management Assistant"},
+    {"label": "AgentiControl-MPC 2026, Advanced Engineering Informatics", "doi": "", "pmid": "", "title": "AgentiControl-MPC: Automated model predictive control for buildings using large language model-based multi-agent system"}
+  ],
+  "languages_allowed": ["English"],
+  "models": {"A": "sonnet", "B": "sonnet", "ADJ": "sonnet", "QC": "sonnet", "FTA": "sonnet", "FTB": "sonnet", "FTADJ": "sonnet"},
+  "model_labels": {
+    "FTA": "Claude Sonnet 5.5 (claude-sonnet-5-5)",
+    "FTB": "Claude Sonnet 5.5 (claude-sonnet-5-5)",
+    "FTADJ": "Claude Sonnet 5.5 (claude-sonnet-5-5)",
+    "QC": "Claude Sonnet 5.5 (claude-sonnet-5-5)"
+  },
+  "agent_type": "academic-research-skills:screening-reviewer-agent",
+  "batching": {"max_records": 50, "max_chars": 90000, "wrap": 150},
+  "dedup": {"doi_title_guard": true}
+}

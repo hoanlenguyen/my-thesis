@@ -6,10 +6,8 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 AUTHORS = {  # key: (authors as cited, year)
-    "acm2026": ("ACM", "2026"),
     "ahmaditeshnizi2024": ("AhmadiTeshnizi et al.", "2024"),
     "avepower2026": ("Avepower", "2026"),
-    "businessnl2027": ("Business.gov.nl", "n.d."),
     "energyauthority2025": ("Energy Authority", "2025"),
     "energyauthority2026": ("Energy Authority", "2026"),
     "eudir2019": ("Directive (EU) 2019/944", "2019"),

@@ -33,16 +33,15 @@ INCLUDE = {
     "S0039": "open-weight reasoning model fine-tuned with verifiable rewards for building thermal storage control (LQ3)",
     # author's decision 24 Nov 2026 (was unsure: EV charging, home or station?)
     "S0131": "three LLM agents turn voice requests into an optimisation problem and solve it, EV charging (LQ1)",
+    # author's decisions 24 Nov 2026 (were unsure)
+    "S0020": "LLM turns user intent into bounded parameters under a physics supervisor (pattern for LQ1 checks); EV "
+             "driving, not home energy",
+    "S0140": "LLM simulates occupant feedback for HVAC control in a human-in-the-loop system (method, like R0007)",
     # author's decision 24 Nov 2026 (was unsure; fails the keyword triage, no energy objective)
     "S0033": "LQ3 background: on-device LLM agent defers uncertain actions to a cloud model (fallback design), "
              "no energy objective",
 }  # fmt: skip
-UNSURE = {
-    "S0020": "LLM turns user intent into bounded parameters under a physics supervisor (pattern for LQ1 checks); EV "
-             "driving, not home energy",
-    "S0036": "LLM agents act as prosumers drawing on a shared energy reserve: household energy management or game study?",
-    "S0140": "LLM simulates occupant feedback for HVAC control (method, like R0007); does the LLM control anything?",
-}  # fmt: skip
+UNSURE: dict[str, str] = {}  # S0020, S0140 included and S0036 excluded by the author, 24 Nov 2026
 LQ3_BACKGROUND: dict[str, str] = {}  # S0033 moved to INCLUDE by the author
 BACKGROUND = {
     "S0023": "systematic review of 66 LLM studies for HVAC operations (kept as background; snowball its studies)",
@@ -50,6 +49,9 @@ BACKGROUND = {
 EXCLUDE = {
     # same authors (Jin, Sel, Hardeep, Yin) and method; author's decision 24 Nov 2026: keep the published version
     "S0146": "duplicate: arXiv preprint 2308.10380 of R0696 (IEEE SmartGridComm 2024), published version kept",
+    # author's decision 24 Nov 2026 (was unsure)
+    "S0036": "LLM agents as prosumers drawing on a shared energy reserve: coordination game study, not household energy "
+             "management",
     "S0024": "community peer-to-peer market level (E1); open-weight LLM sets market bounds",
     "S0090": "position paper on foundation models and smart grids, grid level (E1)",
     "S0097": "power grid control (E1)",
@@ -92,7 +94,8 @@ def main() -> None:
         elif i in BACKGROUND:
             r["decision"], r["reason"] = "exclude", "review or position paper (kept as background): " + BACKGROUND[i]
         elif i in EXCLUDE:
-            r["decision"], r["reason"] = "exclude", EXCLUDE[i]
+            r["decision"] = "duplicate" if EXCLUDE[i].startswith("duplicate") else "exclude"
+            r["reason"] = EXCLUDE[i]
         elif not (LM.search(text) and EN.search(text)):
             r["decision"], r["reason"] = "exclude", "keyword triage: no language-model and energy terms together"
         else:

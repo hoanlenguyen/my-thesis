@@ -147,6 +147,14 @@ BACKGROUND = {"R0040", "R0163", "R0228", "R0232", "R0314", "R0344", "R0364", "R0
               "R0463", "R0638", "R0671", "R0133", "R0071"}  # fmt: skip
 
 
+# Other versions of a study already in the set, found during screening; moved to identification by the author
+# (24 Nov 2026). The journal version is kept.
+DUPLICATES = {
+    "R0408": "duplicate: arXiv preprint of R0034 (Huang et al., IEEE TMC 2026), journal version kept",
+    "R0464": "duplicate: MobiCom 2025 poster of R0034 (Huang et al., IEEE TMC 2026), journal version kept",
+}  # fmt: skip
+
+
 def reason_for_exclusion(title: str) -> str:
     if re.search(r"forecast|prediction|predict", title, re.I):
         return "forecasting or prediction only"
@@ -176,6 +184,14 @@ def main() -> None:
             r["decision"], r["reason"] = "exclude", "keyword triage: no language-model and energy terms together"
         else:
             r["decision"], r["reason"] = "exclude", reason_for_exclusion(r["title"])
+    # Second look at the unsure records on their abstracts (Claude's proposals, approved by the author on
+    # 24 Nov 2026 as a whole): ``out/unsure_proposals.csv`` overrides the decision and reason above.
+    proposals = {p["id"]: p for p in csv.DictReader((OUT / "unsure_proposals.csv").open(encoding="utf-8"))}
+    for r in rows:
+        if r["id"] in proposals:
+            r["decision"], r["reason"] = proposals[r["id"]]["proposed"], proposals[r["id"]]["reason"]
+        if r["id"] in DUPLICATES:
+            r["decision"], r["reason"] = "duplicate", DUPLICATES[r["id"]]
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))
         writer.writeheader()

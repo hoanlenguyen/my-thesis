@@ -100,11 +100,14 @@ prototype numbers in `main.tex`; prototype code and outputs stay in `prototypes/
 the unused `industrial_machine` appliance kind in `core/models.py` and `tools/__init__.py`).
 
 **Title (12 Nov 2026):** "Small Language Models for Smart Home Energy Management: Interpreting Household Plans and
-Configuring an Optimiser on Local Hardware". **Questions (simplified 18 Nov 2026, same scope; H1-H5 unchanged,
+Configuring an Optimiser on Local Hardware". **Questions (shortened 25 Nov 2026, same scope; H1-H5 unchanged,
 drafts until registration):** RQ "How can small language models on a home energy gateway reliably interpret
-household plans and configure an optimiser, and how close do they come to a cloud language model?" SQ1 interpreting
-plans (accuracy; checks and cloud fallback; H1-H3), SQ2 configuring the optimiser (vs cloud model and an automatic
-tuner; H4), SQ3 on local hardware (time, energy, money, privacy; H5). LQ1-LQ3 in section 2.1 mirror them. Method:
+household plans and configure an optimiser?" SQ1 "How accurately does a small model turn household plans into
+optimiser requirements, and what do checks and a cloud fallback add?" (H1-H3); SQ2 "Can a small model configure the
+optimiser from the house's history as well as a cloud model and better than an automatic tuner?" (H4); SQ3 "Does the
+saving of running the model on the gateway outweigh its cost in time, energy, money and privacy?" (H5). The cloud
+comparison sits in the SQs (the RQ no longer names it); Abstract, Conclusions, protocol section 2 and the plan page
+use the same wording. LQ1-LQ3 in section 2.1 mirror them. Method:
 SLR (Kitchenham) as the rigor cycle of DSR. Plan: `docs/protocol_home_gateway.md` and the plan page
 `docs/gateway_thesis_plan.html` (artifact https://claude.ai/artifact/2GN2bsRDJ5dp8xUhnFqHM8, republish after edits).
 
