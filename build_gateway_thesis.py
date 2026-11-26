@@ -1,5 +1,6 @@
-"""Builds gateway_thesis.tex: the template preamble of main.tex (up to \\begin{document}) plus gateway_body.tex,
-with \\parencite{...} and \\textcite{...} written out as APA author-year text (the template has no biblatex)."""
+"""Builds gateway_thesis.tex: the Oulu template preamble in gateway_preamble.tex (up to \\begin{document}) plus
+gateway_body.tex, with \\parencite{...} and \\textcite{...} written out as APA author-year text (the template has no
+biblatex)."""
 
 import re
 from pathlib import Path
@@ -69,16 +70,16 @@ def narrative(match: re.Match) -> str:
 
 
 def main() -> None:
-    lines = (HERE / "main.tex").read_text(encoding="utf-8").splitlines(keepends=True)
+    lines = (HERE / "gateway_preamble.tex").read_text(encoding="utf-8").splitlines(keepends=True)
     head = "".join(lines[: next(i for i, l in enumerate(lines) if l.startswith("\\begin{document}")) + 1])
     # Figure and table captions: only the label ("Figure 1.2.", "Table 5.1") is bold, the caption text is regular.
     for kind in ("figure", "table"):
         bold = f"\\captionsetup[{kind}]{{\n  font={{sf,small,bf}},"
-        assert bold in head, f"{kind} caption setup of main.tex changed"
+        assert bold in head, f"{kind} caption setup of gateway_preamble.tex changed"
         head = head.replace(bold, f"\\captionsetup[{kind}]{{\n  font={{sf,small}},\n  labelfont=bf,")
     # Table labels end with a period like figure labels ("Table 5.1.").
     sep = "\\captionsetup[table]{\n  font={sf,small},\n  labelfont=bf,\n  labelsep=space,"
-    assert sep in head, "table caption separator of main.tex changed"
+    assert sep in head, "table caption separator of gateway_preamble.tex changed"
     head = head.replace(sep, sep.replace("labelsep=space", "labelsep=period"))
     body = (HERE / "gateway_body.tex").read_text(encoding="utf-8")
     body = re.sub(r"\\parencite\{([^}]*)\}", paren, body)

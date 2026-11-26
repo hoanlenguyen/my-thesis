@@ -1,0 +1,140 @@
+% !TEX program = xelatex
+\documentclass[12pt,a4paper]{report}
+
+% ── Fonts ────────────────────────────────────────────────────────────────────
+\usepackage{fontspec}
+% Template fonts are Times New Roman / Arial; fall back to metric-compatible
+% Liberation, then to TeX Gyre (bundled with TeX Live) where unavailable.
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{%
+  \IfFontExistsTF{Liberation Serif}{\setmainfont{Liberation Serif}}%
+    {\setmainfont{TeX Gyre Termes}}}
+\IfFontExistsTF{Arial}{\setsansfont{Arial}}{%
+  \IfFontExistsTF{Liberation Sans}{\setsansfont{Liberation Sans}}%
+    {\setsansfont{TeX Gyre Heros}}}
+
+% ── Page geometry ─────────────────────────────────────────────────────────────
+% Left 4 cm, others 2 cm  (Oulu IPS template)
+\usepackage[
+  a4paper,
+  left=4cm,
+  right=2cm,
+  top=2cm,
+  bottom=2cm,
+  includeheadfoot,
+  headheight=15pt
+]{geometry}
+
+% ── Line spacing ──────────────────────────────────────────────────────────────
+\usepackage{setspace}
+\singlespacing
+
+% ── Headers / footers ─────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+% Chapter opening pages use the "plain" style; give it the same top-right number.
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+
+% ── Chapter / section heading fonts  ─────────────────────────────────────────
+\usepackage{titlesec}
+
+% Chapter heading: Arial 18pt bold, no "Chapter N" prefix
+\titleformat{\chapter}[block]
+  {\sffamily\fontsize{18}{22}\bfseries}
+  {\thechapter.}{0.5em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{12pt}
+
+% Section heading: Arial 14pt bold
+\titleformat{\section}[block]
+  {\sffamily\fontsize{14}{18}\bfseries}
+  {\thesection}{0.5em}{}
+\titlespacing*{\section}{0pt}{18pt}{6pt}
+
+% Subsection heading: Arial 14pt (not bold, matching template)
+\titleformat{\subsection}[block]
+  {\sffamily\fontsize{14}{18}\normalfont}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% Unnumbered chapter (Abstract, Foreword, etc.) — same style, no number
+\newcommand{\unnumberedchapter}[1]{%
+  \chapter*{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+% ── Paragraph spacing ─────────────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{10pt}
+
+% ── Text alignment ────────────────────────────────────────────────────────────
+\usepackage{ragged2e}
+\justifying
+% No words split across lines: no hyphenation, and no line breaks at explicit
+% hyphens or em dashes (---). The extra inter-word stretch below lets justified
+% lines absorb the words that can no longer be split.
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\setlength{\emergencystretch}{3em}
+
+% ── Tables ────────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+% Table text is left-aligned: justified narrow cells stretch badly without hyphenation.
+\renewcommand{\tabularxcolumn}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{array}
+\usepackage{longtable}
+% Figures and tables never float past the start of the next section.
+\usepackage[section]{placeins}
+% Pages holding only figures/tables start at the top instead of centring them.
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{12pt}
+\makeatother
+\usepackage{makecell}
+
+% Table caption: Arial 10pt bold, above table
+\usepackage{caption}
+\captionsetup[table]{
+  font={sf,small,bf},
+  labelsep=space,
+  justification=raggedright,
+  singlelinecheck=false,
+  position=above
+}
+\captionsetup[figure]{
+  font={sf,small,bf},
+  labelsep=period,
+  justification=centering,
+  position=below
+}
+
+% ── Graphics ──────────────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, fit, calc, shapes.geometric}
+
+% ── Hyperlinks ────────────────────────────────────────────────────────────────
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}                    % allow long URLs/DOIs to break across lines
+
+% ── Math ─────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Misc ──────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{eurosym}
+\usepackage{xcolor}
+
+% ── Hanging references ────────────────────────────────────────────────────────
+\usepackage{hanging}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
