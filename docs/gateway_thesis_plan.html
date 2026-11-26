@@ -141,7 +141,7 @@ svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#
 
 <div class="wrap">
 <header class="prose">
-  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · updated 25 Nov 2026</div>
+  <div class="eyebrow">Master's thesis plan · Systematic literature review + Design Science Research · updated 26 Nov 2026</div>
   <h1>Small Language Models for Smart Home Energy Management: Interpreting Household Plans and Configuring an Optimiser on Local Hardware</h1>
   <p class="lede">A home energy gateway runs EMHASS as the optimiser (MPC, model predictive control) for PV, a home battery, a heat pump and an EV charger. Language-model agents do what an optimiser cannot: turn the household's plain-language plans into constraints, explain the plan, react to deviations and configure the optimiser. They run on a small language model (SLM) on the gateway itself, so plans stay in the house; a cloud LLM is the reference and an optional fallback. A deterministic checker and control layer keep every plan safe.</p>
   <ul class="tight">
@@ -312,6 +312,14 @@ svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#
 </svg>
   <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. The agents run on a small language model on local hardware. Dashed agent boxes: the Explainer and the Monitor are designed but not built. Dashed lines: the cloud LLM, called only as a fallback when the small model's answer fails validation twice or the checker rejects its plan, and violations returned to the agents.</figcaption>
   </figure>
+  <div class="prose">
+    <h3>How the harness reaches EMHASS</h3>
+    <ul class="tight">
+      <li><strong>Local HTTP only.</strong> EMHASS 0.18.4 runs in its own container without Home Assistant. The harness posts one JSON request per solve (<span class="mono">POST /action/naive-mpc-optim</span>) and reads the schedule back (<span class="mono">GET /api/v1/plan</span>); the model never calls EMHASS. Nothing leaves the gateway unless the cloud fallback is used, and the ports stay closed to the home network.</li>
+      <li><strong>What EMHASS plans.</strong> The EV charger, the dishwasher and the washing machine (measured cycles), the heat pump as a thermal load and the home battery; other loads are base load.</li>
+      <li><strong>Default settings.</strong> Cost function <span class="mono">profit</span>, no battery-first rule, grid charging allowed, no battery weights: under a dynamic tariff each fixed rule would raise the bill. The Configurator changes only the PV derating and the battery reserve that the harness sends with each request.</li>
+    </ul>
+  </div>
 
   <h3>Four agents, one per event</h3>
   <div class="scroll"><table>
@@ -901,7 +909,7 @@ svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#
 </section>
 
 <section>
-  <h2>9. Progress (22 Nov 2026)</h2>
+  <h2>9. Progress (26 Nov 2026)</h2>
   <div class="prose"><p>All pilots are exploratory: mostly one house, one run each, draft answer keys.</p></div>
   <h3>ReAct gateway, final run</h3>
   <div class="scroll"><table>
@@ -919,7 +927,7 @@ svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#
   <div class="scroll"><table>
     <thead><tr><th>Step</th><th>Status</th><th>What it showed</th></tr></thead>
     <tbody>
-      <tr><td>1. Commit the revised plan and prototypes</td><td><span class="tag opt">author</span></td><td>Protocol, plan page, the pilots, the ReAct gateway and the review files are uncommitted on <span class="mono">new-thesis/home-gateway</span></td></tr>
+      <tr><td>1. Commit the revised plan and prototypes</td><td><span class="tag core">done</span></td><td>Everything is committed on <span class="mono">main</span>, which now holds this thesis; the first thesis is kept on the <span class="mono">old-thesis</span> branch</td></tr>
       <tr><td>2. Check the answer keys (22 test, 14 development)</td><td><span class="tag opt">author</span></td><td>All drafts, now in everyday wording; changed keys first: X1, X4 and DX1 (commit with a warning), DA1 (Saturday 07:30), DA2 (cheapest time), and A5 ("by lunchtime" as vague)</td></tr>
       <tr><td>3. Plan pilot (SQ1): structured call, 22 plans</td><td><span class="tag core">done</span></td><td>Precision / recall, decision: Gemma 4 E4B 1.00 / 0.87, 0.86; GPT-6 Luna 1.00 / 0.96, 0.86 (asked needlessly on three plans).</td></tr>
       <tr><td>4. Configurator pilot (SQ2), spring</td><td><span class="tag core">done</span></td><td>Saving vs default, 8 weeks, hourly MPC: Gemma 4 E4B 2.87 EUR, Luna 4.15, expert 3.52, auto-tuner 1.91 (it chased the last two weeks).</td></tr>
@@ -934,7 +942,7 @@ svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#
       <tr><td>13. The Household Assistant with EMHASS</td><td><span class="tag core">done</span></td><td>14/14 dev decisions, EMHASS at most 2.4 s per solve, 4-13 s per plan with the model on the GPU. One-device test (EMHASS, harness and Gemma on the CPU, same 4 physical cores): 8 of 8 decisions right at 2-4 min per plan; EMHASS replans (median 0.35-0.48 s, max 1.04 s) and control steps (0.04 s) barely affected while the model answers; capping the model at 3 cores with low priority made it slightly faster (168 vs 188 s). Lessons: set the model's threads to its cores; serialise EMHASS calls.</td></tr>
       <tr><td>14. Household hardware for SQ3</td><td><span class="tag ref">next</span></td><td>Buy a Raspberry Pi 5 16 GB, a mini PC and a power meter (a Shelly plug is logged automatically); the edge kit is ready (step 20). Laptop: 3 s per plan on GPU, 39 s on 4 CPU threads, MPC 0.08 s.</td></tr>
       <tr><td>15. Send the plan and the pilots to the supervisors</td><td><span class="tag ref">next</span></td><td>Agree scope: SLM framing, hardware, plan writers, 20 weeks</td></tr>
-      <tr><td>16. Literature screening; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Searches done; title and abstract screening done (99 studies to full text, see next steps). Supplementary search in Scopus still to run. Plan writers use everyday wording; keys follow the same rules as the pilot plans.</td></tr>
+      <tr><td>16. Literature screening; recruit 3-5 plan writers</td><td><span class="tag ref">next</span></td><td>Searches done; title and abstract screening done (99 studies to full text). Full text: 34 assessed, 27 include, 7 exclude (reviewer agreement kappa 0.92); 65 reports still to retrieve. Supplementary search in Scopus still to run. Plan writers use everyday wording; keys follow the same rules as the pilot plans.</td></tr>
       <tr><td>17. Held-out materials</td><td><span class="tag core">done</span></td><td>120 scenario cards on new days of the main house (season x weather; 40 simple, 40 change, 20 ambiguous, 20 conflicting), four writer sheets, collect script, keying guide with a blind second keying. Sheets ready to send.</td></tr>
       <tr><td>18. Registration decisions</td><td><span class="tag core">done</span></td><td>Power calculation: H1/H3 margin 0.10 (0.05 would need about 390 plans), H2 against 90 %, H4 0.20 EUR per week against the auto-tuner and the cloud model, H5 15 minutes; plans on the main house only; Configurator weeks in winter and summer 2016; EMHASS pinned by digest, model versions recorded.</td></tr>
       <tr><td>19. Runner, confirm script, year simulation</td><td><span class="tag core">done</span></td><td>Set-up without checks, cloud fallback on a failed answer or a refused commit, closed loop with EMHASS (cached by constraints), driver over models x set-ups x 3 runs; confirm script (Holm over H1-H3, H4, H5); year simulation over 49 weeks with an energy balance. Tested on development plans and pilot weeks only. The Configurator's weeks and the year keep the thesis MPC (thousands of simulated days); the thesis says so.</td></tr>
@@ -943,5 +951,54 @@ svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#
     </tbody>
   </table></div>
   <p class="caption">Tuned references are always chosen on separate weeks.</p>
+</section>
+<section>
+  <h2>10. Repository and reproduction</h2>
+  <div class="prose">
+    <p>The repository holds the thesis text and the prototypes; <span class="mono">main</span> is this thesis. Prototype data stays in <span class="mono">data/raw/</span> (gitignored): OPSD household data, DWD Konstanz weather, German day-ahead prices, When2Heat and the Norwegian EV sessions.</p>
+    <h3>Setup</h3>
+    <ul class="tight">
+      <li><span class="mono">uv sync</span> (Python 3.12), then copy <span class="mono">.env.example</span> to <span class="mono">.env</span> with the OpenAI key for the cloud model and <span class="mono">LANGSMITH_TRACING=false</span>.</li>
+      <li>Local models through Ollama; EMHASS in Docker (<span class="mono">prototypes/emhass_gateway/docker-compose.yml</span>, image pinned by digest).</li>
+      <li><span class="mono">uv run pytest</span> must pass: the prototypes use the <span class="mono">hems</span> package in <span class="mono">src/hems/</span>.</li>
+    </ul>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Prototype</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td class="num">plan_pilot/</td><td>structured-call reader; the 22 test plans and 14 development plans</td></tr>
+      <tr><td class="num">react_gateway/</td><td>the Household Assistant as a ReAct agent (<span class="mono">plan_schedule</span>); app views per model and plan</td></tr>
+      <tr><td class="num">closed_loop/, home_gateway/</td><td>planning pilot and closed loop on the digital twin of OPSD <span class="mono">residential4</span></td></tr>
+      <tr><td class="num">configurator_pilot/</td><td>Configurator against the auto-tuner, default and expert-tuned MPC over weekly windows (SQ2)</td></tr>
+      <tr><td class="num">emhass_gateway/</td><td>the Household Assistant with EMHASS; the one-device test</td></tr>
+      <tr><td class="num">edge_bench/, edge_kit/</td><td>speed on local hardware; scripts for the Raspberry Pi 5, the mini PC and a power meter (SQ3)</td></tr>
+      <tr><td class="num">heldout/</td><td>materials, runner and confirm script of the registered evaluation</td></tr>
+      <tr><td class="num">slr/</td><td>literature search and screening</td></tr>
+      <tr><td class="num">designed_agents/</td><td>prompts of the Monitor and the Explainer</td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose">
+    <h3>Building the thesis</h3>
+    <p>The text is <span class="mono">gateway_body.tex</span>. <span class="mono">uv run python build_gateway_thesis.py</span> joins it with the Oulu template preamble (<span class="mono">gateway_preamble.tex</span>) and writes the citations out, giving <span class="mono">gateway_thesis.tex</span>; <span class="mono">latexmk -xelatex gateway_thesis</span> compiles the PDF. <span class="mono">gateway_thesis_overleaf.zip</span> holds the .tex and its images for Overleaf.</p>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Figure</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>1.1 home energy system</td><td class="num">home_energy_system.excalidraw</td></tr>
+      <tr><td>1.2 with the gateway</td><td class="num">tools/make_home_energy_system_fig.py</td></tr>
+      <tr><td>4.1 architecture</td><td class="num">tools/flow_figs/make_architecture.py</td></tr>
+      <tr><td>4.2 plan_schedule</td><td class="num">tools/flow_figs/plan_schedule.svg</td></tr>
+      <tr><td>4.3 how each agent decides</td><td class="num">tools/flow_figs/make_agent_flow.py</td></tr>
+      <tr><td>4.4 one day at runtime</td><td class="num">tools/flow_figs/runtime_day.svg</td></tr>
+      <tr><td>4.5 an example plan</td><td class="num">tools/make_example_day_fig.py</td></tr>
+      <tr><td>4.6 user app</td><td>this page</td></tr>
+      <tr><td>4.7 request path</td><td class="num">tools/flow_figs/request_path.svg</td></tr>
+    </tbody>
+  </table></div>
+  <p class="caption"><span class="mono">tools/flow_figs/export.py</span> turns the SVGs into PNGs; the diagrams of sections 3 and 4 on this page are the same drawings.</p>
+  <div class="prose">
+    <h3>Status</h3>
+    <p>Chapters 1 to 7 are drafted; parts without results say "In process", and all prototype results are exploratory. Still open: registering the hypotheses, collecting the 120 held-out plans and running the registered evaluation, the remaining full-text screening and the Scopus search, and the measurements on the Raspberry Pi 5 and the mini PC.</p>
+  </div>
 </section>
 </div>
