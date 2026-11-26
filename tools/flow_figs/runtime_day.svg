@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 478" role="img">
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#5f6b76"/></marker><marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#1f6f78"/></marker></defs>
+<text x="80" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Household</text>
+<text x="210" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f6f78">Agents</text>
+<text x="350" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Harness</text>
+<text x="350" y="39" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">EMHASS, checker</text>
+<text x="490" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Control layer</text>
+<text x="620" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Devices</text>
+<line x1="80" y1="52" x2="80" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+<line x1="210" y1="52" x2="210" y2="470" style="stroke:#1f6f78;stroke-width:1;stroke-dasharray:4 4;stroke-opacity:0.5"/>
+<line x1="350" y1="52" x2="350" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+<line x1="490" y1="52" x2="490" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+<line x1="620" y1="52" x2="620" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+
+<circle cx="30" cy="80" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="80" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">1</text>
+<path d="M80 80 H208" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="88" y="68" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">evening plan "car 80 % by 7, away 9-17"</text>
+
+<circle cx="30" cy="122" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="122" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">2</text>
+<path d="M210 122 H348" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="218" y="110" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">plan_schedule: checks, MPC preview</text>
+
+<circle cx="30" cy="164" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="164" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">3</text>
+<path d="M350 164 H212" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="218" y="152" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">plan and check result</text>
+
+<circle cx="30" cy="206" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="206" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">4</text>
+<path d="M210 206 H82" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="88" y="194" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">Explainer: "charging 01-04, cheapest"</text>
+<path d="M350 206 H488" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="358" y="194" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">committed plan</text>
+
+<circle cx="30" cy="250" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="250" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">5</text>
+<rect x="284" y="236" width="132" height="28" rx="6" style="fill:#f3f3f1;stroke:#6b7785;stroke-width:1.2"/>
+<text x="350" y="250" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#1f2933">MPC replans hourly</text>
+<path d="M490 250 H618" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="498" y="238" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">setpoints every 15 min</text>
+
+<circle cx="30" cy="294" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="294" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">6</text>
+<path d="M80 294 H208" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="88" y="282" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">change at 13:00: "home at 15"</text>
+
+<circle cx="30" cy="336" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="336" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">7</text>
+<path d="M210 336 H348" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="218" y="324" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">comfort from 15:00</text>
+<path d="M350 336 H488" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="358" y="324" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">new checked plan</text>
+
+<circle cx="30" cy="378" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="378" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">8</text>
+<path d="M620 378 H492" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="612" y="366" text-anchor="end" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">measurements</text>
+<path d="M490 412 H212" style="fill:none;stroke:#1f6f78;stroke-width:1.4;stroke-dasharray:5 4" marker-end="url(#at)"/>
+<text x="218" y="400" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">deviation → Monitor, past a threshold</text>
+<rect x="388" y="434" width="204" height="28" rx="6" style="fill:#f3f3f1;stroke:#6b7785;stroke-width:1.2"/>
+<text x="490" y="448" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#1f2933">fallback rules if no valid plan</text>
+</svg>

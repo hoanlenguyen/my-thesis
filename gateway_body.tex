@@ -949,7 +949,11 @@ default settings (the default MPC); EMHASS with expert-tuned settings
 (the PV derating and the battery reserve that the Configurator also
 sets, chosen once on exploratory weeks and frozen); a deterministic auto-tuner (weekly grid search over past weeks);
 a language model without tools; and perfect foresight as the upper
-bound. The Household Assistant is the ReAct agent of
+bound. Perfect foresight is the same optimiser solved once at midnight
+on what actually happened that day (the recorded PV output, heat
+demand, household load and prices, and every car charge known in
+advance) instead of on forecasts; no real system can reach it, so it
+marks the most that planning could save. The Household Assistant is the ReAct agent of
 Section~\ref{sec:agents} and runs in four set-ups: a small model whose
 planning tool plans without the checks and the rules in code, a small
 model with them (the design), a small model with them and a cloud
@@ -980,7 +984,9 @@ with the four agents if the small models allow it.
 key, clarification F1 and decision accuracy (SQ1); household
 requirements met; adjusted cost, which subtracts the value of battery
 charge and stored heat left at midnight; the share of the gap between
-rules and perfect foresight that a system closes; rejected plans,
+rules and perfect foresight that a system closes, that is, (cost of
+rules $-$ cost of the system) / (cost of rules $-$ cost of perfect
+foresight), so rules score 0\,\% and perfect foresight 100\,\%; rejected plans,
 fallbacks and failed calls and the share of plans sent to the cloud
 fallback (SQ1); tokens, cost, mean and 95th-percentile latency, energy
 per event (measured at the wall on each device, above its idle power)
@@ -1195,7 +1201,7 @@ models allow it.
 \begin{table}[htbp]
 \caption{The four agents of the design and the task each serves. The
 Household Assistant and the Configurator are built and evaluated; the
-Monitor and the Explainer are designed. Appendix~\ref{app:prompts}
+Monitor and the Explainer are designed. Table~\ref{tab:prompts}
 gives the role statement of each agent's prompt.}
 \label{tab:agents}
 \small
@@ -1207,6 +1213,49 @@ Household Assistant & a message from the household, typed or spoken & turns the 
 Configurator & once a week & proposes MPC settings from the house's history and backtests them & configuring the optimiser \\
 Monitor & an EV plug-in; a deviation raised by the control layer & finds the cause, adjusts constraints within what the household asked, or alerts & keeps the plan in force \\
 Explainer & each commit; once a day & writes the message and the daily report from the committed plan's figures & tells the household \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textit{Prompts.} Each agent's system prompt opens with a statement of
+its role (Table~\ref{tab:prompts}, verbatim). The built agents' prompts
+continue with their rules, tools and output format: the Household
+Assistant's prompt has about 620 words and the Configurator's about
+150. The Monitor and the Explainer are designed, not built
+(Section~\ref{sec:envisioned}), so their role statements are written
+for the design and have not been run. The prompts are frozen before the
+held-out run.
+
+\begin{table}[htbp]
+\caption{Role statement at the start of each agent's system prompt.}
+\label{tab:prompts}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.5cm}X>{\raggedright\arraybackslash}p{1.6cm}@{}}
+\toprule
+Agent & Role statement (verbatim) & Status \\
+\midrule
+Household Assistant & ``You are the home energy gateway of a household.
+You read the household's message, look at the home's data with your
+tools, plan the devices with the plan\_schedule tool and answer for the
+household app.'' & built \\[4pt]
+Configurator & ``You are the Configurator of a home energy gateway. The
+home has rooftop PV, a 10 kWh home battery, a
+heat pump and an EV charger. An MPC plans the devices every hour and
+at each plug-in, using day-ahead forecasts of PV (from weather
+forecasts), heat demand and household load. Once a week you choose two
+MPC settings for the coming week:'' & built \\[4pt]
+Monitor & ``You are the Monitor of a home energy gateway. You are called
+when the car is plugged in or when the control layer reports a large
+deviation from the committed plan. Find the cause with your tools, then
+either do nothing, adjust the constraints within what the household
+asked, or alert the household with a reason. Never remove or weaken a
+household requirement.'' & designed \\[4pt]
+Explainer & ``You are the Explainer of a home energy gateway. After each
+committed plan and once a day, you write a short message for the
+household app from the figures the harness gives you: when each device
+runs, the cost and the saving, and what changed and why. Use only these
+figures; every figure you cite is checked against the plan.'' &
+designed \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1290,11 +1339,14 @@ calling the model again.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.72\textwidth]{attachments/gateway/plan_schedule.png}
+\includegraphics[width=0.85\textwidth]{attachments/gateway/plan_schedule.png}
 \caption{What \texttt{plan\_schedule} does with the requirements that
 the model sends. The checker stops a plan with problems before the MPC
 runs, and the model asks the household; the gateway commits only a plan
-whose schedule met every requirement or carries a warning.}
+whose schedule met every requirement or carries a warning. The dotted
+path is the set-up without checks of the evaluation
+(Section~\ref{sec:evaldesign}), which fills in only the usual car
+settings before the MPC runs.}
 \label{fig:planschedule}
 \end{figure}
 
@@ -1346,23 +1398,17 @@ checks of the second design principle: in the pilots they, rather than
 the size of the model, closed most of the distance between a small and
 a large model (Section~\ref{sec:answers}). Each tool does its work
 deterministically and returns a short result, which keeps prompts small
-enough for a small model on local hardware. Figure~\ref{fig:day} shows
-one day at runtime.
+enough for a small model on local hardware. Figure~\ref{fig:day}
+(Section~\ref{sec:mpc}) shows one day at runtime.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{attachments/gateway/agent_flow.png}
-\caption{How each agent decides.}
+\caption{How each agent decides. The harness routes each event to one
+agent, which uses its tools in a loop; a deterministic gate then decides
+the outcome. Dashed steps belong to agents that are designed but not
+yet built.}
 \label{fig:flow}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{attachments/gateway/runtime_day.png}
-\caption{One day at runtime. Between agent calls the MPC replans every
-hour and the control layer runs every 15 minutes without a language
-model.}
-\label{fig:day}
 \end{figure}
 
 \section{The optimiser: scheduling loads under dynamic prices}
@@ -1386,6 +1432,33 @@ Chapter~\ref{ch:results} solved the same formulation with PuLP and CBC,
 because they began before EMHASS was chosen as the gateway's optimiser;
 Sections~\ref{sec:emhassdemo} and~\ref{sec:onedevice} run the Household
 Assistant with EMHASS.
+
+The MPC schedules five devices (Table~\ref{tab:devices}). The language
+models schedule none of them: the Household Assistant turns a message
+into requirements for these devices, and the Configurator sets two of
+the MPC's settings. The other loads of the house, such as the
+refrigerator, lighting and cooking, form the base load, which is not
+shifted and enters only as a forecast. The dishwasher and the washing
+machine are the two appliances the OPSD house meters separately, so
+their cycles could be measured; any other appliance with a known cycle
+would be one more load of the same kind.
+
+\begin{table}[htbp]
+\caption{Devices the MPC schedules and what the household can ask for.}
+\label{tab:devices}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}X>{\raggedright\arraybackslash}p{4.4cm}@{}}
+\toprule
+Device & How the MPC schedules it & What the household can ask for \\
+\midrule
+EV charger & charging power in each 15-minute slot, up to 3.7\,kW, within the charging window & a target charge or energy, a ready-by time, an earliest start \\
+Dishwasher & the start time of its measured cycle (about 1\,h, 0.76\,kWh) & a deadline, an earliest start \\
+Washing machine & the start time of its measured cycle (about 2.25\,h, 0.85\,kWh) & a deadline, an earliest start \\
+Heat pump & electric power in each slot, using the building as a heat store within the comfort band & a comfort band, away periods \\
+Home battery & charge and discharge in each slot & nothing directly; the Configurator sets the reserve \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \textit{Horizon and inputs.} The horizon runs in 15-minute slots
 $t = k, \dots, H-1$ (slot length $\Delta = 0.25$\,h) from the current
@@ -1478,7 +1551,18 @@ holds the planned grid exchange by letting the battery absorb the
 forecast error, keeps the comfort band, charges the car at full power
 when its deadline requires it, and starts an appliance at its last
 possible slot if the plan has not started it. A solve takes about a
-tenth of a second (Section~\ref{sec:edgebench}).
+tenth of a second (Section~\ref{sec:edgebench}). Figure~\ref{fig:day}
+shows where the agents, the hourly replan and the control layer act in
+one day.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{attachments/gateway/runtime_day.png}
+\caption{One day at runtime. Between agent calls the MPC replans every
+hour and the control layer runs every 15 minutes without a language
+model.}
+\label{fig:day}
+\end{figure}
 
 \textit{Settings.} The Configurator's settings enter the optimiser as
 parameters (Section~\ref{sec:agents}; the Configurator pilot used the
@@ -1495,7 +1579,7 @@ systems.
 
 \textit{The formulation in EMHASS.} EMHASS 0.18.4 solves this MPC
 through its REST interface with 15-minute steps, and each part maps onto
-one of its inputs. The prices, the PV forecast and the base load are
+one of its inputs (Table~\ref{tab:emhassmap}). The prices, the PV forecast and the base load are
 sent as forecasts with each request. The home battery is EMHASS's
 battery, with its capacity, power, efficiencies and limits and its
 charge now as the start. Each car charge is a deferrable load at the
@@ -1516,6 +1600,84 @@ horizon instead of valuing the energy left, so the target is the charge
 at the start, and the battery reserve becomes a higher target. And it
 takes one COP per solve, the mean of the forecast, and plans a car
 charge in whole 15-minute steps at full power.
+
+\textit{The home battery.} The battery is planned by the MPC like the
+other devices, not by a fixed rule. The harness sends its capacity,
+power, efficiencies and lowest allowed charge, its charge now and its
+target charge at the end of the horizon, and EMHASS chooses its
+charging and discharging power for every 15-minute slot together with
+the car, the appliances and the heat pump, so that the bill for the
+whole horizon is lowest. The battery therefore stores surplus PV when
+that is worth more than the feed-in price, covers the house in
+expensive hours, and charges from the grid in a cheap hour before an
+expensive one when the price difference exceeds its round-trip loss.
+Between solves, the control layer holds the planned grid exchange by
+letting the battery absorb the forecast error (see \textit{Receding
+horizon} above). The only battery setting an agent changes is the
+reserve, which the Configurator sets as a higher target charge at the
+end of the horizon.
+
+EMHASS also offers fixed rules for the battery and for
+self-consumption, all off by default: a cost function that maximises
+the use of the house's own PV instead of minimising the bill, a
+priority that empties the battery before any grid import, a ban on
+charging the battery from the grid, and a cost per kWh of battery use.
+The gateway keeps these defaults. Under a dynamic tariff each rule would
+raise the bill: emptying the battery first spends its charge in cheap
+hours and leaves nothing for expensive ones, and EMHASS's documentation
+recommends this rule for flat tariffs \parencite{emhass}; a ban on grid
+charging gives up cheap night hours before an expensive morning; and
+maximising self-consumption values the share of own PV, not the cost.
+Keeping the defaults also keeps the comparison fair: default EMHASS is
+what a household gets without tuning, and only the two settings the
+Configurator chooses differ between systems.
+
+\textit{An example plan.} Figure~\ref{fig:exampleday} shows the plan the
+Household Assistant committed for one pilot plan, sent at 08:00 on 20
+September 2016 with the car at 45\,\%: ``Going out tonight from 6 to
+10. Car at 70\,\% by 6 and the washing finished by half five.'' The MPC
+charges the car through the day as the PV forecast allows and runs the
+washing machine around noon, so both run on the house's own PV; the
+home battery keeps its charge during the day, covers the house in the
+evening and at night, and is planned to recharge from the next day's
+PV. The heat pump stays off on this mild day, and the house holds
+20.6 to 21.0\,\textdegree{}C. The plan costs 1.32\,EUR against
+2.73\,EUR if every device started at once. Prices moved little on this
+day (0.28 to 0.31\,EUR/kWh), so the plan follows the PV forecast more
+than the price.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{attachments/gateway/example_day_s6.png}
+\caption{An example plan: the first 24 hours of the schedule committed
+for a household message on 20 September 2016 (planned power per hour
+and import price). The car and the washing machine run on the PV
+forecast; the home battery covers the evening and the night. The grey
+band is the away period.}
+\label{fig:exampleday}
+\end{figure}
+
+\begin{table}[htbp]
+\caption{How the harness maps the requirements, the home and the
+Configurator's settings onto the inputs of an EMHASS request.}
+\label{tab:emhassmap}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.6cm}X@{}}
+\toprule
+Requirement or input & EMHASS input \\
+\midrule
+car charge: target and departure & a deferrable load at the charger's 3.7\,kW, running for the hours the energy needs, between the current step and the departure step \\
+dishwasher or washing machine run & a deferrable load with the measured power and cycle length, between the earliest start and the deadline \\
+comfort band or away period & the heat pump as a thermal load: lower and upper temperature per step, start temperature, heating rate and cooling constant \\
+prices & \texttt{load\_cost\_forecast} (import) and \texttt{prod\_price\_forecast} (export), cost function \texttt{profit} \\
+forecasts & \texttt{pv\_power\_forecast}, \texttt{load\_power\_forecast} (base load) and \texttt{outdoor\_temperature\_forecast} \\
+home battery & capacity 10\,kWh, power 5\,kW, efficiencies, minimum charge, \texttt{soc\_init} (charge now) and \texttt{soc\_final} (target at the end of the horizon) \\
+house limits and horizon & maximum power from and to the grid, the prediction horizon and 15-minute steps \\
+Configurator: PV derating & scales the PV forecast that is sent \\
+Configurator: battery reserve & raises \texttt{soc\_final} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Designed but not yet built: Monitor, Explainer, model layer and user app}
 \label{sec:envisioned}
@@ -1633,7 +1795,7 @@ model layer and the user app are not implemented
 (Section~\ref{sec:envisioned}).
 
 \textit{How the agents reach EMHASS.} No agent talks to EMHASS
-directly (Figure~\ref{fig:requestpath}). The model's only route to the optimiser is a tool call, and
+directly (Figure~\ref{fig:requestpath}, Table~\ref{tab:emhasssteps}). The model's only route to the optimiser is a tool call, and
 the harness sends every request. When a call to \texttt{plan\_schedule}
 passes the checker, the harness builds one request from the checked
 requirements, the home's state, the prices and the forecasts, mapped as
@@ -1642,7 +1804,15 @@ in Section~\ref{sec:mpc}. It posts the request to EMHASS's MPC action
 (\texttt{GET /api/v1/plan}) and checks it against each requirement
 before the model or the app sees it. The hourly replan is the same
 call, started by the harness on a timer with the committed requirements
-and new forecasts, without the model. The Configurator does not change
+and new forecasts, without the model. Both calls are plain HTTP with
+JSON bodies inside the gateway: EMHASS listens on a port of its own
+container, which the harness reaches through the container network or
+the local host, and the harness reaches the model the same way, through
+Ollama's local HTTP interface. EMHASS is started without a Home
+Assistant address or token, so it contacts nothing else; everything it
+needs arrives with each request. No message, requirement or schedule
+leaves the gateway unless the cloud fallback is used. As these interfaces have no encryption or
+login, they stay closed to the home network. The Configurator does not change
 EMHASS's own configuration either, such as its cost function, its
 weights or whether the battery may charge from the grid; these keep
 their defaults. Its two settings change what the harness sends with
@@ -1663,6 +1833,29 @@ harness replans with EMHASS on new forecasts without the model, and the
 control layer runs every 15 minutes.}
 \label{fig:requestpath}
 \end{figure}
+
+\begin{table}[htbp]
+\caption{Messages between the household, the model, the harness and
+EMHASS for one request, and the hourly replan.}
+\label{tab:emhasssteps}
+\small
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{3.3cm}X>{\raggedright\arraybackslash}p{2.5cm}@{}}
+\toprule
+Step & From and to & What is sent or done & Form \\
+\midrule
+1 & household to model & the message, for example ``Charge the car for work tomorrow'' & text \\
+2 & model to harness & a \texttt{plan\_schedule} call with the requirements read from the message (car target and time, appliance deadlines, away periods, comfort bands), or a question to the household & tool arguments \\
+3 & harness (checker) & checks the requirements: known appliances, absolute times, a charge the charger can deliver; a failed check returns to the model to correct or to ask about & checker result \\
+4 & harness to EMHASS & \texttt{POST /action/naive-mpc-optim}: the checked requirements with the home's state, the prices and the forecasts & JSON parameters \\
+5 & EMHASS to harness & \texttt{GET /api/v1/plan}: the 15-minute schedule of grid, battery, car, appliances and heat pump, the predicted indoor temperature and the solver status & JSON plan \\
+6 & harness (checker) & checks the schedule against each requirement and the solver status & checker result \\
+7 & harness to model & the checked schedule, its cost and saving & tool result \\
+8 & model to household & the decision to commit or ask, with a short answer & text and app view \\
+9 & harness to EMHASS, every hour & the same call as steps 4 and 5 with the committed requirements and new forecasts, without the model & JSON parameters \\
+10 & control layer, every 15 minutes & holds the planned grid exchange, keeps the comfort band and the car and appliance deadlines & device commands \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \textit{Device data.} The harness, not the model, talks to the devices.
 It reads the meter, the inverter and the home battery over Modbus, MQTT
@@ -2903,20 +3096,16 @@ Buildings, 313}, 114278.
 \chapter{Pilot plans and answer-key rules}
 \label{app:plans}
 
-The 22 plans of the plan-interpretation pilot are in the file
-\path{prototypes/plan_pilot/plans.json} of the thesis repository. Cases S1 to S6 are simple,
-C1 to C5 change the plan during the day, A1 to A6 are ambiguous and X1
-to X5 are conflicting or infeasible. Twenty were adapted from an
+The plan-interpretation pilot uses 22 test plans. Cases S1 to S6 are
+simple, C1 to C5 change the plan during the day, A1 to A6 are ambiguous
+and X1 to X5 are conflicting or infeasible. Twenty were adapted from an
 external review and two restored from the first pilot. The answer keys
 are drafts and are checked before any result is used. The pilots of
-Section~\ref{sec:planpilot} used plans with
-exact values (archived as
-\path{prototypes/plan_pilot/archive/plans_exact_wording.json}); the
-ReAct gateway (Section~\ref{sec:reactpilot}) uses the same plans
-rewritten in everyday wording, with usual car settings of 80\,\% by
-07:30 every day. The 14 development plans
-(\path{prototypes/plan_pilot/plans_dev.json}) follow the same rules.
-The keys follow five rules:
+Section~\ref{sec:planpilot} used the plans with exact values; the ReAct
+gateway (Section~\ref{sec:reactpilot}) uses the same plans rewritten in
+everyday wording, with usual car settings of 80\,\% by 07:30 every day.
+The 14 development plans follow the same rules. The keys follow five
+rules:
 
 \begin{enumerate}[nosep]
 \item A request that the charger or the house cannot meet is an
@@ -2936,53 +3125,120 @@ only when the household names a temperature.
 has are used.
 \end{enumerate}
 
-\chapter{Agent prompts}
-\label{app:prompts}
+All plans are for the same house: rooftop PV, a 10\,kWh home battery,
+a heat pump, a 3.7\,kW charger for a car with a 40\,kWh battery, a
+dishwasher (about 1\,h, 0.76\,kWh) and a washing machine (about
+2.25\,h, 0.85\,kWh). Without a stated temperature the house is kept at
+20--22\,\textdegree{}C, and at 17\,\textdegree{}C while the household is away.
+Tables~\ref{tab:plansexact} to~\ref{tab:plansdev} list every plan. The
+column ``Current time and car battery'' gives the date and time the
+household sends the message (all in 2016) and the car's battery charge
+at that moment. A change plan has a second
+message, shown in italics with its time. ``Expected answer'' gives the
+key: commit or ask (with the parts to clarify) and the requirements the
+agent should hand to the optimiser; ``infeasible'' marks a request the
+house cannot meet in time. Times without a date fall on the day the
+message was sent.
 
-Table~\ref{tab:prompts} gives the opening of each agent's system prompt,
-which states its role, verbatim. The built agents' prompts continue
-with their rules, tools and output format: the Household Assistant's
-prompt has about 620 words and the Configurator's about 150. The Monitor and
-the Explainer are designed, not built (Section~\ref{sec:envisioned}), so
-their role statements are written for the design and have not been run.
-The prompts are in the prototype code (\texttt{react\_gateway/agent.py},
-\texttt{configurator\_pilot/configurator.py} and
-\texttt{designed\_agents/prompts.py}) and are frozen before the
-held-out run.
-
-\begin{table}[htbp]
-\caption{Role statement at the start of each agent's system prompt.}
-\label{tab:prompts}
-\small
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.5cm}X>{\raggedright\arraybackslash}p{1.6cm}@{}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.9cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\caption{The 22 test plans: exact wording (Section~\ref{sec:planpilot}) and expected answers}\label{tab:plansexact}\\
 \toprule
-Agent & Role statement (verbatim) & Status \\
+ID & Current time and car battery & Message & Expected answer \\
 \midrule
-Household Assistant & ``You are the home energy gateway of a household.
-You read the household's message, look at the home's data with your
-tools, plan the devices with the plan\_schedule tool and answer for the
-household app.'' & built \\[4pt]
-Configurator & ``You are the Configurator of a home energy gateway. The
-home has rooftop PV, a 10 kWh home battery, a
-heat pump and an EV charger. An MPC plans the devices every hour and
-at each plug-in, using day-ahead forecasts of PV (from weather
-forecasts), heat demand and household load. Once a week you choose two
-MPC settings for the coming week:'' & built \\[4pt]
-Monitor & ``You are the Monitor of a home energy gateway. You are called
-when the car is plugged in or when the control layer reports a large
-deviation from the committed plan. Find the cause with your tools, then
-either do nothing, adjust the constraints within what the household
-asked, or alert the household with a reason. Never remove or weaken a
-household requirement.'' & designed \\[4pt]
-Explainer & ``You are the Explainer of a home energy gateway. After each
-committed plan and once a day, you write a short message for the
-household app from the figures the harness gives you: when each device
-runs, the cost and the saving, and what changed and why. Use only these
-figures; every figure you cite is checked against the plan.'' &
-designed \\
+\endfirsthead
+\toprule
+ID & Current time and car battery & Message & Expected answer \\
+\midrule
+\endhead
 \bottomrule
-\end{tabularx}
-\end{table}
+\endlastfoot
+S1 & 13~Mar 22:00\newline car 50\,\% & I need the car at 80\% by 07:30 tomorrow morning. Keep the house at normal temperature. & commit; car 80\,\% by 14~Mar 07:30 \\
+S2 & 8~Nov 07:00\newline car 60\,\% & We will be away at the office from 08:30 to 17:00 today. Run the dishwasher so it's finished before we get home. & commit; dishwasher by 17:00; away 08:30--17:00 \\
+S3 & 19~Jan 21:00\newline car 40\,\% & Warm the house to 22-23\,\textdegree{}C between 06:00 and 08:00 tomorrow, and add 15 kWh to the car by 08:00. & commit; car +15\,kWh by 20~Jan 08:00; 22--23\,\textdegree{}C 20~Jan 06:00--08:00 \\
+S4 & 7~Jun 07:30\newline car 70\,\% & Working from home all day today, don't need the car. Run the washing machine between 10:00 and 15:00. & commit; washing 10:00--15:00 \\
+S5 & 2~Feb 22:30\newline car 50\,\% & Charge the car to 100\% by 06:30 tomorrow, and lower the heating to 18-20\,\textdegree{}C from midnight until 06:00. & commit; car 100\,\% by 3~Feb 06:30; 18--20\,\textdegree{}C 3~Feb 00:00--06:00 \\
+S6 & 20~Sep 08:00\newline car 45\,\% & We're going out from 18:00 to 22:00 today. Have the car at 70\% by 18:00 and finish the washing machine by 17:30. & commit; car 70\,\% by 18:00; washing by 17:30; away 18:00--22:00 \\
+C1 & 15~Mar 06:00\newline car 30\,\% & Car at 60\% by 08:00, please. \textit{At 10:00:} I'm back and plugged in. Something came up: I need the car at 75\% by 16:30 today. & commit; car 75\,\% by 16:30 \\
+C2 & 6~Dec 07:00\newline car 60\,\% & We're out from 08:30 to 18:00 today. \textit{At 13:00:} Heading home early! I'll be back at 14:30 instead of 18:00, and please warm the house to 22-23\,\textdegree{}C from 14:30 until 21:00. & commit; away 08:30--14:30; 22--23\,\textdegree{}C 14:30--21:00 \\
+C3 & 12~Jul 18:00\newline car 65\,\% & We're out from 19:30 to 22:30 tonight. Dishwasher done by 21:00. \textit{At 19:00:} We cancelled our evening plans and are staying home tonight. Also, no rush on the dishwasher, just have it done by 07:00 tomorrow. & commit; dishwasher by 13~Jul 07:00 \\
+C4 & 4~Oct 12:00\newline car 40\,\% & Car at 65\% by 18:00 for the gym. \textit{At 15:00:} Skipping the 18:00 gym trip today. Instead, charge the car to 85\% by 07:00 tomorrow morning. & commit; car 85\,\% by 5~Oct 07:00 \\
+C5 & 19~Apr 19:00\newline car 60\,\% & Car at 70\% for 07:00 tomorrow. \textit{At 21:00:} Actually, bump the car target to 90\% for my 07:00 departure tomorrow, and run the washing machine overnight so it's ready by 06:00. & commit; car 90\,\% by 20~Apr 07:00; washing by 20~Apr 06:00 \\
+A1 & 14~Mar 20:00\newline car 35\,\% & I have a long highway trip tomorrow morning, so make sure the car is well charged. & ask (car) \\
+A2 & 10~Jan 09:00\newline car 50\,\% & We're visiting friends for a few hours this afternoon, you can turn down the heat while we're gone. & ask (away, comfort) \\
+A3 & 24~May 07:00\newline car 40\,\% & Charge the car to 90\% before I head out, and run the dishwasher by 18:00. & ask (car); dishwasher by 18:00 \\
+A4 & 22~Nov 18:30\newline car 30\,\% & Plugged the car in for my 07:00 commute tomorrow. Also make the house extra warm tonight. & ask (car, comfort); car by 23~Nov 07:00 \\
+A5 & 9~Aug 07:00\newline car 45\,\% & I need the car charged up by lunchtime, and run a load of washing today. & ask (car); washing by 10~Aug 00:00 \\
+A6 & 10~Jun 17:00\newline car 50\,\% & We're away for the weekend. & ask (away) \\
+X1 & 11~Feb 23:30\newline car 20\,\% & Just got home. I need 25 kWh added to the car before I leave at 05:00. & ask (conflict, car); car +25\,kWh by 12~Feb 05:00 (infeasible) \\
+X2 & 13~Dec 07:00\newline car 50\,\% & We're away from 09:00 to 17:00 so put the heating into away saving mode, and keep the house at a steady 23\,\textdegree{}C from 08:00 to 18:00. & ask (conflict, comfort); away 09:00--17:00 \\
+X3 & 25~Jul 21:00\newline car 40\,\% & I'm driving the car to the office from 08:00 to 17:00 tomorrow. Make sure you charge it to 90\% using our rooftop solar between 11:00 and 15:00. & ask (conflict, car); away 26~Jul 08:00--17:00 \\
+X4 & 18~Oct 18:00\newline car 10\,\% & Charge the car to 100\% before we leave for dinner at 20:00. & ask (conflict, car); car 100\,\% by 20:00 (infeasible) \\
+X5 & 12~Jan 20:00\newline car 30\,\% & Car at 80\% by 7:00 tomorrow, and don't use any electricity from the grid tonight. & ask (conflict, car); car 80\,\% by 13~Jan 07:00 (infeasible) \\
+\end{longtable}
+
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.9cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\caption{The 22 test plans in everyday wording (Section~\ref{sec:reactpilot}) and expected answers}\label{tab:planseveryday}\\
+\toprule
+ID & Current time and car battery & Message & Expected answer \\
+\midrule
+\endfirsthead
+\toprule
+ID & Current time and car battery & Message & Expected answer \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+S1 & 13~Mar 22:00\newline car 50\,\% & Charge the car for work tomorrow. & commit; car 80\,\% by 14~Mar 07:30 \\
+S2 & 8~Nov 07:00\newline car 60\,\% & Out at work from 8:30 till 5 today. Dishwasher done before we're home please. & commit; dishwasher by 17:00; away 08:30--17:00 \\
+S3 & 19~Jan 21:00\newline car 40\,\% & Charge the car full, and make it nice and warm in the morning, 22-23 from 6 to 8. & commit; car 100\,\% by 20~Jan 07:30; 22--23\,\textdegree{}C 20~Jan 06:00--08:00 \\
+S4 & 7~Jun 07:30\newline car 70\,\% & Home all day, don't need the car. Washing between 10 and 3 please. & commit; washing 10:00--15:00 \\
+S5 & 2~Feb 22:30\newline car 50\,\% & Charge it to 100\%, and turn the heating down to 18-20 overnight, midnight to 6. & commit; car 100\,\% by 3~Feb 07:30; 18--20\,\textdegree{}C 3~Feb 00:00--06:00 \\
+S6 & 20~Sep 08:00\newline car 45\,\% & Going out tonight from 6 to 10. Car at 70\% by 6 and the washing finished by half five. & commit; car 70\,\% by 18:00; washing by 17:30; away 18:00--22:00 \\
+C1 & 15~Mar 06:00\newline car 30\,\% & Car for 8 please. \textit{At 10:00:} Back home and plugged in. I need it again at half four, the usual charge is fine. & commit; car 80\,\% by 16:30 \\
+C2 & 6~Dec 07:00\newline car 60\,\% & Out all day, 8:30 to 6. \textit{At 13:00:} Coming home early, back at half two. Make it warm, 22-23, until 9. & commit; away 08:30--14:30; 22--23\,\textdegree{}C 14:30--21:00 \\
+C3 & 12~Jul 18:00\newline car 65\,\% & Out tonight 7:30 to 10:30, dishwasher done by 9. \textit{At 19:00:} Change of plan, we're staying in. The dishwasher just needs to be done by 7 tomorrow. & commit; dishwasher by 13~Jul 07:00 \\
+C4 & 4~Oct 12:00\newline car 40\,\% & Car for the gym at 6. \textit{At 15:00:} Skipping the gym. Just the usual for tomorrow then. & commit; car 80\,\% by 5~Oct 07:30 \\
+C5 & 19~Apr 19:00\newline car 60\,\% & Usual charge for tomorrow. \textit{At 21:00:} Actually charge it full, long drive. And a wash overnight, done by 6. & commit; car 100\,\% by 20~Apr 07:30; washing by 20~Apr 06:00 \\
+A1 & 14~Mar 20:00\newline car 35\,\% & Long trip tomorrow, leaving really early. Make sure the car is full. & ask (car) \\
+A2 & 10~Jan 09:00\newline car 50\,\% & Visiting friends for a few hours this afternoon, turn the heat down while we're out. & ask (away, comfort) \\
+A3 & 24~May 07:00\newline car 40\,\% & Charge the car before I head out, and the dishwasher by 6pm. & ask (car); dishwasher by 18:00 \\
+A4 & 22~Nov 18:30\newline car 30\,\% & Car's plugged in for the commute tomorrow. Make the house extra warm tonight. & ask (comfort); car 80\,\% by 23~Nov 07:30 \\
+A5 & 9~Aug 07:00\newline car 45\,\% & Need the car charged by lunchtime, and a load of washing today. & ask (car); washing by 10~Aug 00:00 \\
+A6 & 10~Jun 17:00\newline car 50\,\% & Away for the weekend. & ask (away) \\
+X1 & 11~Feb 23:30\newline car 20\,\% & Just got home, need it full for 5am. & commit; car 100\,\% by 12~Feb 05:00 (infeasible) \\
+X2 & 13~Dec 07:00\newline car 50\,\% & We're out 9 to 5, put the heating on away mode. But keep it at 23 all day, 8 to 6. & ask (conflict, comfort); away 09:00--17:00 \\
+X3 & 25~Jul 21:00\newline car 40\,\% & Taking the car to work tomorrow, 8 to 5. Charge it to 90\% from the solar panels at midday. & ask (conflict, car); away 26~Jul 08:00--17:00 \\
+X4 & 18~Oct 18:00\newline car 10\,\% & Charge it full before we go to dinner at 8. & commit; car 100\,\% by 20:00 (infeasible) \\
+X5 & 12~Jan 20:00\newline car 30\,\% & Usual charge for tomorrow, but no power from the grid tonight. & ask (conflict, car); car 80\,\% by 13~Jan 07:30 (infeasible) \\
+\end{longtable}
+
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.9cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\caption{The 14 development plans and expected answers}\label{tab:plansdev}\\
+\toprule
+ID & Current time and car battery & Message & Expected answer \\
+\midrule
+\endfirsthead
+\toprule
+ID & Current time and car battery & Message & Expected answer \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+DS1 & 5~Apr 21:00\newline car 35\,\% & Usual charge for tomorrow, and run the dishwasher overnight, done by 7. & commit; car 80\,\% by 6~Apr 07:30; dishwasher by 6~Apr 07:00 \\
+DS2 & 21~Oct 08:00\newline car 55\,\% & Washing done by noon please, and we're out 1 to 4. & commit; washing by 12:00; away 13:00--16:00 \\
+DS3 & 1~Dec 20:00\newline car 25\,\% & Add 10 kWh to the car for quarter past seven tomorrow, and 21-22 in the house from 6 to 8. & commit; car +10\,kWh by 2~Dec 07:15; 21--22\,\textdegree{}C 2~Dec 06:00--08:00 \\
+DS4 & 15~Aug 09:00\newline car 80\,\% & No car today. Washing and dishwasher, both done by 6pm. & commit; washing by 18:00; dishwasher by 18:00 \\
+DC1 & 3~May 07:00\newline car 40\,\% & Car at 70\% by 5. \textit{At 11:00:} Plans changed, leaving at 3 instead, same charge. & commit; car 70\,\% by 15:00 \\
+DC2 & 20~Feb 08:00\newline car 60\,\% & Out skiing 9 to 7. \textit{At 15:00:} Back at 5 instead, warm it up to 22-23 until 10. & commit; away 09:00--17:00; 22--23\,\textdegree{}C 17:00--22:00 \\
+DC3 & 7~Sep 19:00\newline car 50\,\% & Dishwasher done by 10 please. \textit{At 20:00:} Forget the dishwasher. Charge the car full for tomorrow though. & commit; car 100\,\% by 8~Sep 07:30 \\
+DA1 & 29~Mar 18:00\newline car 30\,\% & Charge the car for my trip on Saturday. & commit; car 80\,\% by 2~Apr 07:30 \\
+DA2 & 2~Nov 07:30\newline car 50\,\% & Run the washing sometime when it's cheap. & commit; washing by 4~Nov 00:00 \\
+DA3 & 21~Jun 12:00\newline car 60\,\% & Car full for my trip, leaving early tomorrow. & ask (car) \\
+DA4 & 25~Jan 16:00\newline car 45\,\% & Guests tonight, make it cosy. & ask (comfort) \\
+DX1 & 17~May 22:00\newline car 15\,\% & Charge it full for 5:30. & commit; car 100\,\% by 18~May 05:30 (infeasible) \\
+DX2 & 19~Dec 07:00\newline car 50\,\% & On holiday till Friday 6pm. Heating on away mode, but keep it at 22 the whole time. & ask (conflict, comfort); away 07:00--23~Dec 18:00 \\
+DX3 & 2~Aug 20:00\newline car 40\,\% & Dishwasher and washing, both done by 9. & ask (conflict, appliances); dishwasher by 21:00; washing by 21:00 \\
+\end{longtable}
 
 \chapter{Tool and output schemas}
 \label{app:schemas}
@@ -2993,10 +3249,7 @@ schemas are Pydantic models, and the model sees each field with the
 description given here, so the descriptions are part of the prompt and
 are quoted verbatim, except that the time format, which every time
 field states, is given once here: times are written as
-\texttt{'YYYY-MM-DD HH:MM'}. The schemas are in the prototype code
-(\texttt{react\_gateway/agent.py}, \texttt{plan\_pilot/pilot.py} and
-\texttt{configurator\_pilot/configurator.py}) and are frozen with the
-prompts before the held-out run. The earlier one-call reader of the
+\texttt{'YYYY-MM-DD HH:MM'}. The schemas are frozen with the prompts before the held-out run. The earlier one-call reader of the
 plan pilot (Section~\ref{sec:planpilot}) answered with one structure,
 \texttt{HouseholdPlan}, holding the same four kinds of item, the
 questions and the decision to commit.
