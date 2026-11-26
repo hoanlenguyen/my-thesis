@@ -94,14 +94,13 @@ Paula Alavesa, PhD
 \unnumberedchapter{Foreword}
 
 This thesis was written for the Master's programme in Information
-Processing Science at the University of Oulu. It continues my earlier
-thesis on language model agents that schedule household appliances.
-That work showed that the savings and the reliability came from the
-optimiser and the deterministic checks, not from the language model,
-and it left me with a new question: if the model only has to read a
-household's plans and set the optimiser up, can a small model that runs
-in the home do it, so that the household's routine never has to leave
-the house?
+Processing Science at the University of Oulu. It grew from a simple
+question about home energy management: an optimiser already plans a
+home's devices well, but only if someone tells it what the household
+needs and sets it up. If a language model only has to read a
+household's plans and configure the optimiser, can a small model that
+runs in the home do it, so that the household's routine never has to
+leave the house?
 
 I would like to express my gratitude to my supervisors, Yueqiang Xu and
 Paula Alavesa, for their help at every step of this work. Whenever I
@@ -253,10 +252,7 @@ appliances directly \parencite{elmakroum2026,jonah2026}. Direct
 schedulers come close to the optimum, but they also produced invented
 schedules and misstated deadlines, and their authors recommend a
 deterministic validator before any device is switched
-\parencite{jonah2026}. The author's earlier thesis reached the same
-conclusion for appliance scheduling: reliability and savings came from
-the solver and the deterministic checks, not from the language model or
-the number of agents \parencite{le2026}.
+\parencite{jonah2026}.
 
 Where the language model runs is a second, open problem. The studies
 above call large language models (LLMs) in the cloud. A HEMS that sends
@@ -531,10 +527,7 @@ recommend a deterministic validator before any device is switched.
 Multi-agent designs for home and building energy management are
 appearing \parencite{jung2026,yang2025,liu2025}, and
 \textcite{zhang2024} use a language model to make building control
-interpretable. The author's earlier thesis evaluated a hierarchical
-ReAct pipeline for appliance recommendations and found that the solver
-and the deterministic checks, not the agents, produced the savings and
-the validity \parencite{le2026}. Across these studies, reliability came
+interpretable. Across these studies, reliability came
 from what surrounds the model (a validator, a solver, a fixed schema)
 rather than from the model alone.
 
@@ -1196,11 +1189,9 @@ Monitor and the Explainer; they are designed but not yet built
 (Section~\ref{sec:envisioned}). The harness routes each event
 to one agent by its type; no agent calls another, and the agents share
 state only through the harness. Splitting by event keeps each prompt
-small and lets each output be checked on its own. The earlier thesis
-found that splitting \textit{one} task between agents added cost
-without reliability \parencite{le2026}; here the agents do different
-tasks at different times, and narrow tasks with short prompts suit a
-small model. Whether this helps is compared with one agent if the small
+small and lets each output be checked on its own: the agents do
+different tasks at different times, and narrow tasks with short prompts
+suit a small model. Whether this helps is compared with one agent if the small
 models allow it.
 
 \begin{table}[htbp]
@@ -2973,10 +2964,6 @@ Kitchenham, B., \& Charters, S. (2007). \textit{Guidelines for
 performing systematic literature reviews in software engineering}
 (EBSE Technical Report EBSE-2007-01). Keele University and Durham
 University.
-
-Le, H. (2026). \textit{A hierarchical ReAct multi-agent pipeline for
-residential appliance load scheduling under dynamic electricity pricing}
-[Master's thesis, University of Oulu]. Unpublished manuscript.
 
 Liu, S., Hu, R., Yang, Y., Zhang, H., Ding, X., Sun, H., \& Sun, L.
 (2025). LLM-BEM: Zero-shot LLM-agent scheduling for smart building

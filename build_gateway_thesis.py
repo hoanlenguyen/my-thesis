@@ -34,7 +34,6 @@ AUTHORS = {  # key: (authors as cited, year)
     "jonah2026":("Jonah et al.", "2026"),
     "jung2026": ("Jung", "2026"),
     "kitchenham2007": ("Kitchenham \\& Charters", "2007"),
-    "le2026": ("Le", "2026"),
     "liu2025": ("Liu et al.", "2025"),
     "lu2024": ("Lu et al.", "2024"),
     "michelon2025":("Michelon et al.", "2025"),
