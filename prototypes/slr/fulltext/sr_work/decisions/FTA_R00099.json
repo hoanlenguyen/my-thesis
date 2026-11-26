@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00099@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00099",
+   "d": "exclude",
+   "code": "E2",
+   "why": "LLM only simulates mall occupants and movements to generate training data; RL agent sets temperatures, so no listed role",
+   "where": "p2-4 Sections II.A-B (environment setup, reinforcement learning); p4-5 Section III"
+  }
+ ]
+}

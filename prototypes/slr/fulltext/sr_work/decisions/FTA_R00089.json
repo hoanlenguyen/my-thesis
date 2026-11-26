@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00089@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00089",
+   "d": "exclude",
+   "code": "E1",
+   "why": "LLM recommends EV driving velocity/current while driving; no home or building, and no small or local model named.",
+   "where": "p2 Section 2 Driving Management Framework; p6 Section 4 Results"
+  }
+ ]
+}

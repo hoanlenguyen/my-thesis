@@ -1,0 +1,27 @@
+{
+ "ta": {
+  "review_id": "82a2eec5-cda3-4abf-acbb-6c1dd26f6764",
+  "dataset": "ca0a749e1e4f77506d04b886c6dc0c1f41dc79c56202afc799dbaf96781e87db",
+  "stage": "ta",
+  "protocol_hash": "af0fd01ced42c4d52eb6034b9cd0acef7fcbbb3643dd97f98c1fe346343dbbb5",
+  "config_hash": "823ac1ddd1fcea65711c67b0361beac6beb1466c75ff4cdbc96efa808ae1f4d3",
+  "content_id": "332bd273006aa8865e64c99d87949b31d133d8ac1c61875d4834ad6ab549a904",
+  "config_scope": "stage-v1",
+  "revision": 1,
+  "protocol_path": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\screening_protocol.md",
+  "context_id": "d0793c0a9dd85522667d2b1e929d64bc887d26ef46948aa5ffe2f46ce6837403"
+ },
+ "ft": {
+  "review_id": "82a2eec5-cda3-4abf-acbb-6c1dd26f6764",
+  "dataset": "ca0a749e1e4f77506d04b886c6dc0c1f41dc79c56202afc799dbaf96781e87db",
+  "stage": "ft",
+  "protocol_hash": "af0fd01ced42c4d52eb6034b9cd0acef7fcbbb3643dd97f98c1fe346343dbbb5",
+  "config_hash": "67ee4f01f6b53134e13a7e58cdb3b4c9aaa14341ac28cf5c69634a42bb59435f",
+  "input_hash": "c988e910f68450a233ef6838c3161e930c4fcfdee550bcaa35f04da1923ee47c",
+  "content_id": "fe4f62386a9d2b43a929255d0b70af4a23cbcccfaf25aeb559efa9393d3ba5fa",
+  "config_scope": "stage-v1",
+  "revision": 2,
+  "protocol_path": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\screening_protocol.md",
+  "context_id": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ }
+}

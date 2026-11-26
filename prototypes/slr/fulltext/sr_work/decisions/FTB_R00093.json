@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00093@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00093",
+   "d": "include",
+   "code": "INC",
+   "why": "GPT LLM sets zone heating/cooling setpoints in five-zone office EnergyPlus simulation; energy, PMV comfort, cost, latency measured against baselines.",
+   "where": "p5-8 Sec 3.1, 3.5 (role); p11-14 Sec 5, Tables 1-4 (evaluation)"
+  }
+ ]
+}

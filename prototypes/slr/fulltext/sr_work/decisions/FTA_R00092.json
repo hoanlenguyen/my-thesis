@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00092@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00092",
+   "d": "include",
+   "code": "INC",
+   "why": "LLMs (gpt-oss-20b RFT, GPT-5, GPT-4o) set hourly heat-pump setpoints for office-building TES; simulation measured kg-CO2 vs DP/MPC/DQN",
+   "where": "p1 Abstract; p3-4 Sec 2.1 LLM controller design; p7-9 Sec 3.1-3.4; p10-11 Sec 4.1 Table 4"
+  }
+ ]
+}

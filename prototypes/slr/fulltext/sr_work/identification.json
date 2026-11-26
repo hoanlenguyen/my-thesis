@@ -1,0 +1,25 @@
+{
+ "tool": "sr-screener 1.0.0",
+ "files": [
+  {
+   "file": "included_ta.csv",
+   "format": "csv",
+   "records": 99,
+   "databases": {
+    "TA-included (Scopus, ScienceDirect, arXiv)": 99
+   }
+  }
+ ],
+ "by_database": {
+  "TA-included (Scopus, ScienceDirect, arXiv)": 99
+ },
+ "raw_total": 99,
+ "unique_total": 99,
+ "duplicates_removed": 0,
+ "no_abstract": 4,
+ "overlap": {
+  "TA-included (Scopus, ScienceDirect, arXiv)": 99
+ },
+ "batches": 2,
+ "max_record_lines": 21
+}

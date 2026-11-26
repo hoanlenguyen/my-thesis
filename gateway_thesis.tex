@@ -164,6 +164,8 @@ Hoan Le\\
 
 \pagenumbering{arabic}
 \setcounter{page}{1}
+% Extra space above every table row, so rows are easy to tell apart.
+\setlength{\extrarowheight}{3pt}
 
 % ── ABSTRACT ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Abstract}
@@ -290,9 +292,8 @@ Hoan Le
 
 I used the generative AI tool Claude (Anthropic) in this thesis work: to
 help write and test the software of the evaluated system, to help run
-the literature searches reported in Appendix~\ref{app:search} and make
-a first pass of the screening, whose every decision I check
-(Section~\ref{sec:slr}), and to help draft and revise the text of the
+the literature searches and screen the studies, whose every decision I
+check (Section~\ref{sec:slr}), and to help draft and revise the text of the
 thesis. The language models GPT-6 Luna, Gemma 4, Ministral 3, Nemotron
 3 Nano, gpt-oss and Llama 3.2 are objects of study in this
 thesis and were not used to write it. All content produced with the
@@ -348,7 +349,7 @@ that only one energy manager should control a device at a time
 (Energy Systems Catapult, 2026).
 
 \textit{The grid operator sets limits, or prices.} In Germany, heat
-pumps and wallboxes above 4.2\,kW installed since 2024 must accept power
+pumps and wallboxes above 4.2\,kW must accept power
 reductions from the grid operator (§14a of the Energy Industry Act,
 EnWG), so the household's plan has to fit inside an external limit
 (evcc, n.d.-a). Other EU countries rely mainly on prices: every
@@ -383,7 +384,8 @@ optimiser's parameters and settings.
 Language-model agents can bridge the gap between what a household says
 and what an optimiser needs. Recent work turns plain-language
 preferences into optimisation constraints
-(Sanguinetti et al., 2025; Michelon et al., 2025) or lets ReAct agents schedule
+(Sanguinetti et al., 2025; Michelon et al., 2025) or lets ReAct agents, which
+alternate reasoning steps with tool calls (Yao et al., 2023), schedule
 appliances directly (El Makroum et al., 2026; Jonah et al., 2026). Direct
 schedulers come close to the optimum, but they also produced invented
 schedules and misstated deadlines, and their authors recommend a
@@ -580,7 +582,7 @@ Stage & Activity & Studies \\
 Identification & database search (Scopus, ScienceDirect, arXiv; 11 November 2026) & 863 records, 729 after removing duplicates \\
  & supplementary search (arXiv; 24 November 2026) & 171 records, 149 new after removing duplicates \\
 Screening & titles and abstracts against the inclusion criteria & screened: database search 88 include, 641 exclude; supplementary search 11 include, 138 exclude \\
-Eligibility & full texts & in process \\
+Eligibility & full texts against the inclusion criteria & 99 reports sought; 34 assessed so far: 27 include, 7 exclude (setting 2, role of the language model 4, no evaluation 1); 65 still being retrieved \\
 Snowballing & backward and forward from the included studies & in process \\
 Included & data extraction for LQ1--LQ3 & in process \\
 \bottomrule
@@ -674,7 +676,7 @@ from what surrounds the model (a validator, a solver, a fixed schema)
 rather than from the model alone.
 
 \textit{Configuring an optimiser}, language models choose the settings
-of a control method instead of its inputs. Raghavan and Giridhar (2025) pair
+of a control method instead of its inputs. Raghavan and Giridhar (2026) pair
 a zero-shot agent with MPC in a home, and the review's pre-screen found
 first studies that automate MPC for buildings with language-model
 agents, which are read in full before the gap is final. None of the
@@ -884,8 +886,7 @@ model*'', and ``edge'', ``on-device'', ``local'', ``embedded'' or
 general, because studies of small models on edge hardware rarely name a
 home energy system. An optional block of optimisation terms (``model
 predictive control'', ``MILP'', ``scheduling'') narrows the first search;
-both counts are reported. Appendix~\ref{app:search} gives the strings
-for each database.
+both counts are reported.
 
 The searches were run on 11 November 2026. Scopus returned 543
 records for the first search and 129 for the second, ScienceDirect 63
@@ -912,8 +913,7 @@ households, residential, energy communities, prosumers, electric
 vehicles, heat pumps, thermostats, HVAC) and with optimisation,
 constraints, scheduling or control. It returned 171 records, 149 of them
 new after duplicates were removed, among them the missed study. The same
-search is to be run in Scopus; Appendix~\ref{app:search} gives the
-strings.
+search is to be run in Scopus.
 
 \textit{Inclusion and exclusion.} Included are studies from 2022 to
 2026, in English, on behind-the-meter assets (appliances, PV, batteries,
@@ -927,20 +927,39 @@ forecasting or text analysis, studies of grid-level operation without a
 household or building, and position papers without an evaluation; these
 may still be cited as background.
 
-\textit{Screening and quality.} Titles and abstracts are screened
+\textit{Screening.} Titles and abstracts are screened
 first, then full texts. A first pass was made with an AI assistant
 (Claude): records that do not mention both a language-model term and an
 energy term were excluded by keyword, and the remaining 432 titles were
 marked include, unsure or exclude with a reason. The author checks every
 decision; a random sample of the decisions is checked by a supervisor,
-and disagreements refine the criteria. Each included study is rated on whether it states the
-model and its version, the data, a baseline, and whether its code or
-data are available.
+and disagreements refine the criteria.
 
-\textit{Extraction and synthesis.} A fixed form records, for each study,
+Full texts are assessed against the same criteria, written out as a
+screening protocol that was fixed before any full text was read. The
+protocol orders the reasons for exclusion (language or date, no
+evaluation, setting, role of the language model), so that each excluded
+study gets the first reason that applies. It also settles the unclear
+cases: a model counts as small when it runs locally, when its authors
+call it small, or when it has about 10 billion parameters or fewer; a
+recommendation counts as a role of the language model only when it
+gives a concrete schedule or setting; and a single illustrative example
+without a measured result is not an evaluation. Two AI reviewers (Claude
+Sonnet 5.5, one instructed as an energy management researcher and one as
+a review methodologist) read each full text independently, without
+seeing each other's decision, and give one decision with the page that
+supports it; a third AI reviewer decides when they disagree. The
+reviewers read the text extracted from each PDF file, so figures are not
+visible to them. The author checks every decision and can override it.
+For the first 34 full texts the two reviewers agreed on 33 (Cohen's
+kappa 0.92), and the author overrode one exclusion.
+
+\textit{Extraction, quality and synthesis.} A fixed form records, for each study,
 the role of the language model, the assets and the checks around it
 (LQ1, LQ2), the model, its size, where it runs, its reliability and its
-cost (LQ3), and the baselines, metrics and data of the evaluation. The results are synthesised in tables by
+cost (LQ3), and the baselines, metrics and data of the evaluation. Each
+included study is rated on whether it states the model and its version,
+the data, a baseline, and whether its code or data are available. The results are synthesised in tables by
 review question and in a narrative that ends in the research gap
 (Section~\ref{sec:slrreview}). The search results are in process.
 
@@ -1032,18 +1051,11 @@ prices and heat pump efficiency come from the same place and dates.
 \caption{Data used in the evaluation.}
 \label{tab:data}
 \small
-\begin{tabularx}{\textwidth}{@{}p{3.3cm}Xp{3.0cm}@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.5cm}X>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{2.6cm}@{}}
 \toprule
-Data & Content and source & Use \\
+Data & Content and source & Size & Use \\
 \midrule
-OPSD Household data & 15-minute PV, grid, heat pump, EV and appliance data of homes in Konstanz, 2014--2019 (Open Power System Data, 2020) & main house; more houses for SQ2 \\
-DWD station 02712 & hourly air temperature and global radiation, Konstanz (Deutscher Wetterdienst, n.d.) & weather classes, forecasts \\
-Day-ahead prices & German spot prices, 2015--2019 (Fraunhofer ISE, n.d.) & import and export price \\
-BDEW price analysis & 2016 household price components, 28.80\,ct/kWh (BDEW, 2023) & dynamic tariff \\
-EEG feed-in tariff & 12.31\,ct/kWh for rooftop PV up to 10\,kWp (Bundesnetzagentur, n.d.) & export price \\
-When2Heat & heat pump COP by hour (Ruhnau et al., 2019; Ruhnau \& Muessel, 2023) & heat demand from heat pump electricity \\
-Norwegian EV sessions & 35,377 residential charging sessions (Sørensen et al., 2024) & optional: departure times \\
-Plan benchmark & plain-language plans with answer keys (pilot set in Appendix~\ref{app:plans}) & SQ1 ground truth \\
+OPSD Household data & 15-minute PV, grid, heat pump, EV and appliance data of homes in Konstanz, 2014--2019 (Open Power System Data, 2020) & 11 sites, 6 of them homes; 153,810 rows; main house 81,435 rows (October 2015 to February 2018) & main house; more houses for SQ2 \\DWD station 02712 & hourly air temperature and global radiation, Konstanz (Deutscher Wetterdienst, n.d.) & about 482,000 hourly temperature values (1971 to 2025) and 436,000 radiation values (1977 to 2026) & weather classes, forecasts \\Day-ahead prices & German spot prices, 2015--2019 (Fraunhofer ISE, n.d.) & 32,134 hourly prices (October 2015 to May 2019) & import and export price \\BDEW price analysis & 2016 household price components, 28.80\,ct/kWh (BDEW, 2023) & one set of components & dynamic tariff \\EEG feed-in tariff & 12.31\,ct/kWh for rooftop PV up to 10\,kWp (Bundesnetzagentur, n.d.) & one tariff & export price \\When2Heat & heat pump COP by hour (Ruhnau et al., 2019; Ruhnau \& Muessel, 2023) & 21,165 hourly values for Germany (October 2015 to February 2018) & heat demand from heat pump electricity \\Norwegian EV sessions & residential charging sessions (Sørensen et al., 2024) & 35,377 sessions & optional: departure times \\Plan benchmark & plain-language plans with answer keys (pilot set in Appendix~\ref{app:plans}) & pilot: 22 test and 14 development plans; held out: 120 plans & SQ1 ground truth \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -2782,8 +2794,7 @@ sufficient.
 AhmadiTeshnizi, A., Gao, W., \& Udell, M. (2024). OptiMUS: Scalable
 optimization modeling with (MI)LP solvers and large language models. In
 \textit{Proceedings of the 41st International Conference on Machine
-Learning} (PMLR 235).
-\url{https://proceedings.mlr.press/v235/ahmaditeshnizi24a.html}
+Learning} (PMLR 235). \url{https://arxiv.org/abs/2402.10172}
 
 Avepower. (2026, May 5). \textit{Smart home energy management: Solar,
 battery and home energy use}.
@@ -2838,8 +2849,8 @@ the European Union, L 158}, 125--199.
 
 Dong, P., \& Tran, V. (2025). SLB: A bridge module of local SLM and
 online LLM for smart home device control. In \textit{2025 17th
-International Conference on Knowledge and System Engineering (KSE)}.
-IEEE. \url{https://doi.org/10.1109/KSE68178.2025.11309441}
+International Conference on Knowledge and System Engineering (KSE)}
+(pp. 1--6). IEEE. \url{https://doi.org/10.1109/KSE68178.2025.11309441}
 
 El Makroum, R., Zwickl-Bernhard, S., \& Kranzl, L. (2026). Agentic AI
 home energy management system: A large language model framework for
@@ -2864,12 +2875,12 @@ Energy Systems Catapult. (2026, February 12). \textit{Making home
 energy management work for consumers}.
 \url{https://es.catapult.org.uk/insight/making-home-energy-management-work-for-consumers/}
 
-evcc. (n.d.-a). \textit{§14a EnWG and SteuVE}. evcc documentation.
-Retrieved 1 November 2026, from
-\url{https://docs.evcc.io/en/docs/features/14a-enwg-steuve}
+evcc. (n.d.-a). \textit{External limit (§14a, §9)}. evcc documentation.
+Retrieved 26 November 2026, from
+\url{https://docs.evcc.io/en/external-limit/}
 
-evcc. (n.d.-b). \textit{Vehicles}. evcc documentation. Retrieved 19
-November 2026, from \url{https://docs.evcc.io/en/docs/features/vehicle}
+evcc. (n.d.-b). \textit{Vehicles}. evcc documentation. Retrieved 26
+November 2026, from \url{https://docs.evcc.io/en/features/vehicle/}
 
 Fraunhofer ISE. (n.d.). \textit{Energy-Charts: Day-ahead spot market
 prices} [Data set]. Retrieved 30 October 2026, from
@@ -2881,7 +2892,7 @@ Hevner, A. R. (2007). A three cycle view of design science research.
 
 Hevner, A. R., March, S. T., Park, J., \& Ram, S. (2004). Design
 science in information systems research. \textit{MIS Quarterly, 28}(1),
-75--105.
+75--105. \url{https://doi.org/10.2307/25148625}
 
 Home Assistant. (n.d.). \textit{Assist: Talk to your smart home}.
 Home Assistant documentation. Retrieved 11 November 2026, from
@@ -2930,14 +2941,14 @@ Systems (e-Energy '25)} (pp. 590--602). ACM.
 
 Open Power System Data. (2020). \textit{Data package: Household data}
 (Version 2020-04-15) [Data set].
-\url{https://doi.org/10.25832/household_data/2020-04-15}
+\url{https://data.open-power-system-data.org/household_data/2020-04-15/}
 
 Peffers, K., Tuunanen, T., Rothenberger, M. A., \& Chatterjee, S.
 (2007). A design science research methodology for information systems
 research. \textit{Journal of Management Information Systems, 24}(3),
-45--77.
+45--77. \url{https://doi.org/10.2753/MIS0742-1222240302}
 
-Raghavan, V. S., \& Giridhar, A. V. (2025). Cost-optimal residential
+Raghavan, V. S., \& Giridhar, A. V. (2026). Cost-optimal residential
 energy scheduling via a zero-shot LLM agent and model predictive
 control. \textit{Journal of Building Performance Simulation, 19}(3),
 492--510. \url{https://doi.org/10.1080/19401493.2025.2605465}
@@ -3016,7 +3027,7 @@ energy management. In \textit{2025 44th Chinese Control Conference
 Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., \& Cao,
 Y. (2023). ReAct: Synergizing reasoning and acting in language models.
 \textit{International Conference on Learning Representations (ICLR
-2023)}. arXiv:2210.03629.
+2023)}. \url{https://doi.org/10.48550/arXiv.2210.03629}
 
 Zhang, L., \& Chen, Z. (2024). Large language model-based interpretable
 machine learning control in building energy systems. \textit{Energy and
@@ -3066,66 +3077,6 @@ only when the household names a temperature.
 \item Times are absolute dates and times, and only appliances the house
 has are used.
 \end{enumerate}
-
-\chapter{Search strings}
-\label{app:search}
-
-The search strings of the systematic literature review
-(Section~\ref{sec:slr}). Search A answers LQ1 and LQ2, search B answers
-LQ3, and the supplementary search C covers household settings that
-search A misses (LQ1, LQ2). All searches cover 2022 to 2026, articles, conference papers and
-reviews, in English. ScienceDirect allows at most eight Boolean
-operators per field and no wildcards, so search A is split in two there.
-
-\begingroup
-\small\raggedright
-\setlength{\parskip}{6pt}
-
-\textbf{Scopus, search A.}
-\texttt{TITLE-ABS-KEY ( ( "large language model*" OR "small language model*" OR LLM* OR "language model agent*" OR "language agent*" OR "agentic AI" OR "natural language interface*" ) AND ( "home energy management" OR "home energy gateway" OR "energy gateway*" OR "smart home*" OR "demand response" OR "building energy management" OR "household energy" OR ( ( appliance* OR "electric vehicle*" OR "heat pump*" OR batter* OR load* ) W/3 ( schedul* OR control* OR optimi* ) ) ) ) AND PUBYEAR > 2021 AND PUBYEAR < 2027 AND ( LIMIT-TO ( DOCTYPE , "ar" ) OR LIMIT-TO ( DOCTYPE , "cp" ) OR LIMIT-TO ( DOCTYPE , "re" ) ) AND ( LIMIT-TO ( LANGUAGE , "English" ) )}
-
-\textbf{Scopus, search B.}
-\texttt{TITLE-ABS-KEY ( ( "small language model*" OR ( ( edge OR "on-device" OR local* OR embedded OR quanti?ed ) W/3 ( "language model*" OR LLM* ) ) ) AND ( ( ( energy OR electricity OR power ) W/3 ( management OR gateway* OR control* OR system* ) ) OR "smart home*" OR "smart grid*" ) )}, with the same limits as search A.
-
-\textbf{Web of Science, search A.}
-\texttt{TS=(("large language model*" OR "small language model*" OR LLM* OR "language model agent*" OR "language agent*" OR "agentic AI" OR "natural language interface*") AND ("home energy management" OR "home energy gateway" OR "energy gateway*" OR "smart home*" OR "demand response" OR "building energy management" OR "household energy" OR ((appliance* OR "electric vehicle*" OR "heat pump*" OR batter* OR load*) NEAR/3 (schedul* OR control* OR optimi*))))}
-
-\textbf{Web of Science, search B.}
-\texttt{TS=(("small language model*" OR ((edge OR "on-device" OR local* OR embedded OR quanti?ed) NEAR/3 ("language model*" OR LLM*))) AND (((energy OR electricity OR power) NEAR/3 (management OR gateway* OR control* OR system*)) OR "smart home*" OR "smart grid*"))}. Years, document types and language are set with Refine.
-
-\textbf{IEEE Xplore, search A.}
-\texttt{("All Metadata":"large language model*" OR "All Metadata":"small language model*" OR "All Metadata":LLM* OR "All Metadata":"agentic AI" OR "All Metadata":"language agent*") AND ("All Metadata":"home energy management" OR "All Metadata":"energy gateway" OR "All Metadata":"smart home*" OR "All Metadata":"demand response" OR "All Metadata":"appliance scheduling" OR "All Metadata":"building energy management" OR "All Metadata":"electric vehicle charging")}
-
-\textbf{IEEE Xplore, search B.}
-\texttt{("All Metadata":"small language model*" OR "All Metadata":"edge LLM*" OR "All Metadata":"on-device LLM*" OR "All Metadata":"local LLM*" OR "All Metadata":"quantized language model*") AND ("All Metadata":"energy management" OR "All Metadata":"smart home*" OR "All Metadata":"smart grid*")}
-
-\textbf{ScienceDirect, search A1.}
-\texttt{("large language model" OR "small language model" OR "LLM agent" OR "agentic AI") AND ("home energy management" OR "demand response" OR "smart home" OR "energy gateway")}
-
-\textbf{ScienceDirect, search A2.}
-\texttt{("large language model" OR "small language model" OR "LLM agent" OR "agentic AI") AND ("appliance scheduling" OR "electric vehicle charging" OR "heat pump" OR "building energy management")}
-
-\textbf{ScienceDirect, search B.}
-\texttt{("small language model" OR "on-device language model" OR "edge LLM" OR "local LLM") AND ("energy management" OR "smart home" OR "smart grid")}
-
-\textbf{arXiv} (API, abstracts, submitted 2022 to 2026). Search A: \texttt{"language model(s)"} or \texttt{LLM(s)} and one of \texttt{"home energy"}, \texttt{"demand response"}, \texttt{"smart home"}, \texttt{"energy gateway"} or \texttt{"building energy management"}; search B: \texttt{"small language model(s)"}, \texttt{"on-device LLM"}, \texttt{"edge LLM"}, \texttt{"local LLM"} or \texttt{"locally deployed"} and one of \texttt{"energy management"}, \texttt{"home energy"}, \texttt{"smart grid"}, \texttt{"demand response"} or \texttt{"building energy"}. The word \texttt{energy} alone was not used, because it also matches the energy a model itself uses.
-
-\textbf{arXiv, supplementary search C} (API, abstracts, submitted 2022 to 2026; run 24 November 2026).
-\texttt{"language model(s)"} or \texttt{LLM(s)}; and one of \texttt{appliance(s)}, \texttt{household(s)}, \texttt{residential}, \texttt{"energy community"}, \texttt{prosumer(s)}, \texttt{"electric vehicle(s)"}, \texttt{"heat pump(s)"}, \texttt{thermostat} or \texttt{HVAC}; and one of \texttt{constraint(s)}, \texttt{optimization}, \texttt{optimisation}, \texttt{scheduling}, \texttt{"model predictive control"}, \texttt{MPC} or \texttt{controller}.
-
-\textbf{Scopus, supplementary search C} (to be run).
-\texttt{TITLE-ABS-KEY ( ( "large language model*" OR "small language model*" OR LLM* OR "language model*" ) AND ( appliance* OR household* OR residential OR "energy communit*" OR prosumer* OR "electric vehicle*" OR "heat pump*" OR thermostat* OR HVAC ) AND ( constraint* OR optimi?ation OR schedul* OR "model predictive control" OR MPC OR controller* ) )}, with the same limits as search A.
-
-\textbf{Google Scholar} (snowballing and grey literature only, first 100 results each):
-\texttt{"small language model" "home energy management"};
-\texttt{"large language model" "home energy management" gateway};
-\texttt{"language model" "model predictive control" household OR residential};
-\texttt{"on-device" OR "edge" "language model" "energy management"}.
-
-\textbf{Optional narrowing block} (Scopus and Web of Science, search A):
-\texttt{AND ( "model predictive control" OR MPC OR MILP OR "linear programming" OR optimi?ation OR schedul* )}; both counts are reported.
-
-\endgroup
 
 \chapter{Agent prompts}
 \label{app:prompts}

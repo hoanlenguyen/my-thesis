@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00050@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00050",
+   "d": "include",
+   "code": "INC",
+   "why": "GPT-4o-mini HEMS sets device schedules/settings from user requests; 970 simulated dialogues scored with measured control metrics.",
+   "where": "p8-10 Sec 4.1 (HEMA, simulated smart home, 70 control cases); p5-6 Table 2 (control metrics); p12-14 Sec 5 results"
+  }
+ ]
+}

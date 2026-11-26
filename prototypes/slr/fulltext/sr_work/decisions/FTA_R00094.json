@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00094@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00094",
+   "d": "include",
+   "code": "INC",
+   "why": "Fine-tuned Llama-3-8B generates HVAC action masks for an RL controller in an office building; simulation shows PPD and energy results.",
+   "where": "p4-5 Methods 3.1 and p7 3.4.1 (LLM role); p12-15 Results 5.1-5.3, Table 2 (evaluation)"
+  }
+ ]
+}

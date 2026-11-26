@@ -1,5 +1,5 @@
 # Screening protocol: full-text stage
-Version 0.2 (draft, awaiting confirmation), 25 November 2026. Source: `docs/slr_protocol_prisma_p.md` (PRISMA-P
+Version 1.0, confirmed by Hoan Le (author) on 25 November 2026. Source: `docs/slr_protocol_prisma_p.md` (PRISMA-P
 draft, eligibility I1-I4, E1-E3), the author's title/abstract decisions of 24 November 2026, and five rules decided
 by the author on 25 November 2026 (small model, offline command checks, recommendations, illustrative examples,
 setting boundaries).

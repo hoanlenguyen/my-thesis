@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00069@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00069",
+   "d": "exclude",
+   "code": "E2",
+   "why": "Federated fine-tuning of Llama 2/Phi-3; evaluated only on IoT text classification F1, no listed role or device action",
+   "where": "p2-3 Methodology A-C; p4 Sec IV.B (evaluation on classification tasks); p6 Tables III-IV"
+  }
+ ]
+}

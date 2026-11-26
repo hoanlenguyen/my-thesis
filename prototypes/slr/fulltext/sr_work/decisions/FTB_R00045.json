@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00045@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00045",
+   "d": "include",
+   "code": "INC",
+   "why": "Local Llama 3.2-3B turns smart-home commands into device actions; evaluated on 90 commands with accuracy and latency. LQ3 rule applies.",
+   "where": "p3 Section 3 Adaptive Planning and Execution (role); p4-5 Section 4 Evaluation; p8-10 Section 4.1.2 Results, Table 2 (evaluation)"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00076@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00076",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM orchestrator schedules household appliances from natural-language requests; evaluated against MILP optimum over 75 runs with Austrian prices.",
+   "where": "p5-7 Sec 2.1-2.2 (LLM role); p8-9 Sec 2.3 and p9-15 Sec 3 (evaluation); arXiv 2025 English"
+  }
+ ]
+}

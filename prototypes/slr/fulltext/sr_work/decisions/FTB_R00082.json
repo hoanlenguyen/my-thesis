@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00082@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00082",
+   "d": "exclude",
+   "code": "E2",
+   "why": "LLM only explains decisions of a separate ML-based MPC (SHAP narratives, Q&A); it sets no setpoints or constraints.",
+   "where": "p6-7 Section 2.2; p11 Section 3.4; p12-16 Section 4.2"
+  }
+ ]
+}

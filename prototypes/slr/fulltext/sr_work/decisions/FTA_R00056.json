@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00056@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00056",
+   "d": "include",
+   "code": "INC",
+   "why": "Fine-tuned 0.5B/1.5B Qwen on CPU-only edge hardware turns commands into Home Assistant JSON actions; accuracy, BERTScore, latency measured.",
+   "where": "p1-2 Introduction and Sec 3 (role); p3-4 Sec 3.3, Tables 2-5, Sec 4 (evaluation)"
+  }
+ ]
+}

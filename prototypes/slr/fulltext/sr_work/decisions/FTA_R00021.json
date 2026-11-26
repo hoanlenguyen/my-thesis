@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00021@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00021",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM ReAct agent schedules household appliances; evaluated against MILP and baselines on 12 tariff days, 1,100+ runs, measuring cost, success and latency.",
+   "where": "p3 Sec 3 (agent workflow, tools); p6-9 Sec 5 Experiments 1-4 (results, Tables 4-7)"
+  }
+ ]
+}

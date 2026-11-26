@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00015@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00015",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM Control agent schedules and sets home devices; evaluated in 105 simulated-user runs with goal, accuracy, latency metrics.",
+   "where": "p6 Sec 2.2 Control Agent (role); p8 Sec 3.2, p10 Table 1, p17-18 App. E (evaluation)"
+  }
+ ]
+}

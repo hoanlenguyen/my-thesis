@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00095@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00095",
+   "d": "include",
+   "code": "INC",
+   "why": "GPT-4o writes residential EV/V2G control policy code, evaluated in EV2Gym simulation on NSW household data against baseline.",
+   "where": "p3-4 Sec 4.1-4.3 (LLM role, setting); p6-8 Sec 5, Table 1 (results)"
+  }
+ ]
+}

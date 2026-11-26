@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00015@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00015",
+   "d": "include",
+   "code": "INC",
+   "why": "Home LLM multi-agent; Control agent schedules/sets devices; 105 simulated-user runs with goal, accuracy, latency metrics.",
+   "where": "p6 Sec 2.2 Control Agent (role); p8-10 Sec 3.2, Table 1 and p17-19 App. E (evaluation)"
+  }
+ ]
+}

@@ -1,0 +1,457 @@
+[
+ {
+  "id": "R00001",
+  "title": "What LLM-Simulated Users Can and Cannot Tell Us About Conversational Energy Management Systems",
+  "doi": "10.1145/3765611.3815484",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00003",
+  "title": "VESA: A Secure Offline Voice-Controlled Smart Home Ecosystem Using Agentic AI",
+  "doi": "10.1109/adsssc67751.2026.11582655",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00004",
+  "title": "VCU-LLM: Prompt-efficient On-device Large Language Model for Vague Command Understanding in Smart Homes",
+  "doi": "10.1145/3810190",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00007",
+  "title": "Talk to Your Data: An Agentic Artificial Intelligence-Driven Decision-Support Framework for Prosumer Energy Optimization and Recommendations",
+  "doi": "10.1002/aisy.70442",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00008",
+  "title": "Secure Smart Home: Federated Learning with LLM-Based Recommendations and Differential Privacy",
+  "doi": "10.1109/svcc69905.2026.11642258",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00010",
+  "title": "Preference-conditioned reinforcement learning for balancing occupant comfort and energy efficiency in adaptive residential HVAC control under changing preferences",
+  "doi": "",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00011",
+  "title": "Personalized dynamic lighting via LLM-Empowered multi-Agent reinforcement learning: From user intent to photometric control",
+  "doi": "10.1016/j.eswa.2026.131633",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00012",
+  "title": "Personalized Home Energy Management Using Non-Intrusive Load Monitoring and Human-in-the-Loop Reinforcement Learning",
+  "doi": "10.1109/pesgm58988.2026.11693075",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00014",
+  "title": "Multi-Agent-Based Smart-Home Energy Management with Adaptive Reasoning",
+  "doi": "10.3390/app16041896",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00016",
+  "title": "Lightweight large language models for intent recognition and action invocation in building energy management",
+  "doi": "10.1016/j.jobe.2026.116170",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00017",
+  "title": "Large language model-enhanced home energy management with dynamic user preference elicitation and hierarchical data-sharing",
+  "doi": "10.1016/j.apenergy.2026.127540",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00018",
+  "title": "Large language model-driven rule synthesis for adaptive home energy management",
+  "doi": "",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00020",
+  "title": "LUMI: An On-Device LLM Framework for Secure and Cloud-Free Smart Home Automation",
+  "doi": "10.1109/cine68769.2026.11502692",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00022",
+  "title": "LLM-Enhanced Scenario-Aware Vehicle-to-Home Operation under Grid Resiliency",
+  "doi": "10.1109/pesgm58988.2026.11693420",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00023",
+  "title": "LLM-Assisted Edge Intelligence Framework for Smart Home Energy Management",
+  "doi": "10.1109/apan70967.2026.11709693",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00024",
+  "title": "LICA: A multi-agent framework for household electricity scheduling under real-time pricing",
+  "doi": "10.1016/j.apenergy.2026.128105",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00025",
+  "title": "Integrating large language models into Peer-to-Peer energy management for multi-tenant buildings: A guardrail approach to ensuring resilience",
+  "doi": "10.1016/j.neunet.2026.108814",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00026",
+  "title": "Integrating Large Language Models and Reinforcement Learning for Efficient Home Energy Management",
+  "doi": "10.1109/jiot.2026.3719299",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00028",
+  "title": "How Energy is Consumed by LLM-enabled Smart Home Assistant Systems on Low-Cost Devices: An Empirical Study",
+  "doi": "10.1109/ccnc65079.2026.11366615",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00030",
+  "title": "GreenGuard: A neuro-symbolic edge-LLM controller for safe and energy-aware greenhouse microclimate regulation",
+  "doi": "10.1016/j.atech.2026.102186",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00031",
+  "title": "GUIDE: A Conversational LLM Framework for Dynamic Deep Reinforcement Learning Based Building Energy Management",
+  "doi": "10.1007/978-3-032-22500-9_2",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00032",
+  "title": "Fine-tuned large language models as surrogate schedulers for smart building energy management",
+  "doi": "10.1016/j.enbuild.2026.117588",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00033",
+  "title": "Evaluation of Agentic and Rule-Based Approaches for Smart Home Energy Optimisation",
+  "doi": "10.1109/icera72709.2026.11666658",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00034",
+  "title": "Energy-efficient HVAC control in residential buildings through occupant intention inference with multimodal large language models",
+  "doi": "10.1016/j.adapen.2026.100283",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00035",
+  "title": "Energy assistant for buildings: A knowledge-augmented multi-agent framework for market-integrated and occupant-centric energy management",
+  "doi": "10.1016/j.enbuild.2026.118344",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00036",
+  "title": "Cost-optimal residential energy scheduling via a zero-shot LLM agent and model predictive control",
+  "doi": "10.1080/19401493.2025.2605465",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00038",
+  "title": "Balancing comfort and Cost: A Multi-Agent framework for Human-Centric building energy management via Large language models",
+  "doi": "10.1016/j.enbuild.2026.117684",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00039",
+  "title": "An SLM-Based Agentic Federated Paradigm for Privacy-Preserving Energy Orchestration",
+  "doi": "",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00040",
+  "title": "An AI Agent Framework for Real-World Air Conditioning System Optimization with Long-Term Deployment: A Semantic Data-Driven Approach to Scalable and Adaptive Building Energy Optimization",
+  "doi": "10.1145/3765611.3815366",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00041",
+  "title": "AirWise: LLM-Powered Smart Air Quality Monitoring and Automated Appliance Control",
+  "doi": "10.1109/aiei69164.2026.11496838",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00042",
+  "title": "AgentiControl-MPC: Automated model predictive control for buildings using large language model-based multi-agent system",
+  "doi": "",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00043",
+  "title": "Advancing Generative Artificial Intelligence and Large Language Models for Demand Side Management With Internet of Electric Vehicles",
+  "doi": "10.1109/jiot.2026.3685302",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00044",
+  "title": "Adaptive home energy management to self-motivated user preferences via iterative LLM-augmented reinforcement learning",
+  "doi": "10.1016/j.apenergy.2026.127976",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00046",
+  "title": "A smart home platform integrating an energy-aware digital twin and an LLM-enabled conversational agent",
+  "doi": "10.1080/0144929x.2026.2672579",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00047",
+  "title": "A Small-Scale Large Language Model-Enhanced Deep Reinforcement Learning Approach for Prosumer Energy Management",
+  "doi": "10.1109/tce.2026.3697923",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00048",
+  "title": "A Multi-Stage RLHF Pipeline for LLM-based Smart Building Optimization",
+  "doi": "10.1109/med70602.2026.11598496",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00049",
+  "title": "A Modular LLM-Based Cognitive Architecture for Sensitive Contexts: A Case Study on Local Home Automation",
+  "doi": "10.5220/0014337400004052",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00051",
+  "title": "Towards an LLM-Powered Smart Home for Efficient and Safe Living Environment",
+  "doi": "10.1109/icce-berlin67488.2025.11277534",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00052",
+  "title": "Smart Building Recommendations with LLMs: A Semantic Comparison Approach",
+  "doi": "10.3390/buildings15132303",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00053",
+  "title": "Smart Building Operations and Virtual Assistants Using LLM",
+  "doi": "10.1145/3696630.3728706",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00054",
+  "title": "SLB:A Bridge Module of Local SLM and Online LLM for Smart Home Device Control",
+  "doi": "10.1109/kse68178.2025.11309441",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00055",
+  "title": "RHEA: Residential Home Energy Advisor",
+  "doi": "10.23919/splitech65624.2025.11091692",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00057",
+  "title": "On-Device Intent Reasoning for Smart Home Agents Via Ontology-Augmented sLLMs",
+  "doi": "10.1109/access.2025.3634621",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00058",
+  "title": "Leveraging Large Language Model for Generalization in Building Energy Management",
+  "doi": "10.1109/tsg.2025.3589202",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00060",
+  "title": "LLMSwitchBench: A New Edge-Cloud Routing Benchmark for Smart Home LLM Inference",
+  "doi": "10.1109/access.2025.3632276",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00061",
+  "title": "LLM-MAC: LLM-Driven Multi-Agent Coordination for Generalizable Home Energy Management",
+  "doi": "10.23919/ccc64809.2025.11179521",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00062",
+  "title": "LLM-BEM: Zero-shot LLM-Agent Scheduling for Smart Building Energy Management",
+  "doi": "10.1109/ieeeconf65522.2025.11137227",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00063",
+  "title": "LLM-BAS: Large Language Model-Based Battery Health-Aware Scheduling in Building Energy Systems",
+  "doi": "10.1109/ieeeconf65522.2025.11137012",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00064",
+  "title": "Intelligent HEMS Based on Transformer and Hybrid PSO Scheduling Algorithm",
+  "doi": "10.1109/acpee64358.2025.11040877",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00065",
+  "title": "HyLL: Hybrid LSTM and Large Language Model-Based Recommendation System for Energy Management and Consumption Optimization in Smart Homes",
+  "doi": "10.1109/oeec66525.2025.11100170",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00066",
+  "title": "Human-in-the-Loop Battery Scheduling in Buildings via Intent-Guided Rule-Reinforcement Learning",
+  "doi": "10.1109/jiot.2025.3618644",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00068",
+  "title": "GUIDE: A prescriptive hybrid AI framework for energy-efficient appliances usage through behavioral modeling and LLM guidance",
+  "doi": "10.1016/j.enbuild.2025.116463",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00072",
+  "title": "Building Energy Management Systems with LLM Agent Enhanced Natural Language Policy Explanation",
+  "doi": "10.1109/psgec66102.2025.11150810",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00074",
+  "title": "An LLM-assisted decision-making framework of rule-based control strategy for photovoltaic driven air conditioning systems",
+  "doi": "10.1016/j.energy.2025.139328",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00075",
+  "title": "An Empirically Validated Framework for Automated and Personalized Residential Energy-Management Integrating Large Language Models and the Internet of Energy",
+  "doi": "10.3390/en18143744",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00077",
+  "title": "AI-Driven Smart Home Energy Optimization: Integrating AI Agents with IoT for Adaptive Decision-Making",
+  "doi": "10.1049/icp.2025.2536",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00078",
+  "title": "AI-Driven Multi-Agent Demand Response Framework for Residential Load Optimization Using CrewAi",
+  "doi": "10.1109/iciea65512.2025.11149013",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00079",
+  "title": "A bi-level optimization framework for household distributed energy systems: Integrating multiple flexible loads",
+  "doi": "10.1080/15567036.2025.2504544",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00080",
+  "title": "Privacy-Preserving Energy Recommendations Using Federated Learning and Local LLMs on the Edge",
+  "doi": "10.1109/bdcat63179.2024.00065",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00081",
+  "title": "Office-in-the-Loop for Building HVAC Control with Multimodal Foundation Models",
+  "doi": "10.1145/3671127.3698182",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00083",
+  "title": "LLM-Based Building Energy Management Assistants",
+  "doi": "10.1061/9780784486115.112",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00084",
+  "title": "GPT Prompt Engineering for Scheduling Appliances Usage for Energy Cost Optimization",
+  "doi": "10.1109/mn60932.2024.10615758",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00085",
+  "title": "Designing Home Automation Routines Using an LLM-Based Chatbot",
+  "doi": "10.3390/designs8030043",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00086",
+  "title": "Democratizing Energy Management with LLM-Assisted Optimization Autoformalism",
+  "doi": "10.1109/smartgridcomm60555.2024.10738100",
+  "pmid": "",
+  "ta_decision": "include"
+ },
+ {
+  "id": "R00087",
+  "title": "An LLM-Based Modeling and Decision Optimization for User-Centric Electric Vehicle Charging",
+  "doi": "10.1109/ei264398.2024.10991378",
+  "pmid": "",
+  "ta_decision": "include"
+ }
+]

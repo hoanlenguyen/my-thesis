@@ -1,0 +1,172 @@
+[
+ {
+  "id": "R00002",
+  "title": "What Breaks Under Pruning in Smart Homes, and When? Evaluating LLM Degradation Across Architectures and Task Complexity",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0008.txt"
+ },
+ {
+  "id": "R00005",
+  "title": "Trail: Accurate Local Smart Home Control Using Decision Models",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0027.txt"
+ },
+ {
+  "id": "R00006",
+  "title": "Toward Privacy-Preserving and Personalized Smart Homes via Tailored Small Language Models",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0034.txt"
+ },
+ {
+  "id": "R00009",
+  "title": "Reliability Assurance for LLM-Assisted Energy-Control Software: Deterministic Verification and Reproducible Fault Injection for Battery Peak-Load Compensation",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0095.txt"
+ },
+ {
+  "id": "R00013",
+  "title": "OccuReward: LLM-Guided Occupant-Centric Reward Shaping for Demographic Equity in Grid-Interactive Buildings",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0125.txt"
+ },
+ {
+  "id": "R00015",
+  "title": "Multi-Agent Home Energy Management Assistant",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0138.txt"
+ },
+ {
+  "id": "R00019",
+  "title": "Large Language Model Guided Reinforcement Learning for Heat Pump Control in Smart Buildings",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0168.txt"
+ },
+ {
+  "id": "R00021",
+  "title": "LLMs for Agentic Home Energy Management",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0175.txt"
+ },
+ {
+  "id": "R00027",
+  "title": "Human-AI Collaboration in Large Language Model-Integrated Building Energy Management Systems: The Role of User Domain Knowledge and AI Literacy",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0213.txt"
+ },
+ {
+  "id": "R00029",
+  "title": "HearthNet: Edge Multi-Agent Orchestration for Smart Homes",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0219.txt"
+ },
+ {
+  "id": "R00037",
+  "title": "Conversational Demand Response: Bidirectional Aggregator-Prosumer Coordination through Agentic AI",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0299.txt"
+ },
+ {
+  "id": "R00045",
+  "title": "AdaHome: An Adaptive Smart Home Assistant using Local Small Language Models",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0357.txt"
+ },
+ {
+  "id": "R00050",
+  "title": "A Comprehensive Evaluation Framework for Conversational Home Energy Management Systems",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0396.txt"
+ },
+ {
+  "id": "R00056",
+  "title": "On-Device LLMs for Home Assistant: Dual Role in Intent Detection and Response Generation",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0474.txt"
+ },
+ {
+  "id": "R00059",
+  "title": "Large Language Model Interface for Home Energy Management Systems",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0496.txt"
+ },
+ {
+  "id": "R00067",
+  "title": "Generating HomeAssistant Automations Using an LLM-based Chatbot",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0532.txt"
+ },
+ {
+  "id": "R00069",
+  "title": "Edge-FIT: Federated Instruction Tuning of Quantized LLMs for Privacy-Preserving Smart Home Environments",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0561.txt"
+ },
+ {
+  "id": "R00070",
+  "title": "DESAMO: A Device for Elder-Friendly Smart Homes Powered by Embedded LLM with Audio Modality",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0576.txt"
+ },
+ {
+  "id": "R00071",
+  "title": "Context-aware LLM-based AI Agents for Human-centered Energy Management Systems in Smart Buildings",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0581.txt"
+ },
+ {
+  "id": "R00073",
+  "title": "BitRL-Light: 1-bit LLM Agents with Deep Reinforcement Learning for Energy-Efficient Smart Home Lighting Optimization",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0593.txt"
+ },
+ {
+  "id": "R00076",
+  "title": "Agentic AI Home Energy Management System: A Large Language Model Framework for Residential Load Scheduling",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0610.txt"
+ },
+ {
+  "id": "R00082",
+  "title": "Large Language Model-Based Interpretable Machine Learning Control in Building Energy Systems",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0668.txt"
+ },
+ {
+  "id": "R00088",
+  "title": "Sasha: Creative Goal-Oriented Reasoning in Smart Homes with Large Language Models",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/R0719.txt"
+ },
+ {
+  "id": "R00089",
+  "title": "Merging Large Language Models and Battery Physics for User-Aware Electric Vehicle Driving Management",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0020.txt"
+ },
+ {
+  "id": "R00090",
+  "title": "EnergyBridge: Benchmarking Household Energy Management, User Participation, and Grid Flexibility",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0030.txt"
+ },
+ {
+  "id": "R00091",
+  "title": "Think Short, Defer Smart, Act, and Repeat: Calibrated Reasoning and Uncertainty-Aware Deferral for Edge LLM Agents",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0033.txt"
+ },
+ {
+  "id": "R00092",
+  "title": "Verifier-Based Reinforcement Fine-Tuning of Reasoning Models for Thermal Energy Storage Control",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0039.txt"
+ },
+ {
+  "id": "R00093",
+  "title": "ThermoLLM: LLM-Based Multi-Zone HVAC Control with a Spatiotemporal Context",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0046.txt"
+ },
+ {
+  "id": "R00094",
+  "title": "Hierarchical Control Framework Integrating LLMs with RL for Decarbonized HVAC Operation",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0069.txt"
+ },
+ {
+  "id": "R00095",
+  "title": "Evolving LLM-Derived Control Policies for Residential EV Charging and Vehicle-to-Grid Energy Optimization",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0079.txt"
+ },
+ {
+  "id": "R00096",
+  "title": "From User Preferences to Optimization Constraints Using Large Language Models",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0113.txt"
+ },
+ {
+  "id": "R00097",
+  "title": "Adaptive Self-Improvement for Smarter Energy Systems using Agentic Policy Search",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0121.txt"
+ },
+ {
+  "id": "R00098",
+  "title": "Large Language Models for Power Scheduling: A User-Centric Approach",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0131.txt"
+ },
+ {
+  "id": "R00099",
+  "title": "An LLM-Based Digital Twin for Optimizing Human-in-the Loop Systems",
+  "pdf": "D:/Study/my-thesis/data/raw/slr_fulltext_txt/S0140.txt"
+ }
+]

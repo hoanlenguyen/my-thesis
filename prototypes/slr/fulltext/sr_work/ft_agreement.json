@@ -1,0 +1,10 @@
+{
+ "n": 34,
+ "both_advance": 26,
+ "both_exclude": 7,
+ "a_only_advance": 0,
+ "b_only_advance": 1,
+ "observed_agreement": 0.9706,
+ "kappa": 0.915,
+ "pabak": 0.941
+}

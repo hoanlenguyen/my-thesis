@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00092@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00092",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM (gpt-oss-20b, GPT-5) schedules hourly heat-pump setpoints for office-building thermal storage; simulation measures CO2 emissions against DP, MPC and RL.",
+   "where": "p3-4 Sec 2.1 (LLM as upper-level scheduler issuing hourly ASHP setpoints); p8-11 Secs 3.2, 3.4, 4.1 and Table 4 (simulated office TES benchmark, emissions results)"
+  }
+ ]
+}

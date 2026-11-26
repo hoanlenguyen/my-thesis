@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00098@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00098",
+   "d": "include",
+   "code": "INC",
+   "why": "Llama3 8B (local, Ollama) turns EV-charging voice requests into optimisation problems and schedules; evaluated on 800 requests (IRA, AROL).",
+   "where": "p2-4 Secs II-III (LLM agent roles); p4-7 Sec IV (EVRQ database, Llama3 8B via ollama, IRA/AROL results)"
+  }
+ ]
+}

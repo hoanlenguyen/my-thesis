@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00009@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00009",
+   "d": "exclude",
+   "code": "E4",
+   "why": "No LLM was run; 9,000 responses came from a stochastic fault emulator, so no LLM system was evaluated.",
+   "where": "p7 Methods IV.D-E (Fault-Profile Experiment, Execution Record); p13 Use of AI-assisted tools"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00089@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00089",
+   "d": "exclude",
+   "code": "E1",
+   "why": "LLM sets battery current envelope for a vehicle while driving; no home or building, and the LLM is not named or small.",
+   "where": "p2-3 Sec 2 Driving Management Framework; p6 Sec 4 Results"
+  }
+ ]
+}

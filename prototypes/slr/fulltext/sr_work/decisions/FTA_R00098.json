@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00098@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00098",
+   "d": "include",
+   "code": "INC",
+   "why": "Llama 3 8B (local, ollama) agents turn EV-charging voice requests into optimisation problems and schedules; tested on 800 requests, IRA/AROL.",
+   "where": "p2 Problem Statement; p3-4 Sec. III Agent design; p4-7 Sec. IV Performance Evaluation (database EVRQ, Figs. 3-7, Table II)"
+  }
+ ]
+}

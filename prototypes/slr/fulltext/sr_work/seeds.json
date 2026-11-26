@@ -1,0 +1,32 @@
+[
+ {
+  "label": "Sanguinetti et al. 2025, arXiv 2503.21360",
+  "id": "R00096",
+  "matched_on": "title"
+ },
+ {
+  "label": "Michelon et al. 2025, ACM e-Energy",
+  "id": "R00059",
+  "matched_on": "doi"
+ },
+ {
+  "label": "El Makroum et al. 2026, Results in Engineering",
+  "id": "R00076",
+  "matched_on": "doi"
+ },
+ {
+  "label": "Jonah et al. 2026, arXiv 2607.04569",
+  "id": "R00021",
+  "matched_on": "title"
+ },
+ {
+  "label": "HEMA 2026, SoftwareX",
+  "id": "R00015",
+  "matched_on": "doi"
+ },
+ {
+  "label": "AgentiControl-MPC 2026, Advanced Engineering Informatics",
+  "id": "R00042",
+  "matched_on": "title"
+ }
+]

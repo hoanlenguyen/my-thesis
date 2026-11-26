@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00082@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00082",
+   "d": "exclude",
+   "code": "E2",
+   "why": "LLM only explains decisions of a separate ML-based MPC (SHAP narratives, Q&A); it sets no setpoints or constraints.",
+   "where": "p6 Section 2.2 (framework); p11 Section 3.4 and p12-16 Section 4.2 (LLM role and evaluation)"
+  }
+ ]
+}

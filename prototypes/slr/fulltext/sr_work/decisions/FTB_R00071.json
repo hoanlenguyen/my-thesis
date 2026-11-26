@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00071@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00071",
+   "d": "include",
+   "code": "INC",
+   "why": "GPT-4o agent turns residential user queries into device control and schedules; evaluated on 480 queries with accuracy, latency, cost.",
+   "where": "p8-p11 Sec 3.2.2 Brain module (tools, scheduling); p12-p15 Sec 3.3 Evaluation; p15-p16 Sec 4.1 Results, Table 3"
+  }
+ ]
+}

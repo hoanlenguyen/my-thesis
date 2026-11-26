@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00027@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00027",
+   "d": "exclude",
+   "code": "E2",
+   "why": "GPT-4o only analyses uploaded home data and gives general behavioural energy-saving advice in chat; no schedule, setting or device action produced.",
+   "where": "p6 Methods 3.1; p10 Methods 3.4.1 (experimental sequence); p14-15 Methods 3.5.4, 3.6 (outcomes)"
+  }
+ ]
+}

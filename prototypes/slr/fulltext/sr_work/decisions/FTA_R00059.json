@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00059@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00059",
+   "d": "include",
+   "code": "INC",
+   "why": "Mistral-7B agents convert household answers into HEMS parameters; parameter retrieval accuracy measured on 20 tests per difficulty level.",
+   "where": "p3 Sec 3.1-3.2 (role); p3-4 Sec 5, Tab. 2 (evaluation); p5-6 App. A.1"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00070@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00070",
+   "d": "include",
+   "code": "INC",
+   "why": "3B Qwen2.5-Omni on Jetson maps voice commands to device actions; intent accuracy 98% on 300 samples",
+   "where": "p1-2 Sec 2.1-2.2 (local model, intent-to-device-action role); p2 Sec 3 Pilot Evaluation and Table 1 (evaluation)"
+  }
+ ]
+}

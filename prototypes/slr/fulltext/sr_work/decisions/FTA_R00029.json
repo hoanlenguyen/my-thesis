@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00029@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00029",
+   "d": "exclude",
+   "code": "E1",
+   "why": "Smart-home device control with no energy objective; models are hosted cloud LLMs (Claude Opus 4.6, Gemini 3 Pro), so LQ3 rule does not apply",
+   "where": "p1 Abstract; p2-3 Sections 2-3 (Scene 1 lights, speaker, TV); p4 Section 3.4 Testbed (hosted APIs)"
+  }
+ ]
+}

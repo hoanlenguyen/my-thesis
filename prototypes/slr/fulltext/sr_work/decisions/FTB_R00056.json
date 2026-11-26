@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00056@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00056",
+   "d": "include",
+   "code": "INC",
+   "why": "Fine-tuned 0.5B/1.5B Qwen on CPU-only edge device maps commands to Home Assistant JSON actions; accuracy and latency measured.",
+   "where": "p2 Sec 3 Methodology (role); p3-4 Sec 3.3, Sec 4, Tables 2-5 (evaluation)"
+  }
+ ]
+}

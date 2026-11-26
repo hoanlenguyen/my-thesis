@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00097@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00097",
+   "d": "include",
+   "code": "INC",
+   "why": "LLMs generate and iteratively refine battery control code for a simulated residential PV-battery system; cost results compared with LP optimum and no-battery baseline.",
+   "where": "p6-7 Sec 6 and 7.1 (setting); p8-10 Sec 7.2-7.3 (LLM role); p11 Sec 8 Results (20 episodes, cost vs benchmarks)"
+  }
+ ]
+}

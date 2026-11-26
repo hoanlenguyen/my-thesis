@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00050@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00050",
+   "d": "include",
+   "code": "INC",
+   "why": "HEMA (GPT-4o-mini) schedules and sets household devices from user requests; evaluated on 970 dialogues with schedule correctness and other measured outcomes.",
+   "where": "p8-10 Sec 4.1 (system, household, simulated smart home); p16-17 Sec 5.3 Smart Device Control Analysis (schedule correctness 88%, target device accuracy 94.2%)"
+  }
+ ]
+}

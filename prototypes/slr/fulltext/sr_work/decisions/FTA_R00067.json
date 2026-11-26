@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00067@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00067",
+   "d": "include",
+   "code": "INC",
+   "why": "2025 English paper; GPT/Llama models turn home commands into HomeAssistant routines, evaluated on 40 commands (JSON validity, latency) and a 56-user study.",
+   "where": "p1-2 Intro/RQs; p3-5 Sec 3 (prompt, commands, metrics); p6-8 Sec 4 Tables 2-3 results"
+  }
+ ]
+}

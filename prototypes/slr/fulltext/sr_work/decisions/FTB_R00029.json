@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00029@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00029",
+   "d": "include",
+   "code": "INC",
+   "why": "Home LLM agents turn natural-language commands into device actions; live testbed reports task completion 4/5, latency, conflict and rejection counts.",
+   "where": "p2 Sec 2.1 and 2.3 (role); p3 Sec 3.1-3.3 and p4 Table 1, Sec 3.4 (evaluation)"
+  }
+ ]
+}

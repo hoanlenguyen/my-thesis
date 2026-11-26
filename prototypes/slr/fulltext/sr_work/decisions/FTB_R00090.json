@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00090@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00090",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM agent selects and personalizes household appliance/HVAC/EV schedules via MPC/MILP skills; evaluated in EnergyPlus simulation and human study.",
+   "where": "p4-5 Sec 4.1-4.3 and p5-7 Sec 5.2-5.6 (agent role, results Tables 1-3); p15 App E"
+  }
+ ]
+}

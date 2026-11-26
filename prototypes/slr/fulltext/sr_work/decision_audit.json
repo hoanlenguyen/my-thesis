@@ -1,0 +1,968 @@
+[
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00002.json",
+  "label": "FTB:R00002@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00002",
+    "d": "include",
+    "code": "INC",
+    "why": "Pruned LLMs translate smart-home user requests into device tool calls; evaluated on about 19,500 instances with accuracy measures.",
+    "where": "p2-3 Sec 3.1 Problem Formulation; p4-6 Sec 4 Experiments, Table 1 and Sec 4.2 Results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00002.json",
+  "label": "FTA:R00002@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00002",
+    "d": "include",
+    "code": "INC",
+    "why": "Pruned 4B-9B LLMs translate smart-home requests into device actions; accuracy evaluated on HomeBench, HAR and SHTC (LQ3 small-model rule)",
+    "where": "p2-3 Sec 3.1-3.4 (role, models); p4-6 Sec 4.1-4.2 and Table 1 (evaluation); p8 App. A"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00005.json",
+  "label": "FTB:R00005@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00005",
+    "d": "include",
+    "code": "INC",
+    "why": "Local 4B model translates smart-home commands into device actions; evaluated on Trek datasets with accuracy and latency.",
+    "where": "p3-5 Sec 4 (Trail design, role); p7-10 Sec 6-7 (datasets, accuracy, latency, memory results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00005.json",
+  "label": "FTA:R00005@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00005",
+    "d": "include",
+    "code": "INC",
+    "why": "Local 4B decision model translates commands into smart-home device actions; evaluated on Trek datasets with accuracy and latency; LQ3 rule applies.",
+    "where": "p1 Abstract; p3-5 Sec 4 (design, memory); p7-10 Secs 6-7 (datasets, accuracy, latency, memory results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00013.json",
+  "label": "FTA:R00013@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00013",
+    "d": "include",
+    "code": "INC",
+    "why": "Gemini writes RL reward functions for building control; evaluated in CityLearn simulation with comfort and cost results.",
+    "where": "p2 Methodology 3.3 (LLM as reward engineer); p3 Results 4.1-4.2, Tables 2-3"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00006.json",
+  "label": "FTB:R00006@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00006",
+    "d": "include",
+    "code": "INC",
+    "why": "Local fine-tuned LLaMA3-8B turns smart-home commands into device action plans; evaluated on 100-command DevFinder benchmark (DRS), latency, memory, user study.",
+    "where": "p4-5 Sec IV (design, role); p9-10 Sec VI (DevFinder benchmark, DRS, latency/memory results); p1 abstract (user study M=100)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00013.json",
+  "label": "FTB:R00013@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00013",
+    "d": "include",
+    "code": "INC",
+    "why": "Gemini writes DRL reward functions for building control; evaluated in CityLearn simulation with cost and comfort results.",
+    "where": "p2 Sec 3.3 Experimental Setup (LLM role); p3 Sec 4.1-4.3, Tables 2-3 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00021.json",
+  "label": "FTA:R00021@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00021",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM ReAct agent schedules household appliances; evaluated against MILP and baselines on 12 tariff days, 1,100+ runs, measuring cost, success and latency.",
+    "where": "p3 Sec 3 (agent workflow, tools); p6-9 Sec 5 Experiments 1-4 (results, Tables 4-7)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00019.json",
+  "label": "FTB:R00019@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00019",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM selects or blends RL controllers' actions for residential heat pump; evaluated in simulation with reward, validity, latency, cost.",
+    "where": "p3-4 Sec. III-B, IV (role); p4-7 Sec. V, Tables III-V (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00006.json",
+  "label": "FTA:R00006@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00006",
+    "d": "include",
+    "code": "INC",
+    "why": "Local fine-tuned LLaMA3-8B turns smart-home commands into device action plans; evaluated on 100-command DevFinder benchmark (DRS, latency, privacy).",
+    "where": "p4-5 Sec IV (role: command-to-plan generation); p9-10 Sec VI Performance Evaluation (DevFinder, DRS, latency); p1 date 2025, English"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00009.json",
+  "label": "FTA:R00009@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00009",
+    "d": "exclude",
+    "code": "E4",
+    "why": "No LLM was run; 9,000 responses came from a stochastic fault emulator, so no LLM system was evaluated.",
+    "where": "p7 Methods IV.D-E (Fault-Profile Experiment, Execution Record); p13 Use of AI-assisted tools"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00015.json",
+  "label": "FTA:R00015@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00015",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM Control agent schedules and sets home devices; evaluated in 105 simulated-user runs with goal, accuracy, latency metrics.",
+    "where": "p6 Sec 2.2 Control Agent (role); p8 Sec 3.2, p10 Table 1, p17-18 App. E (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00015.json",
+  "label": "FTB:R00015@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00015",
+    "d": "include",
+    "code": "INC",
+    "why": "Home LLM multi-agent; Control agent schedules/sets devices; 105 simulated-user runs with goal, accuracy, latency metrics.",
+    "where": "p6 Sec 2.2 Control Agent (role); p8-10 Sec 3.2, Table 1 and p17-19 App. E (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00019.json",
+  "label": "FTA:R00019@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00019",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM selects or weights RL controllers for residential heat pump; simulation reports reward, validity, latency, cost; local 7-8B models.",
+    "where": "p3-4 Sec. III-B and IV (role); p5-7 Sec. V, Tables III-V (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00021.json",
+  "label": "FTB:R00021@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00021",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM ReAct agent commits household appliance schedules; evaluated against MILP oracle on Agile price days with measured cost, success, latency",
+    "where": "p3-4 Sec 3 System Architecture (role); p6-9 Sec 5 Experiments 1-4, Tables 4-7 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00027.json",
+  "label": "FTB:R00027@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00027",
+    "d": "exclude",
+    "code": "E2",
+    "why": "GPT-4o only analyses uploaded home data and gives general behavioural energy-saving advice in a human-AI interaction study; no schedule, setting or device action.",
+    "where": "p6 Methods 3.1; p10 Methods 3.4.1 (experimental sequence); p5-6 Sections 2.1 and 3.2.2"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00009.json",
+  "label": "FTB:R00009@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00009",
+    "d": "exclude",
+    "code": "E4",
+    "why": "No language model was run; 9,000 responses came from a synthetic fault emulator, and the LLM only assists offline code development.",
+    "where": "p1 Abstract; p6-7 Sec. IV.C-D (Historical pilot excluded, stochastic fault profiles); p14 Use of AI-assisted tools"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00027.json",
+  "label": "FTA:R00027@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00027",
+    "d": "exclude",
+    "code": "E2",
+    "why": "GPT-4o only analyses uploaded home data and gives general behavioural energy-saving advice in chat; no schedule, setting or device action produced.",
+    "where": "p6 Methods 3.1; p10 Methods 3.4.1 (experimental sequence); p14-15 Methods 3.5.4, 3.6 (outcomes)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00071.json",
+  "label": "FTB:R00071@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00071",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT-4o agent turns residential user queries into device control and schedules; evaluated on 480 queries with accuracy, latency, cost.",
+    "where": "p8-p11 Sec 3.2.2 Brain module (tools, scheduling); p12-p15 Sec 3.3 Evaluation; p15-p16 Sec 4.1 Results, Table 3"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00045.json",
+  "label": "FTA:R00045@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00045",
+    "d": "include",
+    "code": "INC",
+    "why": "Local Llama 3.2-3B turns smart-home commands into device actions; evaluated on 90 commands with accuracy and latency (LQ3 rule).",
+    "where": "p2-4 Sec 3 System Design (role); p4-5 Sec 4 Evaluation setup; p8-10 Sec 4.1.2 Results, Table 2; p12 Sec 4.2.1"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00037.json",
+  "label": "FTA:R00037@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00037",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM HEMS agent parses DR requests, calls MILP battery optimizer, executes approved schedules; latency and token benchmarks over six scenarios.",
+    "where": "p3 Sec III (Architecture, Battery Optimizer); p4-5 Sec IV (Results, Benchmarking, Table III)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00059.json",
+  "label": "FTB:R00059@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00059",
+    "d": "include",
+    "code": "INC",
+    "why": "Mistral-7B ReAct agent converts household answers into HEMS parameters; accuracy evaluated with LLM-simulated users (2025 paper).",
+    "where": "p2-3 Sections 3.1-3.2 (role); p3-4 Section 5, Table 2 (evaluation); p6-8 Appendix A.2-A.4"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00067.json",
+  "label": "FTB:R00067@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00067",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT/Llama/Mistral turn smart-home commands into HomeAssistant automations with appliance energy data; evaluated on 40 commands (JSON validity, latency) plus N=56 user study.",
+    "where": "p3-4 Sec 3 (prompt, commands, home template); p5-9 Sec 3.5 and 4 (metrics, Tables 2-3); p2 Intro (EcoMate N=56 study)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00070.json",
+  "label": "FTA:R00070@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00070",
+    "d": "include",
+    "code": "INC",
+    "why": "3B Qwen2.5-Omni on Jetson maps voice commands to device actions; intent accuracy 98% on 300 samples",
+    "where": "p1-2 Sec 2.1-2.2 (local model, intent-to-device-action role); p2 Sec 3 Pilot Evaluation and Table 1 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00070.json",
+  "label": "FTB:R00070@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00070",
+    "d": "include",
+    "code": "INC",
+    "why": "3B Audio LLM on Jetson maps voice commands to device actions; accuracy 98% on 300 Fluent Speech Commands samples.",
+    "where": "p1-2 Sec 2.1-2.2 (local model, intent-to-device-action role); p2 Sec 3 Pilot Evaluation and Table 1 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00059.json",
+  "label": "FTA:R00059@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00059",
+    "d": "include",
+    "code": "INC",
+    "why": "Mistral-7B agents convert household answers into HEMS parameters; parameter retrieval accuracy measured on 20 tests per difficulty level.",
+    "where": "p3 Sec 3.1-3.2 (role); p3-4 Sec 5, Tab. 2 (evaluation); p5-6 App. A.1"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00037.json",
+  "label": "FTB:R00037@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00037",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM HEMS agents parse DR requests, call MILP battery optimiser, route prosumer preferences; latency/token benchmark, six scenarios, n=5.",
+    "where": "p3-4 Sec. III B-C (agent roles, MILP tool); p4-5 Sec. IV A-D, Table III (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00056.json",
+  "label": "FTB:R00056@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00056",
+    "d": "include",
+    "code": "INC",
+    "why": "Fine-tuned 0.5B/1.5B Qwen on CPU-only edge device maps commands to Home Assistant JSON actions; accuracy and latency measured.",
+    "where": "p2 Sec 3 Methodology (role); p3-4 Sec 3.3, Sec 4, Tables 2-5 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00029.json",
+  "label": "FTB:R00029@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00029",
+    "d": "include",
+    "code": "INC",
+    "why": "Home LLM agents turn natural-language commands into device actions; live testbed reports task completion 4/5, latency, conflict and rejection counts.",
+    "where": "p2 Sec 2.1 and 2.3 (role); p3 Sec 3.1-3.3 and p4 Table 1, Sec 3.4 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00071.json",
+  "label": "FTA:R00071@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00071",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT-4o agent controls and schedules home devices; evaluated on 480 queries across four residential datasets (accuracy, latency, cost).",
+    "where": "p1 Abstract; p9-11 Sec 3.2 (tools, schedule/device functions); p12-15 Sec 3.3 (evaluation); p15-16 Sec 4 (results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00029.json",
+  "label": "FTA:R00029@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00029",
+    "d": "exclude",
+    "code": "E1",
+    "why": "Smart-home device control with no energy objective; models are hosted cloud LLMs (Claude Opus 4.6, Gemini 3 Pro), so LQ3 rule does not apply",
+    "where": "p1 Abstract; p2-3 Sections 2-3 (Scene 1 lights, speaker, TV); p4 Section 3.4 Testbed (hosted APIs)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00056.json",
+  "label": "FTA:R00056@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00056",
+    "d": "include",
+    "code": "INC",
+    "why": "Fine-tuned 0.5B/1.5B Qwen on CPU-only edge hardware turns commands into Home Assistant JSON actions; accuracy, BERTScore, latency measured.",
+    "where": "p1-2 Introduction and Sec 3 (role); p3-4 Sec 3.3, Tables 2-5, Sec 4 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00067.json",
+  "label": "FTA:R00067@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00067",
+    "d": "include",
+    "code": "INC",
+    "why": "2025 English paper; GPT/Llama models turn home commands into HomeAssistant routines, evaluated on 40 commands (JSON validity, latency) and a 56-user study.",
+    "where": "p1-2 Intro/RQs; p3-5 Sec 3 (prompt, commands, metrics); p6-8 Sec 4 Tables 2-3 results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00069.json",
+  "label": "FTA:R00069@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00069",
+    "d": "exclude",
+    "code": "E2",
+    "why": "7B/3.8B models fine-tuned and scored on IoT classification and QA instructions (F1); no schedule, optimiser configuration or device-action role.",
+    "where": "p2-3 Methodology A and C (dataset); p4 Sec. IV.B (classification evaluation); p6 Tables III-IV"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00045.json",
+  "label": "FTB:R00045@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00045",
+    "d": "include",
+    "code": "INC",
+    "why": "Local Llama 3.2-3B turns smart-home commands into device actions; evaluated on 90 commands with accuracy and latency. LQ3 rule applies.",
+    "where": "p3 Section 3 Adaptive Planning and Execution (role); p4-5 Section 4 Evaluation; p8-10 Section 4.1.2 Results, Table 2 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00050.json",
+  "label": "FTA:R00050@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00050",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT-4o-mini HEMS sets device schedules/settings from user requests; 970 simulated dialogues scored with measured control metrics.",
+    "where": "p8-10 Sec 4.1 (HEMA, simulated smart home, 70 control cases); p5-6 Table 2 (control metrics); p12-14 Sec 5 results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00069.json",
+  "label": "FTB:R00069@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00069",
+    "d": "exclude",
+    "code": "E2",
+    "why": "Federated fine-tuning of Llama 2/Phi-3; evaluated only on IoT text classification F1, no listed role or device action",
+    "where": "p2-3 Methodology A-C; p4 Sec IV.B (evaluation on classification tasks); p6 Tables III-IV"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00050.json",
+  "label": "FTB:R00050@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00050",
+    "d": "include",
+    "code": "INC",
+    "why": "HEMA (GPT-4o-mini) schedules and sets household devices from user requests; evaluated on 970 dialogues with schedule correctness and other measured outcomes.",
+    "where": "p8-10 Sec 4.1 (system, household, simulated smart home); p16-17 Sec 5.3 Smart Device Control Analysis (schedule correctness 88%, target device accuracy 94.2%)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00089.json",
+  "label": "FTB:R00089@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00089",
+    "d": "exclude",
+    "code": "E1",
+    "why": "LLM sets battery current envelope for a vehicle while driving; no home or building, and the LLM is not named or small.",
+    "where": "p2-3 Sec 2 Driving Management Framework; p6 Sec 4 Results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00088.json",
+  "label": "FTA:R00088@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00088",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM turns under-specified home commands into device actions/routines; evaluated with 20-person survey, metrics and 7-person user study; 2024, English.",
+    "where": "p5-6 Sec 3 (prototype, role); p9-15 Sec 4 (survey, relevance, latency, JSON validity); Sec 6-7 (evaluation, user study)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00073.json",
+  "label": "FTA:R00073@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00073",
+    "d": "include",
+    "code": "INC",
+    "why": "1-bit Llama-3.2-1B on Raspberry Pi turns voice commands into lighting actions; two-household simulation reports 32% energy saving, latency, accuracy.",
+    "where": "p1 Abstract and Sec. III; p2 Table I and Sec. IV Experimental Results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00076.json",
+  "label": "FTB:R00076@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00076",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM orchestrator schedules household appliances from natural-language requests; evaluated against MILP optimum over 75 runs with Austrian prices.",
+    "where": "p5-7 Sec 2.1-2.2 (LLM role); p8-9 Sec 2.3 and p9-15 Sec 3 (evaluation); arXiv 2025 English"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00073.json",
+  "label": "FTB:R00073@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00073",
+    "d": "include",
+    "code": "INC",
+    "why": "1-bit Llama-3.2-1B on Raspberry Pi turns voice commands into lighting actions; reports 89% intent accuracy, latency, 32% energy savings.",
+    "where": "p1 Abstract and Sec. III (architecture); p2 Table I and Sec. IV Experimental Results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00090.json",
+  "label": "FTA:R00090@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00090",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM agent selects and personalizes MPC/MILP household device plans; evaluated in EnergyPlus simulation with measured acceptance, energy, cost.",
+    "where": "p5 Sec 4.2 Plan Synthesis (role); p5-7 Sec 5.2-5.6, Tables 1-3, p15 App E (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00092.json",
+  "label": "FTB:R00092@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00092",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM (gpt-oss-20b, GPT-5) schedules hourly heat-pump setpoints for office-building thermal storage; simulation measures CO2 emissions against DP, MPC and RL.",
+    "where": "p3-4 Sec 2.1 (LLM as upper-level scheduler issuing hourly ASHP setpoints); p8-11 Secs 3.2, 3.4, 4.1 and Table 4 (simulated office TES benchmark, emissions results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00088.json",
+  "label": "FTB:R00088@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00088",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM turns under-specified commands, including energy-saving ones, into device actions and routines; evaluated by survey, metrics and a 7-person home user study.",
+    "where": "p5-6 Sec 3 (role: action plans and routines); p8-15 Sec 4 (survey, relevance/latency metrics, Llama 2 7B, energy-saving commands); Sec 7 (user study in a test home)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00076.json",
+  "label": "FTA:R00076@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00076",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM orchestrator schedules household appliances from natural language; evaluated against MILP optimum over 75 runs with measured optimality, tokens, time.",
+    "where": "p5-8 Section 2 (LLM role, demonstration setup); p9-15 Section 3 Results, Tables 2-4"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00090.json",
+  "label": "FTB:R00090@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00090",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM agent selects and personalizes household appliance/HVAC/EV schedules via MPC/MILP skills; evaluated in EnergyPlus simulation and human study.",
+    "where": "p4-5 Sec 4.1-4.3 and p5-7 Sec 5.2-5.6 (agent role, results Tables 1-3); p15 App E"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00093.json",
+  "label": "FTB:R00093@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00093",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT LLM sets zone heating/cooling setpoints in five-zone office EnergyPlus simulation; energy, PMV comfort, cost, latency measured against baselines.",
+    "where": "p5-8 Sec 3.1, 3.5 (role); p11-14 Sec 5, Tables 1-4 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00082.json",
+  "label": "FTA:R00082@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00082",
+    "d": "exclude",
+    "code": "E2",
+    "why": "LLM only explains decisions of a separate ML-based MPC (SHAP narratives, Q&A); it sets no setpoints or constraints.",
+    "where": "p6 Section 2.2 (framework); p11 Section 3.4 and p12-16 Section 4.2 (LLM role and evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00082.json",
+  "label": "FTB:R00082@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00082",
+    "d": "exclude",
+    "code": "E2",
+    "why": "LLM only explains decisions of a separate ML-based MPC (SHAP narratives, Q&A); it sets no setpoints or constraints.",
+    "where": "p6-7 Section 2.2; p11 Section 3.4; p12-16 Section 4.2"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00093.json",
+  "label": "FTA:R00093@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00093",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM sets zone heating/cooling setpoints in five-zone office EnergyPlus simulation; evaluated on energy, PMV, latency, cost vs baselines.",
+    "where": "p5-8 Methods 3.1, 3.5 (role); p11-14 Results 5.1-5.4, Tables 1-4 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00091.json",
+  "label": "FTA:R00091@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00091",
+    "d": "exclude",
+    "code": "E1",
+    "why": "Generic edge-LLM agent method tested on GSM8K, HotpotQA, MBPP and a text household-robot task; no energy or smart-home setting.",
+    "where": "p6-9 Sec. 5 Experiments (5.2-5.4); p1 Abstract"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00089.json",
+  "label": "FTA:R00089@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00089",
+    "d": "exclude",
+    "code": "E1",
+    "why": "LLM recommends EV driving velocity/current while driving; no home or building, and no small or local model named.",
+    "where": "p2 Section 2 Driving Management Framework; p6 Section 4 Results"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00092.json",
+  "label": "FTA:R00092@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00092",
+    "d": "include",
+    "code": "INC",
+    "why": "LLMs (gpt-oss-20b RFT, GPT-5, GPT-4o) set hourly heat-pump setpoints for office-building TES; simulation measured kg-CO2 vs DP/MPC/DQN",
+    "where": "p1 Abstract; p3-4 Sec 2.1 LLM controller design; p7-9 Sec 3.1-3.4; p10-11 Sec 4.1 Table 4"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00091.json",
+  "label": "FTB:R00091@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00091",
+    "d": "exclude",
+    "code": "E1",
+    "why": "Generic edge-LLM agent method tested on GSM8K, HotpotQA, MBPP and a simulated household-robot task; no energy or smart-home setting.",
+    "where": "p1 Abstract; p7-9 Sec 5 Experiments (5.2-5.4)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00094.json",
+  "label": "FTB:R00094@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00094",
+    "d": "include",
+    "code": "INC",
+    "why": "Fine-tuned LLaMA generates action masks constraining an RL HVAC controller; simulator evaluation reports PPD and energy on a 7-zone office building.",
+    "where": "p1 Abstract; p4-8 Sec 3.1, 3.3-3.4 (LLM role); p1 Abstract and Introduction contributions (simulator results). Results sections (Sec 5, after p9) not read."
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00094.json",
+  "label": "FTA:R00094@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00094",
+    "d": "include",
+    "code": "INC",
+    "why": "Fine-tuned Llama-3-8B generates HVAC action masks for an RL controller in an office building; simulation shows PPD and energy results.",
+    "where": "p4-5 Methods 3.1 and p7 3.4.1 (LLM role); p12-15 Results 5.1-5.3, Table 2 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00096.json",
+  "label": "FTB:R00096@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00096",
+    "d": "include",
+    "code": "INC",
+    "why": "LLMs convert household appliance preference utterances into optimiser constraints; evaluated on 26-utterance dataset with ChrF and accuracy.",
+    "where": "p3 Sec 2 (task); p6-7 Sec 4-5 (data, models); p8-10 Sec 5-6 (metrics, Table 1 results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00095.json",
+  "label": "FTA:R00095@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00095",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT-4o writes residential EV/V2G control policy code, evaluated in EV2Gym simulation on NSW household data against baseline.",
+    "where": "p3-4 Sec 4.1-4.3 (LLM role, setting); p6-8 Sec 5, Table 1 (results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00096.json",
+  "label": "FTA:R00096@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00096",
+    "d": "include",
+    "code": "INC",
+    "why": "LLMs convert household appliance preferences into optimiser constraints; evaluated on 26 annotated utterances with ChrF and accuracy.",
+    "where": "p3-4 Sec 2 (task definition); p6 Sec 4 (dataset); p7-8 Sec 5 (models, metrics); p9-10 Sec 6 (results, Table 1)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00098.json",
+  "label": "FTB:R00098@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00098",
+    "d": "include",
+    "code": "INC",
+    "why": "Llama3 8B (local, Ollama) turns EV-charging voice requests into optimisation problems and schedules; evaluated on 800 requests (IRA, AROL).",
+    "where": "p2-4 Secs II-III (LLM agent roles); p4-7 Sec IV (EVRQ database, Llama3 8B via ollama, IRA/AROL results)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00095.json",
+  "label": "FTB:R00095@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00095",
+    "d": "include",
+    "code": "INC",
+    "why": "GPT-4o writes and iteratively refines Python EV charge/V2G control policies for a household; simulated on NSW data with profit results.",
+    "where": "p3-4 Sec 4.1-4.3 (LLM role, setting); p6-8 Sec 5, Table 1 (evaluation)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00098.json",
+  "label": "FTA:R00098@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00098",
+    "d": "include",
+    "code": "INC",
+    "why": "Llama 3 8B (local, ollama) agents turn EV-charging voice requests into optimisation problems and schedules; tested on 800 requests, IRA/AROL.",
+    "where": "p2 Problem Statement; p3-4 Sec. III Agent design; p4-7 Sec. IV Performance Evaluation (database EVRQ, Figs. 3-7, Table II)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00099.json",
+  "label": "FTB:R00099@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00099",
+    "d": "exclude",
+    "code": "E2",
+    "why": "LLM only simulates mall occupants' movements and thermal votes as RL training data; it does not configure or control HVAC.",
+    "where": "p2 Sec. II (Environment Setup); p4 Sec. II.B (State space, human input simulated by LLM agents)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00099.json",
+  "label": "FTA:R00099@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00099",
+    "d": "exclude",
+    "code": "E2",
+    "why": "LLM only simulates mall occupants and movements to generate training data; RL agent sets temperatures, so no listed role",
+    "where": "p2-4 Sections II.A-B (environment setup, reinforcement learning); p4-5 Section III"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTA_R00097.json",
+  "label": "FTA:R00097@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00097",
+    "d": "include",
+    "code": "INC",
+    "why": "LLMs generate and iteratively refine battery control code for a simulated residential PV-battery system; cost results compared with LP optimum and no-battery baseline.",
+    "where": "p6-7 Sec 6 and 7.1 (setting); p8-10 Sec 7.2-7.3 (LLM role); p11 Sec 8 Results (20 episodes, cost vs benchmarks)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTB_R00097.json",
+  "label": "FTB:R00097@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00097",
+    "d": "include",
+    "code": "INC",
+    "why": "LLM writes and iteratively refines battery control code for a residential PV-battery system; evaluated in simulation against LP optimum.",
+    "where": "p7-11 Sec 7 (Use Case: LLM generates controller code, meta-LLM prompts); p11 Sec 8 Results, Fig 2 (20 episodes, cost vs LP benchmarks)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ },
+ {
+  "source": "D:\\Study\\my-thesis\\.claude\\worktrees\\new-thesis-home-gateway\\prototypes\\slr\\fulltext\\sr_work\\decisions\\FTADJ_R00029.json",
+  "label": "FTADJ:R00029@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+  "decisions": [
+   {
+    "id": "R00029",
+    "d": "exclude",
+    "code": "E1",
+    "why": "Smart-home control (lights, speakers, TV) with no energy objective; models are hosted cloud APIs (Claude Opus, Gemini), so LQ3 rule does not apply.",
+    "where": "p1 Abstract; p4 Section 3.4 Testbed (hosted LLM APIs); p2-4 Section 3 scenes (no energy task)"
+   }
+  ],
+  "accepted_context": "23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2"
+ }
+]

@@ -1,0 +1,14 @@
+{
+ "n": 0,
+ "both_advance": 0,
+ "both_exclude": 0,
+ "a_only_advance": 0,
+ "b_only_advance": 0,
+ "observed_agreement": null,
+ "kappa": null,
+ "pabak": null,
+ "conflicts": 0,
+ "resolved_by": {
+  "Hoan Le": 99
+ }
+}

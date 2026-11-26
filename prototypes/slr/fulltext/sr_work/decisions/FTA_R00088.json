@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00088@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00088",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM turns under-specified home commands into device actions/routines; evaluated with 20-person survey, metrics and 7-person user study; 2024, English.",
+   "where": "p5-6 Sec 3 (prototype, role); p9-15 Sec 4 (survey, relevance, latency, JSON validity); Sec 6-7 (evaluation, user study)"
+  }
+ ]
+}

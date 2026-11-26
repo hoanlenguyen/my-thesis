@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00094@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00094",
+   "d": "include",
+   "code": "INC",
+   "why": "Fine-tuned LLaMA generates action masks constraining an RL HVAC controller; simulator evaluation reports PPD and energy on a 7-zone office building.",
+   "where": "p1 Abstract; p4-8 Sec 3.1, 3.3-3.4 (LLM role); p1 Abstract and Introduction contributions (simulator results). Results sections (Sec 5, after p9) not read."
+  }
+ ]
+}

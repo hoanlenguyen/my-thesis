@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00013@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00013",
+   "d": "include",
+   "code": "INC",
+   "why": "Gemini writes RL reward functions for building control; evaluated in CityLearn simulation with comfort and cost results.",
+   "where": "p2 Methodology 3.3 (LLM as reward engineer); p3 Results 4.1-4.2, Tables 2-3"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00073@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00073",
+   "d": "include",
+   "code": "INC",
+   "why": "1-bit Llama-3.2-1B on Raspberry Pi turns voice commands into lighting actions; reports 89% intent accuracy, latency, 32% energy savings.",
+   "where": "p1 Abstract and Sec. III (architecture); p2 Table I and Sec. IV Experimental Results"
+  }
+ ]
+}

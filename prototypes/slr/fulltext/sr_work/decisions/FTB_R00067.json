@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00067@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00067",
+   "d": "include",
+   "code": "INC",
+   "why": "GPT/Llama/Mistral turn smart-home commands into HomeAssistant automations with appliance energy data; evaluated on 40 commands (JSON validity, latency) plus N=56 user study.",
+   "where": "p3-4 Sec 3 (prompt, commands, home template); p5-9 Sec 3.5 and 4 (metrics, Tables 2-3); p2 Intro (EcoMate N=56 study)"
+  }
+ ]
+}

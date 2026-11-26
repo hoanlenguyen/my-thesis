@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00005@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00005",
+   "d": "include",
+   "code": "INC",
+   "why": "Local 4B decision model translates commands into smart-home device actions; evaluated on Trek datasets with accuracy and latency; LQ3 rule applies.",
+   "where": "p1 Abstract; p3-5 Sec 4 (design, memory); p7-10 Secs 6-7 (datasets, accuracy, latency, memory results)"
+  }
+ ]
+}

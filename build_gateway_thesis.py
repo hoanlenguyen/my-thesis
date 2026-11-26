@@ -39,7 +39,7 @@ AUTHORS = {  # key: (authors as cited, year)
     "michelon2025":("Michelon et al.", "2025"),
     "opsd2020": ("Open Power System Data", "2020"),
     "peffers2007": ("Peffers et al.", "2007"),
-    "raghavan2025": ("Raghavan \\& Giridhar", "2025"),
+    "raghavan2025": ("Raghavan \\& Giridhar", "2026"),
     "ramamonjison2023": ("Ramamonjison et al.", "2023"),
     "ruhnau2019": ("Ruhnau et al.", "2019"),
     "when2heat2023": ("Ruhnau \\& Muessel", "2023"),
@@ -53,6 +53,7 @@ AUTHORS = {  # key: (authors as cited, year)
     "wohlin2014":("Wohlin", "2014"),
     "xiao2024": ("Xiao et al.", "2024"),
     "yang2025": ("Yang et al.", "2025"),
+    "yao2023": ("Yao et al.", "2023"),
     "zhang2024": ("Zhang \\& Chen", "2024"),
 }
 

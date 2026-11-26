@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00099@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00099",
+   "d": "exclude",
+   "code": "E2",
+   "why": "LLM only simulates mall occupants' movements and thermal votes as RL training data; it does not configure or control HVAC.",
+   "where": "p2 Sec. II (Environment Setup); p4 Sec. II.B (State space, human input simulated by LLM agents)"
+  }
+ ]
+}

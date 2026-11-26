@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00097@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00097",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM writes and iteratively refines battery control code for a residential PV-battery system; evaluated in simulation against LP optimum.",
+   "where": "p7-11 Sec 7 (Use Case: LLM generates controller code, meta-LLM prompts); p11 Sec 8 Results, Fig 2 (20 episodes, cost vs LP benchmarks)"
+  }
+ ]
+}

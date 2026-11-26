@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00006@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00006",
+   "d": "include",
+   "code": "INC",
+   "why": "Local fine-tuned LLaMA3-8B turns smart-home commands into device action plans; evaluated on 100-command DevFinder benchmark (DRS), latency, memory, user study.",
+   "where": "p4-5 Sec IV (design, role); p9-10 Sec VI (DevFinder benchmark, DRS, latency/memory results); p1 abstract (user study M=100)"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00096@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00096",
+   "d": "include",
+   "code": "INC",
+   "why": "LLMs convert household appliance preferences into optimiser constraints; evaluated on 26 annotated utterances with ChrF and accuracy.",
+   "where": "p3-4 Sec 2 (task definition); p6 Sec 4 (dataset); p7-8 Sec 5 (models, metrics); p9-10 Sec 6 (results, Table 1)"
+  }
+ ]
+}

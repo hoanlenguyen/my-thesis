@@ -1,0 +1,649 @@
+BATCH b002 -- 49 records: R00051 .. R00099
+
+### R00051 | 2025 | Journal article | Lang: n/a
+TI: Towards an LLM-Powered Smart Home for Efficient and Safe Living Environment
+AB: The rapid advancements in Generative AI (GenAI), particularly the Large Language Models (LLMs) present transformative opportunities for enhancing
+    smart home environments. This research investigates the integration of LLM agents as reasoning entities into smart homes, with a focus on
+    optimizing energy efficiency, improving indoor living conditions, and addressing safety and security challenges. By leveraging their natural
+    language processing and reasoning capabilities, LLM agents are used to analyze the data from sensors deployed across the smart home to identify
+    usage patterns, detect anomalies, and generate actionable recommendations. The proposed framework demonstrates how LLM agents can optimize
+    appliance settings, enable predictive maintenance, and mitigate vendor lock-in by providing a versatile and non-proprietary solution for
+    intelligent home management. Key contributions of this research include the development of a platform for monitoring and maintaining energy
+    efficiency and living comfort, as well as issuing structured recommendations aligned with standard living guidelines. The findings highlight the
+    potential of LLMs in transforming smart home ecosystems, paving the way for more sustainable, efficient, and user-centric living environments.  ©
+    2025 IEEE.
+
+### R00052 | 2025 | Journal article | Lang: n/a
+TI: Smart Building Recommendations with LLMs: A Semantic Comparison Approach
+AB: The increasing need for sustainable energy management in smart buildings calls for cost-effective solutions that balance energy efficiency and
+    occupant comfort. This article presents a Large Language Model (LLM)-based recommendation system capable of generating proactive, context-aware
+    suggestions from dynamic building conditions. The system was trained on a combination of real-world data and Sinergym simulations, capturing
+    inputs such as weather conditions, forecasts, energy usage, electricity prices, and detailed zone parameters. Five models were fine-tuned and
+    evaluated: GPT-2-Small, GPT-2-Medium, DeepSeek-R1-Distill-Qwen-1.5B, DeepSeek-R1-Distill-Qwen-7B, and GPT-4. To enhance evaluation precision, a
+    novel metric, the Zone-Aware Semantic Reward (ZASR), was developed, combining Sentence-BERT with zone-level scoring and complemented by F1-Score
+    metrics. While GPT-4 demonstrated strong performance with minimal data, its high inference cost limits scalability. In contrast, open-access
+    models like DeepSeek-R1-Distill-Qwen-1.5B, DeepSeek-R1-Distill-Qwen-7B, and GPT-2-Medium required larger datasets but matched or exceeded GPT-4’s
+    performance at significantly lower cost. The system demonstrated adaptability across diverse building types, supported by heterogeneous datasets
+    and parameter normalization. Importantly, the system was also deployed in a real-world multi-zone residential building in Thessaloniki, Greece.
+    During a two-week operational period under near-identical weather and occupancy conditions, the model-assisted recommendations contributed to an
+    estimated 10% reduction in electricity consumption, showcasing the practical potential of LLM-based recommendations in live building environments.
+    © 2025 by the authors.
+
+### R00053 | 2025 | Journal article | Lang: n/a
+TI: Smart Building Operations and Virtual Assistants Using LLM
+AB: Conventional AI-powered smart home assistants primarily function as voice-activated control systems with limited adaptability and contextual
+    understanding. Similarly, while traditional artificial intelligence has advanced autonomous building research, it often relies on predefined rules
+    and struggles with real-time decision-making in dynamic building environments. This paper introduces a novel Generative AI-driven framework that
+    integrates Large Language Models (LLMs) to create a smart generative AI-based virtual assistant and an operation automation system for building
+    infrastructure. The AI systems autonomously manage building operations by analyzing real-time occupancy patterns and adjusting environmental
+    conditions based on predefined comfort thresholds. The proposed system also facilitates seamless human-building interaction through an LLM-powered
+    virtual assistant. The framework is validated through a prototype implementation in a real-world building equipped with smart appliances, with
+    evaluations focusing on the AI systems’ accuracy, reliability, and scalability. The findings demonstrate that the prototype system can
+    autonomously adjust building conditions, optimize energy usage, and provide intelligent assistance for building operation tasks. © 2025 Copyright
+    held by the owner/author(s).
+
+### R00054 | 2025 | Journal article | Lang: n/a
+TI: SLB:A Bridge Module of Local SLM and Online LLM for Smart Home Device Control
+AB: With the increasing popularity of smart home devices, users have a growing need to communicate with smarter assistants to control smart home
+    devices. However, on the one hand, using online large language models(LLMs) to recognize user commands poses a certain threat to the personal
+    privacy and data security of the user. On the other hand, local small language models(SLMs) cannot always perform well because of the limited
+    computing power of local devices. We propose a method that can better interact with smart home assistants: developing a bridge module that can
+    efficiently connect local SLM and online LLM in a smart home assistant. It first analyzes user intent on the local SLM, and then hands it off to
+    the online LLM for further command generations to specified smart home devices. Our experimental results suggest that this approach can provide
+    users with high-quality services while reducing the risk of privacy leakage. This helps reduce the reliance on large hardware devices when
+    implementing home automation while better protecting user data security and personal privacy. © 2025 IEEE.
+
+### R00055 | 2025 | Journal article | Lang: n/a
+TI: RHEA: Residential Home Energy Advisor
+AB: Large language models (LLMs) can learn how to solve many common knowledge tasks such as language translation, code generation or dialogue
+    generation. To provide a response, the LLMs combine the knowledge that was acquired from training along with the user's input. Although this
+    approach covers many cases, it would be valuable if the models could also use data from different sources, such as meter measurements.
+    Incorporating such data could open up new avenues for using LLMs in data-centric applications like energy management systems. One way towards this
+    direction is with the use of external tools such as APIs, which can retrieve and process relevant data for each task. This scenario is explored in
+    current research with the creation of RHEA, an autonomous home energy advisor. RHEA is designed to monitor, control, and provide insight into the
+    energy usage of electrical home appliances. This is accomplished by enabling a pre-trained LLM to generate calls to external energy analytics
+    APIs, which process energy measurements obtained by the user's home. The assistant is built on top of a known pretrained LLM that was fine-tuned
+    to learn how to generate calls to three specific energy-related external tools only when needed while maintaining its capabilities gained from the
+    original training. Additionally, the fine-tuning enables the assistant to generalize and learn to generate calls to similar APIs with minimal
+    examples and without requiring further training.  © 2025 University of Split, FESB.
+
+### R00056 | 2025 | Journal article | Lang: n/a
+TI: On-Device LLMs for Home Assistant: Dual Role in Intent Detection and Response Generation
+AB: This paper investigates whether Large Language Models (LLMs), fine-tuned on synthetic but domain-representative data, can perform the twofold task
+    of (i) slot and intent detection and (ii) natural language response generation for a smart home assistant, while running solely on
+    resource-limited, CPU-only edge hardware. We fine-tune LLMs to produce both JSON action calls and text responses. Our experiments show that 16-bit
+    and 8-bit quantized variants preserve high accuracy on slot and intent detection and maintain strong semantic coherence in generated text, while
+    the 4-bit model, while retaining generative fluency, suffers a noticeable drop in device-service classification accuracy. Further evaluations on
+    noisy human (non-synthetic) prompts and out-of-domain intents confirm the models' generalization ability, obtaining around 80--86\% accuracy.
+    While the average inference time is 5--6 seconds per query -- acceptable for one-shot commands but suboptimal for multi-turn dialogue -- our
+    results affirm that an on-device LLM can effectively unify command interpretation and flexible response generation for home automation without
+    relying on specialized hardware.
+
+### R00057 | 2025 | Journal article | Lang: n/a
+TI: On-Device Intent Reasoning for Smart Home Agents Via Ontology-Augmented sLLMs
+AB: Large language model (LLM)-based agents offer powerful natural language understanding for smart home intent interpretation but typically require
+    cloud deployment, raising concerns over privacy, latency, and resource usage. While sLLM can run on-device, they lack the structured contextual
+    knowledge needed to handle ambiguous intents and complex device interactions effectively. To address this limitation, we present CIDER, an
+    ontology-augmented, on-device intent reasoning framework that combines an sLLM with common-sense device knowledge and user-specific context,
+    organized within a structured ontology-based knowledge graph. Specifically, we develop an ontology construction pipeline for smart homes, which
+    leverages cloud-based LLMs to extract and organize common-sense knowledge about smart home devices and integrates user-specific context from a
+    smart home service. The resulting ontology serves as an external knowledge source that augments the sLLM’s intent reasoning process in a
+    retrieval-augmented manner, enabling context-aware inference for autonomous, orchestrated device operation. In evaluations with SmartThings-based
+    testbeds, CIDER achieves a success rate of 82.2% in general scenarios and 76.6% in highly complex home environments, outperforming strong
+    cloud-based baselines by up to 17.7 percentage points, despite relying on a compact on-device sLLM. These results demonstrate that combining the
+    domain-specific efficiency of symbolic knowledge representations with the flexible semantic processing of an sLLM, empowered by an ontology
+    distilled from cloud-based LLMs, provides an effective approach to intent understanding in smart homes. © 2013 IEEE.
+
+### R00058 | 2025 | Journal article | Lang: n/a
+TI: Leveraging Large Language Model for Generalization in Building Energy Management
+AB: Buildings are major contributors to global electricity consumption and emission, making the development of effective Building Energy Management
+    Systems (BEMS) essential for improving energy efficiency, ensuring thermal comfort. Artificial Intelligence (AI)-based methods, particularly Deep
+    Reinforcement Learning (DRL), have recently garnered significant attention in the BEMS. However, AI-based methods often face challenges related to
+    generalization across diverse building environments. This paper introduces a novel approach for BEMS control, namely Sequence-Based Building
+    Energy Modeling Framework (SeqBECMF), which models the energy management problem as a sequence modeling task. SeqBECMF leverages the power of
+    large language model (LLM) to model long-term dependencies in building energy data. To further enhance adaptability across varying building
+    environments, based on SeqBECMF, we propose the Building Adaptation Decision Transformer (BADT), which incorporates a building adapter module to
+    scale actions based on specific environmental needs. BADT uses a generative pre-trained transformer (GPT) backbone to improve temporal modeling
+    and represent diverse building conditions effectively. We evaluate the performance of the BADT framework on the CityLearn dataset and compare it
+    to state-of-the-art DRL algorithms. Experimental results show that BADT consistently outperforms these DRL methods by minimizing key adverse
+    metrics, including thermal discomfort hours, grid ramping, and electricity consumption. Moreover, BADT demonstrates strong generalization to
+    unseen buildings, setting a new standard for scalable and adaptable BEMS solutions. © 2010-2012 IEEE.
+
+### R00059 | 2025 | Journal article | Lang: n/a
+TI: Large Language Model Interface for Home Energy Management Systems
+AB: Home Energy Management Systems (HEMSs) help households tailor their electricity usage based on power system signals such as energy prices. This
+    technology helps to reduce energy bills and offers greater demand-side flexibility that supports the power system stability. However, residents
+    who lack a technical background may find it difficult to use HEMSs effectively, because HEMSs require well-formatted parameterization that
+    reflects the characteristics of the energy resources, houses, and users' needs. Recently, Large-Language Models (LLMs) have demonstrated an
+    outstanding ability in language understanding. Motivated by this, we propose an LLM-based interface that interacts with users to understand and
+    parameterize their ``badly-formatted answers'', and then outputs well-formatted parameters to implement an HEMS. We further use Reason and Act
+    method (ReAct) and few-shot prompting to enhance the LLM performance. Evaluating the interface performance requires multiple user--LLM
+    interactions. To avoid the efforts in finding volunteer users and reduce the evaluation time, we additionally propose a method that uses another
+    LLM to simulate users with varying expertise, ranging from knowledgeable to non-technical. By comprehensive evaluation, the proposed LLM-based
+    HEMS interface achieves an average parameter retrieval accuracy of 88\%, outperforming benchmark models without ReAct and/or few-shot prompting.
+
+### R00060 | 2025 | Journal article | Lang: n/a
+TI: LLMSwitchBench: A New Edge-Cloud Routing Benchmark for Smart Home LLM Inference
+AB: In smart home automation, large language models (LLMs) offer transformative potential for enabling intelligent, context-aware interactions.
+    However, deploying LLMs on edge devices is constrained to small-scale LLMs (typically 1B–8B parameters) with limited performance, while
+    cloud-based models, though powerful, raise privacy, latency, and cost concerns. To effectively balance these trade-offs, an intelligent routing
+    strategy is needed to determine when to use local inference and when to offload queries to the cloud. Despite growing attention to this problem,
+    there remains a lack of standardized and comprehensive benchmarks that reflect realistic smart home use cases and support the evaluation of such
+    routing strategies. To address this gap, we propose LLMSwitch-bench, a novelQAbenchmark dataset comprising 6,000 queries across five smart home
+    domains, including dietary, sleep, home security, pet care, and plant care. The dataset includes a wide range of question types with varying
+    levels of difficulty, while been human-validated to ensure accuracy and relevance. Building on this benchmark, we introduce LLMSwitch-router, a
+    privacy-preserving routing method that dynamically balances local and cloud-based inference. LLMSwitch-router prioritizes on-device inference to
+    reduce cost and protect user privacy, while selectively leveraging cloud LLMs for handling complex queries that exceed local LLM capabilities.
+    Experimental results show that LLMSwitch-router achieves a 48% reduction in LLM API cost while maintaining cloud-level accuracy, effectively
+    optimizing the trade-off among performance, cost, and privacy. © 2013 IEEE.
+
+### R00061 | 2025 | Journal article | Lang: n/a
+TI: LLM-MAC: LLM-Driven Multi-Agent Coordination for Generalizable Home Energy Management
+AB: Home Energy Management (HEM) is essential for optimizing residential electricity consumption, reducing costs, and integrating distributed energy
+    resources. Existing methods, including rule-based, optimization-based, and RL-based approaches, struggle to balance adaptability, computational
+    efficiency, and explainability. This study proposes LLM-MAC, a novel LLM-driven multi-agent coordination framework that enables zero-shot energy
+    scheduling without task-specific training. The framework employs a hierarchical agent structure, where Agent1 defines constraints, Agent2
+    optimizes scheduling, and Agent3 resolves conflicts iteratively. Experiments on diverse household configurations demonstrate that LLM-MAC
+    effectively generates feasible, cost-efficient, and interpretable scheduling strategies, outperforming traditional methods in adaptability and
+    real-time execution. The results highlight the potential of LLMs in enhancing HEM, bridging the gap between flexibility and computational
+    efficiency while supporting human-in-the-loop optimization. © 2025 Technical Committee on Control Theory, Chinese Association of Automation.
+
+### R00062 | 2025 | Journal article | Lang: n/a
+TI: LLM-BEM: Zero-shot LLM-Agent Scheduling for Smart Building Energy Management
+AB: Smart buildings require efficient energy scheduling across subsystems to balance cost, comfort, and sustainability. Existing methods lack
+    flexibility, generalization ability, and interpretability under dynamic conditions. We propose LLM-BEM, Zero-shot LLM-Agent Scheduling for Smart
+    Building Energy Management, a zero-shot multi-agent framework that integrates large language models for building energy control. LLM-BEM includes
+    ZoneAgent for local intent generation, BuildingAgent for global reconciliation, and LLM-Scheduler for final decisionmaking and explanation.
+    Simulation results show that LLM-BEM reduces energy costs, defers non-critical loads, and preserves occupant comfort. This work demonstrates the
+    feasibility of prompt-driven, training-free scheduling for generalizable and interpretable smart building management. © 2025 IEEE.
+
+### R00063 | 2025 | Journal article | Lang: n/a
+TI: LLM-BAS: Large Language Model-Based Battery Health-Aware Scheduling in Building Energy Systems
+AB: Battery energy storage systems are increasingly used in smart buildings, yet existing approaches often fail to integrate real-time battery health
+    into energy scheduling. Most current methods either require extensive training data or lack interpretability and adaptability to battery
+    degradation. This pa-per proposes LLM-BAS, Large Language Model-Based Battery Health-Aware Scheduling in Building Energy Systems that lever-ages
+    Large Language Models (LLMs) to connect battery health diagnostics with adaptive control. The system consists of two agents: one for estimating
+    state-of-health and degradation causes from telemetry data, and another for generating user-aligned charging policies based on diagnostic feedback
+    and external context. A representative case study shows that the framework produces interpretable State of Health (SOH) assessments and
+    conservative scheduling strategies aligned with lifespan extension. These findings demonstrate the feasibility of using LLMs as semantic
+    controllers in energy-aware building systems. © 2025 IEEE.
+
+### R00064 | 2025 | Journal article | Lang: n/a
+TI: Intelligent HEMS Based on Transformer and Hybrid PSO Scheduling Algorithm
+AB: In the context of growing environmental concerns, Home Energy Management Systems (HEMS) play a crucial role in promoting energy efficiency. This
+    paper proposes an intelligent HEMS that leverages the transformer model for high-precision electricity usage prediction and the Hybrid Particle
+    Swarm Optimization (HPSO) algorithm for optimal energy scheduling. The system takes into account device characteristics, electricity prices, and
+    user preferences. It features a user-friendly graphical interface and incorporates large language models (LLMs) for enhanced voice interaction.
+    Experimental results show that the transformer-based prediction improves accuracy, while the HPSO-based scheduling enhances energy efficiency and
+    cost-effectiveness. With the integration of photovoltaic systems, this system offers a sustainable solution for home energy management,
+    contributing to energy conservation and emission reduction.  © 2025 IEEE.
+
+### R00065 | 2025 | Journal article | Lang: n/a
+TI: HyLL: Hybrid LSTM and Large Language Model-Based Recommendation System for Energy Management and Consumption Optimization in Smart Homes
+AB: The reasoning capabilities and broad general knowledge of Large Language Models (LLMs) make them a natural choice for interpreting user requests
+    and managing energy in smart home contexts. However, LLMs lack specific knowledge about individual homes and the ability to predict future energy
+    consumption, limiting their effectiveness in energy optimization and management. This paper introduces HyLL, a hybrid framework that integrates
+    Long Short-Term Memory (LSTM) networks for energy consumption prediction with an LLM, such as GPT-4o, enhanced through in-context learning for
+    real-time optimization and energy management. The LSTM models predict daily energy usage for ten household appliances using historical data and
+    weather conditions, ensuring accuracy through iterative updates. The LLM utilizes 24-hour energy predictions to guide users in shifting their
+    energy consumption to off-peak hours and reducing usage during peak demand periods. By combining predictive modeling with AI-driven
+    decision-making, HyLL improves energy efficiency, alleviates grid stress, and reduces consumer costs, underscoring the critical role of AI in
+    sustainable smart home energy management.  © 2025 IEEE.
+
+### R00066 | 2025 | Journal article | Lang: n/a
+TI: Human-in-the-Loop Battery Scheduling in Buildings via Intent-Guided Rule-Reinforcement Learning
+AB: The global imperative for carbon neutrality drives unprecedented transformation in building energy systems, where battery energy storage systems
+    (BESS) integrated with photovoltaic (PV) installations offer substantial demand-side flexibility. However, existing battery scheduling approaches
+    - including heuristic rules, mathematical optimization, and reinforcement learning (RL) - fundamentally cannot incorporate user-informed future
+    events lying outside historical training distributions, limiting their ability to leverage human foresight for proactive energy management. This
+    work introduces a human-in-the-loop battery scheduling mechanism via intent-guided rule-RL that systematically bridges user cognitive foresight
+    with autonomous control systems. The mechanism employs large language models (LLMs) to extract structured battery preconditioning intents from
+    natural language inputs through interactive dialog, implements heuristic rules for time-bounded state preparation, utilizes soft actor-critic
+    (SAC) RL for baseline control, and coordinates these paradigms through hierarchical priority arbitration. Experimental validation using real
+    residential energy data demonstrates substantial performance improvements: 39.2% cost reduction in discharge scenarios, 15.1% cost reduction in
+    charge scenarios, and effective multi-intent coordination achieving 6.3% cost reduction with 20.0% improvement in cost savings compared to pure RL
+    approaches. This research establishes a new paradigm for building energy management where human knowledge becomes a strategic optimization
+    resource.  © 2014 IEEE.
+
+### R00067 | 2025 | Journal article | Lang: n/a
+TI: Generating HomeAssistant Automations Using an LLM-based Chatbot
+AB: To combat climate change, individuals are encouraged to adopt sustainable habits, in particular, with their household, optimizing their electrical
+    consumption. Conversational agents, such as Smart Home Assistants, hold promise as effective tools for promoting sustainable practices within
+    households. Our research investigated the application of Large Language Models (LLM) in enhancing smart home automation and promoting sustainable
+    household practices, specifically using the HomeAssistant framework. In particular, it highlights the potential of GPT models in generating
+    accurate automation routines. While the LLMs showed proficiency in understanding complex commands and creating valid JSON outputs, challenges such
+    as syntax errors and message malformations were noted, indicating areas for further improvement. Still, despite minimal quantitative differences
+    between "green" and "no green" prompts, qualitative feedback highlighted a positive shift towards sustainability in the routines generated with
+    environmentally focused prompts. Then, an empirical evaluation (N=56) demonstrated that the system was well-received and found engaging by users
+    compared to its traditional rule-based counterpart. Our findings highlight the role of LLMs in advancing smart home technologies and suggest
+    further research to refine these models for broader, real-world applications to support sustainable living.
+
+### R00068 | 2025 | Journal article | Lang: n/a
+TI: GUIDE: A prescriptive hybrid AI framework for energy-efficient appliances usage through behavioral modeling and LLM guidance
+AB: Improving energy efficiency in residential environments reduces electricity consumption and cost, eases stress on the electricity grid, and
+    promotes sustainability. However, realizing these benefits at scale requires accurate understanding of how energy is consumed within households.
+    The precise interpreting of household energy consumption and providing personalized advice is still proving to be a hurdle due to overlapping
+    appliance usage patterns and diverse user behaviors. This paper introduces Generative Usage-based Insights for Device Efficiency (GUIDE), a hybrid
+    AI framework that integrates advanced device detection, behavioral modeling, and personalized natural language generation using fine-tuned large
+    language models (LLMs). The system first disaggregates appliance-level consumption data utilizing statistical and temporal features, and then
+    profiles household routines to enhance device classification accuracy. These insights are transformed into user-specific energy-saving advices
+    through a domain-adapted LLM trained on structured behavioral prompts and contextual usage summaries. By combining time-series analysis, machine
+    learning, and scalable LLM fine-tuning techniques (LoRA/QLoRA), GUIDE delivers fluent, context-aware and personalized recommendations that adapt
+    to each household’s evolving energy patterns. Experimental results on real-world datasets demonstrate that GUIDE achieves high accuracy in device
+    classification and generates actionable, human-readable advice bridging the gap between signal-level analysis and personalized energy engagement.
+    © 2025 The Author(s).
+
+### R00069 | 2025 | Journal article | Lang: n/a
+TI: Edge-FIT: Federated Instruction Tuning of Quantized LLMs for Privacy-Preserving Smart Home Environments
+AB: This paper proposes Edge-FIT (Federated Instruction Tuning on the Edge), a scalable framework for Federated Instruction Tuning (FIT) of Large
+    Language Models (LLMs). Traditional Federated Learning (TFL) methods, like FedAvg, fail when confronted with the massive parameter size of LLMs
+    [3], [6]. Our Edge-FIT framework combines federated learning with 4-bit Quantized Low-Rank Adaptation (QLORA), mitigating the core issues of
+    communication and computational overhead. We demonstrate this by filtering the general-purpose Databricks Dolly 15k dataset for the IoT domain.
+    Experimental results show the Edge-FIT-tuned Llama 2 (7B) achieves an F1-Score of 0.89. We also demonstrate a viable trade-off using the 3.8B
+    Phi-3-mini model, validating Edge-FIT as a scalable framework for decentralized LLM deployment on home compute gateways. © 2025 IEEE.
+
+### R00070 | 2025 | Journal article | Lang: n/a
+TI: DESAMO: A Device for Elder-Friendly Smart Homes Powered by Embedded LLM with Audio Modality
+AB: We present DESAMO, an on-device smart home system for elder-friendly use powered by Audio LLM, that supports natural and private interactions.
+    While conventional voice assistants rely on ASR-based pipelines or ASR-LLM cascades, often struggling with the unclear speech common among elderly
+    users and unable to handle non-speech audio, DESAMO leverages an Audio LLM to process raw audio input directly, enabling a robust understanding of
+    user intent and critical events, such as falls or calls for help.
+
+### R00071 | 2025 | Journal article | Lang: n/a
+TI: Context-aware LLM-based AI Agents for Human-centered Energy Management Systems in Smart Buildings
+AB: This study presents a conceptual framework and a prototype assessment for Large Language Model (LLM)-based Building Energy Management System
+    (BEMS) AI agents to facilitate context-aware energy management in smart buildings through natural language interaction. The proposed framework
+    comprises three modules: perception (sensing), central control (brain), and action (actuation and user interaction), forming a closed feedback
+    loop that captures, analyzes, and interprets energy data to respond intelligently to user queries and manage connected appliances. By leveraging
+    the autonomous data analytics capabilities of LLMs, the BEMS AI agent seeks to offer context-aware insights into energy consumption, cost
+    prediction, and device scheduling, thereby addressing limitations in existing energy management systems. The prototype's performance was evaluated
+    using 120 user queries across four distinct real-world residential energy datasets and different evaluation metrics, including latency,
+    functionality, capability, accuracy, and cost-effectiveness. The generalizability of the framework was demonstrated using ANOVA tests. The results
+    revealed promising performance, measured by response accuracy in device control (86%), memory-related tasks (97%), scheduling and automation
+    (74%), and energy analysis (77%), while more complex cost estimation tasks highlighted areas for improvement with an accuracy of 49%. This
+    benchmarking study moves toward formalizing the assessment of LLM-based BEMS AI agents and identifying future research directions, emphasizing the
+    trade-off between response accuracy and computational efficiency.
+
+### R00072 | 2025 | Journal article | Lang: n/a
+TI: Building Energy Management Systems with LLM Agent Enhanced Natural Language Policy Explanation
+AB: Building Energy Management System (BEMS) is important for optimizing energy usage. However, existing BEMS often lack natural language
+    explanations, making it difficult for residents to understand and trust system decisions. This paper proposes a large language model (LLM)
+    Agent-based (BEMS Agent) policy explanation for BEMS, enabling the system to generate comprehensible explanations of environmental parameters and
+    control decisions. To improve reasoning accuracy, we introduce a Reflection-Chain-of-Thought (RCoT) mechanism that enhances the logical
+    consistency of explanations. Furthermore, we develop an automated evaluation method to assess how well users understand the generated
+    explanations. This paper highlights the potential of LLMdriven interpretability in increasing user trust and optimizing energy management
+    efficiency, as evidenced by a 29.4% improvement in scores when using RCoT prompts compared to CoT prompts. © 2025 IEEE.
+
+### R00073 | 2025 | Journal article | Lang: n/a
+TI: BitRL-Light: 1-bit LLM Agents with Deep Reinforcement Learning for Energy-Efficient Smart Home Lighting Optimization
+AB: Smart home lighting systems consume 15-20% of residential energy but lack adaptive intelligence to optimize for user comfort and energy efficiency
+    simultaneously. We present BitRL-Light, a novel framework combining 1-bit quantized Large Language Models (LLMs) with Deep Q-Network (DQN)
+    reinforcement learning for real-time smart home lighting control on edge devices. Our approach deploys a 1-bit quantized Llama-3.2-1B model on
+    Raspberry Pi hardware, achieving 71.4 times energy reduction compared to full-precision models while maintaining intelligent control capabilities.
+    Through multi-objective reinforcement learning, BitRL-Light learns optimal lighting policies from user feedback, balancing energy consumption,
+    comfort, and circadian alignment. Experimental results demonstrate 32% energy savings compared to rule-based systems, with inference latency under
+    200ms on Raspberry Pi 4 and 95% user satisfaction. The system processes natural language commands via Google Home/IFTTT integration and learns
+    from implicit feedback through manual overrides. Our comparative analysis shows 1-bit models achieve 5.07 times speedup over 2-bit alternatives on
+    ARM processors while maintaining 92% task accuracy. This work establishes a practical framework for deploying adaptive AI on resource-constrained
+    IoT devices, enabling intelligent home automation without cloud dependencies.
+
+### R00074 | 2025 | Journal article | Lang: n/a
+TI: An LLM-assisted decision-making framework of rule-based control strategy for photovoltaic driven air conditioning systems
+AB: Photovoltaic driven air conditioning (PVAC) systems provide significant opportunities for sustainable building energy management, but optimizing
+    their operational parameters remains challenging. Current control methods often lack flexibility in adapting to dynamic environmental conditions
+    and occupancy requirements. This study introduces a novel optimization framework integrating a large language model (LLM) with a rule-based
+    adaptive control strategy for PVAC systems. A comprehensive simulation model, coupling detailed building thermal dynamics and air conditioning
+    behavior, is developed and experimentally validated. The LLM is requested to determine optimal operational parameters. The LLM is systematically
+    evaluated across varying scenarios, including initial settings for temperature setpoints, comfort ranges, hysteresis bands, and communication
+    intervals. Results indicated that the LLM consistently converged on optimal control configurations, notably temperature setpoints around 24–25 °C,
+    comfort ranges of approximately 1–2 °C, and hysteresis bands of about 0.3–0.5 °C, achieving high thermal comfort satisfaction and substantial
+    energy cost savings. Furthermore, the model demonstrated excellent repeatability and operational stability across diverse climatic conditions.
+    This research confirms the viability of integrating LLM-assisted adaptive control into PVAC systems. The LLM provides a promising opportunity for
+    enhanced building energy efficiency and occupant comfort in practical applications. © 2025 Elsevier Ltd
+
+### R00075 | 2025 | Journal article | Lang: n/a
+TI: An Empirically Validated Framework for Automated and Personalized Residential Energy-Management Integrating Large Language Models and the Internet
+    of Energy
+AB: The growing global demand for energy has resulted in a demand for innovative strategies for residential energy management. This study explores a
+    novel framework—MELISSA (Modern Energy LLM-IoE Smart Solution for Automation)—that integrates Internet of Things (IoT) sensor networks with Large
+    Language Models (LLMs) to optimize household energy consumption through intelligent automation and personalized interactions. The system combines
+    real-time monitoring, machine learning algorithms for behavioral analysis, and natural language processing to deliver personalized, actionable
+    recommendations through a conversational interface. A 12-month randomized controlled trial was conducted with 100 households, which were
+    stratified across four socioeconomic quintiles in metropolitan areas. The experimental design included the continuous collection of IoT data.
+    Baseline energy consumption was measured and compared with post-intervention usage to assess system impact. Statistical analyses included k-means
+    clustering, multiple linear regression, and paired t-tests. The system achieved its intended goal, with a statistically significant reduction of
+    5.66% in energy consumption (95% CI: 5.21–6.11%, (Formula presented.)) relative to baseline, alongside high user satisfaction (mean = 7.81, SD =
+    1.24). Clustering analysis ((Formula presented.), silhouette = 0.68) revealed four distinct energy-consumption profiles. Multiple regression
+    analysis ((Formula presented.), (Formula presented.)) identified household size, ambient temperature, and frequency of user engagement as the
+    principal determinants of consumption. This research advances the theoretical understanding of human–AI interaction in energy management and
+    provides robust empirical evidence of the effectiveness of LLM-mediated behavioral interventions. The findings underscore the potential of
+    conversational AI applications in smart homes and have practical implications for optimization of residential energy use. © 2025 by the authors.
+
+### R00076 | 2025 | Journal article | Lang: n/a
+TI: Agentic AI Home Energy Management System: A Large Language Model Framework for Residential Load Scheduling
+AB: The electricity sector transition requires substantial increases in residential demand response capacity, yet Home Energy Management Systems
+    (HEMS) adoption remains limited by user interaction barriers requiring translation of everyday preferences into technical parameters. While large
+    language models have been applied to energy systems as code generators and parameter extractors, no existing implementation deploys LLMs as
+    autonomous coordinators managing the complete workflow from natural language input to multi-appliance scheduling. This paper presents an agentic
+    AI HEMS where LLMs autonomously coordinate multi-appliance scheduling from natural language requests to device control, achieving optimal
+    scheduling without example demonstrations. A hierarchical architecture combining one orchestrator with three specialist agents uses the ReAct
+    pattern for iterative reasoning, enabling dynamic coordination without hardcoded workflows while integrating Google Calendar for context-aware
+    deadline extraction. Evaluation across three open-source models using real Austrian day-ahead electricity prices reveals substantial capability
+    differences. Llama-3.3-70B successfully coordinates all appliances across all scenarios to match cost-optimal benchmarks computed via
+    mixed-integer linear programming, while other models achieve perfect single-appliance performance but struggle to coordinate all appliances
+    simultaneously. Progressive prompt engineering experiments demonstrate that analytical query handling without explicit guidance remains unreliable
+    despite models' general reasoning capabilities. We open-source the complete system including orchestration logic, agent prompts, tools, and web
+    interfaces to enable reproducibility, extension, and future research.
+
+### R00077 | 2025 | Journal article | Lang: n/a
+TI: AI-Driven Smart Home Energy Optimization: Integrating AI Agents with IoT for Adaptive Decision-Making
+AB: As the Internet of Things (IoT) revolutionizes intelligent environments, energy efficiency remains a critical challenge. Traditional IoT-based
+    energy management systems rely on predefined rule-based automation, which lacks adaptability to dynamic environmental conditions. This study
+    proposes an Agentic AIoT system that integrates AI Agents, Large Language Models (LLMs), and Digital Twin technology to enhance IoT decision-
+    making and optimize energy consumption in smart homes. Unlike conventional IoT frameworks, our system dynamically analyzes contextual
+    factors-including real-time environmental conditions, user behaviors, and external data sources (e.g., weather forecasts and occupancy
+    schedules)-to generate optimal energy-saving decisions autonomously. The proposed system consists of three key components: (1) Information
+    Modules, which aggregate multi-source data beyond traditional IoT sensor inputs and construct a Digital Twin model for real-time environment
+    simulation; (2) AI Agents & LLMs, which process contextual data and generate adaptive energy-saving strategies through intelligent reasoning; and
+    (3) Automated Decision Execution, which seamlessly integrates optimized actions into IoT operations. By incorporating Digital Twin technology, the
+    system can simulate various energy consumption scenarios, predict future power demands, and refine decision- making through AI-driven iterative
+    learning. Experimental results demonstrate that our AIoT system achieves a 47.77% reduction in energy consumption compared to nonIoT environments
+    while enhancing automation, adaptability, and user-centric control. Unlike conventional rule-based IoT solutions, integrating Digital Twin with
+    LLM-powered AI Agents enables real-time context-aware decision-making and predictive energy optimization. This study contributes to intelligent
+    IoT applications, Digital Twin-driven energy management, and AI-enhanced automation. Future research will focus on refining AI-driven autonomous
+    decision-making, improving Digital Twin’s predictive accuracy, and further quantifying the impact of LLM-powered AIoT systems on energy
+    efficiency. Our findings highlight the trans- formative potential of LLM-integrated AIoT with Digital Twin technology in revolutionizing energy
+    management for intelligent environments while ensuring seamless interoperability with existing IoT infrastructures. © The Institution of
+    Engineering & Technology 2025.
+
+### R00078 | 2025 | Journal article | Lang: n/a
+TI: AI-Driven Multi-Agent Demand Response Framework for Residential Load Optimization Using CrewAi
+AB: The rising electricity demand, particularly in the residential sector, necessitates innovative strategies to manage peak loads effectively. This
+    research proposes a novel Automatic Demand Response (ADR) framework using a multi-agent system called CrewAi, designed to optimize residential
+    energy consumption during peak periods. The framework consists of five autonomous agents, coordinated by a central Client Agent, aimed at reducing
+    peak demand and enhancing grid stability. A key component of CrewAi is the Load Forecasting Agent (LFA), which leverages Large Language Models
+    (LLMs) to predict residential energy demand with high accuracy. The model excels in clustering data patterns, enabling precise, achieving superior
+    accuracy for 1-day, 2-day, and 3-day predictions during peak demand periods. The Demand Response Optimizer (DRO) classifies energy loads into
+    shiftable, adaptable, and interruptible loads, facilitating dynamic load shifting from peak to off-peak hours. To Ensure the effective of CrewAi
+    in Prediction, it compared with Long Short-Term Memory (LSTM) networks and Optimized-LSTM. The proposed CrewAi approach results of 14% reduction
+    in residential energy consumption without compromising user comfort., demonstrating enhanced scalability and adaptability. The proposed framework
+    marks a paradigm shift from traditional rule-based ADR systems to intelligent, interconnected agent networks, offering a robust solution to
+    address modern grid complexities and uncertainties in residential energy management. © 2025 IEEE.
+
+### R00079 | 2025 | Journal article | Lang: n/a
+TI: A bi-level optimization framework for household distributed energy systems: Integrating multiple flexible loads
+AB: This paper presents a bi-level optimization framework for household distributed energy systems (DES), incorporating multiple flexible loads. The
+    upper-level configuration optimization model aims to minimize total system cost, reduce carbon emissions, and maximize renewable energy
+    utilization rate. The lower-level operation optimization model minimizes operational cost while considering multiple flexible loads. This bi-level
+    framework achieves optimal system configuration and efficient operational strategies, enhancing energy efficiency, cost-effectiveness, and
+    environmental performance. This paper also proposes a novel multi-objective optimization method based on Large Language Models (LLM), combined
+    with Mixed Integer Linear Programming (MILP). The impact of flexible loads on DES optimization is evaluated using LLM-MILP and other advanced
+    multi-objective bi-level optimization methods in four scenarios with varying levels of flexible load integration. Furthermore, the performance of
+    these four bi-level optimization methods is assessed based on two metrics: Hypervolume (HV) and running time (RT). The results show that the
+    scenario with fully flexible loads demonstrates notable improvements, with total cost reductions of 20.28%, 16.42%, 13.65%, and 17.43% for MOSFO,
+    MOAHA, NSGA-II, and LLM, respectively. Additionally, carbon emissions decreased by 46.32%, 50.01%, 49.76%, and 49.15%, while renewable energy
+    utilization increased by 1.38%, 22.41%, 25.23%, and 27.56%, compared to the scenario without flexible loads. The proposed LLM-MILP model
+    demonstrates superior computational efficiency, particularly in terms of RT, compared to other bi-level optimization models and can achieve high
+    levels of renewable energy utilization (95.791%), total system cost (933.37 $), and total system carbon emissions (1620.1 t). The seasonal
+    analysis further emphasizes the robustness and adaptability of the optimization framework considering fully flexible loads under varying
+    environmental conditions. © 2025 Taylor & Francis Group, LLC.
+
+### R00080 | 2024 | Journal article | Lang: n/a
+TI: Privacy-Preserving Energy Recommendations Using Federated Learning and Local LLMs on the Edge
+AB: Effective energy management in households is critical to achieving overall energy efficiency and sustainability goals. This study introduces a
+    novel approach to predicting short-term energy consumption for households using federated learning (FL) models. The approach achieves short-term
+    energy consumption predictions (i.e. for the next 10 minutes) by analyzing local data, such as the current watt consumption and activated devices.
+    The key innovation in this approach is the use of privacy-preserving machine learning techniques, ensuring that personal data is never shared
+    during the training process. The models are used to predict potential spikes in energy demand, allowing for proactive management. In addition, a
+    local Large Language Model (LLM) is integrated to generate personalized recommendations for users, aimed at avoiding predicted consumption spikes
+    and promoting energy-efficient behavior. This approach not only preserves user privacy but also enhances user engagement by providing actionable
+    insights based on local consumption patterns. © 2024 IEEE.
+
+### R00081 | 2024 | Journal article | Lang: n/a
+TI: Office-in-the-Loop for Building HVAC Control with Multimodal Foundation Models
+AB: This p aper i nvestigates t he p otential o f l arge l anguage models (LLMs) for optimizing HVAC systems in real-world settings. While prior
+    research has primarily focused on simulated environments, this study bridges the gap by deploying and evaluating an LLM-based control system in an
+    actual office. The system collects real-time environmental data and occupant feedback on thermal comfort. This data, along with historical
+    environmental and feedback information, is used to prompt the generative AI model, which predicts optimal HVAC setpoint temperatures throughout
+    the day. The results demonstrate a significant reduction in power consumption (up to 47.92%, equivalent to 39.48 kWh) and a concurrent improvement
+    in occupant comfort (up to 26.36%) compared to the baseline. Notably, regression analysis confirms that these improvements persist even after
+    accounting for external factors such as outside temperature and occupancy. This study highlights the significant potential of generative AI for
+    optimizing HVAC systems, enhancing both energy efficiency and occupant comfort in real-world scenarios. Future research will explore the
+    scalability of this approach, targeting larger-scale building energy management systems in data centers and industrial facilities. © 2024
+    Copyright held by the owner/author(s).
+
+### R00082 | 2024 | Journal article | Lang: n/a
+TI: Large Language Model-Based Interpretable Machine Learning Control in Building Energy Systems
+AB: The potential of Machine Learning Control (MLC) in HVAC systems is hindered by its opaque nature and inference mechanisms, which is challenging
+    for users and modelers to fully comprehend, ultimately leading to a lack of trust in MLC-based decision-making. To address this challenge, this
+    paper investigates and explores Interpretable Machine Learning (IML), a branch of Machine Learning (ML) that enhances transparency and
+    understanding of models and their inferences, to improve the credibility of MLC and its industrial application in HVAC systems. Specifically, we
+    developed an innovative framework that combines the principles of Shapley values and the in-context learning feature of Large Language Models
+    (LLMs). While the Shapley values are instrumental in dissecting the contributions of various features in ML models, LLM provides an in-depth
+    understanding of the non-data-driven or rule-based elements in MLC; combining them, LLM further packages these insights into a coherent,
+    human-understandable narrative. The paper presents a case study to demonstrate the feasibility of the developed IML framework for model predictive
+    control-based precooling under demand response events in a virtual testbed. The results indicate that the developed framework generates and
+    explains the control signals in accordance with the rule-based rationale.
+
+### R00083 | 2024 | Journal article | Lang: n/a
+TI: LLM-Based Building Energy Management Assistants
+AB: This study introduces a novel framework for Large Language Model (LLM)-based Building Energy Management Assistants (BEM Assistants), designed to
+    address the limitations of traditional energy management interfaces by harnessing the advanced capabilities of AI, particularly through the use of
+    LLMs, such as the Generative Pre-trained Transformer (GPT). This framework integrates historical energy consumption data analysis and smart
+    building IoT control by leveraging connections with external devices to enhance operational efficiency and responsiveness in energy management
+    systems. A prototype of a BEM Assistant for residential energy management was developed to demonstrate its practical application and evaluate it
+    through simulation using 95 example user queries included in three categories: information retrieval, data analysis for recommendation, and
+    external device interactions. The results highlight the framework’s feasibility in the effective processing of energy information queries,
+    offering energy consumption insights and executing smart building controls. This study introduces the application of the OpenAI Assistants API in
+    evaluating an Assistant’s capability in building energy management, showcasing the potential of LLMs to improve building energy efficiency and
+    management practices. This research lays a framework for future exploration into AI-powered building energy management, with promising results
+    showing the potential to bridge the gap between traditional management techniques and the evolving advancements of AI and smart building
+    technologies. © ASCE.
+
+### R00084 | 2024 | Journal article | Lang: n/a
+TI: GPT Prompt Engineering for Scheduling Appliances Usage for Energy Cost Optimization
+AB: In this paper, we propose a novel approach that makes use of a GPT model and of prompt engineering to build a proper input to GPT, given a
+    domestic energy dataset. Specifically, given a residential energy consumption dataset, we ask a GPT model - in order to reduce the cost of energy
+    - for planning the timing usage of house appliances, while preserving the same utilization of each appliance on a daily basis. To the best of our
+    knowledge, this is the first attempt to schedule appliances usage taking advantage of the planning ability of a GPT model. Thanks to this
+    preliminary study, we highlight interesting results to be further investigated and enabling certain room for improvements in this domain. © 2024
+    IEEE.
+
+### R00085 | 2024 | Journal article | Lang: n/a
+TI: Designing Home Automation Routines Using an LLM-Based Chatbot
+AB: Without any more delay, individuals are urged to adopt more sustainable behaviors to fight climate change. New digital systems mixed with engaging
+    and gamification mechanisms could play an important role in achieving such an objective. In particular, Conversational Agents, like Smart Home
+    Assistants, are a promising tool that encourage sustainable behaviors within household settings. In recent years, large language models (LLMs)
+    have shown great potential in enhancing the capabilities of such assistants, making them more effective in interacting with users. We present the
+    design and implementation of GreenIFTTT, an application empowered by GPT4 to create and control home automation routines. The agent helps users
+    understand which energy consumption optimization routines could be created and applied to make their home appliances more environmentally
+    sustainable. We performed an exploratory study (Italy, December 2023) with N = 13 participants to test our application’s usability and UX. The
+    results suggest that GreenIFTTT is a usable, engaging, easy, and supportive tool, providing insight into new perspectives and usage of LLMs to
+    create more environmentally sustainable home automation. © 2024 by the authors.
+
+### R00086 | 2024 | Journal article | Lang: n/a
+TI: Democratizing Energy Management with LLM-Assisted Optimization Autoformalism
+AB: This paper introduces a method for personalizing energy optimization using large language models (LLMs) combined with an optimization solver. This
+    approach, termed human-guided optimization autoformalism, translates natural language specifications into optimization problems, enabling LLMs to
+    handle various user-specific energy-related tasks. It allows for nuanced understanding and nonlinear reasoning tailored to individual preferences.
+    The research covers common energy sector tasks like electric vehicle charging, HVAC control, and long-term planning for renewable energy
+    installations. This novel strategy represents a significant advancement in context-based optimization using LLMs, facilitating sustainable energy
+    practices customized to individual needs.  © 2024 IEEE.
+
+### R00087 | 2024 | Journal article | Lang: n/a
+TI: An LLM-Based Modeling and Decision Optimization for User-Centric Electric Vehicle Charging
+AB: Rapid adoption of Electric Vehicles (EVs) has significantly increased the demand for user-centric and personalized EV charging solutions. Existing
+    charging decisions primarily rely on static optimization, involving complicated modeling and algorithms. This, however, poses a high communicative
+    and technical barrier between users and machines, leading to a poor quality-of-experience. To this end, this paper proposes a novel large language
+    model (LLM)-based multi-agent framework, acting as a mediator between users and devices to deliver a direct language-to-solution service. Our
+    framework consists of three specialized agents, i.e., Agent-I, M, and -C, with each responsible for information querying, model construction, and
+    code generation, separately. First, Agent-I extracts vehicle information and user preferences through interactive dialogues with users, and
+    retrieves comprehensive brand and model parameters from external databases. Next, Agent-M filters out key modeling parameters, and grabs real-time
+    electricity prices for charging. Finally, Agent-C generates the professional codes for commercial solvers, e.g., Gurobi, subsequently obtaining
+    optimal charging solutions. Two cases with different EV brands and user preferences have then been tested to demonstrate that our framework can
+    significantly improve user experience while maintaining the accuracy and optimality of charging decisions through a direct language-to-solution
+    mode. This study showcases the potential of LLMs in smart charging systems and pave a way for user-centric resource optimization and scheduling. ©
+    2024 IEEE.
+
+### R00088 | 2023 | Journal article | Lang: n/a
+TI: Sasha: Creative Goal-Oriented Reasoning in Smart Homes with Large Language Models
+AB: Smart home assistants function best when user commands are direct and well-specified (e.g., "turn on the kitchen light"), or when a hard-coded
+    routine specifies the response. In more natural communication, however, human speech is unconstrained, often describing goals (e.g., "make it cozy
+    in here" or "help me save energy") rather than indicating specific target devices and actions to take on those devices. Current systems fail to
+    understand these under-specified commands since they cannot reason about devices and settings as they relate to human situations. We introduce
+    large language models (LLMs) to this problem space, exploring their use for controlling devices and creating automation routines in response to
+    under-specified user commands in smart homes. We empirically study the baseline quality and failure modes of LLM-created action plans with a
+    survey of age-diverse users. We find that LLMs can reason creatively to achieve challenging goals, but they experience patterns of failure that
+    diminish their usefulness. We address these gaps with Sasha, a smarter smart home assistant. Sasha responds to loosely-constrained commands like
+    "make it cozy" or "help me sleep better" by executing plans to achieve user goals, e.g., setting a mood with available devices, or devising
+    automation routines. We implement and evaluate Sasha in a hands-on user study, showing the capabilities and limitations of LLM-driven smart homes
+    when faced with unconstrained user-generated scenarios.
+
+### R00089 | 2026 | Journal article | Lang: n/a
+TI: Merging Large Language Models and Battery Physics for User-Aware Electric Vehicle Driving Management
+AB: Electric vehicle (EV) battery performance is strongly coupled with driver behavior, yet human intent is typically expressed semantically rather
+    than numerically. This paper proposes a hybrid physics-artificial intelligence framework that integrates a Large Language Model (LLM) as a
+    high-level behavioral reasoning layer within a physics-driven supervisory architecture. The LLM interprets textual user intent and structured
+    battery feedback to generate bounded behavioral parameters that shape a discharge current envelope. A physics-driven safety filter then enforces
+    physical safety constraints before computing feasible velocity recommendations. Lyapunov-based analysis establishes bounded recommendation error
+    under battery model and prompt inaccuracies. Simulation results demonstrate adaptive, user-aware operation without compromising physical safety.
+    The proposed reasoning-enforcement architecture provides a principled pathway for safe AI integration in EV energy management.
+
+### R00090 | 2026 | Journal article | Lang: n/a
+TI: EnergyBridge: Benchmarking Household Energy Management, User Participation, and Grid Flexibility
+AB: Residential virtual power plants (VPPs) can provide grid flexibility by shifting household demand, but physical flexibility becomes dependable
+    capacity only when residents authorize a plan and the promised response is delivered. Existing benchmarks evaluate control but omit event-specific
+    authorization. We present EnergyBridge, a benchmark and agent framework connecting capacity reporting, household authorization, and physical
+    execution. It combines region-specific EnergyPlus environments for Tianjin and Berlin with an LLM-based User Participation Simulator. Against 584
+    persona- and event-matched human role-play judgments, the LLM-based User Participation Simulator preserves method ordering with a 5.3-point mean
+    absolute acceptance error. Across conventional controllers and agent baselines, EnergyBridge achieves the highest simulated authorization, lowest
+    event-window energy, and the most reliable capacity commitment in both regions. We release human data and codes for reproducible human-centered
+    grid-flexibility research: https://github.com/Agentic-Intelligence-Lab/EnergyBridge.
+
+### R00091 | 2026 | Journal article | Lang: n/a
+TI: Think Short, Defer Smart, Act, and Repeat: Calibrated Reasoning and Uncertainty-Aware Deferral for Edge LLM Agents
+AB: LLM agents following the ReAct paradigm are promising enablers of complex multi-step tasks, including multi-hop question answering, code
+    generation, and control of physical AI systems. Yet, when deployed at the edge, they must tightly manage their reasoning budget while remaining
+    reliable and deferring to a cloud-side model only when local uncertainty is too high to act safely. We propose Think Short, Defer Smart (TSDS), a
+    framework that synergistically integrates a lightweight convergence probe, which halts on-device reasoning once the intended action has
+    stabilized, with a perplexity-based deferral rule that escalates uncertain actions to a cloud-side model. Both mechanisms are jointly calibrated
+    on end-to-end episode trajectories via a multi-objective Learn-Then-Test (LTT) procedure, providing simultaneous finite-sample guarantees on
+    expected episode reward and cloud-call rate. We evaluate TSDS on four ReAct benchmarks spanning arithmetic reasoning (GSM8K), multi-hop question
+    answering (HotpotQA), code generation (MBPP), and multi-step embodied planning (household robot), and compare against thought-calibration-only and
+    calibrated-deferral-only standalone baselines. TSDS reduces per-episode thinking compute by 43%-65% over deferral-only baselines across HotpotQA,
+    MBPP, and the household robot task, while maintaining certified reward and cloud-call rate guarantees.
+
+### R00092 | 2026 | Journal article | Lang: n/a
+TI: Verifier-Based Reinforcement Fine-Tuning of Reasoning Models for Thermal Energy Storage Control
+AB: Buildings are expected to shift cooling loads in response to grid conditions. Thermal energy storage (TES) enables this shift, but scheduling it
+    well requires planning hours ahead under storage constraints. Model predictive control (MPC) and reinforcement learning are difficult to scale
+    across buildings. This study instead adapts an open-weight reasoning model through reinforcement learning with verifiable rewards (RLVR). We
+    convert exact offline dynamic-programming (DP) action values into dense rewards for every candidate action. Using only 30 training prompts,
+    reinforcement fine-tuning (RFT) trains the model as an upper-level scheduler that outputs hourly heat-pump setpoints from text-based states and
+    forecasts. Evaluation uses a deliberately simple office-building TES benchmark where exact DP is tractable and the optimum is known. RFT reduces
+    the open-weight model's emissions from 70.5 to 61.2 kg-CO2, close to the DP optimum of 60.8 kg-CO2. GPT-5 nearly matches DP and MPC without
+    task-specific training, while GPT-4o, a non-reasoning LLM, produces higher emissions than the no-storage baseline, so inference-time reasoning
+    appears important. Trace analysis shows that RFT mainly stabilizes observable planning patterns (candidate comparison, look-ahead, and feasibility
+    checking) rather than creating a new strategy. Robustness and generalization tests clarify what transfers: the reinforced planning patterns
+    persist under forecast errors and an unseen TES condition and carry over to a battery task, but its different structure limits the gains. DP-based
+    verifiable rewards offer a practical way to adapt open-weight reasoning models to building storage scheduling. These results motivate
+    higher-fidelity tests of whole-building control and scalable verifiers for city-scale energy management.
+
+### R00093 | 2026 | Journal article | Lang: n/a
+TI: ThermoLLM: LLM-Based Multi-Zone HVAC Control with a Spatiotemporal Context
+AB: Multi-zone HVAC control is a spatial decision problem in which indoor thermal evolution and control decisions depend not only on outdoor
+    conditions and internal heat gains but also on zone layout, physical adjacency, and delayed thermal interactions across the building. Recent
+    LLM-based HVAC controllers have shown that prompt-based control is feasible. However, these methods produce inconsistent results, are difficult to
+    generalize, and experience control-latency issues. Their performance also relies heavily on numeric reward values, textual feedback, or
+    unstructured retrieval, which limits their ability to make control decisions that account for zone dynamics and thermodynamics. No existing
+    LLM-based methods have used building semantics and dynamics, together with rolling history, as the centre of the LLM context while testing and
+    comparing HVAC control performance with existing LLM-based HVAC approaches. This paper presents ThermoLLM, an LLM-based HVAC control framework
+    tested in a multi-zone building environment. Spatiotemporal context grounding is a main component of ThermoLLM, which uses a spatial knowledge
+    graph derived from Brick-style building semantics and linked with recent observations from a rolling history. We evaluate ThermoLLM against
+    standard control methods and recent state-of-the-art baselines in a five-zone building environment across six climate-season scenarios. ThermoLLM
+    consistently achieves the best energy-comfort trade-offs and outperforms all evaluated baselines in the Technique for Order Preference by
+    Similarity to Ideal Solution (TOPSIS) rankings across all six scenarios.
+
+### R00094 | 2026 | Journal article | Lang: n/a
+TI: Hierarchical Control Framework Integrating LLMs with RL for Decarbonized HVAC Operation
+AB: Heating, ventilation, and air conditioning (HVAC) systems account for a substantial share of building energy consumption. Environmental
+    uncertainty and dynamic occupancy behavior bring challenges in decarbonized HVAC control. Reinforcement learning (RL) can optimize long-horizon
+    comfort-energy trade-offs but suffers from exponential action-space growth and inefficient exploration in multi-zone buildings. Large language
+    models (LLMs) can encode semantic context and operational knowledge, yet when used alone they lack reliable closed-loop numerical optimization and
+    may result in less reliable comfort-energy trade-offs. To address these limitations, we propose a hierarchical control framework in which a
+    fine-tuned LLM, trained on historical building operation data, generates state-dependent feasible action masks that prune the combinatorial joint
+    action space into operationally plausible subsets. A masked value-based RL agent then performs constrained optimization within this reduced space,
+    improving exploration efficiency and training stability. Evaluated in a high-fidelity simulator calibrated with real-world sensor and occupancy
+    data from a 7-zone office building, the proposed method achieves a mean PPD of 7.30%, corresponding to reductions of 39.1% relative to DQN, the
+    best vanilla RL baseline in comfort, and 53.1% relative to the best vanilla LLM baseline, while reducing daily HVAC energy use to 140.90~kWh,
+    lower than all vanilla RL baselines. The results suggest that LLM-guided action masking is a promising pathway toward efficient multi-zone HVAC
+    control.
+
+### R00095 | 2026 | Journal article | Lang: n/a
+TI: Evolving LLM-Derived Control Policies for Residential EV Charging and Vehicle-to-Grid Energy Optimization
+AB: This research presents a novel application of Evolutionary Computation to the domain of residential electric vehicle (EV) energy management. While
+    reinforcement learning (RL) achieves high performance in vehicle-to-grid (V2G) optimization, it typically produces opaque "black-box" neural
+    networks that are difficult for consumers and regulators to audit. Addressing this interpretability gap, we propose a program search framework
+    that leverages Large Language Models (LLMs) as intelligent mutation operators within an iterative prompt-evaluation-repair loop. Utilizing the
+    high-fidelity EV2Gym simulation environment as a fitness function, the system undergoes successive refinement cycles to synthesize executable
+    Python policies that balance profit maximization, user comfort, and physical safety constraints. We benchmark four prompting strategies:
+    Imitation, Reasoning, Hybrid and Runtime, evaluating their ability to discover adaptive control logic. Results demonstrate that the Hybrid
+    strategy produces concise, human-readable heuristics that achieve 118% of the baseline profit, effectively discovering complex behaviors like
+    anticipatory arbitrage and hysteresis without explicit programming. This work establishes LLM-driven Evolutionary Computation as a practical
+    approach for generating EV charging control policies that are transparent, inspectable, and suitable for real residential deployment.
+
+### R00096 | 2025 | Journal article | Lang: n/a
+TI: From User Preferences to Optimization Constraints Using Large Language Models
+AB: This work explores using Large Language Models (LLMs) to translate user preferences into energy optimization constraints for home appliances. We
+    describe a task where natural language user utterances are converted into formal constraints for smart appliances, within the broader context of a
+    renewable energy community (REC) and in the Italian scenario. We evaluate the effectiveness of various LLMs currently available for Italian in
+    translating these preferences resorting to classical zero-shot, one-shot, and few-shot learning settings, using a pilot dataset of Italian user
+    requests paired with corresponding formal constraint representation. Our contributions include establishing a baseline performance for this task,
+    publicly releasing the dataset and code for further research, and providing insights on observed best practices and limitations of LLMs in this
+    particular domain
+
+### R00097 | 2025 | Journal article | Lang: n/a
+TI: Adaptive Self-Improvement for Smarter Energy Systems using Agentic Policy Search
+AB: Controlling energy systems usually involves manually designed policies for decision-making, which can be complex and time-consuming to develop.
+    This process requires interdisciplinary collaboration among multiple domain experts, resulting in slow and inflexible adaptation to rapidly
+    changing environments. Large Language Models (LLMs) offer a promising paradigm shift by integrating extensive contextual knowledge with the
+    capability to generate structured, executable code. We present Agentic Policy Search (APS) -- a novel hierarchical optimization framework in which
+    LLMs act as autonomous agents that propose complete control logics, translate them into executable code, and iteratively improve them through
+    direct system feedback. We apply APS to a residential energy system with PV, battery, demand, and dynamic electricity prices. Within just seven
+    simulated days, the method yields a net profit of up to 6.20 EUR compared to the no-battery reference scenario (-10.70 EUR), nearly matching the
+    global optimum of a perfectly informed linear program. By combining LLM-driven policy search with the generation of human-interpretable control
+    logic, APS effectively bridges adaptability and traceability in energy management -- while also offering a transferable framework for agentic
+    optimization in other domains.
+
+### R00098 | 2024 | Journal article | Lang: n/a
+TI: Large Language Models for Power Scheduling: A User-Centric Approach
+AB: While traditional optimization and scheduling schemes are designed to meet fixed, predefined system requirements, future systems are moving toward
+    user-driven approaches and personalized services, aiming to achieve high quality-of-experience (QoE) and flexibility. This challenge is
+    particularly pronounced in wireless and digitalized energy networks, where users' requirements have largely not been taken into consideration due
+    to the lack of a common language between users and machines. The emergence of powerful large language models (LLMs) marks a radical departure from
+    traditional system-centric methods into more advanced user-centric approaches by providing a natural communication interface between users and
+    devices. In this paper, for the first time, we introduce a novel architecture for resource scheduling problems by constructing three LLM agents to
+    convert an arbitrary user's voice request (VRQ) into a resource allocation vector. Specifically, we design an LLM intent recognition agent to
+    translate the request into an optimization problem (OP), an LLM OP parameter identification agent, and an LLM OP solving agent. To evaluate system
+    performance, we construct a database of typical VRQs in the context of electric vehicle (EV) charging. As a proof of concept, we primarily use
+    Llama 3 8B. Through testing with different prompt engineering scenarios, the obtained results demonstrate the efficiency of the proposed
+    architecture. The conducted performance analysis allows key insights to be extracted. For instance, having a larger set of candidate OPs to model
+    the real-world problem might degrade the final performance because of a higher recognition/OP classification noise level. All results and codes
+    are open source.
+
+### R00099 | 2024 | Journal article | Lang: n/a
+TI: An LLM-Based Digital Twin for Optimizing Human-in-the Loop Systems
+AB: The increasing prevalence of Cyber-Physical Systems and the Internet of Things (CPS-IoT) applications and Foundation Models are enabling new
+    applications that leverage real-time control of the environment. For example, real-time control of Heating, Ventilation and Air-Conditioning
+    (HVAC) systems can reduce its usage when not needed for the comfort of human occupants, hence reducing energy consumption. Collecting real-time
+    feedback on human preferences in such human-in-the-loop (HITL) systems, however, is difficult in practice. We propose the use of large language
+    models (LLMs) to deal with the challenges of dynamic environments and difficult-to-obtain data in CPS optimization. In this paper, we present a
+    case study that employs LLM agents to mimic the behaviors and thermal preferences of various population groups (e.g. young families, the elderly)
+    in a shopping mall. The aggregated thermal preferences are integrated into an agent-in-the-loop based reinforcement learning algorithm AitL-RL,
+    which employs the LLM as a dynamic simulation of the physical environment to learn how to balance between energy savings and occupant comfort. Our
+    results show that LLMs are capable of simulating complex population movements within large open spaces. Besides, AitL-RL demonstrates superior
+    performance compared to the popular existing policy of set point control, suggesting that adaptive and personalized decision-making is critical
+    for efficient optimization in CPS-IoT applications. Through this case study, we demonstrate the potential of integrating advanced Foundation
+    Models like LLMs into CPS-IoT to enhance system adaptability and efficiency. The project's code can be found on our GitHub repository.
+
+=== END OF BATCH b002 (49 records) ===

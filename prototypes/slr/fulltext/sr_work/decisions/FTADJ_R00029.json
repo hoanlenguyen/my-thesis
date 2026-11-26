@@ -1,0 +1,12 @@
+{
+ "label": "FTADJ:R00029@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00029",
+   "d": "exclude",
+   "code": "E1",
+   "why": "Smart-home control (lights, speakers, TV) with no energy objective; models are hosted cloud APIs (Claude Opus, Gemini), so LQ3 rule does not apply.",
+   "where": "p1 Abstract; p4 Section 3.4 Testbed (hosted LLM APIs); p2-4 Section 3 scenes (no energy task)"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTB:R00091@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00091",
+   "d": "exclude",
+   "code": "E1",
+   "why": "Generic edge-LLM agent method tested on GSM8K, HotpotQA, MBPP and a simulated household-robot task; no energy or smart-home setting.",
+   "where": "p1 Abstract; p7-9 Sec 5 Experiments (5.2-5.4)"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00019@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00019",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM selects or weights RL controllers for residential heat pump; simulation reports reward, validity, latency, cost; local 7-8B models.",
+   "where": "p3-4 Sec. III-B and IV (role); p5-7 Sec. V, Tables III-V (evaluation)"
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "label": "FTA:R00037@23f24dde01c467414ab2135ba6f206bd39b540777726ed856087340cd3e312c2",
+ "decisions": [
+  {
+   "id": "R00037",
+   "d": "include",
+   "code": "INC",
+   "why": "LLM HEMS agent parses DR requests, calls MILP battery optimizer, executes approved schedules; latency and token benchmarks over six scenarios.",
+   "where": "p3 Sec III (Architecture, Battery Optimizer); p4-5 Sec IV (Results, Benchmarking, Table III)"
+  }
+ ]
+}
