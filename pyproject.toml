@@ -1,7 +1,7 @@
 [project]
 name = "hems"
 version = "0.1.0"
-description = "Hierarchical ReAct multi-agent pipeline for residential appliance scheduling (Master's thesis artifact)"
+description = "Small language models on a home energy gateway: interpreting household plans and configuring an optimiser (Master's thesis artifact; the prototypes in prototypes/ use this package)"
 requires-python = ">=3.12,<3.14"
 dependencies = [
   "langgraph>=1.0",

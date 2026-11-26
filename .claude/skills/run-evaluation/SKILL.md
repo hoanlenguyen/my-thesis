@@ -1,43 +1,50 @@
 ---
 name: run-evaluation
-description: Run pilot or full agent evaluations (hems run) across models, keep results comparable after code changes, and summarise gaps/feasibility/recoveries. Use when asked to run a pilot, the full evaluation, a model comparison, or to show evaluation results.
+description: Run the gateway thesis's pilots and evaluations (plan pilot, ReAct Household Assistant, Configurator, EMHASS gateway, edge benchmark, the held-out runner), keep results comparable after code changes, and summarise them. Use when asked to run a pilot, a model comparison, the registered evaluation, or to show results.
 ---
 
-# Run and report agent evaluations
+# Run and report the gateway evaluations
+
+All runs are exploratory until the registration commit. **No system may read a held-out message before the
+registration commit**, and the 22 test plans are never used for tuning (develop on `plans_dev.json`).
 
 ## Before running
 
-1. `uv run pytest -q` passes.
-2. Keys in `.env` (OpenAI, Groq, LangSmith with EU endpoint). Never print key values.
-3. For `gpt-oss-20b` (local): Ollama server up — `curl -s http://127.0.0.1:11434/api/version`; if not,
-   start `"/c/Users/Admin/AppData/Local/Programs/Ollama/ollama.exe" serve` in the background.
-4. **Comparability:** results are only comparable when produced by the same code. If agents, prompts,
-   tools, recovery or scoring changed since rows in the output file were written, archive first and
-   drop the affected rows (keep `milp`/`naive` reference rows — they depend only on the scenarios):
-   ```bash
-   cp results/pilot_real.jsonl results/pilot_real_vN.jsonl   # next unused N
-   uv run python -c "import json; rows=[json.loads(l) for l in open('results/pilot_real.jsonl')]; open('results/pilot_real.jsonl','w').writelines(json.dumps(r)+'\n' for r in rows if r['system'] in ('milp','naive'))"
-   ```
-   The runner skips keys already present, so stale rows would otherwise silently survive.
+1. `uv run pytest -q` passes (the prototypes import the `hems` package in `src/hems/`).
+2. `.env` has the keys (OpenAI for GPT-6 Luna); `LANGSMITH_TRACING=false`. Never print key values.
+3. Local models: the Ollama server is up (`curl -s http://127.0.0.1:11434/api/version`); if not, start
+   `"/c/Users/Admin/AppData/Local/Programs/Ollama/ollama.exe" serve` in the background.
+4. EMHASS runs (Sections 5.4.1, 5.4.2 and the registered run): Docker Desktop running and the container from
+   `prototypes/emhass_gateway/docker-compose.yml` up (EMHASS 0.18.4, pinned by digest, no Home Assistant).
+5. Data in `data/raw/` of the main checkout (`--raw-dir D:/Study/my-thesis/data/raw` from a worktree).
+6. **Comparability:** results are comparable only when produced by the same prompt, tools, checker and
+   optimiser. Before rerunning after such a change, move the old output to the folder's `out/archive/` (or
+   `archive/`) and say so; never mix rows of two versions in one file.
 
-## Running
+## Running (from the repository root)
 
-- Pilot (one scenario per type): `--ids A01 B03 C02 D01 E01 F04 --runs 1`.
-- Full runs are plans in `configs/*.json`, run with `uv run hems campaign run --plan <plan>` (resumable;
-  `campaign status` shows progress). The registered one is `configs/confirmation_q2.json` (96 scenarios,
-  `gpt-4o-mini`, `multi_rag_opt`); `configs/full_evaluation.json` is the earlier two-model, 48-scenario
-  plan. Local gpt-oss-20b runs take ~1–10 min each, so start them in the background and let the
-  resumable runner continue after any interruption.
-- Run long jobs with `run_in_background`, writing output to a log file in the scratchpad rather than
-  long pipes (a Git Bash fork failure killed an earlier batch), then grep the log for
-  `^\[|jobs|FAILED|quota`.
-- `gpt-oss-120b` (Groq) is pilot-only. If it is ever run, use a **separate** batch: on its daily quota
-  the runner stops the whole batch; rerun the same command after the quota resets to resume.
-- `FAILED (not recorded)` = provider/network error → rerun later. `INFEASIBLE` = recorded agent failure.
+| What | Command | Output |
+|---|---|---|
+| Plan pilot (Table 5.3) | `uv run python prototypes/plan_pilot/pilot.py --models gemma4-e4b gpt-6-luna --plans prototypes/plan_pilot/plans_dev.json --out <file>` | JSONL per model and plan |
+| Household Assistant, ReAct (Section 5.2) | `uv run python prototypes/react_gateway/agent.py --raw-dir <raw> --models gemma4-e4b --plans prototypes/plan_pilot/plans_dev.json --loop` | `react_gateway/out/results.jsonl`, app views in `out/app/<model>/` |
+| Its summary | `uv run python prototypes/react_gateway/summary.py --plans prototypes/plan_pilot/plans_dev.json` | decisions, recall, met |
+| Configurator (SQ2, Tables 5.4 and 5.6) | `uv run python prototypes/configurator_pilot/configurator.py --raw-dir <raw> --models gemma4-e4b gpt-6-luna --start 2016-10-03 --weeks 8 --tune-start 2016-06-06 --site DE_KN_residential4 --resume` | `configurator_pilot/out/` |
+| Household Assistant with EMHASS (Section 5.4.1) | `uv run python prototypes/emhass_gateway/emhass_gateway.py --raw-dir <raw> --model gemma4-e4b` | `emhass_gateway/out/results.jsonl` |
+| One-device test (Section 5.4.2) | `prototypes/emhass_gateway/run_onedevice.ps1`, then `onedevice_summary.py` | `emhass_gateway/out/onedevice/` |
+| Edge benchmark (SQ3) | `uv run python prototypes/edge_bench/bench.py --device laptop-gpu --model gemma4-e4b`; on a device, `prototypes/edge_kit/run_device.sh` | `edge_bench/out/` |
+| Registered run (after registration only) | `uv run python prototypes/heldout/run_heldout.py --raw-dir <raw> --plans <held-out plans> --emhass http://localhost:5001 --runs 3 --out <file>`, then `confirm_heldout.py --plans <plans> --runs <file>` | H1-H5 report |
+
+- The 22 test plans are `prototypes/plan_pilot/plans.json`; use them only for the reported test runs, never to
+  change a prompt, a tool or a rule.
+- Run long jobs with `run_in_background`, writing output to a log in the scratchpad, and resume with the same
+  command (`--resume` where the runner has it). On CPU, Ollama needs `--num-thread` equal to its cores.
+- A provider or network error is not a result: rerun it, never record it as a failed answer.
 
 ## Reporting
 
-Summarise per scenario and model: gap vs MILP `(cost - milp)/milp`, feasible, `recoveries`,
-latency, tokens, and `agent_errors`/`violations` for failures. Distinguish model behaviour
-(no structured output, step limit, dropped appliance) from infrastructure (quota, DNS). Compare with
-earlier archived runs only when the code was the same.
+Per model and plan: constraint precision and recall against the answer key, decision right (commit or ask),
+requirements met in the closed loop, latency (mean and p95), tokens and USD; for the Configurator, saving
+against the default MPC in EUR and the share of the rules-to-perfect-foresight gap closed. Separate model
+behaviour (wrong reading, asks when it should commit, invalid output) from infrastructure (Ollama, EMHASS,
+network). Compare with archived runs only when the prompt, tools and optimiser were the same. Numbers that go into
+`gateway_body.tex` must match the output files; then rebuild and compile with the `compile-thesis` skill.

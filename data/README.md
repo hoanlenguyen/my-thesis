@@ -1,6 +1,25 @@
 # Data
 
-`raw/` is gitignored — datasets are downloaded locally. Committed scenario sets:
+`raw/` is gitignored: datasets are downloaded locally, into `data/raw/` of the main checkout (worktrees pass
+`--raw-dir D:/Study/my-thesis/data/raw`).
+
+## Gateway thesis (`prototypes/`, Table 3.3 of the thesis)
+
+| File or folder in `raw/` | Source | Used for |
+|---|---|---|
+| `opsd_household/household_data_15min_singleindex.csv` | Open Power System Data, Household data 2020-04-15 (<https://data.open-power-system-data.org/household_data/2020-04-15/>, CC BY 4.0) | the main house `DE_KN_residential4` (PV, grid, heat pump, EV, dishwasher, washing machine) and `residential3`/`residential6` for SQ2 |
+| `dwd_konstanz/` | DWD station 02712 Konstanz, hourly air temperature and global radiation (DWD Open Data) | weather classes and weather-driven forecasts |
+| `prices_de_energycharts_2015_2019.csv` | German day-ahead prices (Fraunhofer ISE, Energy-Charts) | import and export price |
+| `when2heat_de_2015_2018.csv` | German COP columns of When2Heat 2023-07-27 (<https://data.open-power-system-data.org/when2heat/2023-07-27/>, CC BY 4.0) | heat pump COP by hour |
+| `ev_norway/Dataset1_charging_reports.csv` | Norwegian residential EV charging sessions (<https://zenodo.org/records/12730566>, CC BY 4.0; Sørensen et al., 2024) | optional: departure times |
+| `slr_fulltext/`, `slr_fulltext_txt/` | full texts of the literature review and their extracted text | full-text screening (`prototypes/slr/fulltext/`) |
+
+The 2016 household price components (BDEW) and the EEG feed-in tariff are constants in the code. The pilot plans
+are committed in `prototypes/plan_pilot/` and the held-out scenario cards in `prototypes/heldout/`.
+
+## First thesis (the `hems` benchmark; text on the `old-thesis` branch)
+
+Committed scenario sets:
 
 | Directory | Scenarios | Prices | Notes |
 |---|---|---|---|

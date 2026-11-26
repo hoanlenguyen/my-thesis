@@ -29,3 +29,6 @@ data/raw/*
 
 # LangGraph Studio dev server state (langgraph dev)
 .langgraph_api/
+
+# Presentation videos (large; the slides and script are committed)
+presentation/*.mp4
