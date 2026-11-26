@@ -10,7 +10,9 @@ earlier `new-thesis/home-gateway` branch points to the same history); the first 
 
 - **Commit or push only when the author asks.** Otherwise make and verify changes, then list the changed files.
 - **All prototype results are exploratory**; the answer keys are drafts until the author checks them.
-- **No system may read a held-out message before the registration commit.** Never tune on the 22 test plans.
+- **No held-out plans (option D, author's decision 26 Nov 2026):** SQ1 (H1-H3) is reported descriptively on the 22
+  test and 14 development plans and stays exploratory; only H4 (Configurator, held-out weeks) and H5 (hardware) are
+  registered, before their run. Never tune on the 22 test plans; develop on `plans_dev.json`.
 - Report failures and surprising numbers as they are.
 
 ## Layout
@@ -108,7 +110,8 @@ readable in black and white. After figure or design changes, update the plan pag
   without/with the model, `edge_bench/bench.py`, `mpc_time.py`, the one-device test; phases in `events.jsonl`;
   `power_log.py` (Shelly Gen1/Gen2) or `manual.json`; `edge_energy.py` -> idle W, Wh per plan and the
   `year_balance.py` command. Waits for the Pi 5, the mini PC and a meter (last step).
-- `heldout/` (draft, not registered): 120 scenario cards (`make_scenarios.py`, seed 2027; `residential4` 2016 days not
+- `heldout/` (draft, not registered; since 26 Nov 2026 the scenario cards, writer sheets, `collect.py` and the keying
+  guide are unused, as no held-out plans are written): 120 scenario cards (`make_scenarios.py`, seed 2027; `residential4` 2016 days not
   used by the pilots or the tuning, season x weather, 40 simple / 40 change / 20 ambiguous / 20 conflict, writers
   W1-W4), writer sheets, `collect.py`, `keying_guide.md`, `power.py` (H1/H3 margin 0.10; H2 p0 0.90; plans on
   `residential4` only), `config_heldout.json` (H4 margin 0.20 EUR/week vs auto-tuner and LLM, H5 p95 <= 15 min;
@@ -119,7 +122,9 @@ readable in black and white. After figure or design changes, update the plan pag
   EMHASS pinned by digest in `emhass_gateway/docker-compose.yml`. Year simulation: `configurator.py` over 49 weeks from
   2016-01-18 + `heldout/year_balance.py`; runs only after registration; Configurator weeks and year use the thesis MPC
   (PuLP/CBC), not EMHASS.
-- **Next steps** (plan page section 7): register, held-out run, finish the SLR, text pass, edge boards last.
+- **Next steps** (plan page section 7): register H4 and H5, the registered run (Configurator weeks, three repeats of
+  the plan runs, year simulation), finish the SLR, text pass, edge board last (waiting for a Raspberry Pi 5 or a mini
+  PC; supervisors agreed the scope on 26 Nov 2026).
 
 ## Literature review (`prototypes/slr/`, Chapter 2)
 

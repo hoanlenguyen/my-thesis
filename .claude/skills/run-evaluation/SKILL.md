@@ -5,8 +5,9 @@ description: Run the gateway thesis's pilots and evaluations (plan pilot, ReAct 
 
 # Run and report the gateway evaluations
 
-All runs are exploratory until the registration commit. **No system may read a held-out message before the
-registration commit**, and the 22 test plans are never used for tuning (develop on `plans_dev.json`).
+No held-out plans are written (author's decision, 26 Nov 2026): SQ1 runs on the 22 test and 14 development plans
+and stays exploratory. H4 (Configurator, held-out weeks) and H5 (hardware) are registered before their run. The 22
+test plans are never used for tuning (develop on `plans_dev.json`).
 
 ## Before running
 
@@ -32,7 +33,8 @@ registration commit**, and the 22 test plans are never used for tuning (develop 
 | Household Assistant with EMHASS (Section 5.4.1) | `uv run python prototypes/emhass_gateway/emhass_gateway.py --raw-dir <raw> --model gemma4-e4b` | `emhass_gateway/out/results.jsonl` |
 | One-device test (Section 5.4.2) | `prototypes/emhass_gateway/run_onedevice.ps1`, then `onedevice_summary.py` | `emhass_gateway/out/onedevice/` |
 | Edge benchmark (SQ3) | `uv run python prototypes/edge_bench/bench.py --device laptop-gpu --model gemma4-e4b`; on a device, `prototypes/edge_kit/run_device.sh` | `edge_bench/out/` |
-| Registered run (after registration only) | `uv run python prototypes/heldout/run_heldout.py --raw-dir <raw> --plans <held-out plans> --emhass http://localhost:5001 --runs 3 --out <file>`, then `confirm_heldout.py --plans <plans> --runs <file>` | H1-H5 report |
+| Plan runs, three repeats (SQ1, descriptive) | `uv run python prototypes/heldout/run_heldout.py --raw-dir <raw> --plans prototypes/plan_pilot/plans.json --emhass http://localhost:5001 --runs 3 --out <file>` | four set-ups x models |
+| Registered run (after registration only) | Configurator held-out weeks and the year simulation; `confirm_heldout.py` tests H4 and H5 | H4, H5 report |
 
 - The 22 test plans are `prototypes/plan_pilot/plans.json`; use them only for the reported test runs, never to
   change a prompt, a tool or a rule.

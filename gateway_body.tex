@@ -71,8 +71,9 @@ seconds on a GPU and considerably longer on a laptop CPU.
 
 The results suggest three design principles: narrow tasks for the
 model, deterministic checks around it, and local inference first. They
-rest mostly on one house and the author's plans; the registered evaluation and
-tests on a Raspberry Pi~5 and a mini PC are in process.
+rest mostly on one house and the author's plans, so the plan results are
+exploratory; the registered evaluation of the Configurator and the
+tests on a Raspberry Pi~5 or a mini PC are in process.
 
 \clearpage
 {\sffamily\itshape Keywords}
@@ -339,9 +340,10 @@ and an exploratory comparison of one agent with the four-agent design
 tests whether narrow tasks help a small model more than a large one.
 
 The thesis does not measure usability with users. Its claim is that the
-HEMS works without expert configuration from plans written by people
-other than the author; a usability study is left for future research
-(Section~\ref{sec:future}).
+HEMS works without expert configuration from the household's own plans;
+the plans used here are written by the author, so a test on plans
+written by households and a usability study are left for future
+research (Section~\ref{sec:future}).
 
 \section{Research approach, scope and structure}
 \label{sec:approach}
@@ -352,8 +354,9 @@ The thesis combines a systematic literature review (SLR)
 about language models in home energy management and forms the rigor
 cycle of the DSR \parencite{hevner2007}; the DSR designs, builds,
 demonstrates and evaluates the HEMS, with design
-iterations on an exploratory set and a registered confirmation on a
-held-out set (Chapter~\ref{ch:method}). The evaluation is limited to
+iterations on exploratory plans and a registered confirmation of the
+Configurator on held-out weeks and of the hardware
+(Chapter~\ref{ch:method}). The evaluation is limited to
 households: one home with PV, a heat pump and an EV charger is
 simulated with measured data, real weather and real prices, and a
 simulated home battery (Section~\ref{sec:data}). The small models run on a laptop with an
@@ -382,7 +385,8 @@ Chapter~\ref{ch:results} reports the exploratory results: the design
 iterations that led to the present design, then the Household
 Assistant as a ReAct agent on the gateway (SQ1), the Configurator
 (SQ2) and the speed on local hardware (SQ3);
-the registered evaluation is in process. Chapter~\ref{ch:discussion}
+the registered evaluation of the Configurator and the hardware is in
+process. Chapter~\ref{ch:discussion}
 answers the research questions, discusses transferability to industry,
 the limitations and future research, and Chapter~\ref{ch:conclusions}
 concludes.
@@ -712,8 +716,8 @@ Phase & Method & Output & Chapter & Status \\
 \midrule
 1 Literature & SLR & answers to LQ1 to LQ3, research gap & 2 & in process \\
 2 Exploration & DSR, Cycle 1 & design iterations of the Household Assistant; pilots of plan interpretation, optimiser configuration and speed on local hardware & 5.1 to 5.4 & done \\
-3 Design & DSR, Cycle 2 & Household Assistant and Configurator with tools, checker and control layer, frozen for the held-out run; exploratory set; Monitor, Explainer, model layer and user app as designed & 4 & in process \\
-4 Confirmation & DSR, Cycle 3 & registered evaluation, year simulation & 5.5 & in process \\
+3 Design & DSR, Cycle 2 & Household Assistant and Configurator with tools, checker and control layer, frozen before the registered run; Monitor, Explainer, model layer and user app as designed & 4 & in process \\
+4 Confirmation & DSR, Cycle 3 & registered evaluation of the Configurator and the hardware, year simulation & 5.5 & in process \\
 5 Synthesis & both & answers to RQ and SQ1 to SQ3 (provisional, from the pilots), design principles, limitations & 6, 7 & in process \\
 \bottomrule
 \end{tabularx}
@@ -847,7 +851,7 @@ Problem identification & optimisers in home energy management need expert config
 Objectives of a solution & requirements R1 to R6; research question and hypotheses & 1, 3, 4 \\
 Design and development & Household Assistant (a ReAct agent) and Configurator on a local small model, their tools, rules in code, checker, backtest gate and control layer; Monitor, Explainer, model layer and user app as designed & 4 \\
 Demonstration & simulated house-days with measured data, weather and prices, models run on local hardware & 5 \\
-Evaluation & pilots, then a registered evaluation on held-out plans & 5 \\
+Evaluation & pilots on the author's plans; a registered evaluation of the Configurator on held-out weeks and of the hardware & 5 \\
 Communication & this thesis, code and data & all \\
 \bottomrule
 \end{tabularx}
@@ -866,18 +870,20 @@ the schedule and into the two tasks of the title; the last one and the
 Configurator pilot gave the provisional answers of
 Section~\ref{sec:answers}.
 \item \textit{Cycle 2 (in process):} the Household Assistant and the
-Configurator are frozen for the held-out run after a last check on an
-exploratory set of house-days, and the household devices are measured.
-\item \textit{Cycle 3 (in process):} a registered evaluation on a
-held-out set and a year simulation.
+Configurator are frozen before the registered run after a last check on
+the development plans, and the household devices are measured.
+\item \textit{Cycle 3 (in process):} a registered evaluation of the
+Configurator on held-out weeks and of the household hardware, and a
+year simulation.
 \end{enumerate}
 
 The evaluation strategy follows the framework of
 \textcite{venable2016}. Cycles 1 and 2 are formative and artificial:
-they test the design on simulated house-days to improve it. Cycle 3 is
-summative and still artificial: the hypotheses are registered before the
-run, and the held-out plans are written by other people and keyed in
-advance, so the design cannot be tuned to them. A naturalistic
+they test the design on simulated house-days to improve it. Plan
+interpretation stays formative: its results come from plans the author
+wrote, so they are exploratory. Cycle 3 is summative and still
+artificial for the Configurator and the hardware: their hypotheses are
+registered before the run, on weeks the design was not tuned on. A naturalistic
 evaluation in real homes is left for future research
 (Section~\ref{sec:future}).
 
@@ -911,7 +917,7 @@ prices and heat pump efficiency come from the same place and dates.
 \toprule
 Data & Content and source & Size & Use \\
 \midrule
-OPSD Household data & 15-minute PV, grid, heat pump, EV and appliance data of homes in Konstanz, 2014--2019 \parencite{opsd2020} & 11 sites, 6 of them homes; 153,810 rows; main house 81,435 rows (October 2015 to February 2018) & main house; more houses for SQ2 \\DWD station 02712 & hourly air temperature and global radiation, Konstanz \parencite{dwd} & about 482,000 hourly temperature values (1971 to 2025) and 436,000 radiation values (1977 to 2026) & weather classes, forecasts \\Day-ahead prices & German spot prices, 2015--2019 \parencite{energycharts} & 32,134 hourly prices (October 2015 to May 2019) & import and export price \\BDEW price analysis & 2016 household price components, 28.80\,ct/kWh \parencite{bdew2023} & one set of components & dynamic tariff \\EEG feed-in tariff & 12.31\,ct/kWh for rooftop PV up to 10\,kWp \parencite{bnetzaEEG} & one tariff & export price \\When2Heat & heat pump COP by hour \parencite{ruhnau2019,when2heat2023} & 21,165 hourly values for Germany (October 2015 to February 2018) & heat demand from heat pump electricity \\Norwegian EV sessions & residential charging sessions \parencite{sorensen2024} & 35,377 sessions & optional: departure times \\Plan benchmark & plain-language plans with answer keys (pilot set in Appendix~\ref{app:plans}) & pilot: 22 test and 14 development plans; held out: 120 plans & SQ1 ground truth \\
+OPSD Household data & 15-minute PV, grid, heat pump, EV and appliance data of homes in Konstanz, 2014--2019 \parencite{opsd2020} & 11 sites, 6 of them homes; 153,810 rows; main house 81,435 rows (October 2015 to February 2018) & main house; more houses for SQ2 \\DWD station 02712 & hourly air temperature and global radiation, Konstanz \parencite{dwd} & about 482,000 hourly temperature values (1971 to 2025) and 436,000 radiation values (1977 to 2026) & weather classes, forecasts \\Day-ahead prices & German spot prices, 2015--2019 \parencite{energycharts} & 32,134 hourly prices (October 2015 to May 2019) & import and export price \\BDEW price analysis & 2016 household price components, 28.80\,ct/kWh \parencite{bdew2023} & one set of components & dynamic tariff \\EEG feed-in tariff & 12.31\,ct/kWh for rooftop PV up to 10\,kWp \parencite{bnetzaEEG} & one tariff & export price \\When2Heat & heat pump COP by hour \parencite{ruhnau2019,when2heat2023} & 21,165 hourly values for Germany (October 2015 to February 2018) & heat demand from heat pump electricity \\Norwegian EV sessions & residential charging sessions \parencite{sorensen2024} & 35,377 sessions & optional: departure times \\Plan benchmark & plain-language plans with answer keys (pilot set in Appendix~\ref{app:plans}) & 22 test and 14 development plans & SQ1 ground truth \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -934,12 +940,12 @@ the configurator sets the MPC from past weeks only, and the week is then
 scored. Factors are the plan type (structured, plain language,
 plain language with a change, ambiguous, conflicting or infeasible),
 weather, price pattern and load, and for configuring also the house.
-Plans for the held-out set are written by three to five people other
-than the author, keyed before any run and checked by a second person.
-They are bound to 120 new days of the main house, spread over the
-seasons and the weather; it is the only house in the data with a heat
-pump and an EV, so only there can every kind of plan be run on its
-real day.
+The plans are the 22 test plans and 14 development plans of the pilots
+(Appendix~\ref{app:plans}), written by the author and bound to days of
+the main house; it is the only house in the data with a heat pump and
+an EV, so only there can every kind of plan be run on its real day. No
+plans are held out: plan interpretation is evaluated on these plans,
+and the held-out part of the evaluation is the Configurator's weeks.
 
 \textit{Systems.} All systems use the same house-days, forecasts, plans
 and control layer: the recorded operation; rules; EMHASS with its
@@ -968,14 +974,13 @@ token (greedy decoding) instead of sampling one, so the answers depend
 on the hardware more than on chance: a CPU run and a GPU run of the same model gave decision
 accuracies of 0.64 and 0.82. Each run is therefore repeated three times
 on each device, and the spread of the repeats is reported separately
-from the difference between devices. The pilots and the registered
-evaluation solve the same formulation, the pilots with PuLP and CBC. In
-the registered evaluation the Household Assistant's plans and their
-days in closed loop are solved with EMHASS (Section~\ref{sec:mpc}),
-while the Configurator's weeks and the year simulation keep PuLP and
-CBC, because they simulate thousands of days. All models use one prompt, developed on separate development
+from the difference between devices. The pilots solve the formulation
+with PuLP and CBC; the Household Assistant's final runs and their days
+in closed loop are solved with EMHASS (Section~\ref{sec:mpc}), while
+the Configurator's weeks and the year simulation keep PuLP and CBC,
+because they simulate thousands of days. All models use one prompt, developed on separate development
 plans (Section~\ref{sec:reactpilot}); the prompt, the tools and the
-rules in code are frozen before the held-out run. A one-agent variant is compared
+rules in code are frozen before the registered run. A one-agent variant is compared
 with the four agents if the small models allow it.
 
 \textit{Metrics.} Constraint precision and recall against the answer
@@ -990,8 +995,9 @@ fallback (SQ1); tokens, cost, mean and 95th-percentile latency, energy
 per event (measured at the wall on each device, above its idle power)
 and the share of household data that leaves the house (SQ3).
 
-\textit{Hypotheses (draft; thresholds fixed and registered before the
-held-out run).} The registered evaluation tests five hypotheses:
+\textit{Hypotheses (draft).} H1 to H3 state what SQ1 expects; as no
+plans are held out, they are reported descriptively on the pilot plans,
+not tested. H4 and H5 are registered before their run and tested:
 
 \begin{description}[leftmargin=1.4cm, style=sameline, font=\normalfont\bfseries]
 \item[H1] \textit{(SQ1)} The best small model is within 0.10 of the
@@ -1011,17 +1017,11 @@ handled through the fallback, and the yearly saving exceeds the energy
 and cost of inference.
 \end{description}
 
-The analysis uses cluster bootstrap
-intervals over plans, exact binomial and paired Wilcoxon or McNemar
-tests, and Holm correction within each sub-question. The margin of
-0.10 in H1 and H3 follows from a power calculation: the two models
-disagreed on 4 of the 36 pilot decisions, and at that rate a margin of
-0.05 would need about 390 held-out plans for a power of 0.8, while 0.10
-needs about 100, within the 120 plans planned. The null rate of
-90\,\% in H2 has the same reason: of the 120 plans, at most 80 are
-feasible plans to commit, and against 95\,\% the test would pass only
-if all 80 were met, while against 90\,\% 80 house-days give a power of
-0.78 if the true rate is 98\,\%. The margin in H4 is less than half of
+H1 to H3 are reported with bootstrap intervals over the 22 test plans
+and no test; with so few plans, a difference of 0.10 between two models
+is within the run-to-run spread, so these comparisons show direction,
+not equivalence. H4 and H5 use paired Wilcoxon tests and bootstrap
+intervals over weeks, with Holm correction within each sub-question. The margin in H4 is less than half of
 what the expert setting saved over the default MPC on the main house in
 the pilots (about 0.45\,EUR per week), and gives a power of 0.94 over
 the 31 held-out weeks if the two settings are truly equal. The limit in
@@ -1029,8 +1029,8 @@ H5 means that every plan the local model keeps is committed at least
 15 minutes before it is due, since plans due sooner than 30 minutes go
 to the fallback. The provisional
 answers of the pilots (Section~\ref{sec:answers}) inform where the
-thresholds are set, and the thresholds are registered before the
-held-out plans are run.
+thresholds are set, and the thresholds of H4 and H5 are registered
+before their run.
 
 With the model's work in a queue (Section~\ref{sec:architecture}), what
 the household notices is not the time per plan but the time from its
@@ -1055,7 +1055,8 @@ rest. In the first Scopus search, the term \textit{load*} near
 off-topic records that screening removes but does not lose relevant ones.
 
 \textit{Design and evaluation.} The main threats and their handling are
-author-written plans (other writers, second-person check), tuning on
+author-written plans (the plan results are reported as exploratory, and
+the prompt was developed on separate development plans), tuning on
 evaluation days (tuning only on exploratory weeks), a harness that
 passes H2 by construction (scoring against the answer key, with grid
 and battery limits reported separately as safety checks), mixed data
@@ -1071,8 +1072,8 @@ every run is repeated and reported with its spread.
 reported with every result, and the cloud model, which has no dated
 snapshot, is identified by its name and the date of each run. The
 checker's rules were written from the HEMS's constraints but tried on
-the pilot plans; the held-out plans test them on cases they were not
-developed on. Some conflicts cannot be expressed in the output schema,
+the pilot plans and have not been tested on plans they were not
+developed on, so their benefit is exploratory. Some conflicts cannot be expressed in the output schema,
 which bounds the accuracy any model can reach; such plans are reported
 separately. In closed loop, plans on which the HEMS asks the household
 are scored on the decision only, because the household's answer is
@@ -1220,7 +1221,7 @@ Assistant's prompt has about 620 words and the Configurator's about
 150. The Monitor and the Explainer are designed, not built
 (Section~\ref{sec:envisioned}), so their role statements are written
 for the design and have not been run. The prompts are frozen before the
-held-out run.
+registered run.
 
 \begin{table}[htbp]
 \caption{Role statement at the start of each agent's system prompt.}
@@ -2225,8 +2226,8 @@ on the development plans, but two came from errors seen on the test
 plans: the conflict of a charge that may only start after the car must
 be ready (X3), and the rule that a house too warm is a problem only
 while the heat pump heats (S5). The 22 plans have also been inspected
-in detail several times, so they are no longer a clean test; the
-held-out plans written by other people are (Section~\ref{sec:registered}).
+in detail several times, so they are no longer a clean test, and the
+results on them are exploratory.
 The everyday wording and the changed keys also mean that these results
 cannot be compared directly with Table~\ref{tab:structpilot}.
 
@@ -2503,34 +2504,31 @@ show.
 \label{sec:registered}
 
 The registered evaluation tests the provisional answers of the pilots
-on data the design was not developed on. Its hypotheses (H1 to H5,
-Section~\ref{sec:evaldesign}) and their thresholds are registered after
-the exploratory phase and before any held-out run. The held-out plans
-are written by three to five people other than the author, keyed before
-any run and checked by a second person; they are bound to new days of
-the main house, the only house in the data with a heat pump and an EV,
-and are run three times per model, in the four set-ups of the model
-layer. Unlike the pilots, which solved the formulation with PuLP and
-CBC, the Household Assistant plans through EMHASS, the optimiser the
-gateway runs (Section~\ref{sec:mpc}), and its committed plans are
-executed in closed loop with EMHASS replanning every hour, so the three
-differences between the two solvers (Section~\ref{sec:mpc}) are part
-of what is tested. The Configurator's weeks and the year simulation
+where held-out data exist: the Configurator's weeks (H4) and the
+household hardware (H5). Their hypotheses and thresholds
+(Section~\ref{sec:evaldesign}) are registered after the exploratory
+phase and before the run. Plan interpretation (SQ1, H1 to H3) has no
+held-out plans; it is reported on the 22 test plans and 14 development
+plans of Sections~\ref{sec:planpilot} to~\ref{sec:emhassdemo}, three
+runs per model, in the four set-ups of the model layer, and its results
+stay exploratory.
+
+The Configurator is evaluated on held-out weeks of three houses against
+the auto-tuner and the cloud model. These weeks and the year simulation
 keep PuLP and CBC: the auto-tuner and the backtests try ten settings on
 every day, so each run simulates thousands of days, which would take
-days of computing through EMHASS's interface. The closed-loop days of
-the plans show how far the two solvers differ; on three development
-plans, EMHASS's days cost 0.3 to 0.6\,EUR more, from the three
-differences of Section~\ref{sec:mpc}, and met the requirements the
-same way. The
-Configurator is evaluated on held-out weeks against the
-auto-tuner and the cloud model, and the year simulation weighs the
-saving against the time, energy and cost of local inference, measured
-on the Raspberry Pi~5 and the mini PC.
+days of computing through EMHASS's interface. The Household Assistant's
+runs plan through EMHASS, the optimiser the gateway runs
+(Section~\ref{sec:mpc}); on three development plans, EMHASS's days cost
+0.3 to 0.6\,EUR more than the same plans with PuLP and CBC, from the
+three differences of Section~\ref{sec:mpc}, and met the requirements
+the same way. The year simulation weighs the saving against the time,
+energy and cost of local inference, measured on a Raspberry Pi~5 or a
+mini PC.
 
-The plans, the answer keys and the measurements are in process. Until
-they are done, the answers to the research questions in
-Section~\ref{sec:answers} remain provisional.
+The registered runs and the measurements on the household device are
+in process. Until they are done, the answers to the research questions
+in Section~\ref{sec:answers} remain provisional.
 
 % ════════════════════════════════════════════════════════════════════════════
 \chapter{Discussion}
@@ -2543,8 +2541,8 @@ The registered evaluation is in process, so the answers below rest on
 the exploratory pilots of Chapter~\ref{ch:results}: one house (three
 for the Configurator), 22 plans written by the author and one run per
 configuration. They are
-provisional answers that the registered evaluation tests (H1 to H5),
-not findings.
+provisional answers, not findings: the registered evaluation tests
+those of SQ2 and SQ3 (H4, H5), while those of SQ1 stay exploratory.
 
 \textit{SQ1, interpreting household plans.} In the present design the
 Household Assistant is a ReAct agent: the model reads a message in
@@ -2566,8 +2564,9 @@ board, decided 17 correctly, while Ministral 3 8B never called the
 planning tool and asked on every plan, and Nemotron 3 Nano failed on a
 third of the plans despite its training for tool calls. The rules in
 code were partly shaped by the test plans themselves, and one plan is
-4.5 percentage points of the 22, so the held-out plans decide whether
-the gap of two plans holds.
+4.5 percentage points of the 22, so a gap of two plans is not a firm
+difference; plans written by households would settle it
+(Section~\ref{sec:future}).
 
 The earlier iterations show where a small model stands against the
 cloud model and what the checks add (Section~\ref{sec:planpilot},
@@ -2660,9 +2659,10 @@ cloud model writes the commands; here the commands come from the
 optimiser, and the cloud model is needed only when the local answer
 fails. Under these principles, the small model came close to the cloud
 LLM in reading plans, and in configuring the MPC in one of the two
-seasons tested; whether it does so on plans written by
-other people, and fast enough on household hardware, is the question of
-the registered evaluation.
+seasons tested. Whether it configures the MPC as well on held-out weeks
+and runs fast enough on household hardware is the question of the
+registered evaluation; whether it reads plans written by households as
+well is left for future research.
 
 \section{Transferability to industrial energy management}
 \label{sec:industry}
@@ -2725,9 +2725,12 @@ household's answer to a question is unknown. Of the design, only the
 Household Assistant and the Configurator are built; the Monitor, the
 Explainer, the running model layer with the cloud fallback and the user
 app are designed but not evaluated (Section~\ref{sec:envisioned}).
-The registered evaluation addresses these points with held-out plans
-written by other people for new days and three repeats. Reading plans
-is still tested on one house, because the other houses in the data have
+All plans were written by the author, and the prompt and some rules in
+code were developed on them, so the results on reading plans are
+exploratory; no plans written by other people were held out. The
+registered evaluation adds three repeats per run, held-out weeks for
+the Configurator and measurements on household hardware. Reading plans
+is also tested on one house only, because the other houses in the data have
 no heat pump or EV, so comfort, away and car plans could not be run
 there; only the Configurator is tested on three houses. The evaluation
 also remains a simulation: the battery is simulated, the prices are a counterfactual
@@ -2750,11 +2753,13 @@ AI-assisted and is being checked by the author.
 Five directions follow from the design and its limits:
 
 \begin{enumerate}
-\item \textit{Households in the loop.} A field study in which
-households write their own plans, by text or voice in the user app
-(Section~\ref{sec:userapp}), would test the claim that the HEMS works
-without expert configuration, and would measure usability, which this
-thesis leaves out.
+\item \textit{Households in the loop.} The plans in this thesis were
+written by the author. Plans written by other people and held out from
+the design would give a confirmatory test of plan interpretation (SQ1),
+and a field study in which households write their own plans, by text or
+voice in the user app (Section~\ref{sec:userapp}), would test the claim
+that the HEMS works without expert configuration and measure usability,
+which this thesis leaves out.
 \item \textit{Smaller and faster models.} The 4-billion-parameter model
 with reasoning matched the cloud model but needed minutes, and the
 3-billion-parameter model failed validation on most plans; fine-tuning or distilling a small model on the
@@ -2826,9 +2831,10 @@ contributes the artifact itself, a benchmark of household plans with
 answer keys, and a protocol for comparing small and large models on
 both tasks. The answers are provisional: the pilots used mostly one house,
 plans written by the author and one run per configuration. The
-registered evaluation tests them on plans written by other people for
-new days, the Configurator on three houses, and two household devices, a Raspberry Pi~5 and a mini PC; until
-then, the thesis shows that small language models on local hardware are
+registered evaluation tests the Configurator on held-out weeks of three
+houses and the speed on a household device, a Raspberry Pi~5 or a mini
+PC; reading plans stays exploratory until it is tested on plans written
+by households. Until then, the thesis shows that small language models on local hardware are
 a realistic option for the two tasks of its title, not that they are
 sufficient.
 
@@ -3241,7 +3247,7 @@ schemas are Pydantic models, and the model sees each field with the
 description given here, so the descriptions are part of the prompt and
 are quoted verbatim, except that the time format, which every time
 field states, is given once here: times are written as
-\texttt{'YYYY-MM-DD HH:MM'}. The schemas are frozen with the prompts before the held-out run. The earlier one-call reader of the
+\texttt{'YYYY-MM-DD HH:MM'}. The schemas are frozen with the prompts before the registered run. The earlier one-call reader of the
 plan pilot (Section~\ref{sec:planpilot}) answered with one structure,
 \texttt{HouseholdPlan}, holding the same four kinds of item, the
 questions and the decision to commit.

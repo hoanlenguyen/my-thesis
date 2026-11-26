@@ -60,7 +60,7 @@ OPSD household data, DWD weather, day-ahead prices, When2Heat, the EV sessions).
 | `configurator_pilot/` | Configurator vs auto-tuner, default and expert-tuned MPC over weekly windows (SQ2) |
 | `emhass_gateway/` | the Household Assistant with EMHASS; the one-device test (EMHASS, harness and model on shared cores) |
 | `edge_bench/`, `edge_kit/` | speed on local hardware; scripts for the Raspberry Pi 5, the mini PC and a power meter (SQ3) |
-| `heldout/` | materials for the registered run: 120 scenario cards, keying guide, power analysis, `run_heldout.py`, `confirm_heldout.py` |
+| `heldout/` | runner and confirm script of the registered run (`run_heldout.py`, `confirm_heldout.py`); the scenario cards and writer sheets are unused, as no held-out plans are written |
 | `slr/` | literature search, title/abstract and full-text screening (`fulltext/`) |
 | `designed_agents/` | prompts of the Monitor and the Explainer |
 | `hipe/`, `opsd/`, `heatpump/` | data exploration |
@@ -97,6 +97,6 @@ Chrome); run the `make_*.py` generators first. The PNGs are then cropped to thei
 ## Status
 
 Chapters 1 to 7 are drafted; parts without results say "In process", and all prototype results are
-exploratory. Still open: registering the hypotheses, collecting the 120 held-out plans and running the
-registered evaluation, the full-text screening of the remaining reports and Scopus search C, and the
+exploratory; plan interpretation (SQ1) is reported on the author's plans without held-out plans. Still open:
+registering H4 and H5 and running the registered evaluation (the Configurator's held-out weeks), the full-text screening of the remaining reports and Scopus search C, and the
 measurements on the Raspberry Pi 5 and the mini PC.

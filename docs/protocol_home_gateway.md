@@ -90,13 +90,16 @@ The cloud fallback therefore answers with v2. Both prompts are frozen from here 
 change is a new design iteration on the development plans only.
 **Hardware (author's decision, 11 November 2026, "plan A"):** laptop with RTX 4070 (8 GB) for all runs; for SQ3 the plan benchmark (`prototypes/edge_bench/bench.py`) and the optimiser timing (`mpc_time.py`) are repeated on a Raspberry Pi 5 with 16 GB (low end, comparable with Islam et al., 2025) and a Ryzen 7 mini PC with 32 GB (middle). A 4 GB board (e.g. Arduino UNO Q) can host the control layer, checker and MPC, with the language model on another device.
 
-**Draft hypotheses** (thresholds fixed only at registration, after the exploratory phase):
+**Draft hypotheses** (thresholds fixed only at registration, after the exploratory phase). **Amendment 26 Nov 2026
+(author's decision, option D): no held-out plans are written.** H1-H3 (SQ1) are reported descriptively on the 22 test
+and 14 development plans, three runs per model, without a confirmatory test; only H4 (Configurator on held-out weeks)
+and H5 (hardware) are registered and tested. Plans written by other people are future research.
 
 | | Hypothesis | Test |
 |---|---|---|
-| H1 (SQ1) | On the held-out plans, the best SLM is within 0.10 of the cloud LLM on constraint recall and decision accuracy (non-inferiority; margin chosen 21 Nov 2026 from `prototypes/heldout/power.py`: 0.05 would need about 390 plans, 0.10 about 100) | paired cluster bootstrap over plans; McNemar on decisions |
-| H2 (SQ1) | With the best SLM in closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on more than 90 % of feasible house-days | one-sided exact binomial, p0 = 0.90 (changed from 0.95 on 21 Nov 2026: with at most 80 feasible commit plans among the 120, 0.95 had no slack) |
-| H3 (SQ1) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.10 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
+| H1 (SQ1, descriptive since 26 Nov) | On the plans, the best SLM is within 0.10 of the cloud LLM on constraint recall and decision accuracy (non-inferiority; margin chosen 21 Nov 2026 from `prototypes/heldout/power.py`: 0.05 would need about 390 plans, 0.10 about 100) | paired cluster bootstrap over plans; McNemar on decisions |
+| H2 (SQ1, descriptive since 26 Nov) | With the best SLM in closed loop, the household's requirements in the **answer key** (EV energy within 1 kWh by departure, comfort less than 0.5 degree-hours outside the band, away periods, appliance deadlines) are met on more than 90 % of feasible house-days | one-sided exact binomial, p0 = 0.90 (changed from 0.95 on 21 Nov 2026: with at most 80 feasible commit plans among the 120, 0.95 had no slack) |
+| H3 (SQ1, descriptive since 26 Nov) | With the checker and the cloud fallback, the SLM's decision accuracy is within 0.10 of the LLM's, and the fallback is used on at most 20 % of plans | paired cluster bootstrap; exact binomial for the fallback share |
 | H4 (SQ2) | The SLM-configured MPC costs at most 0.20 EUR per week more than the deterministic auto-tuner (same history, same backtest) and than the LLM-configured MPC (non-inferiority; margin fixed 22 Nov 2026: less than half of the expert setting's 0.45 EUR per week on the main house; power 0.94 over 31 weeks if equal) | paired one-sided Wilcoxon, both comparisons |
 | H5 (SQ3) | On each device the p95 of the time per plan is at most 15 minutes (fixed 22 Nov 2026: plans due within 30 minutes go to the fallback, so every plan kept locally is committed at least 15 minutes ahead), plans due sooner go to the fallback, and the yearly saving over rules exceeds the energy and cost of inference | descriptive with measured power; year simulation |
 
@@ -237,7 +240,7 @@ the cost.
   edge cases plus two restored cases (a weekend away and a "no grid tonight" conflict). Written by language models,
   keyed by the author.
 - *Exploratory set* (about 100 house-days) for design iterations.
-- *Held-out set*: plans written by 3-5 people other than the author from scenario prompts (the house-day, who is
+- *Held-out set* (**dropped 26 Nov 2026**, option D; the cards and sheets in `prototypes/heldout/` stay unused): plans written by 3-5 people other than the author from scenario prompts (the house-day, who is
   home, what they want) on 120 new days of `residential4` (`prototypes/heldout/`), keyed by the author, checked by a second person, registered before any run. Its size
   follows the power calculation in section 2.
 
@@ -700,3 +703,13 @@ X4 (warning) and S5 (physics); extra cost vs the key's exact parameters +0.05 EU
 came from test-plan errors (X3 conflict, S5 "too warm" only while heating), so the 22 plans are no longer a clean
 test. In thesis Section 5.5 (`sec:reactpilot`, Tables 5.7-5.8); appendix A notes the everyday wording; Abstract,
 1.3, 6.1 (SQ1, SQ3, RQ) and Conclusions cite it.
+
+**Option D (26 November 2026, author's decision).** No held-out plans are written: recruiting 3-5 plan writers is
+dropped. SQ1 (H1-H3) is answered descriptively on the 22 test and 14 development plans (three runs per model in the
+four set-ups), and its results stay exploratory; the thesis says so in the Abstract, Chapters 1 and 3 (benchmark, hypotheses, analysis,
+threats), Section 5.5 (registered evaluation), Chapter 6 (answers, limitations, future research) and the Conclusions. The
+registration now covers H4 (the Configurator on its held-out weeks of three houses) and H5 (a Raspberry Pi 5 or a
+mini PC) plus the year simulation. The power calculation for H1/H3 and the p0 of H2 no longer apply; the scenario
+cards, writer sheets, `collect.py` and `keying_guide.md` in `prototypes/heldout/` are kept but unused, and
+`run_heldout.py` can run the four set-ups on the pilot plans. Supervisors had agreed the scope the same day; the
+remaining wait is for the household device.
