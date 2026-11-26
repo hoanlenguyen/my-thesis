@@ -122,6 +122,21 @@ ul.tight { margin: 10px 0 0; padding-left: 1.2em; }
 ul.tight li { margin: 4px 0; }
 .note { border-left: 3px solid var(--sun); padding: 4px 0 4px 14px; color: var(--muted); margin-top: 16px; max-width: 72ch; }
 @media (prefers-reduced-motion: no-preference) { a { transition: color .15s } }
+
+/* thesis figures (tools/flow_figs): drawn for white paper */
+.figure svg.tfig { background: #ffffff; min-width: 0; max-width: 860px; margin: 0 auto; }
+.figure svg.tfig.tall { max-width: 560px; }
+.figure img.tfig { max-width: 900px; margin: 0 auto; }
+svg.tfig text { font-family: Arial, Helvetica, sans-serif; }
+svg.tfig .th { font-size: 14px; font-weight: bold; fill: #2C2C2A; } svg.tfig .ts { font-size: 12px; fill: #5F5E5A; }
+svg.tfig .arr { stroke: #5F5E5A; stroke-width: 1.2; fill: none; }
+svg.tfig .c-amber>rect{fill:#FAEEDA;stroke:#854F0B} svg.tfig .c-amber>.th{fill:#633806} svg.tfig .c-amber>.ts{fill:#854F0B}
+svg.tfig .c-teal>rect{fill:#E1F5EE;stroke:#0F6E56} svg.tfig .c-teal>.th{fill:#085041} svg.tfig .c-teal>.ts{fill:#0F6E56}
+svg.tfig .c-blue>rect{fill:#E6F1FB;stroke:#185FA5} svg.tfig .c-blue>.th{fill:#0C447C} svg.tfig .c-blue>.ts{fill:#185FA5}
+svg.tfig .c-gray>rect{fill:#F1EFE8;stroke:#5F5E5A} svg.tfig .c-gray>.th{fill:#2C2C2A} svg.tfig .c-gray>.ts{fill:#5F5E5A}
+svg.tfig .c-coral>rect{fill:#FAECE7;stroke:#993C1D} svg.tfig .c-coral>.th{fill:#712B13} svg.tfig .c-coral>.ts{fill:#993C1D}
+svg.tfig .c-green>rect{fill:#EAF3DE;stroke:#3B6D11} svg.tfig .c-green>.th{fill:#27500A} svg.tfig .c-green>.ts{fill:#3B6D11}
+.figure img.tfig { display: block; width: 100%; height: auto; background: #ffffff; }
 </style>
 
 <div class="wrap">
@@ -195,156 +210,106 @@ ul.tight li { margin: 4px 0; }
     <p>Three layers; models sit in one. The MPC replans every hour on its own; an agent runs only on an event (a message, a commit, a plug-in or deviation, the weekly configuration). A model layer calls the cloud LLM only when the small model's answer fails twice or the checker rejects it.</p>
   </div>
   <figure class="figure">
-  <svg viewBox="0 0 1130 800" role="img" aria-label="Four agents, each started by its own event, reach the gateway only through validated tools; the tuned MPC plans, the checker passes only valid plans to the control layer, and measurements flow into the history the Configurator learns from.">
-    <defs>
-      <marker id="ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="iag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="ias" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head sun" d="M0,0 L10,5 L0,10 z"/></marker>
-    </defs>
-
-    <!-- row A: outside the gateway -->
-    <rect class="box" x="40" y="30" width="300" height="72" rx="8"/>
-    <g class="icon" transform="translate(58,53)"><path d="M3 13 L13 4 L23 13 M6 11 V23 H20 V11"/><path d="M11 23 V17 H15 V23"/></g>
-    <text class="title" x="98" y="61">Household</text>
-    <text class="sub" x="98" y="80">plans, changes, answers</text>
-
-    <rect class="sunbox" x="420" y="30" width="280" height="72" rx="8"/>
-    <g class="icon sun" transform="translate(438,53)"><circle cx="8" cy="8" r="3.5"/><path d="M8 1 V2.5 M8 13.5 V15 M1 8 H2.5 M13.5 8 H15 M3 3 L4 4 M12 12 L13 13 M13 3 L12 4 M3 13 L4 12"/><path d="M11 24 L15 19 L18 21 L25 13"/></g>
-    <text class="title" x="478" y="61">Market and weather</text>
-    <text class="sub" x="478" y="80">prices, tariff, DWD forecasts</text>
-
-    <rect class="box" x="780" y="30" width="280" height="72" rx="8" stroke-dasharray="6 5"/>
-    <g class="icon" transform="translate(798,53)"><path d="M7 21 H20 A5 5 0 0 0 20 11 A7 7 0 0 0 7 10 A5.5 5.5 0 0 0 7 21 Z"/></g>
-    <text class="title" x="838" y="61">Cloud LLM (fallback)</text>
-    <text class="sub" x="838" y="80">only when the local SLM fails</text>
-
-    <!-- row B: four agents, each started by its own event -->
-    <rect class="zone" x="28" y="140" width="1044" height="100" rx="10"/>
-    <text class="mono" x="590" y="134">AGENT LAYER · local SLM on the gateway</text>
-
-    <rect class="agentbox" x="40" y="150" width="234" height="80" rx="8"/>
-    <g class="icon agent" transform="translate(54,177)"><path d="M3 4 H23 V17 H12 L7 22 V17 H3 Z"/><path d="M8.5 10.5 H8.6 M13 10.5 H13.1 M17.5 10.5 H17.6"/></g>
-    <text class="title" x="92" y="180">Household Assistant</text>
-    <text class="sub" x="92" y="199">on each message</text>
-    <text class="sub" x="92" y="216">plan → constraints, asks</text>
-
-    <rect class="agentbox" x="302" y="150" width="234" height="80" rx="8" stroke-dasharray="6 5"/>
-    <g class="icon agent" transform="translate(316,177)"><path d="M6 3 H16 L21 8 V23 H6 Z"/><path d="M16 3 V8 H21 M9.5 13 H17.5 M9.5 17 H17.5 M9.5 21 H14"/></g>
-    <text class="title" x="354" y="180">Explainer (designed)</text>
-    <text class="sub" x="354" y="199">after each commit, daily</text>
-    <text class="sub" x="354" y="216">plan → message, report</text>
-
-    <rect class="agentbox" x="564" y="150" width="234" height="80" rx="8" stroke-dasharray="6 5"/>
-    <g class="icon agent" transform="translate(578,177)"><path d="M2 14 H7 L10 7 L15 21 L18 14 H24"/></g>
-    <text class="title" x="616" y="180">Monitor (designed)</text>
-    <text class="sub" x="616" y="199">on plug-in or deviation</text>
-    <text class="sub" x="616" y="216">diagnoses, adjusts, alerts</text>
-
-    <rect class="agentbox" x="826" y="150" width="234" height="80" rx="8"/>
-    <g class="icon agent" transform="translate(840,177)"><circle cx="13" cy="13" r="8" stroke-width="3.2" stroke-dasharray="3 2.3"/><circle cx="13" cy="13" r="3"/></g>
-    <text class="title" x="878" y="180">Configurator</text>
-    <text class="sub" x="878" y="199">weekly, offline</text>
-    <text class="sub" x="878" y="216">history → MPC settings</text>
-
-    <!-- row C: the only way in: validated tools -->
-    <rect class="sunbox" x="40" y="270" width="1020" height="42" rx="8"/>
-    <g class="icon" transform="translate(54,278)"><path d="M17 3 A5.5 5.5 0 0 0 11.5 10.5 L3.5 18.5 L7.5 22.5 L15.5 14.5 A5.5 5.5 0 0 0 23 9 L19.5 12.5 L16 11.5 L15 8 L18.5 4.5"/></g>
-    <text class="title" x="92" y="296">Tools</text>
-    <text class="mono" x="150" y="296">get_home_state · get_prices · get_weather_forecast · get_appliances · plan_schedule · history_summary · backtest · get_situation · explain_plan</text>
-
-    <!-- row D: deterministic harness -->
-    <text class="mono" x="40" y="342">DETERMINISTIC HARNESS</text>
-    <rect class="box" x="40" y="350" width="300" height="96" rx="8"/>
-    <g class="icon" transform="translate(56,385)"><path d="M3 3 V23 H24"/><path d="M6 19 H10 V13 H14 V16 H18 V8 H22"/></g>
-    <text class="title" x="94" y="386">EMHASS (MPC)</text>
-    <text class="sub" x="94" y="406">tuned settings · LP / MILP</text>
-    <text class="sub" x="94" y="423">replans hourly on its own</text>
-
-    <rect class="box" x="400" y="350" width="300" height="96" rx="8"/>
-    <g class="icon" transform="translate(416,385)"><path d="M13 2 L22 6 V13 C22 18 18 22 13 24 C8 22 4 18 4 13 V6 Z"/><path d="M9 13 L12 16 L17.5 10"/></g>
-    <text class="title" x="454" y="386">Checker</text>
-    <text class="sub" x="454" y="406">comfort, EV by departure</text>
-    <text class="sub" x="454" y="423">battery, grid limit, feasibility</text>
-
-    <rect class="box" x="760" y="350" width="300" height="96" rx="8"/>
-    <g class="icon" transform="translate(776,385)"><path d="M5 6 C5 3 21 3 21 6 C21 9 5 9 5 6 Z"/><path d="M5 6 V20 C5 23 21 23 21 20 V6"/><path d="M5 13 C5 16 21 16 21 13"/></g>
-    <text class="title" x="814" y="386">History store</text>
-    <text class="sub" x="814" y="406">meters, weather, forecast errors</text>
-    <text class="sub" x="814" y="423">committed plans, events</text>
-
-    <!-- row E: control layer -->
-    <rect class="detbox" x="40" y="510" width="1020" height="72" rx="8"/>
-    <g class="icon" transform="translate(58,533)"><circle cx="13" cy="13" r="10"/><path d="M13 7 V13 L17.5 15.5"/></g>
-    <text class="title" x="98" y="540">Control layer · every 15 min</text>
-    <text class="sub" x="98" y="560">holds the planned grid exchange · battery absorbs forecast error · keeps comfort, EV deadline, battery limits · fallback rules · raises deviation events</text>
-
-    <!-- row F: devices -->
-    <rect class="sunbox" x="40" y="650" width="230" height="72" rx="8"/>
-    <g class="icon sun" transform="translate(56,673)"><path d="M2 17 L6 6 H22 L18 17 Z"/><path d="M4 11.5 H20 M11 6 L9 17 M16.5 6 L14.5 17"/><path d="M8 21 H16"/></g>
-    <text class="title" x="94" y="691">PV + battery</text>
-
-    <rect class="box" x="300" y="650" width="230" height="72" rx="8"/>
-    <g class="icon" transform="translate(316,673)"><rect x="2" y="4" width="22" height="18" rx="2"/><circle cx="11" cy="13" r="5"/><path d="M11 8 V18 M6 13 H16"/><path d="M20 8 V18"/></g>
-    <text class="title" x="354" y="681">Heat pump</text>
-    <text class="mono" x="354" y="700">SG Ready / EEBus</text>
-
-    <rect class="box" x="560" y="650" width="230" height="72" rx="8"/>
-    <g class="icon" transform="translate(576,673)"><path d="M9 2 V7 M17 2 V7 M6 7 H20 V11 A7 7 0 0 1 6 11 Z"/><path d="M13 18 V24"/></g>
-    <text class="title" x="614" y="681">EV charger</text>
-    <text class="mono" x="614" y="700">OCPP</text>
-
-    <rect class="box" x="820" y="650" width="240" height="72" rx="8"/>
-    <g class="icon" transform="translate(836,673)"><path d="M3 13 L13 4 L23 13 M6 11 V23 H20 V11"/><circle cx="13" cy="16" r="2"/><path d="M13 14 V11 M11.3 17 L9 19 M14.7 17 L17 19"/></g>
-    <text class="title" x="874" y="681">Home Assistant</text>
-    <text class="mono" x="874" y="700">device integration</text>
-
-    <!-- household, market and cloud -->
-    <path class="arrow agent" d="M150,102 V150" marker-end="url(#iag)"/>
-    <text class="lbl agent" x="158" y="124">plans, changes</text>
-    <path class="arrow agent" d="M320,150 V102" marker-end="url(#iag)" stroke-dasharray="5 4"/>
-    <text class="lbl agent" x="350" y="124">messages, questions</text>
-    <path class="arrow sun" d="M550,102 V270" marker-end="url(#ias)"/>
-    <text class="lbl" x="558" y="258">prices, forecasts</text>
-    <path class="arrow" d="M920,102 V140" marker-end="url(#ia)" stroke-dasharray="5 4"/>
-    <text class="lbl" x="928" y="124">fallback only</text>
-
-    <!-- agents to the tools -->
-    <path class="arrow agent" d="M157,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
-    <text class="lbl agent" x="165" y="258">constraints</text>
-    <path class="arrow agent" d="M419,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
-    <text class="lbl agent" x="427" y="258">committed plan</text>
-    <path class="arrow agent" d="M681,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
-    <text class="lbl agent" x="689" y="258">situation, fixes</text>
-    <path class="arrow agent" d="M943,232 V270" marker-start="url(#iag)" marker-end="url(#iag)"/>
-    <text class="lbl agent" x="951" y="258">settings</text>
-
-    <!-- tools to the harness -->
-    <path class="arrow" d="M190,312 V350" marker-end="url(#ia)"/>
-    <text class="lbl" x="198" y="336">constraints, settings, forecasts</text>
-    <path class="arrow" d="M550,350 V312" marker-end="url(#ia)" stroke-dasharray="5 4"/>
-    <text class="lbl" x="558" y="336">violations, preview</text>
-    <path class="arrow" d="M910,350 V312" marker-end="url(#ia)"/>
-    <text class="lbl" x="918" y="336">history, backtest</text>
-
-    <!-- inside the harness -->
-    <path class="arrow" d="M340,398 H400" marker-end="url(#ia)"/>
-    <text class="lbl" x="370" y="390" text-anchor="middle">plan</text>
-    <path class="arrow" d="M700,398 H760" marker-end="url(#ia)"/>
-    <text class="lbl" x="730" y="390" text-anchor="middle">committed</text>
-    <path class="arrow" d="M550,446 V510" marker-end="url(#ia)"/>
-    <text class="lbl" x="558" y="482">checked plan only</text>
-
-    <!-- to and from the devices -->
-    <path class="arrow sun" d="M155,582 V650" marker-end="url(#ias)"/>
-    <path class="arrow" d="M415,582 V650" marker-end="url(#ia)"/>
-    <path class="arrow" d="M675,582 V650" marker-end="url(#ia)"/>
-    <text class="lbl" x="683" y="620">setpoints</text>
-    <path class="arrow" d="M1060,686 H1092 V398 H1060" marker-end="url(#ia)"/>
-    <text class="lbl" x="1106" y="540" transform="rotate(-90 1106 540)" text-anchor="middle">measurements, events</text>
-
-    <text class="lbl" x="550" y="764" text-anchor="middle">No agent computes a schedule or switches a device; every agent acts only through the validated tools.</text>
-    <text class="lbl" x="550" y="786" text-anchor="middle">Dashed agent boxes: designed, not built or evaluated.</text>
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" class="tfig" aria-label="Architecture of the HEMS on the gateway: the agents act only through validated tools; EMHASS plans, the checker passes only valid plans to the control layer, and measurements flow into the history store." viewBox="0 0 780 714" role="img"><defs><marker id="m5a6661" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#5a6661"/></marker><marker id="m1f6f78" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#1f6f78"/></marker><marker id="mb86e00" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#b86e00"/></marker></defs>
+<rect x="20" y="20" width="220" height="60" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="34" y="41.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Household</text>
+<text x="34" y="61.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">plans, changes, answers</text>
+<rect x="270" y="20" width="220" height="60" rx="8" style="fill:#fbefd9;stroke:#b86e00;stroke-width:1.4"/>
+<text x="284" y="41.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Market and weather</text>
+<text x="284" y="61.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">prices, tariff, DWD forecasts</text>
+<rect x="520" y="20" width="220" height="60" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4;stroke-dasharray:6 5"/>
+<text x="534" y="41.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Cloud LLM (fallback)</text>
+<text x="534" y="61.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">only when the local SLM fails</text>
+<path d="M60 80 V120" style="fill:none;stroke:#1f6f78;stroke-width:1.5" marker-end="url(#m1f6f78)"/>
+<text x="68" y="100" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#1f6f78">plans, changes</text>
+<path d="M230 122 V82" style="fill:none;stroke:#1f6f78;stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#m1f6f78)"/>
+<text x="238" y="100" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#1f6f78">messages, questions</text>
+<path d="M375 80 V232" style="fill:none;stroke:#b86e00;stroke-width:1.5" marker-end="url(#mb86e00)"/>
+<text x="383" y="94" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">prices, forecasts</text>
+<path d="M720 80 V112" style="fill:none;stroke:#5a6661;stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#m5a6661)"/>
+<text x="712" y="94" text-anchor="end" dominant-baseline="central" style="font-size:12px;fill:#5a6661">fallback only</text>
+<rect x="12" y="114" width="736" height="94" rx="10" style="fill:none;stroke:#c9d1cd;stroke-width:1.2;stroke-dasharray:6 5"/>
+<text x="388" y="107" text-anchor="start" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:11px;fill:#5a6661">AGENT LAYER · local SLM on the gateway</text>
+<rect x="20" y="122" width="175" height="78" rx="8" style="fill:#dcefef;stroke:#1f6f78;stroke-width:1.6"/>
+<text x="107.5" y="143.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Household Assistant</text>
+<text x="107.5" y="163.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">on each message</text>
+<text x="107.5" y="180.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">plan → constraints, asks</text>
+<rect x="200" y="122" width="170" height="78" rx="8" style="fill:#dcefef;stroke:#1f6f78;stroke-width:1.6;stroke-dasharray:6 5"/>
+<text x="285.0" y="143.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Explainer</text>
+<text x="285.0" y="163.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">after each commit, daily</text>
+<text x="285.0" y="180.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">plan → message, report</text>
+<rect x="385" y="122" width="175" height="78" rx="8" style="fill:#dcefef;stroke:#1f6f78;stroke-width:1.6;stroke-dasharray:6 5"/>
+<text x="472.5" y="143.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Monitor</text>
+<text x="472.5" y="163.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">on plug-in or deviation</text>
+<text x="472.5" y="180.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">diagnoses, adjusts</text>
+<rect x="565" y="122" width="175" height="78" rx="8" style="fill:#dcefef;stroke:#1f6f78;stroke-width:1.6"/>
+<text x="652.5" y="143.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Configurator</text>
+<text x="652.5" y="163.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">weekly, offline</text>
+<text x="652.5" y="180.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">history → MPC settings</text>
+<path d="M50 202 V232" style="fill:none;stroke:#1f6f78;stroke-width:1.5" marker-start="url(#m1f6f78)" marker-end="url(#m1f6f78)"/>
+<text x="58" y="217" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#1f6f78">constraints</text>
+<path d="M230 202 V232" style="fill:none;stroke:#1f6f78;stroke-width:1.5" marker-start="url(#m1f6f78)" marker-end="url(#m1f6f78)"/>
+<text x="238" y="217" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#1f6f78">committed plan</text>
+<path d="M415 202 V232" style="fill:none;stroke:#1f6f78;stroke-width:1.5" marker-start="url(#m1f6f78)" marker-end="url(#m1f6f78)"/>
+<text x="423" y="217" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#1f6f78">situation, fixes</text>
+<path d="M595 202 V232" style="fill:none;stroke:#1f6f78;stroke-width:1.5" marker-start="url(#m1f6f78)" marker-end="url(#m1f6f78)"/>
+<text x="603" y="217" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#1f6f78">settings</text>
+<rect x="20" y="234" width="720" height="52" rx="8" style="fill:#fbefd9;stroke:#b86e00;stroke-width:1.4"/>
+<text x="34" y="260" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Tools</text>
+<text x="92" y="251" text-anchor="start" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:12px;fill:#5a6661">get_home_state · get_prices · get_weather_forecast · get_appliances · plan_schedule</text>
+<text x="92" y="269" text-anchor="start" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:12px;fill:#5a6661">history_summary · backtest · get_situation · explain_plan</text>
+<path d="M110 288 V322" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="118" y="305" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">constraints, settings, forecasts</text>
+<path d="M380 322 V288" style="fill:none;stroke:#5a6661;stroke-width:1.5;stroke-dasharray:5 4" marker-end="url(#m5a6661)"/>
+<text x="388" y="305" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">violations, preview</text>
+<path d="M640 322 V288" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="648" y="305" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">history, backtest</text>
+<rect x="20" y="324" width="200" height="92" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="34" y="343.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">EMHASS (MPC)</text>
+<text x="34" y="363.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">tuned settings</text>
+<text x="34" y="380.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">LP / MILP</text>
+<text x="34" y="397.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">replans hourly</text>
+<rect x="280" y="324" width="200" height="92" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="294" y="343.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Checker</text>
+<text x="294" y="363.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">comfort, EV by departure</text>
+<text x="294" y="380.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">battery, grid limit</text>
+<text x="294" y="397.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">feasibility</text>
+<rect x="540" y="324" width="200" height="92" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="554" y="343.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">History store</text>
+<text x="554" y="363.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">meters, weather</text>
+<text x="554" y="380.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">forecast errors</text>
+<text x="554" y="397.0" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">committed plans, events</text>
+<path d="M220 370 H278" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="249" y="360" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">plan</text>
+<path d="M480 370 H538" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="509" y="360" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">commit</text>
+<text x="740" y="432" text-anchor="end" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:11px;fill:#5a6661">DETERMINISTIC HARNESS</text>
+<path d="M380 416 V468" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="388" y="444" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">checked plan only</text>
+<rect x="20" y="470" width="720" height="74" rx="8" style="fill:#f6f7f5;stroke:#5a6661;stroke-width:1.2"/>
+<text x="34" y="490" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Control layer · every 15 min</text>
+<text x="34" y="510" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">holds the planned grid exchange · battery absorbs forecast error · keeps comfort, EV deadline,</text>
+<text x="34" y="527" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">battery limits · fallback rules · raises deviation events</text>
+<path d="M100 544 V598" style="fill:none;stroke:#b86e00;stroke-width:1.5" marker-end="url(#mb86e00)"/>
+<path d="M287 544 V598" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<path d="M472 544 V598" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="480" y="571" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#5a6661">setpoints</text>
+<rect x="20" y="600" width="165" height="56" rx="8" style="fill:#fbefd9;stroke:#b86e00;stroke-width:1.4"/>
+<text x="34" y="628.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">PV + battery</text>
+<rect x="205" y="600" width="165" height="56" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="219" y="619.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Heat pump</text>
+<text x="219" y="639.0" text-anchor="start" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:12px;fill:#5a6661">SG Ready / EEBus</text>
+<rect x="390" y="600" width="165" height="56" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="404" y="619.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">EV charger</text>
+<text x="404" y="639.0" text-anchor="start" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:12px;fill:#5a6661">OCPP</text>
+<rect x="575" y="600" width="165" height="56" rx="8" style="fill:#ffffff;stroke:#c9d1cd;stroke-width:1.4"/>
+<text x="589" y="619.0" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1d2622">Home Assistant</text>
+<text x="589" y="639.0" text-anchor="start" dominant-baseline="central" style="font-family:Consolas,'Courier New',monospace;font-size:12px;fill:#5a6661">device integration</text>
+<path d="M740 628 H756 V370 H742" style="fill:none;stroke:#5a6661;stroke-width:1.5" marker-end="url(#m5a6661)"/>
+<text x="770" y="499" text-anchor="middle" dominant-baseline="central" transform="rotate(-90 770 499)" style="font-size:12px;fill:#5a6661">measurements, events</text>
+<text x="380" y="682" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">No agent computes a schedule or switches a device; every agent acts only through the validated tools.</text>
+<text x="380" y="700" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#5a6661">Dashed agent boxes: designed, not built or evaluated.</text>
+</svg>
   <figcaption>Four agents, each started by its own event: the Assistant on a household message, the Explainer after each commit and once a day, the Monitor on an EV plug-in or a large deviation, the Configurator once a week. The harness routes the event; no agent calls another. All of them act only through validated tools, the tuned MPC plans, the checker returns violations and passes only valid plans to the control layer. Measurements and events return to the history store. The agents run on a small language model on local hardware. Dashed agent boxes: the Explainer and the Monitor are designed but not built. Dashed lines: the cloud LLM, called only as a fallback when the small model's answer fails validation twice or the checker rejects its plan, and violations returned to the agents.</figcaption>
   </figure>
 
@@ -368,137 +333,74 @@ ul.tight li { margin: 4px 0; }
 
   <h3>How each agent decides</h3>
   <figure class="figure">
-  <svg viewBox="0 0 1130 660" role="img" aria-label="Each event goes through the harness router to one agent, which uses its tools in a loop and ends at a deterministic gate: the checker, the figure check or the backtest decides what is committed; any failure keeps the current plan.">
-    <defs>
-      <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="fg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
-    </defs>
-    <rect class="detbox" x="206" y="30" width="62" height="540" rx="8"/>
-    <text class="title" transform="rotate(-90 242 300)" x="242" y="300" text-anchor="middle">Event router (harness, no model)</text>
-    <rect class="zone" x="296" y="30" width="520" height="120" rx="10"/>
-    <text class="lbl agent" x="310" y="46">Household Assistant (ReAct)</text>
-    <rect class="box" x="20" y="60" width="160" height="60" rx="8"/>
-    <text class="title" x="34" y="86">Household message</text>
-    <text class="sub" x="34" y="105">plan or change</text>
-    <path class="arrow" d="M180,90 H204" marker-end="url(#fa)"/>
-    <path class="arrow agent" d="M268,90 H322" marker-end="url(#fg)"/>
-    <rect class="agentbox" x="324" y="64" width="140" height="56" rx="8"/>
-    <text class="title" x="336" y="86">Read data</text>
-    <text class="mono" x="336" y="105">get_home_state …</text>
-    <rect class="agentbox" x="484" y="64" width="140" height="56" rx="8"/>
-    <text class="title" x="496" y="86">Plan</text>
-    <text class="mono" x="496" y="105">plan_schedule</text>
-    <path class="arrow agent" d="M464,92 H482" marker-end="url(#fg)"/>
-    <path class="arrow agent" d="M554,120 V134 H394 V122" marker-end="url(#fg)" stroke-dasharray="4 4"/>
-    <text class="lbl agent" x="474" y="146" text-anchor="middle">tool loop</text>
-    <path class="arrow" d="M624,92 H674" marker-end="url(#fa)"/>
-    <polygon class="detbox" points="732,50 794,92 732,134 670,92"/>
-    <text class="lbl" x="732" y="89" text-anchor="middle">schedule met,</text>
-    <text class="lbl" x="732" y="104" text-anchor="middle">nothing unclear?</text>
-    <path class="arrow" d="M794,92 H840 V60 H868" marker-end="url(#fa)"/>
-    <path class="arrow" d="M794,92 H840 V124 H868" marker-end="url(#fa)"/>
-    <text class="lbl" x="834" y="76" text-anchor="end">yes</text>
-    <text class="lbl" x="834" y="114" text-anchor="end">no</text>
-    <rect class="box" x="870" y="38" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="57">Commit the plan</text>
-    <text class="sub" x="884" y="74">requirements stay as MPC constraints</text>
-    <rect class="box" x="870" y="102" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="121">Ask the household</text>
-    <text class="sub" x="884" y="138">questions in the app answer</text>
-    <rect class="zone" x="296" y="170" width="520" height="120" rx="10"/>
-    <text class="lbl agent" x="310" y="186">Explainer (ReAct, designed, not built)</text>
-    <rect class="box" x="20" y="200" width="160" height="60" rx="8"/>
-    <text class="title" x="34" y="226">Commit, daily</text>
-    <text class="sub" x="34" y="245">after each commit</text>
-    <path class="arrow" d="M180,230 H204" marker-end="url(#fa)"/>
-    <path class="arrow agent" d="M268,230 H322" marker-end="url(#fg)"/>
-    <rect class="agentbox" x="324" y="204" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
-    <text class="title" x="336" y="226">Read figures</text>
-    <text class="mono" x="336" y="245">explain_plan</text>
-    <rect class="agentbox" x="484" y="204" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
-    <text class="title" x="496" y="226">Write message</text>
-    <text class="sub" x="496" y="245">cites the figures</text>
-    <path class="arrow agent" d="M464,232 H482" marker-end="url(#fg)"/>
-    <path class="arrow agent" d="M554,260 V274 H394 V262" marker-end="url(#fg)" stroke-dasharray="4 4"/>
-    <text class="lbl agent" x="474" y="286" text-anchor="middle">tool loop</text>
-    <path class="arrow" d="M624,232 H674" marker-end="url(#fa)"/>
-    <polygon class="detbox" points="732,190 794,232 732,274 670,232"/>
-    <text class="lbl" x="732" y="229" text-anchor="middle">figures</text>
-    <text class="lbl" x="732" y="244" text-anchor="middle">match plan?</text>
-    <path class="arrow" d="M794,232 H840 V200 H868" marker-end="url(#fa)"/>
-    <path class="arrow" d="M794,232 H840 V264 H868" marker-end="url(#fa)"/>
-    <text class="lbl" x="834" y="216" text-anchor="end">yes</text>
-    <text class="lbl" x="834" y="254" text-anchor="end">no</text>
-    <rect class="box" x="870" y="178" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="197">Send message</text>
-    <text class="sub" x="884" y="214">to the household</text>
-    <rect class="box" x="870" y="242" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="261">Send template</text>
-    <text class="sub" x="884" y="278">fixed wording</text>
-    <rect class="zone" x="296" y="310" width="520" height="120" rx="10"/>
-    <text class="lbl agent" x="310" y="326">Monitor (ReAct, designed, not built)</text>
-    <rect class="box" x="20" y="340" width="160" height="60" rx="8"/>
-    <text class="title" x="34" y="366">Plug-in, deviation</text>
-    <text class="sub" x="34" y="385">from the control layer</text>
-    <path class="arrow" d="M180,370 H204" marker-end="url(#fa)"/>
-    <path class="arrow agent" d="M268,370 H322" marker-end="url(#fg)"/>
-    <rect class="agentbox" x="324" y="344" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
-    <text class="title" x="336" y="366">Diagnose</text>
-    <text class="mono" x="336" y="385">get_situation</text>
-    <rect class="agentbox" x="484" y="344" width="140" height="56" rx="8" stroke-dasharray="6 5"/>
-    <text class="title" x="496" y="366">Adjust or alert</text>
-    <text class="mono" x="496" y="385">propose → preview</text>
-    <path class="arrow agent" d="M464,372 H482" marker-end="url(#fg)"/>
-    <path class="arrow agent" d="M554,400 V414 H394 V402" marker-end="url(#fg)" stroke-dasharray="4 4"/>
-    <text class="lbl agent" x="474" y="426" text-anchor="middle">tool loop</text>
-    <path class="arrow" d="M624,372 H674" marker-end="url(#fa)"/>
-    <polygon class="detbox" points="732,330 794,372 732,414 670,372"/>
-    <text class="lbl" x="732" y="369" text-anchor="middle">action</text>
-    <text class="lbl" x="732" y="384" text-anchor="middle">needed?</text>
-    <path class="arrow" d="M794,372 H840 V340 H868" marker-end="url(#fa)"/>
-    <path class="arrow" d="M794,372 H840 V404 H868" marker-end="url(#fa)"/>
-    <text class="lbl" x="834" y="356" text-anchor="end">yes</text>
-    <text class="lbl" x="834" y="394" text-anchor="end">no</text>
-    <rect class="box" x="870" y="318" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="337">Commit or alert</text>
-    <text class="sub" x="884" y="354">within household limits</text>
-    <rect class="box" x="870" y="382" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="401">No action</text>
-    <text class="sub" x="884" y="418">plan stays</text>
-    <rect class="zone" x="296" y="450" width="520" height="120" rx="10"/>
-    <text class="lbl agent" x="310" y="466">Configurator (ReAct)</text>
-    <rect class="box" x="20" y="480" width="160" height="60" rx="8"/>
-    <text class="title" x="34" y="506">Weekly</text>
-    <text class="sub" x="34" y="525">once a week</text>
-    <path class="arrow" d="M180,510 H204" marker-end="url(#fa)"/>
-    <path class="arrow agent" d="M268,510 H322" marker-end="url(#fg)"/>
-    <rect class="agentbox" x="324" y="484" width="140" height="56" rx="8"/>
-    <text class="title" x="336" y="506">Summarise</text>
-    <text class="mono" x="336" y="525">history_summary</text>
-    <rect class="agentbox" x="484" y="484" width="140" height="56" rx="8"/>
-    <text class="title" x="496" y="506">Compare settings</text>
-    <text class="sub" x="496" y="525">backtest</text>
-    <path class="arrow agent" d="M464,512 H482" marker-end="url(#fg)"/>
-    <path class="arrow agent" d="M554,540 V554 H394 V542" marker-end="url(#fg)" stroke-dasharray="4 4"/>
-    <text class="lbl agent" x="474" y="566" text-anchor="middle">tool loop</text>
-    <path class="arrow" d="M624,512 H674" marker-end="url(#fa)"/>
-    <polygon class="detbox" points="732,470 794,512 732,554 670,512"/>
-    <text class="lbl" x="732" y="509" text-anchor="middle">beats current</text>
-    <text class="lbl" x="732" y="524" text-anchor="middle">settings?</text>
-    <path class="arrow" d="M794,512 H840 V480 H868" marker-end="url(#fa)"/>
-    <path class="arrow" d="M794,512 H840 V544 H868" marker-end="url(#fa)"/>
-    <text class="lbl" x="834" y="496" text-anchor="end">yes</text>
-    <text class="lbl" x="834" y="534" text-anchor="end">no</text>
-    <rect class="box" x="870" y="458" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="477">Apply next day</text>
-    <text class="sub" x="884" y="494">PV derating, reserve</text>
-    <rect class="box" x="870" y="522" width="240" height="44" rx="7"/>
-    <text class="title" x="884" y="541">Keep settings</text>
-    <text class="sub" x="884" y="558">current settings stay</text>
-    <rect class="sunbox" x="20" y="594" width="1090" height="44" rx="8"/>
-    <text class="title" x="36" y="614">Any failure (timeout, invalid answer, model or network down)</text>
-    <text class="sub" x="36" y="631">keep the current plan and settings; the MPC replans hourly and the control layer falls back to rules if needed</text>
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" class="tfig tall" aria-label="How each agent decides: the harness routes each event to one agent, which uses its tools in a loop until a deterministic gate decides the outcome." viewBox="0 0 680 668" role="img"><defs><marker id="a5f6b76" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#5f6b76"/></marker><marker id="a1f6f78" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#1f6f78"/></marker></defs>
+<rect x="40" y="12" width="600" height="36" rx="6" style="fill:#f3f3f1;stroke:#6b7785;stroke-width:1.4"/>
+<text x="340" y="30" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Event router in the harness, no model: each event starts one agent</text>
+<path d="M185 48 V63" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="40" y="64" width="290" height="240" rx="10" style="fill:none;stroke:#c3c8cd;stroke-width:1;stroke-dasharray:6 4"/>
+<text x="54" y="84" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Household Assistant</text>
+<text x="54" y="101" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">on each household message</text>
+<rect x="54" y="114" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6"/><text x="116.0" y="128.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Read data</text><text x="116.0" y="146.0" text-anchor="middle" dominant-baseline="central" style="font-family:Consolas,monospace;font-size:12px;fill:#52606d">get_home_state</text>
+<path d="M178 137 H190" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#a1f6f78)"/>
+<rect x="192" y="114" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6"/><text x="254.0" y="128.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Plan</text><text x="254.0" y="146.0" text-anchor="middle" dominant-baseline="central" style="font-family:Consolas,monospace;font-size:12px;fill:#52606d">plan_schedule</text>
+<path d="M254 160 V170 H116 V163" style="fill:none;stroke:#1f6f78;stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#a1f6f78)"/>
+<text x="185" y="182" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#1f6f78">tool loop</text>
+<rect x="54" y="194" width="262" height="44" rx="6" style="fill:#ffffff;stroke:#6b7785;stroke-width:1.6"/><text x="185.0" y="207.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Gate: checker</text><text x="185.0" y="225.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">schedule met, nothing unclear?</text>
+<path d="M116 238 V248" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<path d="M254 238 V248" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="54" y="250" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="116.0" y="263.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">yes: commit</text><text x="116.0" y="281.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">MPC constraints</text>
+<rect x="192" y="250" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="254.0" y="263.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">no: ask</text><text x="254.0" y="281.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">questions in app</text>
+<path d="M495 48 V63" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="350" y="64" width="290" height="240" rx="10" style="fill:none;stroke:#c3c8cd;stroke-width:1;stroke-dasharray:6 4"/>
+<text x="364" y="84" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Configurator</text>
+<text x="364" y="101" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">once a week</text>
+<rect x="364" y="114" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6"/><text x="426.0" y="128.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Summarise</text><text x="426.0" y="146.0" text-anchor="middle" dominant-baseline="central" style="font-family:Consolas,monospace;font-size:12px;fill:#52606d">history_summary</text>
+<path d="M488 137 H500" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#a1f6f78)"/>
+<rect x="502" y="114" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6"/><text x="564.0" y="128.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Backtest</text><text x="564.0" y="146.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">compare settings</text>
+<path d="M564 160 V170 H426 V163" style="fill:none;stroke:#1f6f78;stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#a1f6f78)"/>
+<text x="495" y="182" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#1f6f78">tool loop</text>
+<rect x="364" y="194" width="262" height="44" rx="6" style="fill:#ffffff;stroke:#6b7785;stroke-width:1.6"/><text x="495.0" y="207.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Gate: backtest</text><text x="495.0" y="225.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">beats the current settings?</text>
+<path d="M426 238 V248" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<path d="M564 238 V248" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="364" y="250" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="426.0" y="263.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">yes: apply</text><text x="426.0" y="281.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">from the next day</text>
+<rect x="502" y="250" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="564.0" y="263.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">no: keep</text><text x="564.0" y="281.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">current settings</text>
+<path d="M40 30 H26 V340 H39" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="40" y="320" width="290" height="240" rx="10" style="fill:none;stroke:#c3c8cd;stroke-width:1;stroke-dasharray:6 4"/>
+<text x="54" y="340" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Monitor (designed)</text>
+<text x="54" y="357" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">on a plug-in or a deviation</text>
+<rect x="54" y="370" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6;stroke-dasharray:6 4"/><text x="116.0" y="384.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Diagnose</text><text x="116.0" y="402.0" text-anchor="middle" dominant-baseline="central" style="font-family:Consolas,monospace;font-size:12px;fill:#52606d">get_situation</text>
+<path d="M178 393 H190" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#a1f6f78)"/>
+<rect x="192" y="370" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6;stroke-dasharray:6 4"/><text x="254.0" y="384.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Adjust, alert</text><text x="254.0" y="402.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">propose → preview</text>
+<path d="M254 416 V426 H116 V419" style="fill:none;stroke:#1f6f78;stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#a1f6f78)"/>
+<text x="185" y="438" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#1f6f78">tool loop</text>
+<rect x="54" y="450" width="262" height="44" rx="6" style="fill:#ffffff;stroke:#6b7785;stroke-width:1.6"/><text x="185.0" y="463.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Gate: checker</text><text x="185.0" y="481.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">is an action needed?</text>
+<path d="M116 494 V504" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<path d="M254 494 V504" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="54" y="506" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="116.0" y="519.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">yes: act</text><text x="116.0" y="537.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">within the limits</text>
+<rect x="192" y="506" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="254.0" y="519.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">no: no action</text><text x="254.0" y="537.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">the plan stays</text>
+<path d="M640 30 H654 V340 H641" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="350" y="320" width="290" height="240" rx="10" style="fill:none;stroke:#c3c8cd;stroke-width:1;stroke-dasharray:6 4"/>
+<text x="364" y="340" text-anchor="start" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Explainer (designed)</text>
+<text x="364" y="357" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">after each commit, and daily</text>
+<rect x="364" y="370" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6;stroke-dasharray:6 4"/><text x="426.0" y="384.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Read figures</text><text x="426.0" y="402.0" text-anchor="middle" dominant-baseline="central" style="font-family:Consolas,monospace;font-size:12px;fill:#52606d">explain_plan</text>
+<path d="M488 393 H500" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#a1f6f78)"/>
+<rect x="502" y="370" width="124" height="46" rx="6" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.6;stroke-dasharray:6 4"/><text x="564.0" y="384.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Write message</text><text x="564.0" y="402.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">cites the figures</text>
+<path d="M564 416 V426 H426 V419" style="fill:none;stroke:#1f6f78;stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#a1f6f78)"/>
+<text x="495" y="438" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#1f6f78">tool loop</text>
+<rect x="364" y="450" width="262" height="44" rx="6" style="fill:#ffffff;stroke:#6b7785;stroke-width:1.6"/><text x="495.0" y="463.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Gate: figure check</text><text x="495.0" y="481.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">figures match the plan?</text>
+<path d="M426 494 V504" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<path d="M564 494 V504" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#a5f6b76)"/>
+<rect x="364" y="506" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="426.0" y="519.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">yes: send</text><text x="426.0" y="537.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">to the household</text>
+<rect x="502" y="506" width="124" height="44" rx="6" style="fill:#ffffff;stroke:#c3c8cd;stroke-width:1.2"/><text x="564.0" y="519.0" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">no: template</text><text x="564.0" y="537.0" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">fixed wording</text>
+<rect x="40" y="576" width="600" height="50" rx="6" style="fill:#fcefd9;stroke:#c27c0e;stroke-width:1.4"/>
+<text x="340" y="592" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Any failure: timeout, invalid answer, model or network down</text>
+<text x="340" y="610" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">keep the plan and settings; the MPC replans hourly; the control layer falls back to rules</text>
+<rect x="40" y="642" width="22" height="14" rx="3" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.2"/><text x="68" y="649" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">built step</text>
+<rect x="154.0" y="642" width="22" height="14" rx="3" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.2;stroke-dasharray:6 4"/><text x="182.0" y="649" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">designed, not built</text>
+<rect x="325.6" y="642" width="22" height="14" rx="3" style="fill:#ffffff;stroke:#6b7785;stroke-width:1.2"/><text x="353.6" y="649" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">gate or outcome</text>
+<rect x="471.6" y="642" width="22" height="14" rx="3" style="fill:#f3f3f1;stroke:#6b7785;stroke-width:1.2"/><text x="499.6" y="649" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">harness</text>
+<rect x="566.4000000000001" y="642" width="22" height="14" rx="3" style="fill:#fcefd9;stroke:#c27c0e;stroke-width:1.2"/><text x="594.4000000000001" y="649" text-anchor="start" dominant-baseline="central" style="font-size:12px;fill:#52606d">failure rule</text>
+</svg>
   <figcaption>Every agent follows the same pattern: an event starts it, it uses its tools in a short loop, and a deterministic gate decides what happens: the checker (Assistant, Monitor), the figure check (Explainer) or the backtest (Configurator). Only a passed gate changes the plan, the message or the settings; anything else keeps what is already in force.</figcaption>
   </figure>
 
@@ -675,62 +577,43 @@ ul.tight li { margin: 4px 0; }
   <h3>What <code>plan_schedule</code> does</h3>
   <div class="prose"><p>The MPC in the tool is a one-off preview; after a commit the hourly MPC takes over without the model.</p></div>
   <figure class="figure">
-  <svg viewBox="0 0 1060 300" role="img" aria-label="Inside plan_schedule: code completes the requirements, reads them back, the checker either returns problems to ask about or the MPC solves once and returns a preview; after the gateway commits, the MPC replans every hour without the model.">
-    <defs>
-      <marker id="ps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="psa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="psw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head warn" d="M0,0 L10,5 L0,10 z"/></marker>
-    </defs>
-    <rect class="zone" x="150" y="20" width="740" height="150" rx="10"/>
-    <text class="mono" x="166" y="40">plan_schedule (deterministic)</text>
-
-    <rect class="agentbox" x="10" y="60" width="120" height="70" rx="8"/>
-    <text class="title" x="24" y="90">SLM</text>
-    <text class="sub" x="24" y="110">requirements</text>
-
-    <rect class="detbox" x="170" y="60" width="150" height="70" rx="8"/>
-    <text class="title" x="184" y="88">1 Complete</text>
-    <text class="sub" x="184" y="106">usual settings,</text>
-    <text class="sub" x="184" y="121">am/pm, deadlines</text>
-
-    <rect class="detbox" x="350" y="60" width="140" height="70" rx="8"/>
-    <text class="title" x="364" y="88">2 Read back</text>
-    <text class="sub" x="364" y="106">weekday, part of</text>
-    <text class="sub" x="364" y="121">day, hours from now</text>
-
-    <rect class="detbox" x="520" y="60" width="140" height="70" rx="8"/>
-    <text class="title" x="534" y="88">3 Checker</text>
-    <text class="sub" x="534" y="106">vague, conflict,</text>
-    <text class="sub" x="534" y="121">infeasible window</text>
-
-    <rect class="sunbox" x="700" y="60" width="170" height="70" rx="8"/>
-    <text class="title" x="714" y="88">4 MPC, one solve</text>
-    <text class="sub" x="714" y="106">forecasts and prices</text>
-    <text class="sub" x="714" y="121">at the message time</text>
-
-    <rect class="box" x="910" y="60" width="140" height="70" rx="8"/>
-    <text class="title" x="924" y="88">App preview</text>
-    <text class="sub" x="924" y="106">schedule, reasons,</text>
-    <text class="sub" x="924" y="121">cost, checks</text>
-
-    <path class="arrow agent" d="M130,95 H168" marker-end="url(#psa)"/>
-    <path class="arrow" d="M320,95 H348" marker-end="url(#ps)"/>
-    <path class="arrow" d="M490,95 H518" marker-end="url(#ps)"/>
-    <path class="arrow" d="M660,95 H698" marker-end="url(#ps)"/>
-    <text class="lbl" x="664" y="86">pass</text>
-    <path class="arrow" d="M870,95 H908" marker-end="url(#ps)"/>
-
-    <path class="arrow" d="M590,130 V200 H70 V132" marker-end="url(#psw)" stroke-dasharray="5 4"/>
-    <text class="lbl" x="240" y="194">problems → the model asks the household (MPC not run)</text>
-    <path class="arrow agent" d="M420,60 V8 H70 V58" marker-end="url(#psa)" stroke-dasharray="5 4"/>
-    <text class="lbl agent" x="140" y="16">wrong time in the read-back → call again</text>
-
-    <rect class="detbox" x="700" y="220" width="350" height="64" rx="8"/>
-    <text class="title" x="714" y="246">After commit: MPC every hour</text>
-    <text class="sub" x="714" y="266">new forecasts, measured state; control layer every 15 min</text>
-    <path class="arrow" d="M980,130 V218" marker-end="url(#ps)"/>
-    <text class="lbl" x="988" y="180">commit</text>
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" class="tfig tall" aria-label="What plan_schedule does with the model's requirements: rules in code, read-back, checker, one MPC solve, a check of each requirement and the commit gate." viewBox="0 0 680 990" role="img">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<g class="c-amber"><rect x="40" y="20" width="340" height="56" rx="4" stroke-width="0.8" style="stroke-dasharray:5 3"/><text class="th" x="210" y="38" text-anchor="middle" dominant-baseline="central">Model calls plan_schedule</text><text class="ts" x="210" y="58" text-anchor="middle" dominant-baseline="central">requirements read from the message</text></g>
+<line x1="380" y1="48" x2="408" y2="48" class="arr" marker-end="url(#arrow)"/>
+<g class="c-gray"><rect x="410" y="20" width="230" height="56" rx="4" stroke-width="0.8"/><text class="th" x="525" y="38" text-anchor="middle" dominant-baseline="central">Set-up without checks</text><text class="ts" x="525" y="58" text-anchor="middle" dominant-baseline="central">usual car settings only</text></g>
+<path d="M600 76 L600 440 L382 440" class="arr" style="stroke-dasharray:2 3" marker-end="url(#arrow)"/>
+<line x1="210" y1="76" x2="210" y2="98" class="arr" marker-end="url(#arrow)"/>
+<g class="c-teal"><rect x="40" y="100" width="340" height="92" rx="4" stroke-width="0.8"/><text class="th" x="210" y="120" text-anchor="middle" dominant-baseline="central">1. Complete with rules in code</text><text class="ts" x="210" y="142" text-anchor="middle" dominant-baseline="central">usual car target and ready-by time</text><text class="ts" x="210" y="158" text-anchor="middle" dominant-baseline="central">no deadline: end of the known prices</text><text class="ts" x="210" y="174" text-anchor="middle" dominant-baseline="central">time without am/pm: next occurrence</text></g>
+<line x1="210" y1="192" x2="210" y2="214" class="arr" marker-end="url(#arrow)"/>
+<g class="c-teal"><rect x="40" y="216" width="340" height="56" rx="4" stroke-width="0.8"/><text class="th" x="210" y="234" text-anchor="middle" dominant-baseline="central">2. Read back in words</text><text class="ts" x="210" y="254" text-anchor="middle" dominant-baseline="central">weekday, part of day, hours from now</text></g>
+<line x1="210" y1="272" x2="210" y2="294" class="arr" marker-end="url(#arrow)"/>
+<g class="c-teal"><rect x="40" y="296" width="340" height="92" rx="4" stroke-width="0.8"/><text class="th" x="210" y="316" text-anchor="middle" dominant-baseline="central">3. Checker</text><text class="ts" x="210" y="338" text-anchor="middle" dominant-baseline="central">vague words or an empty request</text><text class="ts" x="210" y="354" text-anchor="middle" dominant-baseline="central">time passed or window too short</text><text class="ts" x="210" y="370" text-anchor="middle" dominant-baseline="central">conflict or missing temperature</text></g>
+<line x1="380" y1="342" x2="408" y2="342" class="arr" marker-end="url(#arrow)"/>
+<g class="c-coral"><rect x="410" y="314" width="170" height="56" rx="20" stroke-width="0.8"/><text class="th" x="495" y="332" text-anchor="middle" dominant-baseline="central">Not planned</text><text class="ts" x="495" y="352" text-anchor="middle" dominant-baseline="central">the model asks</text></g>
+<line x1="210" y1="388" x2="210" y2="410" class="arr" marker-end="url(#arrow)"/>
+<g class="c-blue"><rect x="40" y="412" width="340" height="56" rx="4" stroke-width="2"/><text class="th" x="210" y="430" text-anchor="middle" dominant-baseline="central">4. MPC solves once (EMHASS)</text><text class="ts" x="210" y="450" text-anchor="middle" dominant-baseline="central">car, appliances, heat pump, battery</text></g>
+<line x1="210" y1="468" x2="210" y2="490" class="arr" marker-end="url(#arrow)"/>
+<g class="c-teal"><rect x="40" y="492" width="340" height="74" rx="4" stroke-width="0.8"/><text class="th" x="210" y="512" text-anchor="middle" dominant-baseline="central">5. Check each requirement</text><text class="ts" x="210" y="534" text-anchor="middle" dominant-baseline="central">car charged by ready-by, or a warning</text><text class="ts" x="210" y="550" text-anchor="middle" dominant-baseline="central">runs in their windows, temperature in band</text></g>
+<line x1="210" y1="566" x2="210" y2="588" class="arr" marker-end="url(#arrow)"/>
+<g class="c-teal"><rect x="40" y="590" width="340" height="92" rx="4" stroke-width="0.8"/><text class="th" x="210" y="610" text-anchor="middle" dominant-baseline="central">6. Result for the model and the app</text><text class="ts" x="210" y="632" text-anchor="middle" dominant-baseline="central">times and a reason for each device</text><text class="ts" x="210" y="648" text-anchor="middle" dominant-baseline="central">cost, saving against starting now, warnings</text><text class="ts" x="210" y="664" text-anchor="middle" dominant-baseline="central">hourly timeline of prices and devices</text></g>
+<line x1="210" y1="682" x2="210" y2="704" class="arr" marker-end="url(#arrow)"/>
+<g class="c-amber"><rect x="40" y="706" width="340" height="56" rx="4" stroke-width="0.8" style="stroke-dasharray:5 3"/><text class="th" x="210" y="724" text-anchor="middle" dominant-baseline="central">Model compares the read-back</text><text class="ts" x="210" y="744" text-anchor="middle" dominant-baseline="central">with the message; commit or ask</text></g>
+<line x1="380" y1="734" x2="408" y2="734" class="arr" marker-end="url(#arrow)"/>
+<g class="c-coral"><rect x="410" y="706" width="170" height="56" rx="20" stroke-width="0.8"/><text class="th" x="495" y="724" text-anchor="middle" dominant-baseline="central">Wrong reading</text><text class="ts" x="495" y="744" text-anchor="middle" dominant-baseline="central">calls again, step 1</text></g>
+<line x1="210" y1="762" x2="210" y2="784" class="arr" marker-end="url(#arrow)"/>
+<g class="c-teal"><rect x="40" y="786" width="340" height="74" rx="4" stroke-width="0.8"/><text class="th" x="210" y="806" text-anchor="middle" dominant-baseline="central">7. Gateway commit gate</text><text class="ts" x="210" y="828" text-anchor="middle" dominant-baseline="central">model commits, no problems, every</text><text class="ts" x="210" y="844" text-anchor="middle" dominant-baseline="central">requirement met or warned</text></g>
+<line x1="380" y1="823" x2="408" y2="823" class="arr" marker-end="url(#arrow)"/>
+<g class="c-coral"><rect x="410" y="795" width="170" height="56" rx="20" stroke-width="0.8"/><text class="th" x="495" y="813" text-anchor="middle" dominant-baseline="central">Otherwise</text><text class="ts" x="495" y="833" text-anchor="middle" dominant-baseline="central">the household is asked</text></g>
+<line x1="210" y1="860" x2="210" y2="882" class="arr" marker-end="url(#arrow)"/>
+<g class="c-green"><rect x="40" y="884" width="340" height="56" rx="20" stroke-width="0.8"/><text class="th" x="210" y="902" text-anchor="middle" dominant-baseline="central">Committed</text><text class="ts" x="210" y="922" text-anchor="middle" dominant-baseline="central">the app shows the plan; MPC replans hourly</text></g>
+<g class="c-amber"><rect x="40" y="964" width="26" height="14" rx="3" stroke-width="0.8" style="stroke-dasharray:5 3"/></g><text class="ts" x="72" y="971" dominant-baseline="central">model</text>
+<g class="c-teal"><rect x="122" y="964" width="26" height="14" rx="3" stroke-width="0.8"/></g><text class="ts" x="154" y="971" dominant-baseline="central">harness code</text>
+<g class="c-blue"><rect x="246" y="964" width="26" height="14" rx="3" stroke-width="2"/></g><text class="ts" x="278" y="971" dominant-baseline="central">optimiser</text>
+<g class="c-coral"><rect x="350" y="964" width="26" height="14" rx="7" stroke-width="0.8"/></g><text class="ts" x="382" y="971" dominant-baseline="central">ask</text>
+<g class="c-green"><rect x="418" y="964" width="26" height="14" rx="7" stroke-width="0.8"/></g><text class="ts" x="450" y="971" dominant-baseline="central">commit</text>
+<line x1="510" y1="971" x2="536" y2="971" class="arr" style="stroke-dasharray:2 3"/><text class="ts" x="542" y="971" dominant-baseline="central">without checks</text>
+</svg>
   <figcaption>The four steps inside <code>plan_schedule</code>. Dashed lines go back to the model: a problem from the checker becomes a question, and a wrong time in the read-back makes the model call the tool again (the app shows the last result). The MPC in the tool is a single preview; the hourly replanning after a commit needs no model call.</figcaption>
   </figure>
   <div class="scroll"><table>
@@ -779,64 +662,70 @@ ul.tight li { margin: 4px 0; }
       <li><strong>Receding horizon:</strong> re-solved hourly; the control layer holds the planned grid exchange every 15 minutes.</li>
     </ul>
 
+  <h3>An example plan</h3>
+  <figure class="figure">
+  <img class="tfig" src="example_day_s6.png" alt="The first 24 hours of the plan committed for a household message on 20 September 2016: the car and the washing machine run on the PV forecast, and the home battery covers the evening and the night.">
+  <figcaption>The plan the Household Assistant committed for pilot plan S6 (sent 08:00 on 20 September 2016, car at 45 %: "Going out tonight from 6 to 10. Car at 70 % by 6 and the washing finished by half five."). The car and the washing machine run on the house's own PV; the battery keeps its charge during the day and covers the evening and night. Planned cost 1.32 EUR against 2.73 EUR if every device started at once.</figcaption>
+  </figure>
+
   <h3>One day at runtime</h3>
   <div class="figure">
-  <svg viewBox="0 0 980 470" role="img" aria-label="Sequence of one day at runtime">
-    <defs>
-      <marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
-      <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head agent" d="M0,0 L10,5 L0,10 z"/></marker>
-    </defs>
-    <text class="title" x="40" y="30">Household</text>
-    <text class="title" x="225" y="30">Agents</text>
-    <text class="title" x="440" y="30">Harness: EMHASS + checker</text>
-    <text class="title" x="665" y="30">Control layer</text>
-    <text class="title" x="850" y="30">Devices</text>
-    <line class="lane" x1="80" y1="42" x2="80" y2="455"/>
-    <line class="lane" x1="285" y1="42" x2="285" y2="455"/>
-    <line class="lane" x1="520" y1="42" x2="520" y2="455"/>
-    <line class="lane" x1="715" y1="42" x2="715" y2="455"/>
-    <line class="lane" x1="890" y1="42" x2="890" y2="455"/>
+  <svg xmlns="http://www.w3.org/2000/svg" class="tfig" aria-label="One day at runtime: agents act at the household's messages; between them the MPC replans hourly and the control layer runs every 15 minutes." viewBox="0 0 680 478" role="img">
+<defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#5f6b76"/></marker><marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#1f6f78"/></marker></defs>
+<text x="80" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Household</text>
+<text x="210" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f6f78">Agents</text>
+<text x="350" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Harness</text>
+<text x="350" y="39" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#52606d">EMHASS, checker</text>
+<text x="490" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Control layer</text>
+<text x="620" y="22" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:14px;fill:#1f2933">Devices</text>
+<line x1="80" y1="52" x2="80" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+<line x1="210" y1="52" x2="210" y2="470" style="stroke:#1f6f78;stroke-width:1;stroke-dasharray:4 4;stroke-opacity:0.5"/>
+<line x1="350" y1="52" x2="350" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+<line x1="490" y1="52" x2="490" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
+<line x1="620" y1="52" x2="620" y2="470" style="stroke:#c3c8cd;stroke-width:1;stroke-dasharray:4 4"/>
 
-    <circle class="step" cx="30" cy="72" r="10"/><text class="stepnum" x="26" y="76">1</text>
-    <path class="arrow agent" d="M80,72 L283,72" marker-end="url(#s2)"/>
-    <text class="small" x="92" y="64">evening plan: "car 80 % by 7, away 9-17"</text>
+<circle cx="30" cy="80" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="80" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">1</text>
+<path d="M80 80 H208" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="88" y="68" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">evening plan "car 80 % by 7, away 9-17"</text>
 
-    <circle class="step" cx="30" cy="118" r="10"/><text class="stepnum" x="26" y="122">2</text>
-    <path class="arrow agent" d="M285,118 L518,118" marker-end="url(#s2)"/>
-    <text class="small" x="297" y="110">Assistant: plan_schedule (checks, MPC preview)</text>
+<circle cx="30" cy="122" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="122" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">2</text>
+<path d="M210 122 H348" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="218" y="110" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">plan_schedule: checks, MPC preview</text>
 
-    <circle class="step" cx="30" cy="164" r="10"/><text class="stepnum" x="26" y="168">3</text>
-    <path class="arrow" d="M520,164 L287,164" marker-end="url(#s1)"/>
-    <text class="small" x="300" y="156">plan + checker result (cost, EV, comfort)</text>
+<circle cx="30" cy="164" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="164" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">3</text>
+<path d="M350 164 H212" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="218" y="152" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">plan and check result</text>
 
-    <circle class="step" cx="30" cy="210" r="10"/><text class="stepnum" x="26" y="214">4</text>
-    <path class="arrow agent" d="M285,210 L82,210" marker-end="url(#s2)"/>
-    <text class="small" x="96" y="202">Explainer: "charging 01-04, cheapest"</text>
-    <path class="arrow" d="M520,210 L713,210" marker-end="url(#s1)"/>
-    <text class="small" x="530" y="202">committed plan</text>
+<circle cx="30" cy="206" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="206" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">4</text>
+<path d="M210 206 H82" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="88" y="194" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">Explainer: "charging 01-04, cheapest"</text>
+<path d="M350 206 H488" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="358" y="194" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">committed plan</text>
 
-    <circle class="step" cx="30" cy="262" r="10"/><text class="stepnum" x="26" y="266">5</text>
-    <rect class="detbox" x="460" y="244" width="120" height="34" rx="5"/>
-    <text class="small" x="472" y="265">MPC replans hourly</text>
-    <path class="arrow" d="M715,262 L888,262" marker-end="url(#s1)"/>
-    <text class="small" x="726" y="254">setpoints every 15 min</text>
+<circle cx="30" cy="250" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="250" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">5</text>
+<rect x="284" y="236" width="132" height="28" rx="6" style="fill:#f3f3f1;stroke:#6b7785;stroke-width:1.2"/>
+<text x="350" y="250" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#1f2933">MPC replans hourly</text>
+<path d="M490 250 H618" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="498" y="238" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">setpoints every 15 min</text>
 
-    <circle class="step" cx="30" cy="316" r="10"/><text class="stepnum" x="26" y="320">6</text>
-    <path class="arrow agent" d="M80,316 L283,316" marker-end="url(#s2)"/>
-    <text class="small" x="92" y="308">change at 13:00: "home at 15"</text>
+<circle cx="30" cy="294" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="294" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">6</text>
+<path d="M80 294 H208" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="88" y="282" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">change at 13:00: "home at 15"</text>
 
-    <circle class="step" cx="30" cy="362" r="10"/><text class="stepnum" x="26" y="366">7</text>
-    <path class="arrow agent" d="M285,362 L518,362" marker-end="url(#s2)"/>
-    <text class="small" x="297" y="354">Assistant: comfort band from 15:00</text>
-    <path class="arrow" d="M520,362 L713,362" marker-end="url(#s1)"/>
-    <text class="small" x="530" y="354">new checked plan</text>
+<circle cx="30" cy="336" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="336" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">7</text>
+<path d="M210 336 H348" style="fill:none;stroke:#1f6f78;stroke-width:1.4" marker-end="url(#at)"/>
+<text x="218" y="324" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">comfort from 15:00</text>
+<path d="M350 336 H488" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="358" y="324" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">new checked plan</text>
 
-    <circle class="step" cx="30" cy="414" r="10"/><text class="stepnum" x="26" y="418">8</text>
-    <path class="arrow" d="M888,414 L717,414" marker-end="url(#s1)"/>
-    <text class="small" x="728" y="406">measurements; fallback if no valid plan</text>
-    <path class="arrow agent" d="M715,436 L287,436" marker-end="url(#s2)" stroke-dasharray="5 4"/>
-    <text class="small" x="300" y="452">deviation event → Monitor (only if a threshold is passed)</text>
-  </svg>
+<circle cx="30" cy="378" r="11" style="fill:#dff0f0;stroke:#1f6f78;stroke-width:1.4"/><text x="30" y="378" text-anchor="middle" dominant-baseline="central" style="font-weight:bold;font-size:13px;fill:#1f2933">8</text>
+<path d="M620 378 H492" style="fill:none;stroke:#5f6b76;stroke-width:1.4" marker-end="url(#ag)"/>
+<text x="612" y="366" text-anchor="end" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">measurements</text>
+<path d="M490 412 H212" style="fill:none;stroke:#1f6f78;stroke-width:1.4;stroke-dasharray:5 4" marker-end="url(#at)"/>
+<text x="218" y="400" dominant-baseline="central" style="font-size:12px;fill:#52606d;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round">deviation → Monitor, past a threshold</text>
+<rect x="388" y="434" width="204" height="28" rx="6" style="fill:#f3f3f1;stroke:#6b7785;stroke-width:1.2"/>
+<text x="490" y="448" text-anchor="middle" dominant-baseline="central" style="font-size:12px;fill:#1f2933">fallback rules if no valid plan</text>
+</svg>
   </div>
   <p class="caption">Agents appear at steps 1-4 and 6-7, and after step 8 only if the control layer raises a deviation. Between them the MPC replans every hour and the control layer runs every 15 minutes without a language model.</p>
 
