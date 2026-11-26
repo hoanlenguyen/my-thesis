@@ -22,7 +22,7 @@ text{font-family:Arial,Helvetica,sans-serif}
 chrome = next(p for p in [r"C:\Program Files\Google\Chrome\Application\chrome.exe",
                           r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
                           shutil.which("chrome") or ""] if p and Path(p).exists())
-for name in ("request_path", "plan_schedule", "agent_flow", "runtime_day"):
+for name in ("request_path", "plan_schedule", "agent_flow", "runtime_day", "architecture"):
     svg = (HERE / f"{name}.svg").read_text(encoding="utf-8")
     w, h = map(float, re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
     svg = svg.replace('width="100%"', f'width="{w:g}" height="{h:g}"')

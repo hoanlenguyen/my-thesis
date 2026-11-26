@@ -24,6 +24,11 @@ Hoan Le\\
 \setcounter{page}{1}
 % Extra space above every table row, so rows are easy to tell apart.
 \setlength{\extrarowheight}{3pt}
+% Let figures up to most of a page share it with text instead of getting a page of their own.
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
 
 % ── ABSTRACT ────────────────────────────────────────────────────────────────
 \unnumberedchapter{Abstract}
